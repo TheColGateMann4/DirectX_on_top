@@ -1,0 +1,91 @@
+#pragma once
+#include "Bindable.h"
+
+template<class C>
+class ConstantBuffer : public Bindable
+{
+public:
+	void Update(GFX& gfx, const C& consts)
+	{
+		HRESULT hr;
+
+		D3D11_MAPPED_SUBRESOURCE subresourceData;
+
+		THROW_GFX_IF_FAILED(
+			GetDeviceContext(gfx)->Map(
+				pConstantBuffer.Get(),
+				NULL,
+				D3D11_MAP_WRITE_DISCARD,
+				NULL,
+				&subresourceData)
+		);
+
+		memcpy(subresourceData.pData, &consts, sizeof(consts));
+
+		GetDeviceContext(gfx)->Unmap(pConstantBuffer.Get(), NULL);
+	}
+	ConstantBuffer(GFX& gfx, const C& consts)
+	{
+		HRESULT hr;
+
+		D3D11_BUFFER_DESC constBufferDesc = {};
+		constBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		constBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		constBufferDesc.MiscFlags = NULL;
+		constBufferDesc.ByteWidth = sizeof(consts);
+		constBufferDesc.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA constBufferResourceData = {};
+		constBufferResourceData.pSysMem = &consts;
+
+		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &(ConstantBuffer::pConstantBuffer)));
+	}
+	ConstantBuffer(GFX& gfx)
+	{
+		HRESULT hr;
+
+		D3D11_BUFFER_DESC constBufferDesc = {};
+		constBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		constBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		constBufferDesc.MiscFlags = NULL;
+		constBufferDesc.ByteWidth = sizeof(C);
+		constBufferDesc.StructureByteStride = 0;
+
+		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &(ConstantBuffer::pConstantBuffer)));
+	}
+protected:
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
+};
+
+
+template<class C>
+class PixelConstantBuffer : public ConstantBuffer<C>
+{
+	using ConstantBuffer<C>::pConstantBuffer;
+	using Bindable::GetDeviceContext;
+
+public:
+	using ConstantBuffer<C>::ConstantBuffer;
+
+	VOID Bind(GFX& gfx) noexcept override
+	{
+		GetDeviceContext(gfx)->PSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+	}
+};
+
+template<class C>
+class VertexConstantBuffer : public ConstantBuffer<C>
+{
+	using ConstantBuffer<C>::pConstantBuffer;
+	using Bindable::GetDeviceContext;
+
+public:
+	using ConstantBuffer<C>::ConstantBuffer;
+
+	VOID Bind(GFX& gfx) noexcept override
+	{
+		GetDeviceContext(gfx)->VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+	}
+};
