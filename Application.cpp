@@ -1,5 +1,8 @@
 #include "Application.h"
 #include "KeyMacros.h"
+#include "Sphere.h"
+#include "Cube.h"
+#include "Pyramid.h"
 #include <random>
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
@@ -16,17 +19,18 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 	std::uniform_int_distribution<int> longdist{ 10,40 };
 	std::uniform_int_distribution<int> typedist{ 0,2 };
 
-	for (auto i = 0; i < 2000; i++)
+	for (auto i = 0; i < 1; i++)
 	{
-		//boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
+		boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
 		boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
+		boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
 	}
 	window.Graphics.SetProjection(DirectX::XMMatrixPerspectiveLH(1.0, 3.0 / 4.0, 0.5, 40.0));
 }
 
 BOOL Application::Initiate()
 {
-	window.Graphics.FrameRate = 144;
+	window.Graphics.FrameRate = 155;
 	while (true)
 	{
 		
@@ -119,7 +123,7 @@ VOID Application::DoFrame()
 	FLOAT DeltaTime = time.Mark();
 	window.Graphics.ClearBuffer({ 0,0,0,1 });
 
-	for (std::unique_ptr<Cube>& b : boxes)
+	for (std::unique_ptr<Shape>& b : boxes)
 	{
 		b->Update(DeltaTime);
 		b->Draw(window.Graphics);

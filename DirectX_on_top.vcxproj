@@ -158,6 +158,7 @@
     <ClInclude Include="KeyMacros.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="Pyramid.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Sphere.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="PixelShader.cpp" />
+    <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Time.cpp" />

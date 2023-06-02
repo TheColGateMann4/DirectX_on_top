@@ -1,8 +1,7 @@
-#include "Cube.h"
+#include "Pyramid.h"
 #include "BindableClassesMacro.h"
 
-Cube::Cube(GFX& gfx,
-	std::mt19937& rng,
+Pyramid::Pyramid(GFX& gfx, std::mt19937& rng,
 	std::uniform_real_distribution<float>& adist,
 	std::uniform_real_distribution<float>& ddist,
 	std::uniform_real_distribution<float>& odist,
@@ -28,10 +27,9 @@ Cube::Cube(GFX& gfx,
 				FLOAT x, y, z;
 			} pos;
 		};
+		Mesh<Vertex> PyramidModel = GetMesh<Vertex>();
 
-		Mesh<Vertex> CubeModel = GetMesh<Vertex>();
-
-		AddStaticBind(std::make_unique<VertexBuffer>(gfx, CubeModel.m_vertices));
+		AddStaticBind(std::make_unique<VertexBuffer>(gfx, PyramidModel.m_vertices));
 
 		std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
 		ID3DBlob* pBlob = pVertexShader->GetByteCode();
@@ -40,7 +38,7 @@ Cube::Cube(GFX& gfx,
 
 		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
 
-		AddStaticIndexBufferBind(std::make_unique<IndexBuffer>(gfx, CubeModel.m_indices));
+		AddStaticIndexBufferBind(std::make_unique<IndexBuffer>(gfx, PyramidModel.m_indices));
 
 
 		struct ConstantBufferColor
@@ -83,34 +81,35 @@ Cube::Cube(GFX& gfx,
 }
 
 template <class T>
-static Mesh<T> Cube::GetMesh()
+static Mesh<T> Pyramid::GetMesh()
 {
 	std::vector<T> vertices =
 	{
 		{ -1.0f,-1.0f,-1.0f },
 		{ 1.0f, -1.0f, -1.0f },
-		{ -1.0f,1.0f,-1.0f },
-		{ 1.0f,1.0f,-1.0f },
 		{ -1.0f,-1.0f,1.0f },
 		{ 1.0f,-1.0f,1.0f },
-		{ -1.0f,1.0f,1.0f },
-		{ 1.0f,1.0f,1.0f }
+		{ 0.0f,1.0f,0.0f },
+		{ 0.0f,-1.0f,-1.0f },
+		{ 1.0f, -1.0f, 0.0f },
+		{ -1.0f,-1.0f,0.0f },
+		{ 0.0f,-1.0f,1.0f },
 	};
 
 	std::vector<UINT32> indices =
 	{
-		0,2,1, 2,3,1,
-		1,3,5, 3,7,5,
-		2,6,3, 3,6,7,
-		4,5,7, 4,7,6,
-		0,4,2, 2,4,6,
-		0,1,4, 1,5,4
+		0,1,2,	1,3,2,
+		4,8,3,	4,2,8,
+		4,6,1,	4,3,6,
+		4,7,2,	4,0,7,
+		4,5,0,  4,1,5,
 	};
 
 	return { std::move(vertices), std::move(indices) };
 }
 
-VOID Cube::Update(FLOAT DeltaTime) noexcept
+
+VOID Pyramid::Update(FLOAT DeltaTime) noexcept
 {
 	roll += droll * DeltaTime;
 	pitch += dpitch * DeltaTime;
@@ -121,7 +120,7 @@ VOID Cube::Update(FLOAT DeltaTime) noexcept
 	chi += dchi * DeltaTime;
 }
 
-DirectX::XMMATRIX Cube::GetTranformMatrix() const noexcept
+DirectX::XMMATRIX Pyramid::GetTranformMatrix() const noexcept
 {
 	return
 		DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *

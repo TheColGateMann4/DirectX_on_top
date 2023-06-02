@@ -5,10 +5,10 @@
 #include "Mesh.h"
 #include <random>
 
-class Cube : public StaticBindables<Cube>
+class Pyramid : public StaticBindables<Shape>
 {
 public:
-	Cube(GFX& gfx,
+	Pyramid(GFX& gfx,
 		std::mt19937& rng,
 		std::uniform_real_distribution<float>& adist,
 		std::uniform_real_distribution<float>& ddist,
@@ -21,7 +21,7 @@ public:
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 private:
-	template <class T>
+	template<class T>
 	static Mesh<T> GetMesh();
 
 private:

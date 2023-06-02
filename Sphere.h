@@ -21,7 +21,7 @@ public:
 
 private:
 	template <class T>
-	static Mesh<T> GetMesh(FLOAT Radius = 1.0, UINT32 HorizontalDivisions = 12, UINT32 VerticalDivisions = 24);
+	static Mesh<T> GetMesh(UINT32 latDiv = 12, UINT32 longDiv = 24);
 private:
 private:
 	// positional

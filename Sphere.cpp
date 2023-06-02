@@ -61,10 +61,6 @@ Sphere::Sphere(GFX& gfx, std::mt19937& rng,
 
 		AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	}
-	else
-	{
-		GetIndexBufferFromVector();
-	}
 
 	struct Vertex
 	{
@@ -72,7 +68,7 @@ Sphere::Sphere(GFX& gfx, std::mt19937& rng,
 	};
 
 
-	auto mesh = Sphere::GetMesh<Vertex>(1.0f, (UINT32)latdist(rng), (UINT32)longdist(rng));
+	auto mesh = Sphere::GetMesh<Vertex>((UINT32)latdist(rng), (UINT32)longdist(rng));
 
 	mesh.Transform(DirectX::XMMatrixScaling(1.0, 1.0, 1.2));
 
@@ -85,83 +81,89 @@ Sphere::Sphere(GFX& gfx, std::mt19937& rng,
 }
 
 template <class T>
-static Mesh<T> Sphere::GetMesh( FLOAT Radius, UINT32 HorizontalDivisions, UINT32 VerticalDivisions )
+static Mesh<T> Sphere::GetMesh(UINT32 latDiv, UINT32 longDiv)
 {
-	const DirectX::XMVECTOR startPosition = DirectX::XMVectorSet(0, 0, Radius, 0);
-	const FLOAT lattitudeAngle = std::_Pi / HorizontalDivisions;
-	const FLOAT longitudeAngle = 2 * std::_Pi / VerticalDivisions;
+	namespace dx = DirectX;
+	assert(latDiv >= 3);
+	assert(longDiv >= 3);
+
+	constexpr float radius = 1.0f;
+	const auto base = dx::XMVectorSet(0.0f, 0.0f, radius, 0.0f);
+	const float lattitudeAngle = std::_Pi / latDiv;
+	const float longitudeAngle = 2.0f * std::_Pi / longDiv;
 
 	std::vector<T> vertices;
-	for (UINT32 iVerticalDivisions = 1; iVerticalDivisions < VerticalDivisions; iVerticalDivisions++)
+	for (int iLat = 1; iLat < latDiv; iLat++)
 	{
-		const DirectX::XMVECTOR currVerticalPos = DirectX::XMVector3Transform(startPosition, DirectX::XMMatrixRotationX(lattitudeAngle * iVerticalDivisions));
-		for (UINT32 iHorizontalDivision = 0; iHorizontalDivision < HorizontalDivisions; iHorizontalDivision++)
+		const auto latBase = dx::XMVector3Transform(
+			base,
+			dx::XMMatrixRotationX(lattitudeAngle * iLat)
+		);
+		for (int iLong = 0; iLong < longDiv; iLong++)
 		{
 			vertices.emplace_back();
-			DirectX::XMVECTOR verticePos = DirectX::XMVector3Transform(currVerticalPos, DirectX::XMMatrixRotationZ(longitudeAngle * HorizontalDivisions));
-			DirectX::XMStoreFloat3(&vertices.back().position, verticePos);
+			auto v = dx::XMVector3Transform(
+				latBase,
+				dx::XMMatrixRotationZ(longitudeAngle * iLong)
+			);
+			dx::XMStoreFloat3(&vertices.back().position, v);
 		}
 	}
 
-	//cap
-	const auto iNorthPole = vertices.size();
+	// add the cap vertices
+	const auto iNorthPole = (UINT32)vertices.size();
 	vertices.emplace_back();
-	DirectX::XMStoreFloat3(&vertices.back().position, startPosition);
-
-	const auto iSouthPole = vertices.size();
+	dx::XMStoreFloat3(&vertices.back().position, base);
+	const auto iSouthPole = (UINT32)vertices.size();
 	vertices.emplace_back();
-	DirectX::XMStoreFloat3(&vertices.back().position, DirectX::XMVectorNegate(startPosition));
+	dx::XMStoreFloat3(&vertices.back().position, dx::XMVectorNegate(base));
 
-	const auto ResolveIndex = [VerticalDivisions, HorizontalDivisions](UINT32 iVerticalDivisions, UINT32 iHorizontalDivision)
-	{return iVerticalDivisions * VerticalDivisions + iHorizontalDivision;};
-
+	const auto calcIdx = [latDiv, longDiv](UINT32 iLat, UINT32 iLong)
+	{ return iLat * longDiv + iLong; };
 	std::vector<UINT32> indices;
-	for (UINT32 iVerticalDivisions = 0; iVerticalDivisions < VerticalDivisions - 2; iVerticalDivisions++)
+	for (UINT32 iLat = 0; iLat < latDiv - 2; iLat++)
 	{
-		for (UINT32 iHorizontalDivision = 0; iHorizontalDivision < HorizontalDivisions - 1; iHorizontalDivision++)
+		for (UINT32 iLong = 0; iLong < longDiv - 1; iLong++)
 		{
-			indices.push_back(ResolveIndex(iVerticalDivisions, iHorizontalDivision));
-			indices.push_back(ResolveIndex(iVerticalDivisions + 1, iHorizontalDivision));
-			indices.push_back(ResolveIndex(iVerticalDivisions, iHorizontalDivision + 1));
-			indices.push_back(ResolveIndex(iVerticalDivisions, iHorizontalDivision + 1));
-			indices.push_back(ResolveIndex(iVerticalDivisions + 1, iHorizontalDivision));
-			indices.push_back(ResolveIndex(iVerticalDivisions + 1, iHorizontalDivision + 1));
+			indices.push_back(calcIdx(iLat, iLong));
+			indices.push_back(calcIdx(iLat + 1, iLong));
+			indices.push_back(calcIdx(iLat, iLong + 1));
+			indices.push_back(calcIdx(iLat, iLong + 1));
+			indices.push_back(calcIdx(iLat + 1, iLong));
+			indices.push_back(calcIdx(iLat + 1, iLong + 1));
 		}
-
-		//connecting two ends on longitude
-		indices.push_back(ResolveIndex(iVerticalDivisions, HorizontalDivisions - 1));
-		indices.push_back(ResolveIndex(iVerticalDivisions + 1, HorizontalDivisions - 1));
-		indices.push_back(ResolveIndex(iVerticalDivisions, 0));
-		indices.push_back(ResolveIndex(iVerticalDivisions, 0));
-		indices.push_back(ResolveIndex(iVerticalDivisions + 1, HorizontalDivisions - 1));
-		indices.push_back(ResolveIndex(iVerticalDivisions + 1, 0));
+		// wrap band
+		indices.push_back(calcIdx(iLat, longDiv - 1));
+		indices.push_back(calcIdx(iLat + 1, longDiv - 1));
+		indices.push_back(calcIdx(iLat, 0));
+		indices.push_back(calcIdx(iLat, 0));
+		indices.push_back(calcIdx(iLat + 1, longDiv - 1));
+		indices.push_back(calcIdx(iLat + 1, 0));
 	}
 
-	//making poles
-	for (UINT32 iHorizontalDivision = 0; iHorizontalDivision < HorizontalDivisions - 1; iHorizontalDivision++)
+	// cap fans
+	for (UINT32 iLong = 0; iLong < longDiv - 1; iLong++)
 	{
-		//north
+		// north
 		indices.push_back(iNorthPole);
-		indices.push_back(ResolveIndex(0, iHorizontalDivision));
-		indices.push_back(ResolveIndex(0, iHorizontalDivision + 1));
-
-		//south
-		indices.push_back(ResolveIndex(VerticalDivisions - 2, iHorizontalDivision + 1));
-		indices.push_back(ResolveIndex(VerticalDivisions - 2, iHorizontalDivision));
+		indices.push_back(calcIdx(0, iLong));
+		indices.push_back(calcIdx(0, iLong + 1));
+		// south
+		indices.push_back(calcIdx(latDiv - 2, iLong + 1));
+		indices.push_back(calcIdx(latDiv - 2, iLong));
 		indices.push_back(iSouthPole);
 	}
-
-	//north
+	// wrap triangles
+	// north
 	indices.push_back(iNorthPole);
-	indices.push_back(ResolveIndex(0, HorizontalDivisions - 1));
-	indices.push_back(ResolveIndex(0, 0));
-
-	//south
-	indices.push_back(ResolveIndex(VerticalDivisions - 2, 0));
-	indices.push_back(ResolveIndex(VerticalDivisions - 2, HorizontalDivisions - 1));
+	indices.push_back(calcIdx(0, longDiv - 1));
+	indices.push_back(calcIdx(0, 0));
+	// south
+	indices.push_back(calcIdx(latDiv - 2, 0));
+	indices.push_back(calcIdx(latDiv - 2, longDiv - 1));
 	indices.push_back(iSouthPole);
 
-	return { std::move(vertices), std::move(indices) };
+	return { std::move(vertices),std::move(indices) };
 }
 
 VOID Sphere::Update(FLOAT DeltaTime) noexcept

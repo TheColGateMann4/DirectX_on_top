@@ -3,7 +3,7 @@
 #include "Window.h"
 #include "ErrorHandling.h"
 #include "Time.h"
-#include "Cube.h"
+#include "Shape.h"
 
 class Application
 {
@@ -24,6 +24,6 @@ private:
 	Time time;
 
 private:
-	std::vector<std::unique_ptr<Cube>> boxes;
+	std::vector<std::unique_ptr<Shape>> boxes;
 };
 
