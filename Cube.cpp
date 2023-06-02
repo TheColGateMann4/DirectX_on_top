@@ -31,21 +31,21 @@ Cube::Cube(GFX& gfx,
 
 		const std::vector<Vertex> vertices =
 		{
-			{ -1.0f,-1.0f,-1.0f },	//---
-			{ 1.0f,-1.0f,-1.0f },	//+--
-			{ -1.0f,1.0f,-1.0f },	//-+-
-			{ 1.0f,1.0f,-1.0f },	//++-
-			{ -1.0f,-1.0f,1.0f },	//--+
-			{ 1.0f,-1.0f,1.0f },	//+-+
-			{ -1.0f,1.0f,1.0f },	//-++
-			{ 1.0f,1.0f,1.0f },		//+++
+			{ -1.0f,-1.0f,-1.0f },
+			{ 1.0f, -1.0f, -1.0f },
+			{ -1.0f,1.0f,-1.0f },
+			{ 1.0f,1.0f,-1.0f },
+			{ -1.0f,-1.0f,1.0f },
+			{ 1.0f,-1.0f,1.0f },
+			{ -1.0f,1.0f,1.0f },
+			{ 1.0f,1.0f,1.0f }
 		};
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
 		std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
 		ID3DBlob* pBlob = pVertexShader->GetByteCode();
-		AddBindable(std::move(pVertexShader));
+		AddStaticBind(std::move(pVertexShader));
 
 
 		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));

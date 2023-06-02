@@ -61,6 +61,10 @@ Sphere::Sphere(GFX& gfx, std::mt19937& rng,
 
 		AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	}
+	else
+	{
+		GetIndexBufferFromVector();
+	}
 
 	struct Vertex
 	{

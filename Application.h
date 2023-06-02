@@ -3,9 +3,7 @@
 #include "Window.h"
 #include "ErrorHandling.h"
 #include "Time.h"
-#include "Shape.h"
 #include "Cube.h"
-#include "Sphere.h"
 
 class Application
 {

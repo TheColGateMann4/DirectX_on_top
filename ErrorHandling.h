@@ -1,15 +1,13 @@
 #pragma once
 #include "Includes.h"
-#include "ErrorMacros.h"
 #include <exception>
+#include "ErrorMacros.h"
 
 #ifdef _DEBUG
 #include <wrl.h>
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 #endif
-
-//#define THROW_GFX_DEVICE_REMOVED(hr) int a
 
 class ErrorHandler
 {
@@ -37,7 +35,6 @@ class ErrorHandler
 		const char* file;
 		HRESULT hr;
 	};
-
 	class InternalException : public StandardException
 	{
 	public:
@@ -51,8 +48,6 @@ class ErrorHandler
 	private:
 		std::string m_errorString;
 	};
-
- public:
 	 class GFXException : public StandardException
 	{
 	 public:
@@ -67,8 +62,15 @@ class ErrorHandler
 		std::string GetErrorDescription();
 
 	};
+	 class NoGFXException : public StandardException
+	 {
+	 public:
+		 NoGFXException(UINT32 line_, const char* file_);
+
+		 std::string GetErrorType() override;
+		 HRESULT GetErrorCode() override;
+	 };
 #ifdef _DEBUG
-public:
 	class DXGIException : public GFXException
 	{
 	 public:
@@ -101,15 +103,6 @@ public:
 	class DeviceRemovedException : public GFXException
 	{
 		std::string GetErrorType() override;
-	};
-public:
-	class NoGFXException : public StandardException
-	{
-	 public:
-		NoGFXException(UINT32 line_, const char* file_);
-
-		std::string GetErrorType() override;
-		HRESULT GetErrorCode() override;
 	};
 	class InfoException : public GFXException
 	{

@@ -13,7 +13,6 @@ VOID Shape::Draw(GFX& gfx) const
 	{
 		b->Bind(gfx);
 	}
-
 	gfx.DrawIndexed(pIndexBuffer->GetCount());
 }
 

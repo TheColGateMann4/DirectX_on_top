@@ -60,7 +60,7 @@ const char* ErrorHandler::StandardException::what()
 	result += ErrorHandler::StandardException::GetErrorType();
 
 	result += "\n[Error Code]: ";
-	result += ErrorHandler::StandardException::GetErrorCode();
+	result += std::to_string(ErrorHandler::StandardException::GetErrorCode());
 
 	result += "\n[Error String]: ";
 	result += ErrorHandler::StandardException::GetErrorString();
@@ -72,7 +72,7 @@ const char* ErrorHandler::StandardException::what()
 	result += "\n[Line] ";
 	result += ErrorHandler::StandardException::GetLine();
 
-	return result.data();
+	return _strdup(result.c_str());
 }
 
 
@@ -148,6 +148,61 @@ const char* ErrorHandler::GFXException::what()
 
 
 
+ErrorHandler::InternalException::InternalException(UINT32 line_, const char* file_, std::string errorString_)
+	: StandardException(line_, file_, NULL), m_errorString(errorString_)
+{
+
+}
+
+std::string ErrorHandler::InternalException::GetErrorType()
+{
+	return "INTERNAL_EXCEPTION";
+}
+std::string ErrorHandler::InternalException::GetErrorString()
+{
+	return ErrorHandler::InternalException::m_errorString;
+}
+
+const char* ErrorHandler::InternalException::what()
+{
+	std::stringstream result;
+
+	result << ErrorHandler::InternalException::GetErrorType();
+
+	result << "\n[Error Name] ";
+	result << ErrorHandler::InternalException::GetErrorString();
+
+	result << "\n\n[File] ";
+	result << ErrorHandler::InternalException::GetFile();
+
+	result << "\n[Line] ";
+	result << ErrorHandler::InternalException::GetLine();
+
+	return _strdup(result.str().c_str());
+}
+
+
+
+
+
+
+
+ErrorHandler::NoGFXException::NoGFXException(UINT32 line_, const char* file_)
+	: StandardException(line_, file_, NULL)
+{
+
+}
+
+std::string ErrorHandler::NoGFXException::GetErrorType()
+{
+	return "NO_GFX_EXCEPTION";
+}
+
+HRESULT ErrorHandler::NoGFXException::GetErrorCode()
+{
+	return (HRESULT)0;
+}
+
 
 
 
@@ -188,8 +243,7 @@ ErrorHandler::DXGIException::DXGIException(UINT32 line_, const char* file_, HRES
 	for (std::string message : messages)
 		ErrorHandler::DXGIException::allMessages += (message + '\n');
 
-	//removing '\n' at the end
-	if (!ErrorHandler::DXGIException::allMessages.empty())
+	if (!ErrorHandler::DXGIException::allMessages.empty()) //removing '\n' at the end
 		ErrorHandler::DXGIException::allMessages.pop_back();
 }
 
@@ -283,67 +337,6 @@ std::vector<std::string> ErrorHandler::DXGIException::DXGIInfoManager::GetMessag
 	return messages;
 }
 
-
-
-ErrorHandler::InternalException::InternalException(UINT32 line_, const char* file_, std::string errorString_)
-	: StandardException(line_, file_, NULL), m_errorString(errorString_)
-{
-
-}
-
-std::string ErrorHandler::InternalException::GetErrorType()
-{
-	return "INTERNAL_EXCEPTION";
-}
-std::string ErrorHandler::InternalException::GetErrorString()
-{
-	return ErrorHandler::InternalException::m_errorString;
-}
-
-const char* ErrorHandler::InternalException::what()
-{
-	std::stringstream result;
-
-	result << ErrorHandler::InternalException::GetErrorType();
-
-	result << "\n[Error Name] ";
-	result << ErrorHandler::InternalException::GetErrorString();
-
-	result << "\n\n[File] ";
-	result << ErrorHandler::InternalException::GetFile();
-
-	result << "\n[Line] ";
-	result << ErrorHandler::InternalException::GetLine();
-
-	return _strdup(result.str().c_str());
-}
-
-
-
-
-
-
-
-ErrorHandler::NoGFXException::NoGFXException(UINT32 line_, const char* file_)
-	: StandardException(line_, file_, NULL)
-{
-
-}
-
-std::string ErrorHandler::NoGFXException::GetErrorType()
-{
-	return "NO_GFX_EXCEPTION";
-}
-
-HRESULT ErrorHandler::NoGFXException::GetErrorCode()
-{
-	return (HRESULT)0;
-}
-
-
-
-
-
 std::string ErrorHandler::DeviceRemovedException::GetErrorType()
 {
 	return "DEVICE_REMOVED_EXCEPTION";
@@ -391,4 +384,5 @@ const char* ErrorHandler::InfoException::what()
 
 	return _strdup(result.str().c_str());
 }
+
 #endif

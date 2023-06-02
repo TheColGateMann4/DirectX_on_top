@@ -14,6 +14,7 @@ public:
 		std::uniform_real_distribution<float>& odist,
 		std::uniform_real_distribution<float>& rdist);
 
+
 public:
 	VOID Update(FLOAT DeltaTime) noexcept override;
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;

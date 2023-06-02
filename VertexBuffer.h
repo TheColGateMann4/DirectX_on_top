@@ -16,7 +16,7 @@ public:
 		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		vertexBufferDesc.CPUAccessFlags = NULL;
 		vertexBufferDesc.MiscFlags = NULL;
-		vertexBufferDesc.ByteWidth = (UINT32)(sizeof(V) * vertices.size());
+		vertexBufferDesc.ByteWidth = (unsigned int)(sizeof(V) * vertices.size());
 		vertexBufferDesc.StructureByteStride = sizeof(V);
 
 		D3D11_SUBRESOURCE_DATA vertexBufferResourceData = {};

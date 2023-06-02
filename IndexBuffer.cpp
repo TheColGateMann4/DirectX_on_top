@@ -1,6 +1,6 @@
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer(GFX& gfx, const std::vector<UINT32>& indices)
+IndexBuffer::IndexBuffer(GFX& gfx, const std::vector<UINT32> indices)
 	: m_count( (UINT32)indices.size())
 {
 	HRESULT hr;
@@ -21,7 +21,7 @@ IndexBuffer::IndexBuffer(GFX& gfx, const std::vector<UINT32>& indices)
 
 VOID IndexBuffer::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->IASetIndexBuffer(IndexBuffer::pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+	GetDeviceContext(gfx)->IASetIndexBuffer(IndexBuffer::pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 }
 
 UINT32 IndexBuffer::GetCount() const noexcept
