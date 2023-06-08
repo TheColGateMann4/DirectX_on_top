@@ -28,12 +28,17 @@ VOID GFX::Initialize(HWND hWnd)
 	scDesc.Flags = 0;
 
 	HRESULT hr;
+	UINT32 SwapChainFlags = 0;
+
+#ifdef _DEBUG
+	SwapChainFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 	THROW_GFX_IF_FAILED(D3D11CreateDeviceAndSwapChain(
 		NULL,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
-		D3D11_CREATE_DEVICE_DEBUG,
+		SwapChainFlags,
 		NULL,
 		NULL,
 		D3D11_SDK_VERSION,

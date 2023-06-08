@@ -5,7 +5,7 @@
 class Topology : public Bindable
 {
 public:
-	Topology(GFX& gfx, D3D11_PRIMITIVE_TOPOLOGY topologyType);
+	Topology(D3D11_PRIMITIVE_TOPOLOGY topologyType);
 	VOID Bind(GFX& gfx) noexcept override;
 
 protected:

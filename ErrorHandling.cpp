@@ -3,7 +3,7 @@
 #include <sstream>
 
 ErrorHandler::StandardException::StandardException(UINT32 line_, const char* file_, HRESULT hr_)
-	: line(line_), file(file_), hr(hr_)
+	: m_line(line_), file(file_), m_hr(hr_)
 {
 	//errorHandler.PrintMessage(NULL, "Internal Error", ErrorHandler::Exception::GetErrorOrgin(), LEVEL_ERROR);
 }
@@ -30,12 +30,12 @@ std::string ErrorHandler::StandardException::TranslateErrorCode(HRESULT hr)
 
 std::string ErrorHandler::StandardException::GetErrorString()
 {
-	return ErrorHandler::StandardException::TranslateErrorCode(hr);
+	return ErrorHandler::StandardException::TranslateErrorCode(m_hr);
 }
 
 HRESULT ErrorHandler::StandardException::GetErrorCode()
 {
-	return ErrorHandler::StandardException::hr;
+	return ErrorHandler::StandardException::m_hr;
 }
 
 const char* ErrorHandler::StandardException::GetFile()
@@ -43,9 +43,9 @@ const char* ErrorHandler::StandardException::GetFile()
 	return ErrorHandler::StandardException::file;
 }
 
-UINT32 ErrorHandler::StandardException::GetLine()
+const char* ErrorHandler::StandardException::GetLine()
 {
-	return ErrorHandler::StandardException::line;
+	return _strdup(std::to_string(ErrorHandler::StandardException::m_line).c_str());
 }
 
 std::string ErrorHandler::StandardException::GetErrorType()
@@ -98,12 +98,12 @@ ErrorHandler::GFXException::GFXException(UINT32 line, const char* file, HRESULT 
 
 HRESULT ErrorHandler::GFXException::GetErrorCode()
 {
-	return ErrorHandler::GFXException::hr;
+	return ErrorHandler::GFXException::m_hr;
 }
 
 std::string ErrorHandler::GFXException::GetErrorString()
 {
-	return DXGetErrorString(hr);
+	return DXGetErrorString(m_hr);
 }
 
 std::string ErrorHandler::GFXException::GetErrorType()
@@ -115,7 +115,7 @@ std::string ErrorHandler::GFXException::GetErrorType()
 std::string ErrorHandler::GFXException::GetErrorDescription()
 {
 	char buff[350];
-	DXGetErrorDescriptionA(ErrorHandler::GFXException::hr, buff, sizeof(buff));
+	DXGetErrorDescriptionA(ErrorHandler::GFXException::m_hr, buff, sizeof(buff));
 	return (std::string)buff;
 }
 
@@ -209,7 +209,7 @@ HRESULT ErrorHandler::NoGFXException::GetErrorCode()
 
 
 
-VOID ErrorHandler::ThrowMessage(HWND hWnd, const char* title, const char* text) noexcept
+VOID ErrorHandler::ThrowMessage(const char* title, const char* text) noexcept
 {
 	MessageBoxA(NULL, text, title, MB_OK | MB_ICONEXCLAMATION);
 

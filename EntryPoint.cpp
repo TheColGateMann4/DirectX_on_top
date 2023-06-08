@@ -3,10 +3,10 @@
 
 int WINAPI WinMain
 (
-	_In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPSTR lpCmdLine,
-	_In_ int nShowCmd
+	_In_ HINSTANCE,
+	_In_opt_ HINSTANCE,
+	_In_ LPSTR,
+	_In_ int
 )
 {
 	try
@@ -16,16 +16,19 @@ int WINAPI WinMain
 	}
 	catch (ErrorHandler::StandardException& except)
 	{
-		errorHandler.ThrowMessage(NULL, "Internal Error", except.what());
+		errorHandler.ThrowMessage("Internal Error", except.what());
 	}
 	catch ( std::exception& except)
 	{
-		errorHandler.ThrowMessage(NULL, "Standard Error", except.what());
+		errorHandler.ThrowMessage("Standard Error", except.what());
 	}
 	catch (...)
 	{			
-		errorHandler.ThrowMessage(NULL, "Unknown Error", "No Details Available");
+		errorHandler.ThrowMessage("Unknown Error", "No Details Available");
 	}
 
 	return FALSE;
 }
+
+//TODO: Get Includes right
+//TODO: Add ConstBuffer with time to vertex shader 

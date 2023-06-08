@@ -25,15 +25,15 @@ class ErrorHandler
 		virtual HRESULT GetErrorCode();
 
 		const char* GetFile();
-		UINT32 GetLine();
+		const char* GetLine();
 
 	 private:
 		std::string TranslateErrorCode(HRESULT hr);
 
 	 protected:
-		UINT32 line;
+		UINT32 m_line;
 		const char* file;
-		HRESULT hr;
+		HRESULT m_hr;
 	};
 	class InternalException : public StandardException
 	{
@@ -121,7 +121,7 @@ class ErrorHandler
 #endif
 	
  public:
-	static VOID ThrowMessage(HWND hWnd, const char* title, const char* text) noexcept;
+	static VOID ThrowMessage(const char* title, const char* text) noexcept;
 };
 
 static ErrorHandler errorHandler;

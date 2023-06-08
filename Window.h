@@ -44,8 +44,8 @@ public:
 	LRESULT HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
  private:
-	int sWidth;
-	int sHeight;
+	UINT32 sWidth;
+	UINT32 sHeight;
 	HWND shWnd;
 
  public:

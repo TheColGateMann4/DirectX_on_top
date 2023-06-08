@@ -19,7 +19,6 @@ public:
 				NULL,
 				&subresourceData)
 		);
-
 		memcpy(subresourceData.pData, &consts, sizeof(consts));
 
 		GetDeviceContext(gfx)->Unmap(pConstantBuffer.Get(), NULL);

@@ -23,7 +23,7 @@ public:
 	VOID SetProjection(DirectX::FXMMATRIX projection) noexcept;
 
 private:
-	DirectX::XMMATRIX m_projection;
+	DirectX::XMMATRIX m_projection = {};
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;

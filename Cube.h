@@ -22,7 +22,10 @@ public:
 
 private:
 	template <class T>
-	static Mesh<T> GetMesh();
+	static Mesh<T> GetNormalMesh();
+
+	template <class T>
+	static Mesh<T> GetUnwrappedMesh();
 
 private:
 	// positional

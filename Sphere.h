@@ -23,7 +23,6 @@ private:
 	template <class T>
 	static Mesh<T> GetMesh(UINT32 latDiv = 12, UINT32 longDiv = 24);
 private:
-private:
 	// positional
 	FLOAT r;
 	FLOAT roll = 0.0f;
