@@ -120,7 +120,7 @@ VOID GFX::FinishFrame()
 	DXGImanager.Set();
 #endif
 
-	if (FAILED(hr = pSwapChain->Present(60 / FrameRate, NULL)))
+	if (FAILED(hr = pSwapChain->Present(1, NULL)))
 	{
 		if (hr == DXGI_ERROR_DEVICE_REMOVED)
 		{

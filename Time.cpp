@@ -9,7 +9,7 @@ Time::Time()
 FLOAT Time::Mark()
 {
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-	const std::chrono::duration<FLOAT> time = m_lastTime - now;
+	const std::chrono::duration<FLOAT> time = now - m_lastTime;
 
 	m_lastTime = now;
 

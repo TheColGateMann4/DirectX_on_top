@@ -1,13 +1,17 @@
 #include "Shape.h"
 #include "IndexBuffer.h"
+#include "TransformConstBuffer.h"
 #include <cassert>
 #include <typeinfo>
 
-VOID Shape::Draw(GFX& gfx) const
+VOID Shape::Draw(GFX& gfx, float currtime) const
 {
 	for (auto& b : binds)
 	{
-		b->Bind(gfx);
+		if (TransformConstBuffer* tcb = dynamic_cast<TransformConstBuffer*>(b.get()))
+			tcb->Bind(gfx, currtime);
+		else
+			b->Bind(gfx);
 	}
 	for (auto& b : GetStaticBindables())
 	{

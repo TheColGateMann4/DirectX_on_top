@@ -13,8 +13,8 @@ public:
 		std::uniform_real_distribution<float>& ddist,
 		std::uniform_real_distribution<float>& odist,
 		std::uniform_real_distribution<float>& rdist,
-		std::uniform_int_distribution<int>& longdist,
-		std::uniform_int_distribution<int>& latdist);
+		std::uniform_int_distribution<UINT32>& longdist,
+		std::uniform_int_distribution<UINT32>& latdist);
 
 	VOID Update(FLOAT DeltaTime) noexcept override;
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;

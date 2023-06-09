@@ -79,7 +79,7 @@ BOOL Window::ProcessMessage()
 }
 //! Window
 
-Window::Window(int width, int height, const char* name)
+Window::Window(UINT32 width, UINT32 height, const char* name)
 	: sHeight(height), sWidth(width)
 {
 	RECT rWindow = { NULL };

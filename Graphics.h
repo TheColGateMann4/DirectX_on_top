@@ -7,9 +7,6 @@ class GFX
 	friend class Bindable;
 
 public:
-	UINT32 FrameRate = 60;
-
-public:
 	VOID Initialize(HWND hWnd);
 
 	VOID FinishFrame();

@@ -1,11 +1,11 @@
 cbuffer constBuffer
 {
 	matrix transform;
-	//float time;
+	float currtime;
 };
 
 float4 main(float3 position : POSITION) : SV_POSITION
 {
-	//position.y = 3 * sin(position.x * time);
+	position.y = sin(position.x * 1.5 + currtime * 0.000001) + position.y;
 	return mul(float4(position, 1.0f), transform);
 }

@@ -7,7 +7,7 @@
 class Window
 {
  public:
-	Window(int width, int height, const char* name);
+	Window(UINT32 width, UINT32 height, const char* name);
 	~Window();
 	Window(const Window&) = delete;
 	Window& operator= (const Window&) = delete;
@@ -44,8 +44,8 @@ public:
 	LRESULT HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
  private:
-	int sWidth;
-	int sHeight;
+	UINT32 sWidth;
+	UINT32 sHeight;
 	HWND shWnd;
 
  public:
