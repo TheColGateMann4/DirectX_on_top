@@ -9,7 +9,7 @@
 																	varible += changevalue;
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name),
-	window(m_width, m_height, m_name)
+	window(width, height, name)
 {
 	std::mt19937 rng(std::random_device{}());
 	std::uniform_real_distribution<float> adist{ 0.0f,(float)std::_Pi * 2.0f };
@@ -26,15 +26,15 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 		//boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
 		//boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
 		//boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
-		boxes.push_back(std::make_unique<Sheet>(window.Graphics, 500));
+ 		boxes.push_back(std::make_unique<Sheet>(window.Graphics, 500));
 	}
-	window.Graphics.SetProjection(DirectX::XMMatrixPerspectiveLH(1.0, 3.0 / 4.0, 0.5, 40.0));
+ 	window.Graphics.SetProjection(DirectX::XMMatrixPerspectiveLH(1.0, 3.0 / 4.0, 0.5, 40.0));
 }
 
 BOOL Application::Initiate()
 {
-	window.Graphics.FrameRate = 144;
-	window.Input.Key.allowRepeating(true);
+ 	window.Graphics.FrameRate = 144;
+ 	window.Input.Key.allowRepeating(true);
 
 	while (true)
 	{
@@ -45,8 +45,8 @@ BOOL Application::Initiate()
 			return result;
 
 
-		this->DoFrame();
-	}
+ 		this->DoFrame();
+ 	}
 }
 VOID Application::DoFrame()
 {
