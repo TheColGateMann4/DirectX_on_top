@@ -25,6 +25,6 @@ private:
 	const char* m_name;
 
 private:
-	std::vector<std::unique_ptr<Sheet>> boxes;
+	std::vector<std::unique_ptr<Shape>> boxes;
 };
 

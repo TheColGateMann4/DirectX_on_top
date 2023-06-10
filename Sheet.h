@@ -9,7 +9,12 @@
 class Sheet : public StaticBindables<Sheet>
 {
 public:
-	Sheet(GFX& gfx, const UINT32 TesselationRatio = 1);
+	Sheet(GFX& gfx,	std::mt19937& rng,
+		std::uniform_real_distribution<float>& adist,
+		std::uniform_real_distribution<float>& ddist,
+		std::uniform_real_distribution<float>& odist,
+		std::uniform_real_distribution<float>& rdist,
+		const UINT32 TesselationRatio = 1);
 
 public:
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept;
@@ -19,7 +24,7 @@ private:
 	template <class V>
 	Mesh<V> GetTesselatedMesh(const UINT32 TesselationRatio);
 
-public:
+private:
 	// positional
 	FLOAT r = 17.0f;
 	FLOAT roll = (float)std::_Pi * 0.125f;

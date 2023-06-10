@@ -2,62 +2,84 @@
 #include "BindableClassesMacro.h"
 #include "Application.h"
 
-Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio)
+Sheet::Sheet(GFX& gfx, std::mt19937& rng,
+	std::uniform_real_distribution<float>& adist,
+	std::uniform_real_distribution<float>& ddist,
+	std::uniform_real_distribution<float>& odist,
+	std::uniform_real_distribution<float>& rdist,
+	const UINT32 TesselationRatio)
+	:
+	r(rdist(rng)),
+	droll(ddist(rng)),
+	dpitch(ddist(rng)),
+	dyaw(ddist(rng)),
+	dphi(odist(rng)),
+	dtheta(odist(rng)),
+	dchi(odist(rng)),
+	chi(adist(rng)),
+	theta(adist(rng)),
+	phi(adist(rng))
 {
-	struct Vertex
+	if (!IsStaticInitialized())
 	{
-		struct
+		struct Vertex
 		{
-			FLOAT x, y, z;
-		} pos;
-	};
-	Mesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio);
+			struct
+			{
+				FLOAT x, y, z;
+			} pos;
+		};
+		Mesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio);
 
-	AddStaticBind(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
+		AddStaticBind(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
 
-	std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
-	ID3DBlob* pBlob = pVertexShader->GetByteCode();
-	AddStaticBind(std::move(pVertexShader));
-
-
-	AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
-
-	AddStaticIndexBufferBind(std::make_unique<IndexBuffer>(gfx, TesselatedSheet.m_indices));
+		std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
+		ID3DBlob* pBlob = pVertexShader->GetByteCode();
+		AddStaticBind(std::move(pVertexShader));
 
 
-	struct ConstantBufferColor
-	{
-		struct
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
+
+		AddStaticIndexBufferBind(std::make_unique<IndexBuffer>(gfx, TesselatedSheet.m_indices));
+
+
+		struct ConstantBufferColor
 		{
-			float r, g, b, a;
-		}face_colors[8];
-	};
+			struct
+			{
+				float r, g, b, a = 1.0;
+			}face_colors[8];
+		};
 
-	const ConstantBufferColor constbufferColor
-	{
+		const ConstantBufferColor constbufferColor
 		{
-			{ 0.0,1.0,1.0 },
-			{ 0.0,1.0,1.0 },
-			{ 0.0,1.0,1.0 },
-			{ 0.0,1.0,1.0 },
-			{ 0.0,1.0,1.0 },
-			{ 0.0,1.0,1.0 },
-			{ 0.0,1.0,1.0 },
-			{ 0.0,1.0,1.0 }
-		}
-	};
-	AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBufferColor>>(gfx, constbufferColor));
+			{
+				{ 0.0,1.0,1.0 },
+				{ 0.0,1.0,1.0 },
+				{ 0.0,1.0,1.0 },
+				{ 0.0,1.0,1.0 },
+				{ 0.0,1.0,1.0 },
+				{ 0.0,1.0,1.0 },
+				{ 0.0,1.0,1.0 },
+				{ 0.0,1.0,1.0 }
+			}
+		};
+		AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBufferColor>>(gfx, constbufferColor));
 
 
-	const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
+		const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
+		{
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		};
+
+		AddStaticBind(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
+
+		AddStaticBind(std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	}
+	else
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
-
-	AddStaticBind(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
-
-	AddStaticBind(std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
+		GetIndexBufferFromVector();
+	}
 	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
 }
 

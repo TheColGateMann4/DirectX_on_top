@@ -5,8 +5,7 @@
 #include "Pyramid.h"
 #include "Sheet.h"
 #include <random>
-#define KEYMACROAWW(varible, pressedkeyqw, changevalue) 		if (window.Input.Key.GetKeyState(pressedkeyqw)&1) \
-																	varible += changevalue;
+
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name),
 	window(width, height, name)
@@ -17,16 +16,16 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 	std::uniform_real_distribution<float> odist{ 0.0f,(float)std::_Pi * 0.08f };
 	std::uniform_real_distribution<float> rdist{ 6.0f,20.0f };
 	std::uniform_real_distribution<float> bdist{ 0.4f,3.0f };
-	std::uniform_int_distribution<UINT32> latdist{ 5,20 };
-	std::uniform_int_distribution<UINT32> longdist{ 10,40 };
+	std::uniform_int_distribution<UINT32> latdist{ 20,40 };
+	std::uniform_int_distribution<UINT32> longdist{ 30,80 };
 	std::uniform_int_distribution<UINT32> typedist{ 0,2 };
 
 	for (auto i = 0; i < 1; i++)
 	{
-		//boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
-		//boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
-		//boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
- 		boxes.push_back(std::make_unique<Sheet>(window.Graphics, 10));
+		boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
+		boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
+		boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
+ 		boxes.push_back(std::make_unique<Sheet>(window.Graphics, rng, adist, ddist, odist, rdist, 20));
 	}
  	window.Graphics.SetProjection(DirectX::XMMatrixPerspectiveLH(1.0, 3.0 / 4.0, 0.5, 40.0));
 }
@@ -126,31 +125,10 @@ VOID Application::DoFrame()
 
 	FLOAT DeltaTime = timer.Mark();
 	window.Graphics.ClearBuffer({ 0,0,0,1 });
- 	for (std::unique_ptr<Sheet>& b : boxes)
+ 	for (std::unique_ptr<Shape>& b : boxes)
  	{
- 		KEYMACROAWW(b->r, KEY_A, 0.05f);
- 		KEYMACROAWW(b->r, KEY_Z, -0.05f);
- 
- 		KEYMACROAWW(b->roll, KEY_S, 0.05f);
- 		KEYMACROAWW(b->roll, KEY_X, -0.05f);
- 
- 		KEYMACROAWW(b->pitch, KEY_D, 0.05f);
- 		KEYMACROAWW(b->pitch, KEY_C, -0.05f);
- 
- 		KEYMACROAWW(b->yaw, KEY_F, 0.05f);
- 		KEYMACROAWW(b->yaw, KEY_V, -0.05f);
- 
- 		KEYMACROAWW(b->theta, KEY_G, 0.05f);
- 		KEYMACROAWW(b->theta, KEY_B, -0.05f);
- 
- 		KEYMACROAWW(b->phi, KEY_H, 0.05f);
- 		KEYMACROAWW(b->phi, KEY_N, -0.05f);
- 
- 		KEYMACROAWW(b->chi, KEY_J, 0.05f);
- 		KEYMACROAWW(b->chi, KEY_M, -0.005);
-
  		b->Update(DeltaTime);
- 		b->Draw(window.Graphics, timer.Get());
+ 		b->Draw(window.Graphics);
  	}
 	window.Graphics.FinishFrame();
 }

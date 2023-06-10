@@ -4,14 +4,11 @@
 #include <cassert>
 #include <typeinfo>
 
-VOID Shape::Draw(GFX& gfx, float currtime) const
+VOID Shape::Draw(GFX& gfx) const
 {
 	for (auto& b : binds)
 	{
-		if (TransformConstBuffer* tcb = dynamic_cast<TransformConstBuffer*>(b.get()))
-			tcb->Bind(gfx, currtime);
-		else
-			b->Bind(gfx);
+		b->Bind(gfx);
 	}
 	for (auto& b : GetStaticBindables())
 	{

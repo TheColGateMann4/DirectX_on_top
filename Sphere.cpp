@@ -53,7 +53,7 @@ Sphere::Sphere(GFX& gfx, std::mt19937& rng,
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
 		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
 		AddStaticBind(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
@@ -87,8 +87,8 @@ static Mesh<T> Sphere::GetMesh(UINT32 verticalDivisions, UINT32 horizontalDivisi
 
 	constexpr float radius = 1.0f;
 	const auto base = DirectX::XMVectorSet(0.0f, 0.0f, radius, 0.0f);
-	const float verticalAngle = std::_Pi / verticalDivisions;
-	const float horizontalAngle = 2.0f * std::_Pi / horizontalDivisions;
+	const float verticalAngle = (float)std::_Pi / verticalDivisions;
+	const float horizontalAngle = 2.0f * (float)std::_Pi / horizontalDivisions;
 
 	std::vector<T> vertices;
 	for (UINT32 currVerticalDivisions = 1; currVerticalDivisions < verticalDivisions; currVerticalDivisions++)

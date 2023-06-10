@@ -15,7 +15,7 @@ public:
 	virtual ~Shape() = default;
 
 public:
-	VOID Draw(GFX& gfx, float currtime) const;
+	VOID Draw(GFX& gfx) const;
 	virtual VOID Update(float DeltaTime) noexcept = 0;
 	virtual DirectX::XMMATRIX GetTranformMatrix() const noexcept = 0;
 
