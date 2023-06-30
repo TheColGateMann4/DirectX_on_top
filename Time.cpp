@@ -18,5 +18,5 @@ FLOAT Time::Mark()
 
 FLOAT Time::Get()
 {
-	return static_cast<FLOAT>(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - m_firstTime).count());
+	return static_cast<FLOAT>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - m_firstTime).count());
 }

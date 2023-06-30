@@ -38,7 +38,7 @@ public:
 		D3D11_SUBRESOURCE_DATA constBufferResourceData = {};
 		constBufferResourceData.pSysMem = &consts;
 
-		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &(ConstantBuffer::pConstantBuffer)));
+		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &(this->pConstantBuffer)));
 	}
 	ConstantBuffer(GFX& gfx)
 	{
@@ -52,19 +52,17 @@ public:
 		constBufferDesc.ByteWidth = sizeof(C);
 		constBufferDesc.StructureByteStride = 0;
 
-		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &(ConstantBuffer::pConstantBuffer)));
+		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &(this->pConstantBuffer)));
 	}
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 };
-
 
 template<class C>
 class PixelConstantBuffer : public ConstantBuffer<C>
 {
 	using ConstantBuffer<C>::pConstantBuffer;
 	using Bindable::GetDeviceContext;
-
 public:
 	using ConstantBuffer<C>::ConstantBuffer;
 
@@ -79,7 +77,6 @@ class VertexConstantBuffer : public ConstantBuffer<C>
 {
 	using ConstantBuffer<C>::pConstantBuffer;
 	using Bindable::GetDeviceContext;
-
 public:
 	using ConstantBuffer<C>::ConstantBuffer;
 

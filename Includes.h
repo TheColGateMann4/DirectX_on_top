@@ -51,11 +51,11 @@
 #include <memory>
 
 #ifdef _DEBUG
-#define IS_DEBUG TRUE
+	#include <iostream>
+	#define IS_DEBUG TRUE
 #else
-#define IS_DEBUG FALSE
+	#define IS_DEBUG FALSE
 #endif
-
 
 //std::string os_;
 //os_ += 'k';

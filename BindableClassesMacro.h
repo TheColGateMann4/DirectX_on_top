@@ -9,4 +9,6 @@
 #include "TransformConstBuffer.h"
 #include "VertexBuffer.h"
 #include "VertexShader.h"
-
+#include "Texture.h"
+#include "SamplerState.h"
+#include "PSConstBuffer.h"

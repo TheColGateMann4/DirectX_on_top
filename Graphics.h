@@ -10,7 +10,7 @@ public:
 	VOID Initialize(HWND hWnd);
 
 	VOID FinishFrame();
-	VOID ClearBuffer(Vector4f color_);
+	VOID ClearBuffer(Vector4f color_ = { 0,0,0,1 });
 
 public:
 	VOID DrawIndexed(UINT32 count);

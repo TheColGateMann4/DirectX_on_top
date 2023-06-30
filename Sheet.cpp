@@ -1,24 +1,9 @@
 #include "Sheet.h"
 #include "BindableClassesMacro.h"
 #include "Application.h"
+#include "Includes.h"
 
-Sheet::Sheet(GFX& gfx, std::mt19937& rng,
-	std::uniform_real_distribution<float>& adist,
-	std::uniform_real_distribution<float>& ddist,
-	std::uniform_real_distribution<float>& odist,
-	std::uniform_real_distribution<float>& rdist,
-	const UINT32 TesselationRatio)
-	:
-	r(rdist(rng)),
-	droll(ddist(rng)),
-	dpitch(ddist(rng)),
-	dyaw(ddist(rng)),
-	dphi(odist(rng)),
-	dtheta(odist(rng)),
-	dchi(odist(rng)),
-	chi(adist(rng)),
-	theta(adist(rng)),
-	phi(adist(rng))
+Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio)
 {
 	if (!IsStaticInitialized())
 	{
@@ -27,49 +12,34 @@ Sheet::Sheet(GFX& gfx, std::mt19937& rng,
 			struct
 			{
 				FLOAT x, y, z;
-			} pos;
+			} position;
+			struct
+			{
+				FLOAT u, v;
+			} texture;
 		};
 		Mesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio);
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
 
-		std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
+		std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexTextureShader.cso");
 		ID3DBlob* pBlob = pVertexShader->GetByteCode();
 		AddStaticBind(std::move(pVertexShader));
 
 
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelTextureShader.cso"));
 
 		AddStaticIndexBufferBind(std::make_unique<IndexBuffer>(gfx, TesselatedSheet.m_indices));
 
+		AddStaticBind(std::make_unique<SamplerState>(gfx, D3D11_TEXTURE_ADDRESS_WRAP)); //D3D11_TEXTURE_ADDRESS_WRAP
 
-		struct ConstantBufferColor
-		{
-			struct
-			{
-				float r, g, b, a = 1.0;
-			}face_colors[8];
-		};
-
-		const ConstantBufferColor constbufferColor
-		{
-			{
-				{ 0.0,1.0,1.0 },
-				{ 0.0,1.0,1.0 },
-				{ 0.0,1.0,1.0 },
-				{ 0.0,1.0,1.0 },
-				{ 0.0,1.0,1.0 },
-				{ 0.0,1.0,1.0 },
-				{ 0.0,1.0,1.0 },
-				{ 0.0,1.0,1.0 }
-			}
-		};
-		AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBufferColor>>(gfx, constbufferColor));
+		AddStaticBind(std::make_unique<Texture>(gfx, L"C:\\Users\\U¿ytkownik1\\Desktop\\Shoppy\\movingprimordial.gif"));
 
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
 		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
 		AddStaticBind(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
@@ -81,6 +51,7 @@ Sheet::Sheet(GFX& gfx, std::mt19937& rng,
 		GetIndexBufferFromVector();
 	}
 	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
+	AddBindable(std::make_unique<PSConstBuffer>(gfx));
 }
 
 template <class V>
@@ -91,12 +62,13 @@ Mesh<V> Sheet::GetTesselatedMesh(const UINT32 TesselationRatio)
 
 	Mesh<V> tesselatedMesh;
 	const float maxNormalizedPosition = 1.0f;
-	const float lengthOfTriangle = maxNormalizedPosition / TesselationRatio;
+	const float minNormalizedPosition = 0.0f;
+	const float lengthOfTriangle = (maxNormalizedPosition - minNormalizedPosition) / TesselationRatio;
 
 	for (UINT32 row = 0; row < TesselationRatio + 1; row++)
 		for (UINT32 column = 0; column < TesselationRatio + 1; column++)
 		{
-			tesselatedMesh.m_vertices.push_back({ column * lengthOfTriangle, 0, row * lengthOfTriangle });
+			tesselatedMesh.m_vertices.push_back({ { column * lengthOfTriangle, 0, row * lengthOfTriangle }, {column * lengthOfTriangle, row * lengthOfTriangle} });
 
 			if (row < TesselationRatio && column < TesselationRatio)
 			{

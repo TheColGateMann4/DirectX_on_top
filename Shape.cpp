@@ -1,14 +1,18 @@
 #include "Shape.h"
 #include "IndexBuffer.h"
-#include "TransformConstBuffer.h"
+#include "PSConstBuffer.h"
+#include "ConstantBuffers.h"
 #include <cassert>
 #include <typeinfo>
 
-VOID Shape::Draw(GFX& gfx) const
+VOID Shape::Draw(GFX& gfx, float time) const
 {
 	for (auto& b : binds)
 	{
-		b->Bind(gfx);
+		if (PSConstBuffer* pcb = dynamic_cast<PSConstBuffer*>(b.get()))
+			pcb->Bind(gfx, time);
+		else
+			b->Bind(gfx);
 	}
 	for (auto& b : GetStaticBindables())
 	{

@@ -16,16 +16,16 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 	std::uniform_real_distribution<float> odist{ 0.0f,(float)std::_Pi * 0.08f };
 	std::uniform_real_distribution<float> rdist{ 6.0f,20.0f };
 	std::uniform_real_distribution<float> bdist{ 0.4f,3.0f };
-	std::uniform_int_distribution<UINT32> latdist{ 20,40 };
-	std::uniform_int_distribution<UINT32> longdist{ 30,80 };
+	std::uniform_int_distribution<UINT32> latdist{ 10,20 };
+	std::uniform_int_distribution<UINT32> longdist{ 10,40 };
 	std::uniform_int_distribution<UINT32> typedist{ 0,2 };
 
 	for (auto i = 0; i < 1; i++)
 	{
-		boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
-		boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
-		boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
- 		boxes.push_back(std::make_unique<Sheet>(window.Graphics, rng, adist, ddist, odist, rdist, 20));
+		//boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
+		//boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
+		//boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
+ 		boxes.push_back(std::make_unique<Sheet>(window.Graphics, 10));
 	}
  	window.Graphics.SetProjection(DirectX::XMMatrixPerspectiveLH(1.0, 3.0 / 4.0, 0.5, 40.0));
 }
@@ -124,11 +124,13 @@ VOID Application::DoFrame()
 		*/
 
 	FLOAT DeltaTime = timer.Mark();
-	window.Graphics.ClearBuffer({ 0,0,0,1 });
+	window.Graphics.ClearBuffer();
  	for (std::unique_ptr<Shape>& b : boxes)
  	{
  		b->Update(DeltaTime);
- 		b->Draw(window.Graphics);
+		float arr = timer.Get() / 50;
+ 		b->Draw(window.Graphics, arr);
+		std::cout << arr << "seconds \n";
  	}
 	window.Graphics.FinishFrame();
 }
