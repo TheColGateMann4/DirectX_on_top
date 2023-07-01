@@ -17,7 +17,7 @@ int WINAPI WinMain
 
 	try
 	{
-		Application App(800, 600, "DirectX Dominating");
+		Application App(1600, 1200, "DirectX Dominating");
 		return App.Initiate();
 	}
 	catch (ErrorHandler::StandardException& except)

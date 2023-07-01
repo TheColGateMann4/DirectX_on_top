@@ -7,6 +7,8 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
+#include "imgui/backend/imgui_impl_dx11.h"
+
 
 VOID GFX::Initialize(HWND hWnd)
 {
@@ -80,8 +82,8 @@ VOID GFX::Initialize(HWND hWnd)
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
 
 	D3D11_TEXTURE2D_DESC depthDecs = {};
-	depthDecs.Width = 800;
-	depthDecs.Height = 600;
+	depthDecs.Width = this->m_width;
+	depthDecs.Height = this->m_height;
 	depthDecs.MipLevels = 1;
 	depthDecs.ArraySize = 1;
 	depthDecs.Format = DXGI_FORMAT_D32_FLOAT;
@@ -102,14 +104,22 @@ VOID GFX::Initialize(HWND hWnd)
 	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), pDepthStencilView.Get());
 
 	D3D11_VIEWPORT viewPort = {};
-	viewPort.Width = 800;
-	viewPort.Height = 600;
+	viewPort.Width = this->m_width;
+	viewPort.Height = this->m_height;
 	viewPort.MinDepth = 0;
 	viewPort.MaxDepth = 1;
 	viewPort.TopLeftX = 0;
 	viewPort.TopLeftY = 0;
 
 	pDeviceContext->RSSetViewports(1, &viewPort);
+
+	ImGui_ImplDX11_Init(pDevice.Get(), pDeviceContext.Get());
+}
+
+VOID GFX::SetResolution(UINT32 width, UINT32 height)
+{
+	this->m_width = width;
+	this->m_height = height;
 }
 
 VOID GFX::FinishFrame()

@@ -6,6 +6,10 @@
 #include "Sheet.h"
 #include <random>
 
+#include "imgui/imgui.h";
+#include "imgui/backend/imgui_impl_dx11.h";
+#include "imgui/backend/imgui_impl_win32.h";
+
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name),
 	window(width, height, name)
@@ -27,7 +31,18 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 		//boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
  		boxes.push_back(std::make_unique<Sheet>(window.Graphics, 10));
 	}
- 	window.Graphics.SetProjection(DirectX::XMMatrixPerspectiveLH(1.0, 3.0 / 4.0, 0.5, 40.0));
+	float aspectRatioX, AspectRatioY;
+	if (width > height)
+	{	
+		aspectRatioX = (float)width / (float)height;
+		AspectRatioY = 1.0f;	
+	}
+	else 
+	{	
+		AspectRatioY = (float)height / (float)width;
+		aspectRatioX = 1.0f;
+	}
+ 	window.Graphics.SetProjection(DirectX::XMMatrixPerspectiveLH(aspectRatioX, AspectRatioY, 0.5, 40.0));
 }
 
 BOOL Application::Initiate()
@@ -128,9 +143,21 @@ VOID Application::DoFrame()
  	for (std::unique_ptr<Shape>& b : boxes)
  	{
  		b->Update(DeltaTime);
-		float arr = timer.Get() / 50;
+		float arr = timer.Get() / 1000;
  		b->Draw(window.Graphics, arr);
 		std::cout << arr << "seconds \n";
  	}
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	static bool show_demo_window = true;
+	if (show_demo_window)
+		ImGui::ShowDemoWindow(&show_demo_window);
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	window.Graphics.FinishFrame();
 }

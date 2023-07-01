@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "ErrorHandling.h"
 #include "Time.h"
+#include "ImguiManager.h"
 #include "Shape.h"
 #include "Sheet.h"
 
@@ -13,6 +14,7 @@ public:
 	BOOL Initiate();
 
 public:
+	ImguiManager imguiManager;
 	Window window;
 	Time timer;
 

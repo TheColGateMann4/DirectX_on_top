@@ -17,7 +17,7 @@ public:
 
 private:
 	template <class V>
-	Mesh<V> GetTesselatedMesh(const UINT32 TesselationRatio);
+	Mesh<V> GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio);
 
 private:
 	// positional

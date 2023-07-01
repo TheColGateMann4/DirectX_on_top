@@ -2,7 +2,7 @@
 #include "ErrorMacros.h"
 #include "KeyMacros.h"
 #include "resource.h"
-
+#include "imgui/backend/imgui_impl_win32.h"
 //! WindowClass
 
 Window::WindowClass Window::WindowClass::sWindowClass;
@@ -106,13 +106,17 @@ Window::Window(UINT32 width, UINT32 height, const char* name)
 	if (this->shWnd == NULL)
 		THROW_LAST_ERROR;
 
+	this->Graphics.SetResolution(width, height);
 	this->Graphics.Initialize(shWnd);
 
 	ShowWindow(shWnd, SW_SHOW);
+
+	ImGui_ImplWin32_Init(shWnd);
 }
 
 Window::~Window()
 {
+	ImGui_ImplWin32_Shutdown();
 	DestroyWindow(shWnd);
 }
 
@@ -142,6 +146,9 @@ LRESULT WINAPI Window::MessageHub(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+		return true;
+
 	switch (msg)
 	{
 	///*          Window Behaving stuff          *///

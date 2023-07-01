@@ -18,7 +18,7 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio)
 				FLOAT u, v;
 			} texture;
 		};
-		Mesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio);
+		Mesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio, 1);
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
 
@@ -55,7 +55,7 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio)
 }
 
 template <class V>
-Mesh<V> Sheet::GetTesselatedMesh(const UINT32 TesselationRatio)
+Mesh<V> Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio)
 {
 	if (TesselationRatio == 0)
 		std::abort();
@@ -68,7 +68,7 @@ Mesh<V> Sheet::GetTesselatedMesh(const UINT32 TesselationRatio)
 	for (UINT32 row = 0; row < TesselationRatio + 1; row++)
 		for (UINT32 column = 0; column < TesselationRatio + 1; column++)
 		{
-			tesselatedMesh.m_vertices.push_back({ { column * lengthOfTriangle, 0, row * lengthOfTriangle }, {column * lengthOfTriangle, row * lengthOfTriangle} });
+			tesselatedMesh.m_vertices.push_back({ { column * lengthOfTriangle, 0, row * lengthOfTriangle }, {(column * lengthOfTriangle) * textureRatio,( row * lengthOfTriangle) * textureRatio} });
 
 			if (row < TesselationRatio && column < TesselationRatio)
 			{

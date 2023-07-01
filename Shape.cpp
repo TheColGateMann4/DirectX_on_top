@@ -2,6 +2,7 @@
 #include "IndexBuffer.h"
 #include "PSConstBuffer.h"
 #include "ConstantBuffers.h"
+#include "TransformConstBuffer.h"
 #include <cassert>
 #include <typeinfo>
 

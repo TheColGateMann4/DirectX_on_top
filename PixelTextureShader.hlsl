@@ -7,6 +7,6 @@ cbuffer PSconstBuffer : register(b0)
 
 float4 main(float2 textureCoordinates : TEXCOORD) : SV_Target
 {
-    float frame = timee.x % 61;
+    float frame = timee.x * 10 % 61;
     return textures.Sample(samplerState, float3(textureCoordinates, frame));
 }
