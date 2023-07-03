@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "Includes.h"
 
-Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio)
+Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 {
 	if (!IsStaticInitialized())
 	{
@@ -18,7 +18,7 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio)
 				FLOAT u, v;
 			} texture;
 		};
-		Mesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio, 1);
+		Mesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio, TextureRatio);
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
 
@@ -33,7 +33,7 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio)
 
 		AddStaticBind(std::make_unique<SamplerState>(gfx, D3D11_TEXTURE_ADDRESS_WRAP)); //D3D11_TEXTURE_ADDRESS_WRAP
 
-		AddStaticBind(std::make_unique<Texture>(gfx, L"C:\\Users\\U¿ytkownik1\\Desktop\\Shoppy\\movingprimordial.gif"));
+		AddStaticBind(std::make_unique<Texture>(gfx, L"movingprimordial.gif"));
 
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
@@ -111,6 +111,5 @@ DirectX::XMMATRIX Sheet::GetTranformMatrix() const noexcept
 	return
 		DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 		DirectX::XMMatrixTranslation(r, 0.0, 0.0) *
-		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi) *
-		DirectX::XMMatrixTranslation(0.0, 0.0, 20.0);
+		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
 }

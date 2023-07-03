@@ -4,11 +4,10 @@
 #include "Cube.h"
 #include "Pyramid.h"
 #include "Sheet.h"
+#include "CustomShape.h"
 #include <random>
 
 #include "imgui/imgui.h";
-#include "imgui/backend/imgui_impl_dx11.h";
-#include "imgui/backend/imgui_impl_win32.h";
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name),
@@ -29,8 +28,10 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 		//boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
 		//boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
 		//boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
- 		boxes.push_back(std::make_unique<Sheet>(window.Graphics, 10));
+ 		//boxes.push_back(std::make_unique<CustomShape>(window.Graphics, L"teddybear.obj"));
+ 		boxes.push_back(std::make_unique<Sheet>(window.Graphics, 1));
 	}
+
 	float aspectRatioX, AspectRatioY;
 	if (width > height)
 	{	
@@ -42,12 +43,12 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 		AspectRatioY = (float)height / (float)width;
 		aspectRatioX = 1.0f;
 	}
- 	window.Graphics.SetProjection(DirectX::XMMatrixPerspectiveLH(aspectRatioX, AspectRatioY, 0.5, 40.0));
+ 	window.Graphics.camera.SetProjection(DirectX::XMMatrixPerspectiveLH(aspectRatioX, AspectRatioY, 0.5f, 40.0f));
 }
 
 BOOL Application::Initiate()
 {
- 	window.Input.Key.allowRepeating(true);
+ 	window.Input.Key.allowRepeating(false);
 
 	while (true)
 	{
@@ -139,25 +140,22 @@ VOID Application::DoFrame()
 		*/
 
 	FLOAT DeltaTime = timer.Mark();
-	window.Graphics.ClearBuffer();
+	window.Graphics.BeginFrame({ 0,0,0,1 });
  	for (std::unique_ptr<Shape>& b : boxes)
  	{
  		b->Update(DeltaTime);
 		float arr = timer.Get() / 1000;
  		b->Draw(window.Graphics, arr);
-		std::cout << arr << "seconds \n";
+		std::cout << '\n' << arr << "seconds";
  	}
 
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+	if (window.Input.Key.GetKeyDown(VK_INSERT) && window.Graphics.isImGUIVisible())
+		if(window.Graphics.isImGUIVisible())
+			window.Graphics.ShowImGUI(false);
+		else
+			window.Graphics.ShowImGUI(true);
 
-	static bool show_demo_window = true;
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
-
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	window.Graphics.camera.CreateControlMenu();
 
 	window.Graphics.FinishFrame();
 }

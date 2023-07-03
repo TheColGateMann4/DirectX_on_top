@@ -149,6 +149,8 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
 		return true;
 
+	ImGuiIO imguiio = ImGui::GetIO();
+
 	switch (msg)
 	{
 	///*          Window Behaving stuff          *///
@@ -173,6 +175,8 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		{
+		if (imguiio.WantCaptureKeyboard)
+			break;
 		if (!this->Input.Key.isWritingText)
 			if (lParam & 0x40000000) //was pressed before
 				if (this->Input.Key.m_allowRepeating)
@@ -200,6 +204,9 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYUP:
 	case WM_KEYUP:
 		{
+			if (imguiio.WantCaptureKeyboard)
+				break;
+
 			this->Input.m_keyStateList[wParam] = FALSE;
 			this->Input.m_releasedKeysList[wParam] = TRUE;
 
@@ -208,7 +215,9 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SYSCHAR:
 	case WM_CHAR:
-		{
+		{		
+			if (imguiio.WantCaptureKeyboard)
+				break;
 			this->Input.Key.m_charBuffer += static_cast<char>(wParam);
 			break;
 		}

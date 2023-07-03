@@ -9,7 +9,7 @@
 class Sheet : public StaticBindables<Sheet>
 {
 public:
-	Sheet(GFX& gfx,	const UINT32 TesselationRatio = 1);
+	Sheet(GFX& gfx,	const UINT32 TesselationRatio = 1, const UINT32 TextureRatio = 1);
 
 public:
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept;

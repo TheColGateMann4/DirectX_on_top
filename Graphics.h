@@ -1,5 +1,6 @@
 #pragma  once
 #include "Includes.h"
+#include "CameraView.h"
 #include <wrl.h>
 
 class GFX
@@ -10,18 +11,19 @@ public:
 	VOID Initialize(HWND hWnd);
 	VOID SetResolution(UINT32 width, UINT32 height);
 
+	VOID BeginFrame(Vector4f color_ = { 0,0,0,1 });
 	VOID FinishFrame();
 	VOID ClearBuffer(Vector4f color_ = { 0,0,0,1 });
+
+public:
+	VOID ShowImGUI(bool show);
+	BOOL isImGUIVisible();
 
 public:
 	VOID DrawIndexed(UINT32 count);
 
 public:
-	DirectX::XMMATRIX GetProjection() const noexcept; 
-	VOID SetProjection(DirectX::FXMMATRIX projection) noexcept;
-
-private:
-	DirectX::XMMATRIX m_projection;
+	CameraView camera;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
@@ -33,4 +35,5 @@ private:
 private:
 	UINT32 m_width;
 	UINT32 m_height;
+	bool m_imgui_enabled = true;
 };

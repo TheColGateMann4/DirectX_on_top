@@ -51,6 +51,8 @@
 #include <vector>
 #include <memory>
 
+#define OBJLOADER_READ_SIZE 1024
+
 #ifdef _DEBUG
 	#include <iostream>
 	#define IS_DEBUG TRUE

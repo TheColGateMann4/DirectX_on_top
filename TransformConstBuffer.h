@@ -10,7 +10,13 @@ public:
 
 	VOID Bind(GFX& gfx) noexcept override
 	{
-		vcbuf.Update(gfx, DirectX::XMMatrixTranspose(m_parent.GetTranformMatrix() * gfx.GetProjection()));
+		vcbuf.Update(gfx, 
+			DirectX::XMMatrixTranspose(
+				m_parent.GetTranformMatrix() * 
+				gfx.camera.GetCamera() *
+				gfx.camera.GetProjection()
+		));
+
 		vcbuf.Bind(gfx);
 	}
 

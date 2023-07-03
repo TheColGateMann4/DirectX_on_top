@@ -7,7 +7,9 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
-#include "imgui/backend/imgui_impl_dx11.h"
+#include "imgui/imgui.h";
+#include "imgui/backend/imgui_impl_dx11.h";
+#include "imgui/backend/imgui_impl_win32.h";
 
 
 VOID GFX::Initialize(HWND hWnd)
@@ -122,8 +124,29 @@ VOID GFX::SetResolution(UINT32 width, UINT32 height)
 	this->m_height = height;
 }
 
+VOID GFX::BeginFrame(Vector4f color_)
+{
+	//imgui
+	if (this->m_imgui_enabled)
+	{
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	//DirectX
+	this->ClearBuffer(color_);
+}
+
 VOID GFX::FinishFrame()
 {
+	if (this->m_imgui_enabled)
+	{
+		ImGui::ShowDemoWindow(&this->m_imgui_enabled);
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	}
+
 	HRESULT hr;
 
 #ifdef _DEBUG
@@ -150,6 +173,16 @@ VOID GFX::ClearBuffer(Vector4f color_)
 	pDeviceContext->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1, 0);
 }
 
+VOID GFX::ShowImGUI(bool show)
+{
+	this->m_imgui_enabled = show;
+}
+
+BOOL GFX::isImGUIVisible()
+{
+	return this->m_imgui_enabled;
+}
+
 VOID GFX::DrawIndexed(UINT32 count)
 {
 	THROW_INFO_EXCEPTION
@@ -161,14 +194,4 @@ VOID GFX::DrawIndexed(UINT32 count)
 			0u
 		)
 	);
-}
-
-VOID GFX::SetProjection(DirectX::FXMMATRIX projection) noexcept
-{
-	m_projection = projection;
-}
-
-DirectX::XMMATRIX GFX::GetProjection() const noexcept
-{
-	return m_projection;
 }
