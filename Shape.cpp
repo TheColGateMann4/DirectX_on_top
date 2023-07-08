@@ -10,9 +10,9 @@ VOID Shape::Draw(GFX& gfx, float time) const
 {
 	for (auto& b : binds)
 	{
-		if (PSConstBuffer* pcb = dynamic_cast<PSConstBuffer*>(b.get()))
-			pcb->Bind(gfx, time);
-		else
+		//if (PSConstBuffer* pcb = dynamic_cast<PSConstBuffer*>(b.get()))
+		//	pcb->Bind(gfx, time);
+		//else
 			b->Bind(gfx);
 	}
 	for (auto& b : GetStaticBindables())

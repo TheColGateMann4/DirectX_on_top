@@ -9,7 +9,7 @@
 class CustomShape : public StaticBindables<CustomShape>
 {
 public:
-	CustomShape(GFX& gfx, std::wstring objpath);
+	CustomShape(GFX& gfx, std::wstring objpath, std::wstring texturePath);
 
 public:
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept;

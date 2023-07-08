@@ -28,8 +28,8 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 		//boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
 		//boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
 		//boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
- 		//boxes.push_back(std::make_unique<CustomShape>(window.Graphics, L"teddybear.obj"));
- 		boxes.push_back(std::make_unique<Sheet>(window.Graphics, 1));
+ 		boxes.push_back(std::make_unique<CustomShape>(window.Graphics, L"untitled1.obj", L"BrickRound0105_5_S.jpg"));
+ 		//boxes.push_back(std::make_unique<Sheet>(window.Graphics, 1));
 	}
 
 	float aspectRatioX, AspectRatioY;
@@ -149,7 +149,7 @@ VOID Application::DoFrame()
 		std::cout << '\n' << arr << "seconds";
  	}
 
-	if (window.Input.Key.GetKeyDown(VK_INSERT) && window.Graphics.isImGUIVisible())
+	if (window.Input.Key.GetKeyDown(VK_INSERT))
 		if(window.Graphics.isImGUIVisible())
 			window.Graphics.ShowImGUI(false);
 		else

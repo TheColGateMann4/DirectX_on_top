@@ -11,6 +11,5 @@ public:
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShaderResourceView;
-	Microsoft::WRL::ComPtr<ID3D11Resource> pTexture;
 };
 
