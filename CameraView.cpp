@@ -8,18 +8,18 @@ VOID CameraView::SetProjection(DirectX::XMMATRIX projection)
 
 DirectX::XMMATRIX CameraView::GetCamera()
 {
-	DirectX::XMVECTOR position = DirectX::XMVector3Transform(
+	const auto position = DirectX::XMVector3Transform(
 		DirectX::XMVectorSet(0.0f, 0.0f, -r, 0.0f),
 		DirectX::XMMatrixRotationRollPitchYaw(phi, -theta, 0.0f)
 	);
-
-	DirectX::XMMATRIX matrix = DirectX::XMMatrixLookAtLH(
-		position,
-		DirectX::XMVectorZero(),
+	const auto projection = DirectX::XMMatrixLookAtLH(
+		position, DirectX::XMVectorZero(),
 		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
 	);
 
-	return matrix * DirectX::XMMatrixRotationRollPitchYaw(pitch, -yaw, roll);
+	return projection * DirectX::XMMatrixRotationRollPitchYaw(
+		pitch, -yaw, roll
+	);
 }
 
 DirectX::XMMATRIX CameraView::GetProjection()
@@ -42,9 +42,9 @@ VOID CameraView::CreateControlMenu()
 	if (ImGui::Begin("Camera Control"))
 	{
 		ImGui::Text("Positione");
-		ImGui::SliderFloat("R", &r, 0.0f, 80.0f, "%.1f");
+		ImGui::SliderFloat("R", &r, 0.1f, 80.0f, "%.1f");
 		ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
-		ImGui::SliderAngle("Phi", &phi, -89.9, 89.9f);
+		ImGui::SliderAngle("Phi", &phi, -89.0, 89.0f);
 
 		ImGui::Text("Orientatione");
 		ImGui::SliderAngle("Roll", &roll, -180.0f, 180.0f);

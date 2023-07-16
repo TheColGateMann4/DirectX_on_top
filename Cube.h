@@ -22,10 +22,10 @@ public:
 
 private:
 	template <class T>
-	static Mesh<T> GetNormalMesh();
+	static Mesh<T> GetNormalMesh(float scale);
 
 	template <class T>
-	static Mesh<T> GetUnwrappedMesh();
+	static Mesh<T> GetUnwrappedMesh(float scale);
 
 private:
 	// positional
@@ -44,5 +44,7 @@ private:
 	FLOAT dtheta;
 	FLOAT dphi;
 	FLOAT dchi;
+
+	DirectX::XMFLOAT3X3 ModelScale;
 };
 

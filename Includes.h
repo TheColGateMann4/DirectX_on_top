@@ -38,10 +38,8 @@
 // #define NOPROXYSTUB
 // #define NOIMAGE
 // #define NOTAPE
-// #define NOMINMAX
 // 
 // #define STRICT
-
 #include <windows.h>
 
 #include <d3d11.h>

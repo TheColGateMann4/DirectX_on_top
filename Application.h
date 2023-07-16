@@ -4,6 +4,7 @@
 #include "ErrorHandling.h"
 #include "Time.h"
 #include "ImguiManager.h"
+#include "PointLight.h"
 #include "Shape.h"
 #include "Sheet.h"
 
@@ -26,7 +27,9 @@ private:
 	UINT32 m_height;
 	const char* m_name;
 
+	//scene
 private:
 	std::vector<std::unique_ptr<Shape>> boxes;
+	PointLight pointLight;
 };
 

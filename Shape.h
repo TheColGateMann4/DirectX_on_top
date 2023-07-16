@@ -15,9 +15,19 @@ public:
 	virtual ~Shape() = default;
 
 public:
-	VOID Draw(GFX& gfx, float time) const;
+	VOID Draw(GFX& gfx, float time) const noexcept(!IS_DEBUG);
 	virtual VOID Update(float DeltaTime) noexcept = 0;
 	virtual DirectX::XMMATRIX GetTranformMatrix() const noexcept = 0;
+
+public:
+	template <class T>
+	T* GetBindable() noexcept
+	{
+		for (auto& b : binds)
+			if (T* r = dynamic_cast<T*>(b.get()))
+				return r;
+		return nullptr;
+	}
 
 public:
 	VOID AddBindable(std::unique_ptr<Bindable> bindable);

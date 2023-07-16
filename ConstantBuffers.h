@@ -23,7 +23,8 @@ public:
 
 		GetDeviceContext(gfx)->Unmap(pConstantBuffer.Get(), NULL);
 	}
-	ConstantBuffer(GFX& gfx, const C& consts)
+	ConstantBuffer(GFX& gfx, const C& consts, UINT32 slot)
+		: m_slot(slot)
 	{
 		HRESULT hr;
 
@@ -40,7 +41,8 @@ public:
 
 		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &(this->pConstantBuffer)));
 	}
-	ConstantBuffer(GFX& gfx)
+	ConstantBuffer(GFX& gfx, UINT32 slot)
+		: m_slot(slot)
 	{
 		HRESULT hr;
 
@@ -56,32 +58,35 @@ public:
 	}
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
+	UINT32 m_slot;
 };
 
 template<class C>
 class PixelConstantBuffer : public ConstantBuffer<C>
 {
-	using ConstantBuffer<C>::pConstantBuffer;
 	using Bindable::GetDeviceContext;
+	using ConstantBuffer<C>::pConstantBuffer;
+	using ConstantBuffer<C>::m_slot;
 public:
 	using ConstantBuffer<C>::ConstantBuffer;
 
 	VOID Bind(GFX& gfx) noexcept override
 	{
-		GetDeviceContext(gfx)->PSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+		GetDeviceContext(gfx)->PSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 	}
 };
 
 template<class C>
 class VertexConstantBuffer : public ConstantBuffer<C>
 {
-	using ConstantBuffer<C>::pConstantBuffer;
 	using Bindable::GetDeviceContext;
+	using ConstantBuffer<C>::pConstantBuffer;
+	using ConstantBuffer<C>::m_slot;
 public:
 	using ConstantBuffer<C>::ConstantBuffer;
 
 	VOID Bind(GFX& gfx) noexcept override
 	{
-		GetDeviceContext(gfx)->VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+		GetDeviceContext(gfx)->VSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 	}
 };

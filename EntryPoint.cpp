@@ -42,4 +42,3 @@ int WINAPI WinMain
 }
 
 //TODO: Get Includes right
-//TODO: Add ConstBuffer with time to vertex shader 

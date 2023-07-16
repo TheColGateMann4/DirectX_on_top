@@ -10,13 +10,12 @@
 #include "imgui/imgui.h";
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
-	: m_width(width), m_height(height), m_name(name),
-	window(width, height, name)
+	: m_width(width), m_height(height), m_name(name), window(width, height, name), pointLight(window.Graphics)
 {
 	std::mt19937 rng(std::random_device{}());
-	std::uniform_real_distribution<float> adist{ 0.0f,(float)std::_Pi * 2.0f };
-	std::uniform_real_distribution<float> ddist{ 0.0f,(float)std::_Pi * 0.5f };
-	std::uniform_real_distribution<float> odist{ 0.0f,(float)std::_Pi * 0.08f };
+	std::uniform_real_distribution<float> adist{ -(float)std::_Pi * 2.0f,(float)std::_Pi * 2.0f };
+	std::uniform_real_distribution<float> ddist{ -(float)std::_Pi * 0.5f,(float)std::_Pi * 0.5f };
+	std::uniform_real_distribution<float> odist{ -(float)std::_Pi * 0.08f,(float)std::_Pi * 0.08f };
 	std::uniform_real_distribution<float> rdist{ 6.0f,20.0f };
 	std::uniform_real_distribution<float> bdist{ 0.4f,3.0f };
 	std::uniform_int_distribution<UINT32> latdist{ 10,20 };
@@ -28,7 +27,8 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 		//boxes.push_back(std::make_unique<Sphere>(window.Graphics, rng, adist, ddist, odist, rdist, longdist, latdist));
 		//boxes.push_back(std::make_unique<Cube>(window.Graphics, rng, adist, ddist, odist, rdist));
 		//boxes.push_back(std::make_unique<Pyramid>(window.Graphics, rng, adist, ddist, odist, rdist));
- 		boxes.push_back(std::make_unique<CustomShape>(window.Graphics, L"untitled1.obj", L"BrickRound0105_5_S.jpg"));
+		boxes.push_back(std::make_unique<CustomShape>(window.Graphics, "armadillo.obj", DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), 0));
+		boxes.push_back(std::make_unique<CustomShape>(window.Graphics, "armadillo.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), 1));
  		//boxes.push_back(std::make_unique<Sheet>(window.Graphics, 1));
 	}
 
@@ -141,13 +141,19 @@ VOID Application::DoFrame()
 
 	FLOAT DeltaTime = timer.Mark();
 	window.Graphics.BeginFrame({ 0,0,0,1 });
+
+	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
  	for (std::unique_ptr<Shape>& b : boxes)
  	{
+		if (CustomShape* customShape = dynamic_cast<CustomShape*>(b.get()))
+			customShape->SpawnControlWindow(window.Graphics);
+
  		b->Update(DeltaTime);
 		float arr = timer.Get() / 1000;
  		b->Draw(window.Graphics, arr);
 		std::cout << '\n' << arr << "seconds";
  	}
+	pointLight.Draw(window.Graphics);
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
 		if(window.Graphics.isImGUIVisible())
@@ -156,6 +162,7 @@ VOID Application::DoFrame()
 			window.Graphics.ShowImGUI(true);
 
 	window.Graphics.camera.CreateControlMenu();
+	this->pointLight.SpawnControlWindow();
 
 	window.Graphics.FinishFrame();
 }

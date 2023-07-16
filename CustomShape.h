@@ -9,32 +9,31 @@
 class CustomShape : public StaticBindables<CustomShape>
 {
 public:
-	CustomShape(GFX& gfx, std::wstring objpath, std::wstring texturePath);
+	CustomShape(GFX& gfx, std::string objpath, DirectX::XMFLOAT3 color, UINT32 objectNumber);
 
 public:
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept;
 	VOID Update(FLOAT DeltaTime) noexcept;
 
-private:
-	template <class V>
-	Mesh<V> GetCustomMesh(std::wstring& objpath);
+public:
+	VOID SpawnControlWindow(GFX& gfx) noexcept;
+	VOID Reset() noexcept;
 
 private:
-	// positional
+	VOID SyncConstBuffer(GFX& gfx) noexcept(!IS_DEBUG);
 
-	FLOAT r = 0.0f;
-	FLOAT roll = 0.0f;
-	FLOAT pitch = 0.0f;
-	FLOAT yaw = 0.0f;
-	FLOAT theta = 0.0f;
-	FLOAT phi = 0.0f;
-	FLOAT chi = 0.0f;
+private:
+	DirectX::XMFLOAT3 m_position = {0.0f, 0.0f, 0.0f};
+	DirectX::XMFLOAT3 m_rotation = {0.0f, 0.0f, 0.0f};
+	DirectX::XMFLOAT3X3 m_scale;
 
-	// speed (delta/s)
-	FLOAT droll; //= 3.0f;
-	FLOAT dpitch;
-	FLOAT dyaw;
-	FLOAT dtheta;
-	FLOAT dphi;
-	FLOAT dchi;
+	struct ModelMaterial {
+		alignas (16) DirectX::XMFLOAT3 color;
+		float specularIntensity;
+		float specularPower;
+		float padding[2];
+	};
+	ModelMaterial m_material;
+	DirectX::XMFLOAT3 m_defaultColor;
+	UINT32 m_objectNumber;
 };

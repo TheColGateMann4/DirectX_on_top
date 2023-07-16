@@ -1,9 +1,10 @@
-cbuffer constBuffer
+cbuffer constBuffer : register(b0)
 {
-	matrix transform;
+    matrix model;
+    matrix modelViewProj;
 };
 
-float4 main(float3 position : POSITION) : SV_POSITION
+float4 main(float3 pos : POSITION) : SV_POSITION
 {
-	return mul(float4(position, 1.0f), transform);
+    return mul(float4(pos, 1.0f), modelViewProj);
 }
