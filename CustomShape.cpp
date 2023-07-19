@@ -21,28 +21,28 @@ CustomShape::CustomShape(GFX& gfx, std::string objpath, DirectX::XMFLOAT3 color,
 		));
 		std::vector<UINT32> indices;
 
-		{//model stuff
-			Assimp::Importer importer;
-			auto model = importer.ReadFile(objpath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
-			auto mesh = model->mMeshes[0];
-
-			for (size_t i = 0; i < mesh->mNumVertices; i++)
-			{
-				vertexBuffer.Emplace_Back<>(
-				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh->mVertices[i]),
-				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh->mNormals[i])
-				);
-			}
-
-			indices.reserve(mesh->mNumFaces * 3);
-			for (size_t i = 0; i < mesh->mNumFaces; i++)
-			{
-				const auto& face = mesh->mFaces[i];
-				assert(face.mNumIndices == 3);
-				indices.push_back(face.mIndices[0]);
-				indices.push_back(face.mIndices[1]);
-				indices.push_back(face.mIndices[2]);
-			}
+ 		{//model stuff
+// 			Assimp::Importer importer;
+// 			auto model = importer.ReadFile(objpath, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+// 			auto mesh = model->mMeshes[0];
+// 
+// 			for (size_t i = 0; i < mesh->mNumVertices; i++)
+// 			{
+// 				vertexBuffer.Emplace_Back<>(
+// 				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh->mVertices[i]),
+// 				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh->mNormals[i])
+// 				);
+// 			}
+// 
+// 			indices.reserve(mesh->mNumFaces * 3);
+// 			for (size_t i = 0; i < mesh->mNumFaces; i++)
+// 			{
+// 				const auto& face = mesh->mFaces[i];
+// 				assert(face.mNumIndices == 3);
+// 				indices.push_back(face.mIndices[0]);
+// 				indices.push_back(face.mIndices[1]);
+// 				indices.push_back(face.mIndices[2]);
+// 			}
 		}
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertexBuffer));
 
@@ -75,7 +75,7 @@ CustomShape::CustomShape(GFX& gfx, std::string objpath, DirectX::XMFLOAT3 color,
 	);
 }
 
-VOID CustomShape::Update(FLOAT DeltaTime) noexcept
+void CustomShape::Update(FLOAT DeltaTime) noexcept
 {
 
 }
@@ -84,11 +84,11 @@ DirectX::XMMATRIX CustomShape::GetTranformMatrix() const noexcept
 {
 	return
 		DirectX::XMLoadFloat3x3(&m_scale) *
-		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) *
-		DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z);
+		(DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
+			DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z));
 }
 
-VOID CustomShape::SpawnControlWindow(GFX& gfx) noexcept
+void CustomShape::SpawnControlWindow(GFX& gfx) noexcept
 {
 	std::string windowName = "Object " + std::to_string(m_objectNumber);
 	bool changed = false;
@@ -126,7 +126,7 @@ VOID CustomShape::SpawnControlWindow(GFX& gfx) noexcept
 		SyncConstBuffer(gfx);
 }
 
-VOID CustomShape::Reset() noexcept
+void CustomShape::Reset() noexcept
 {
 	m_position = { float(3 * m_objectNumber), 0.0f, 0.0f };
 	m_rotation = { 0.0f, 0.0f, 0.0f };
@@ -141,7 +141,7 @@ VOID CustomShape::Reset() noexcept
 	m_material.specularPower = 30.0f;
 }
 
-VOID CustomShape::SyncConstBuffer(GFX& gfx) noexcept(!IS_DEBUG)
+void CustomShape::SyncConstBuffer(GFX& gfx) noexcept(!IS_DEBUG)
 {
 	auto pPixelShaderCbuff = GetBindable<PixelConstantBuffer<ModelMaterial>>();
 	assert(pPixelShaderCbuff != nullptr);

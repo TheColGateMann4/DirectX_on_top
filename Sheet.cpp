@@ -2,6 +2,7 @@
 #include "BindableClassesMacro.h"
 #include "Application.h"
 #include "Includes.h"
+#include "SimpleMesh.h"
 
 Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 {
@@ -18,7 +19,7 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 				FLOAT u, v;
 			} texture;
 		};
-		Mesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio, TextureRatio);
+		SimpleMesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio, TextureRatio);
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
 
@@ -55,12 +56,12 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 }
 
 template <class V>
-Mesh<V> Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio)
+SimpleMesh<V> Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio)
 {
 	if (TesselationRatio == 0)
 		std::abort();
 
-	Mesh<V> tesselatedMesh;
+	SimpleMesh<V> tesselatedMesh = {};
 	const float maxNormalizedPosition = 1.0f;
 	const float minNormalizedPosition = 0.0f;
 	const float lengthOfTriangle = (maxNormalizedPosition - minNormalizedPosition) / TesselationRatio;

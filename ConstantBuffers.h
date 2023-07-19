@@ -70,7 +70,7 @@ class PixelConstantBuffer : public ConstantBuffer<C>
 public:
 	using ConstantBuffer<C>::ConstantBuffer;
 
-	VOID Bind(GFX& gfx) noexcept override
+	void Bind(GFX& gfx) noexcept override
 	{
 		GetDeviceContext(gfx)->PSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 	}
@@ -85,7 +85,7 @@ class VertexConstantBuffer : public ConstantBuffer<C>
 public:
 	using ConstantBuffer<C>::ConstantBuffer;
 
-	VOID Bind(GFX& gfx) noexcept override
+	void Bind(GFX& gfx) noexcept override
 	{
 		GetDeviceContext(gfx)->VSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 	}

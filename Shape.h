@@ -15,8 +15,8 @@ public:
 	virtual ~Shape() = default;
 
 public:
-	VOID Draw(GFX& gfx, float time) const noexcept(!IS_DEBUG);
-	virtual VOID Update(float DeltaTime) noexcept = 0;
+	void Draw(GFX& gfx, float time) const noexcept(!IS_DEBUG);
+	virtual void Update(float DeltaTime) noexcept = 0;
 	virtual DirectX::XMMATRIX GetTranformMatrix() const noexcept = 0;
 
 public:
@@ -30,8 +30,8 @@ public:
 	}
 
 public:
-	VOID AddBindable(std::unique_ptr<Bindable> bindable);
-	VOID AddIndexBuffer(std::unique_ptr<class IndexBuffer> indexBuffer) noexcept;
+	void AddBindable(std::unique_ptr<Bindable> bindable);
+	void AddIndexBuffer(std::unique_ptr<class IndexBuffer> indexBuffer) noexcept;
 
 private:
 	const class IndexBuffer* pIndexBuffer = NULL;

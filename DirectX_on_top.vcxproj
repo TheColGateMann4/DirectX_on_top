@@ -192,6 +192,8 @@
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="KeyMacros.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PointLightModel.h" />
@@ -201,6 +203,7 @@
     <ClInclude Include="SamplerState.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Sheet.h" />
+    <ClInclude Include="SimpleMesh.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="StaticBindables.h" />
     <ClInclude Include="Texture.h" />

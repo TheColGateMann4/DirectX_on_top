@@ -5,8 +5,7 @@
 #include "Time.h"
 #include "ImguiManager.h"
 #include "PointLight.h"
-#include "Shape.h"
-#include "Sheet.h"
+#include "Model.h"
 
 class Application
 {
@@ -20,7 +19,7 @@ public:
 	Time timer;
 
 private:
-	VOID DoFrame();
+	void DoFrame();
 
 private:
 	UINT32 m_width;
@@ -29,7 +28,7 @@ private:
 
 	//scene
 private:
-	std::vector<std::unique_ptr<Shape>> boxes;
 	PointLight pointLight;
+	Model model_{ window.Graphics, "nanosuit.obj" };
 };
 

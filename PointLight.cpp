@@ -7,7 +7,7 @@ PointLight::PointLight(GFX& gfx, float radius)
 	Reset(); // lazy setting values on startup
 }
 
-VOID PointLight::SpawnControlWindow() noexcept
+void PointLight::SpawnControlWindow() noexcept
 {
 	if (ImGui::Begin("Light"))
 	{
@@ -36,7 +36,7 @@ VOID PointLight::SpawnControlWindow() noexcept
 
 void PointLight::Reset() noexcept
 {
-	m_pcstruct.position = { 0.0f,0.0f,0.0f };
+	m_pcstruct.position = { 0.0f,0.0f,-8.0f };
 	m_pcstruct.ambient = { 0.05f, 0.05f, 0.05f };
 	m_pcstruct.diffuseColor = { 1.0f, 1.0f, 1.0f };
 
@@ -47,13 +47,13 @@ void PointLight::Reset() noexcept
 
 }
 
-VOID PointLight::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
+void PointLight::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	m_model.SetPosition(m_pcstruct.position);
 	m_model.Draw(gfx, 0.0f);
 }
 
-VOID PointLight::Bind(GFX& gfx, DirectX::XMMATRIX CameraView_) const noexcept
+void PointLight::Bind(GFX& gfx, DirectX::XMMATRIX CameraView_) const noexcept
 {
 	auto temp = m_pcstruct;
 	const auto position = DirectX::XMLoadFloat3(&m_pcstruct.position);

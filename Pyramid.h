@@ -2,7 +2,7 @@
 #include "Shape.h"
 #include "Graphics.h"
 #include "StaticBindables.h"
-#include "Mesh.h"
+#include "SimpleMesh.h"
 #include <random>
 
 class Pyramid : public StaticBindables<Shape>
@@ -22,7 +22,7 @@ public:
 
 private:
 	template<class T>
-	static Mesh<T> GetMesh();
+	static SimpleMesh<T> GetMesh();
 
 private:
 	// positional

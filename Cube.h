@@ -2,7 +2,7 @@
 #include "Shape.h"
 #include "Graphics.h"
 #include "StaticBindables.h"
-#include "Mesh.h"
+#include "SimpleMesh.h"
 #include <random>
 
 class Cube : public StaticBindables<Cube>
@@ -17,15 +17,15 @@ public:
 
 
 public:
-	VOID Update(FLOAT DeltaTime) noexcept override;
+	void Update(FLOAT DeltaTime) noexcept override;
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 private:
 	template <class T>
-	static Mesh<T> GetNormalMesh(float scale);
+	static SimpleMesh<T> GetNormalMesh(float scale);
 
 	template <class T>
-	static Mesh<T> GetUnwrappedMesh(float scale);
+	static SimpleMesh<T> GetUnwrappedMesh(float scale);
 
 private:
 	// positional

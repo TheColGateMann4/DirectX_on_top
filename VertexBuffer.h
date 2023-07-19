@@ -25,7 +25,7 @@ public:
 
 		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&vertexBufferDesc, &vertexBufferResourceData, &pVertexBuffer));
 	}
-	VertexBuffer(GFX& gfx, const DynamicVertex::VertexBuffer vertexBuffer)
+	VertexBuffer(GFX& gfx, const DynamicVertex::VertexBuffer& vertexBuffer)
 		: stride((UINT32)vertexBuffer.GetLayout().GetByteSize())
 	{
 		HRESULT hr;
@@ -35,7 +35,7 @@ public:
 		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		vertexBufferDesc.CPUAccessFlags = NULL;
 		vertexBufferDesc.MiscFlags = NULL;
-		vertexBufferDesc.ByteWidth = vertexBuffer.GetBytesSize();
+		vertexBufferDesc.ByteWidth = (UINT32)vertexBuffer.GetBytesSize();
 		vertexBufferDesc.StructureByteStride = stride;
 
 		D3D11_SUBRESOURCE_DATA vertexBufferResourceData = {};
@@ -44,7 +44,7 @@ public:
 		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&vertexBufferDesc, &vertexBufferResourceData, &pVertexBuffer));
 	}
 
-	VOID Bind(GFX& gfx) noexcept override;
+	void Bind(GFX& gfx) noexcept override;
 
 protected:
 	UINT32 stride;

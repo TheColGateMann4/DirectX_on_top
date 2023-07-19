@@ -1,6 +1,6 @@
 #pragma once
 #include "Shape.h"
-#include "Mesh.h"
+#include "SimpleMesh.h"
 #include "Graphics.h"
 #include "StaticBindables.h"
 #include <random>
@@ -22,7 +22,7 @@ public:
 
 public:
 	template <class T>
-	static Mesh<T> GetMesh(UINT32 verticalDivisions = 12, UINT32 horizontalDivisions = 24)
+	static SimpleMesh<T> GetMesh(UINT32 verticalDivisions = 12, UINT32 horizontalDivisions = 24)
 	{
 		assert(verticalDivisions >= 3);
 		assert(horizontalDivisions >= 3);

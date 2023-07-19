@@ -9,12 +9,12 @@ public:
 	PointLight(GFX &gfx, float radius = 0.5f);
 
 public:
-	VOID SpawnControlWindow() noexcept;
-	VOID Reset() noexcept;
+	void SpawnControlWindow() noexcept;
+	void Reset() noexcept;
 
 public:
-	VOID Draw(GFX &gfx) const noexcept(!IS_DEBUG);
-	VOID Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
+	void Draw(GFX &gfx) const noexcept(!IS_DEBUG);
+	void Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
 
 private:
 	struct PixelConstantStruct { 

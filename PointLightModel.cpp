@@ -1,6 +1,6 @@
 #include "PointLightModel.h"
 #include "BindableClassesMacro.h"
-#include "Mesh.h"
+#include "SimpleMesh.h"
 #include "Sphere.h"
 
 PointLightModel::PointLightModel(GFX& gfx, float radius)
@@ -11,7 +11,7 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 		{
 			DirectX::XMFLOAT3 position;
 		};
-		Mesh<Vertex> model = Sphere::GetMesh<Vertex>(35, 35);
+		SimpleMesh<Vertex> model = Sphere::GetMesh<Vertex>(35, 35);
 		model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
 		AddBindable(std::make_unique<VertexBuffer>(gfx, model.m_vertices));
 		AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, model.m_indices));

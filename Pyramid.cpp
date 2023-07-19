@@ -27,7 +27,7 @@ Pyramid::Pyramid(GFX& gfx, std::mt19937& rng,
 				FLOAT x, y, z;
 			} pos;
 		};
-		Mesh<Vertex> PyramidModel = GetMesh<Vertex>();
+		SimpleMesh<Vertex> PyramidModel = GetMesh<Vertex>();
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, PyramidModel.m_vertices));
 
@@ -81,7 +81,7 @@ Pyramid::Pyramid(GFX& gfx, std::mt19937& rng,
 }
 
 template <class T>
-static Mesh<T> Pyramid::GetMesh()
+static SimpleMesh<T> Pyramid::GetMesh()
 {
 	std::vector<T> vertices =
 	{

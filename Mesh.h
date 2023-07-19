@@ -1,34 +1,54 @@
 #pragma once
 #include "Includes.h"
 #include "ErrorHandling.h"
+#include "Bindable.h"
+#include "BindableClassesMacro.h"
+#include "Shape.h"
 
-template<class T>
-class Mesh
+class Mesh : public StaticBindables<Mesh>
 {
 public:
-	Mesh() = default;
-	Mesh(std::vector<T> vertices, std::vector<UINT32> indices)
-		: m_vertices(std::move(vertices)), m_indices(std::move(indices))
+	Mesh(GFX &gfx, std::vector<std::unique_ptr<Bindable>> binds)
 	{
-		THROW_INTERNAL_ERROR("A mesh needs at least two vertices.", m_vertices.size() < 2);
-		THROW_INTERNAL_ERROR("Indices must create triangles; indices % 3 != 0.", m_indices.size() % 3 != 0);
-	}
-
-public:
-	VOID Transform(DirectX::XMMATRIX martix)
-	{
-		for (auto& v : m_vertices)
+		if (!IsStaticInitialized())
 		{
-			const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&v.position);
-
-			DirectX::XMStoreFloat3(
-				&v.position,
-				DirectX::XMVector3Transform(position, martix)
-			);
+			AddStaticBind(std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 		}
+
+		for (auto& bind : binds)
+		{
+			if (auto pIndexBuffer = dynamic_cast<IndexBuffer*>(bind.get()))
+			{
+				AddIndexBuffer(std::unique_ptr<IndexBuffer>(pIndexBuffer));
+				bind.release();
+			}
+			else
+			{
+				AddBindable(std::move(bind));
+			}
+		}
+
+		AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
 	}
 
 public:
-	std::vector<T> m_vertices;
-	std::vector<UINT32> m_indices;
+	void Update(float DeltaTime) noexcept override
+	{
+
+	}
+
+	void Draw(GFX& gfx, DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
+	{
+		DirectX::XMStoreFloat4x4(&m_transform, transform);
+		Shape::Draw(gfx, 0.0f);
+	}
+
+public:
+	DirectX::XMMATRIX GetTranformMatrix() const noexcept override
+	{
+		return DirectX::XMLoadFloat4x4(&m_transform);
+	}
+
+private:
+	mutable DirectX::XMFLOAT4X4 m_transform;
 }; 

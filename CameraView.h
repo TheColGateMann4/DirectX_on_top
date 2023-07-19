@@ -5,7 +5,7 @@ class CameraView
 {
 
 public:
-	VOID SetProjection(DirectX::XMMATRIX projection);
+	void SetProjection(DirectX::XMMATRIX projection);
 
 public:
 	DirectX::XMMATRIX GetCamera();
@@ -15,8 +15,8 @@ private:
 	DirectX::XMMATRIX m_projection = {};
 
 public:
-	VOID Reset();
-	VOID CreateControlMenu();
+	void Reset();
+	void CreateControlMenu();
 
 private:
 	FLOAT r = 20.0f;

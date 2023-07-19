@@ -29,7 +29,7 @@ Cube::Cube(GFX& gfx,
 			} pos;
 		};
 
-		Mesh<Vertex> CubeModel = GetUnwrappedMesh<Vertex>(0.8f);
+		SimpleMesh<Vertex> CubeModel = GetUnwrappedMesh<Vertex>(0.8f);
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, CubeModel.m_vertices));
 
@@ -88,7 +88,7 @@ Cube::Cube(GFX& gfx,
 }
 
 template <class T>
-static Mesh<T> Cube::GetNormalMesh(float scale)
+static SimpleMesh<T> Cube::GetNormalMesh(float scale)
 {
 	std::vector<T> vertices
 	{
@@ -115,7 +115,7 @@ static Mesh<T> Cube::GetNormalMesh(float scale)
 }
 
 template <class T>
-static Mesh<T> Cube::GetUnwrappedMesh(float scale)
+static SimpleMesh<T> Cube::GetUnwrappedMesh(float scale)
 {
 	std::vector<T> vertices =
 	{
@@ -147,7 +147,7 @@ static Mesh<T> Cube::GetUnwrappedMesh(float scale)
 	return { std::move(vertices), std::move(indices) };
 }
 
-VOID Cube::Update(FLOAT DeltaTime) noexcept
+void Cube::Update(FLOAT DeltaTime) noexcept
 {
 	roll += droll * DeltaTime;
 	pitch += dpitch * DeltaTime;

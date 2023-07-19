@@ -67,7 +67,7 @@ Sphere::Sphere(GFX& gfx, std::mt19937& rng,
 	};
 
 
-	Mesh<Vertex> mesh = GetMesh<Vertex>(latdist(rng), longdist(rng));
+	SimpleMesh<Vertex> mesh = GetMesh<Vertex>(latdist(rng), longdist(rng));
 
 	mesh.Transform(DirectX::XMMatrixScaling(1.0, 1.0, 1.2));
 

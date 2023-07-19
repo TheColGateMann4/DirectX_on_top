@@ -8,7 +8,7 @@ public:
 	TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot = 0)
 		: m_parent(parent), vcbuf(gfx, slot) {}
 
-	VOID Bind(GFX& gfx) noexcept override
+	void Bind(GFX& gfx) noexcept override
 	{
 		const DirectX::XMMATRIX ModelTransformView = m_parent.GetTranformMatrix() * gfx.camera.GetCamera();
 		vcbuf.Update(gfx,

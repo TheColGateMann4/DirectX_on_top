@@ -2,7 +2,7 @@
 #include "Shape.h"
 #include "Graphics.h"
 #include "StaticBindables.h"
-#include "Mesh.h"
+#include "SimpleMesh.h"
 #include "Time.h"
 #include <random>
 
@@ -17,7 +17,7 @@ public:
 
 private:
 	template <class V>
-	Mesh<V> GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio);
+	SimpleMesh<V> GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio);
 
 private:
 	// positional

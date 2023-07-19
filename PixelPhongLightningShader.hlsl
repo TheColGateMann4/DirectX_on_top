@@ -25,7 +25,7 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL) 
     const float lengthOfVectorLength = length(VectorLength);
     const float3 DirectionToLightSource = VectorLength / lengthOfVectorLength;
     
-    const float attenuation = 1 / (attenuationConst + attenuationLinear * DirectionToLightSource + attenuationQuadratic * (lengthOfVectorLength * DirectionToLightSource));
+    const float attenuation = 1 / (attenuationConst + attenuationLinear * lengthOfVectorLength + attenuationQuadratic * (lengthOfVectorLength * lengthOfVectorLength));
 	
     const float3 diffuse = diffuseColor * diffuseIntensity * attenuation * max(0.0f, dot(DirectionToLightSource, normal));
     

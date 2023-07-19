@@ -1,7 +1,7 @@
 #include "CameraView.h"
 #include "imgui/imgui.h"
 
-VOID CameraView::SetProjection(DirectX::XMMATRIX projection)
+void CameraView::SetProjection(DirectX::XMMATRIX projection)
 {
 	this->m_projection = projection;
 }
@@ -27,7 +27,7 @@ DirectX::XMMATRIX CameraView::GetProjection()
 	return this->m_projection;
 }
 
-VOID CameraView::Reset()
+void CameraView::Reset()
 {
 	r = 20.0f;
 	theta = 0.0f;
@@ -37,7 +37,7 @@ VOID CameraView::Reset()
 	pitch = 0.0f;
 	yaw = 0.0f;
 }
-VOID CameraView::CreateControlMenu()
+void CameraView::CreateControlMenu()
 {
 	if (ImGui::Begin("Camera Control"))
 	{

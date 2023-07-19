@@ -2,7 +2,6 @@
 #include "Shape.h"
 #include "Graphics.h"
 #include "StaticBindables.h"
-#include "Mesh.h"
 #include "Time.h"
 #include <random>
 
@@ -13,14 +12,14 @@ public:
 
 public:
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept;
-	VOID Update(FLOAT DeltaTime) noexcept;
+	void Update(FLOAT DeltaTime) noexcept;
 
 public:
 	VOID SpawnControlWindow(GFX& gfx) noexcept;
 	VOID Reset() noexcept;
 
 private:
-	VOID SyncConstBuffer(GFX& gfx) noexcept(!IS_DEBUG);
+	void SyncConstBuffer(GFX& gfx) noexcept(!IS_DEBUG);
 
 private:
 	DirectX::XMFLOAT3 m_position = {0.0f, 0.0f, 0.0f};
