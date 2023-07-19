@@ -29,6 +29,6 @@ private:
 	//scene
 private:
 	PointLight pointLight;
-	Model model_{ window.Graphics, "nanosuit.obj" };
+	Model model_{ window.Graphics, "boxy.gltf" };
 };
 

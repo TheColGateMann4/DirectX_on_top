@@ -9,6 +9,7 @@
 #include <assimp/postprocess.h>
 #include "imgui/imgui.h"
 #include <random>
+#include "ErrorMacros.h"
 
 class Model
 {
@@ -22,12 +23,10 @@ public:
 			aiProcess_ConvertToLeftHanded |
 			aiProcess_GenNormals
 		);
-		
-		const char* errormesadawf = importer.GetErrorString();
 
 		if (pScene == nullptr)
 		{
-			
+			THROW_MODEL_EXCEPTION(importer.GetErrorString());
 		}
 
 		for (size_t i = 0; i < pScene->mNumMeshes; i++)
@@ -131,7 +130,7 @@ public:
 		if (ImGui::Begin("Object Controler"))
 		{
 			ImGui::Columns(2, nullptr, true);
-			m_pressedNode = m_pStartingNode->GenerateTree(m_pressedNode);
+			m_pStartingNode->GenerateTree(m_pressedNode);
 
 			ImGui::NextColumn();
 

@@ -42,13 +42,13 @@ class ErrorHandler
 
 	public:
 		const char* what() override;
-		std::string GetErrorType() override;
-		 std::string GetErrorString() override;
+		virtual std::string GetErrorType() override;
+		std::string GetErrorString() override;
 
 	private:
 		std::string m_errorString;
 	};
-	 class GFXException : public StandardException
+	class GFXException : public StandardException
 	{
 	 public:
 		GFXException(UINT32 line_, const char* file_, HRESULT hr_);
@@ -70,31 +70,39 @@ class ErrorHandler
 		 std::string GetErrorType() override;
 		 HRESULT GetErrorCode() override;
 	 };
+	 class ModelException : public InternalException
+	 {
+	 public:
+		 ModelException(UINT32 line_, const char* file_, std::string errorString_) : InternalException(line_, file_, errorString_) {};
+
+	 public:
+		 std::string GetErrorType() override;
+	 };
 #ifdef _DEBUG
 	class DXGIException : public GFXException
 	{
-	 public:
+	public:
 		DXGIException(UINT32 line_, const char* file_, HRESULT hr_, std::vector<std::string> messages = {});
 
-	 public:
+	public:
 		 const char* what() override;
 
 		 std::string GetErrorType() override;
 		 std::string GetErrorInfo();
 
-	 protected:
+	protected:
 		std::string allMessages;
 
-	 public:
+	public:
 		class DXGIInfoManager
 		{
-		 public:
+		public:
 			DXGIInfoManager();
 
 			void Set() noexcept;
 			std::vector<std::string> GetMessages() const;
 
-		 private:
+		private:
 			unsigned long long next = 0u;
 			Microsoft::WRL::ComPtr<IDXGIInfoQueue> pDxgiInfoQueue;
 
@@ -106,7 +114,7 @@ class ErrorHandler
 	};
 	class InfoException : public GFXException
 	{
-	 public:
+	public:
 		InfoException(UINT32 line_, const char* file_, std::vector<std::string> messages = {});
 
 	public:
@@ -120,7 +128,7 @@ class ErrorHandler
 	};
 #endif
 	
- public:
+public:
 	static VOID ThrowMessage(const char* title, const char* text) noexcept;
 };
 

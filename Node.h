@@ -12,14 +12,14 @@ public:
 	Node(std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX &transform, const char* nodeName) noexcept(!IS_DEBUG)
 		: m_pMeshes(std::move(pMeshes)), m_nodeName(nodeName)
 	{
-		DirectX::XMStoreFloat4x4(&m_transform, transform);
+		DirectX::XMStoreFloat4x4(&m_baseTransform, transform);
 	}
 
 public:
 	void Draw(GFX &gfx, DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
 	{
 		const auto finalTransform = 
-			(DirectX::XMLoadFloat4x4(&m_transform) *													//original node transform
+			(DirectX::XMLoadFloat4x4(&m_baseTransform) *													//original node transform
 				(DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *									//local added scale to current node
 					(DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *		//local added rotation to current node
 						DirectX::XMMatrixTranslation(position.x, position.y, position.z)				//local added position to current node
@@ -45,9 +45,8 @@ public:
 	}
 
 public:
-	Node* GenerateTree(Node* pressedNode)
+	void GenerateTree(Node*& pressedNode)
 	{
-		Node* returnValue = pressedNode;
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
 
 		if (m_pChildrens.empty())
@@ -58,21 +57,16 @@ public:
 		if (ImGui::TreeNodeEx(m_nodeName.c_str(), flags))
 		{
 			if (ImGui::IsItemClicked())
-				if (returnValue == this)
-					returnValue = nullptr;
+				if (pressedNode != this)
+					pressedNode = this;
 				else
-					returnValue = this;
+					pressedNode = nullptr;
 
 			for (const auto& child : m_pChildrens)
-			{
-				Node* checkReturnValue = child->GenerateTree(pressedNode);
-				if (checkReturnValue != pressedNode)
-					returnValue = checkReturnValue;
-			}
+				child->GenerateTree(pressedNode);
+
 			ImGui::TreePop();
 		}
-
-		return returnValue;
 	}
 
 private:
@@ -85,7 +79,7 @@ private:
 private:
 	std::vector<std::unique_ptr<Node>> m_pChildrens;
 	std::vector<Mesh*> m_pMeshes;
-	DirectX::XMFLOAT4X4 m_transform;
+	DirectX::XMFLOAT4X4 m_baseTransform;
 	std::string m_nodeName;
 
 public:

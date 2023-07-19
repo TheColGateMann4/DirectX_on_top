@@ -4,9 +4,7 @@
 
 ErrorHandler::StandardException::StandardException(UINT32 line_, const char* file_, HRESULT hr_)
 	: m_line(line_), file(file_), m_hr(hr_)
-{
-	//errorHandler.PrintMessage(NULL, "Internal Error", ErrorHandler::Exception::GetErrorOrgin(), LEVEL_ERROR);
-}
+{}
 
 std::string ErrorHandler::StandardException::TranslateErrorCode(HRESULT hr)
 {
@@ -30,22 +28,22 @@ std::string ErrorHandler::StandardException::TranslateErrorCode(HRESULT hr)
 
 std::string ErrorHandler::StandardException::GetErrorString()
 {
-	return ErrorHandler::StandardException::TranslateErrorCode(m_hr);
+	return TranslateErrorCode(m_hr);
 }
 
 HRESULT ErrorHandler::StandardException::GetErrorCode()
 {
-	return ErrorHandler::StandardException::m_hr;
+	return m_hr;
 }
 
 const char* ErrorHandler::StandardException::GetFile()
 {
-	return ErrorHandler::StandardException::file;
+	return file;
 }
 
 const char* ErrorHandler::StandardException::GetLine()
 {
-	return _strdup(std::to_string(ErrorHandler::StandardException::m_line).c_str());
+	return _strdup(std::to_string(m_line).c_str());
 }
 
 std::string ErrorHandler::StandardException::GetErrorType()
@@ -57,20 +55,20 @@ const char* ErrorHandler::StandardException::what()
 {
 	std::string result;
 
-	result += ErrorHandler::StandardException::GetErrorType();
+	result += GetErrorType();
 
 	result += "\n[Error Code]: ";
-	result += std::to_string(ErrorHandler::StandardException::GetErrorCode());
+	result += std::to_string(GetErrorCode());
 
 	result += "\n[Error String]: ";
-	result += ErrorHandler::StandardException::GetErrorString();
+	result += GetErrorString();
 
 	result += "\n";
 
 	result += "\n[File] ";
-	result += ErrorHandler::StandardException::GetFile();
+	result += GetFile();
 	result += "\n[Line] ";
-	result += ErrorHandler::StandardException::GetLine();
+	result += GetLine();
 
 	return _strdup(result.c_str());
 }
@@ -98,7 +96,7 @@ ErrorHandler::GFXException::GFXException(UINT32 line, const char* file, HRESULT 
 
 HRESULT ErrorHandler::GFXException::GetErrorCode()
 {
-	return ErrorHandler::GFXException::m_hr;
+	return m_hr;
 }
 
 std::string ErrorHandler::GFXException::GetErrorString()
@@ -115,7 +113,7 @@ std::string ErrorHandler::GFXException::GetErrorType()
 std::string ErrorHandler::GFXException::GetErrorDescription()
 {
 	char buff[350];
-	DXGetErrorDescriptionA(ErrorHandler::GFXException::m_hr, buff, sizeof(buff));
+	DXGetErrorDescriptionA(m_hr, buff, sizeof(buff));
 	return (std::string)buff;
 }
 
@@ -126,21 +124,21 @@ const char* ErrorHandler::GFXException::what()
 	result << GetErrorType();
 
 	result << "\n[Error Code] ";
-	result << ErrorHandler::GFXException::GetErrorCode();
+	result << GetErrorCode();
 
 	result << "\n\n[Error Name] ";
-	result << ErrorHandler::GFXException::GetErrorString();
+	result << GetErrorString();
 
 	result << "\n\n[Description] ";
-	result << ErrorHandler::GFXException::GetErrorDescription();
+	result << GetErrorDescription();
 
 	result << "\n";
 
 	result << "\n\n[File] ";
-	result << ErrorHandler::GFXException::GetFile();
+	result << GetFile();
 
 	result << "\n\n[Line] ";
-	result << ErrorHandler::GFXException::GetLine();
+	result << GetLine();
 
 	return _strdup(result.str().c_str());
 }
@@ -160,23 +158,23 @@ std::string ErrorHandler::InternalException::GetErrorType()
 }
 std::string ErrorHandler::InternalException::GetErrorString()
 {
-	return ErrorHandler::InternalException::m_errorString;
+	return m_errorString;
 }
 
 const char* ErrorHandler::InternalException::what()
 {
 	std::stringstream result;
 
-	result << ErrorHandler::InternalException::GetErrorType();
+	result << GetErrorType();
 
 	result << "\n[Error Name] ";
-	result << ErrorHandler::InternalException::GetErrorString();
+	result << GetErrorString();
 
 	result << "\n\n[File] ";
-	result << ErrorHandler::InternalException::GetFile();
+	result << GetFile();
 
 	result << "\n[Line] ";
-	result << ErrorHandler::InternalException::GetLine();
+	result << GetLine();
 
 	return _strdup(result.str().c_str());
 }
@@ -202,6 +200,14 @@ HRESULT ErrorHandler::NoGFXException::GetErrorCode()
 {
 	return (HRESULT)0;
 }
+
+
+
+std::string ErrorHandler::ModelException::GetErrorType()
+{
+	return "MODEL_EXCEPTION";
+}
+
 
 
 
@@ -241,15 +247,15 @@ ErrorHandler::DXGIException::DXGIException(UINT32 line_, const char* file_, HRES
 {
 
 	for (std::string message : messages)
-		ErrorHandler::DXGIException::allMessages += (message + '\n');
+		allMessages += (message + '\n');
 
-	if (!ErrorHandler::DXGIException::allMessages.empty()) //removing '\n' at the end
-		ErrorHandler::DXGIException::allMessages.pop_back();
+	if (!allMessages.empty()) //removing '\n' at the end
+		allMessages.pop_back();
 }
 
 std::string ErrorHandler::DXGIException::GetErrorInfo()
 {
-	return ErrorHandler::DXGIException::allMessages;
+	return allMessages;
 }
 
 std::string ErrorHandler::DXGIException::GetErrorType()
@@ -261,29 +267,29 @@ const char* ErrorHandler::DXGIException::what()
 {
 	std::stringstream result;
 
-	result << ErrorHandler::DXGIException::GetErrorType();
+	result << GetErrorType();
 
 	result << "\n[Error Code] ";
-	result << ErrorHandler::DXGIException::GetErrorCode();
+	result << GetErrorCode();
 
 	result << "\n[Error Name] ";
-	result << ErrorHandler::DXGIException::GetErrorString();
+	result << GetErrorString();
 
 	result << "\n\n[Description] ";
-	result << ErrorHandler::DXGIException::GetErrorDescription();
+	result << GetErrorDescription();
 
 	result << "\n\n[Error Info] ";
-	result << ErrorHandler::DXGIException::GetErrorInfo();
+	result << GetErrorInfo();
 
 	result << "\n\n[File] ";
-	result << ErrorHandler::DXGIException::GetFile();
+	result << GetFile();
 
 	result << "\n[Line] ";
-	result << ErrorHandler::DXGIException::GetLine();
+	result << GetLine();
 
 	return _strdup(result.str().c_str());
 }
-#define THROW_NOINFO(checkfailed) if( FAILED( hr = (checkfailed) ) ) throw ErrorHandler::GFXException( __LINE__,__FILE__,hr );
+#define THROW_NOINFO(checkfailed) if( FAILED( hr = (checkfailed) ) ) throw GFXException( __LINE__,__FILE__,hr );
 
 ErrorHandler::DXGIException::DXGIInfoManager::DXGIInfoManager()
 {
@@ -353,8 +359,8 @@ ErrorHandler::InfoException::InfoException(UINT32 line_, const char* file_, std:
 		ErrorHandler::InfoException::allMessages += (message + '\n');
 
 	//removing '\n' at the end
-	if (!ErrorHandler::InfoException::allMessages.empty())
-		ErrorHandler::InfoException::allMessages.pop_back();
+	if (!allMessages.empty())
+		allMessages.pop_back();
 }
 
 std::string ErrorHandler::InfoException::GetErrorType()
@@ -364,23 +370,23 @@ std::string ErrorHandler::InfoException::GetErrorType()
 
 std::string ErrorHandler::InfoException::GetErrorInfo()
 {
-	return ErrorHandler::InfoException::allMessages;
+	return allMessages;
 }
 
 const char* ErrorHandler::InfoException::what()
 {
 	std::stringstream result;
 
-	result << ErrorHandler::InfoException::GetErrorType();
+	result << GetErrorType();
 
 	result << "\n\n[Error Info] ";
-	result << ErrorHandler::InfoException::GetErrorInfo();
+	result << GetErrorInfo();
 
 	result << "\n\n[File] ";
-	result << ErrorHandler::InfoException::GetFile();
+	result << GetFile();
 
 	result << "\n[Line] ";
-	result << ErrorHandler::InfoException::GetLine();
+	result << GetLine();
 
 	return _strdup(result.str().c_str());
 }
