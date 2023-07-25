@@ -11,15 +11,8 @@ cbuffer lightBuffer : register(b0)
     float attenuationQuadratic;
 };
 
-cbuffer objectBuffer : register(b1)
-{
-    float specularIntensity;
-    float specularPower;
-    
-    float padding[2];
-}
-
 Texture2D diffuseTexture : register(t0);
+Texture2D specularTexture : register(t1);
 SamplerState samplerr : register(s0);
 
 float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD) : SV_TARGET
@@ -35,7 +28,11 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     const float3 w = normal * dot(VectorLength, normal);
     const float3 r = w * 2.0f - VectorLength;
     
-    const float3 specular = attenuation * (diffuseColor * diffuseIntensity) * specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), specularPower);
+    const float4 specularSample = specularTexture.Sample(samplerr, textureCoords);
+    const float3 specularColor = specularSample.rgb;
+    const float specularPower = pow(2.0f, specularSample.a * 13.0f);
     
-    return float4(saturate((diffuse + ambient) * diffuseTexture.Sample(samplerr, textureCoords).rgb + specular), 1.0f);
+    const float3 specular = attenuation * (diffuseColor * diffuseIntensity) * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), specularPower);
+    
+    return float4(saturate((diffuse + ambient) * diffuseTexture.Sample(samplerr, textureCoords).rgb + specular * specularColor), 1.0f);
 }

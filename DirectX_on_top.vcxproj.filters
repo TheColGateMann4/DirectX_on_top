@@ -335,5 +335,8 @@
     <FxCompile Include="PixelSolidColorShader.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="PixelPhongLightningSpecularShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

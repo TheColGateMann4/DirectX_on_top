@@ -49,15 +49,20 @@ class InputSystem
 
 	 public:
 
-		Vector2i GetMousePos();
-		BOOL GetMouseButtonDown(UINT8 button, Vector2i* position);
-		BOOL GetMouseButtonUp(UINT8 button, Vector2i* position);
+		Vector2uint GetMousePos();
+		BOOL GetMouseButtonDown(UINT8 button, Vector2uint* position);
+		BOOL GetMouseButtonUp(UINT8 button, Vector2uint* position);
 		INT8 GetMouseWheel();
+		Vector2int GetRawInputPos();
+
+	public:
+		void HandleRawInput(INT32 x, INT32 y);
 
 	 private:
-		Vector2i m_pressedKeysList[32] = {};
-		Vector2i m_releasedKeysList[32] = {};
-		Vector2i m_position = {};
+		Vector2uint m_pressedKeysList[32] = {};
+		Vector2uint m_releasedKeysList[32] = {};
+		Vector2uint m_position = {};
+		Vector2int m_rawInputPosition = {};
 		INT8 m_mouseWheelOffset;
 		VOID m_MouseButtonChanged(UINT8 button, BOOL pressed, LPARAM lParam);
 	};

@@ -77,10 +77,14 @@
 
 */
 
-struct Vector2i {
+struct Vector2uint {
 	UINT32 x, y;
 };
  
+struct Vector2int {
+	INT32 x, y;
+};
+
 struct Vector2f {
 	FLOAT x, y, z;
 };

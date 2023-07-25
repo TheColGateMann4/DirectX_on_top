@@ -117,12 +117,12 @@ VOID InputSystem::KeyInput::busyWritingText(BOOL busy)
 
 */
 
-Vector2i InputSystem::MouseInput::GetMousePos()
+Vector2uint InputSystem::MouseInput::GetMousePos()
 {
 	return InputSystem::MouseInput::m_position;
 }
 
-BOOL InputSystem::MouseInput::GetMouseButtonDown(UINT8 button, Vector2i* position)
+BOOL InputSystem::MouseInput::GetMouseButtonDown(UINT8 button, Vector2uint* position)
 {
 	if (button > 31)
 		return FALSE;
@@ -133,7 +133,7 @@ BOOL InputSystem::MouseInput::GetMouseButtonDown(UINT8 button, Vector2i* positio
 	return InputSystem::m_pressedKeysList[button];
 }
 
-BOOL InputSystem::MouseInput::GetMouseButtonUp(UINT8 button, Vector2i* position)
+BOOL InputSystem::MouseInput::GetMouseButtonUp(UINT8 button, Vector2uint* position)
 {
 	if (button > 31)
 		return FALSE;
@@ -147,6 +147,16 @@ BOOL InputSystem::MouseInput::GetMouseButtonUp(UINT8 button, Vector2i* position)
 INT8 InputSystem::MouseInput::GetMouseWheel()
 {
 	return InputSystem::MouseInput::m_mouseWheelOffset;
+}
+
+Vector2int InputSystem::MouseInput::GetRawInputPos()
+{
+	return m_rawInputPosition;
+}
+
+void InputSystem::MouseInput::HandleRawInput(INT32 mouseRawX, INT32 mouseRawY)
+{
+	m_rawInputPosition = { mouseRawX,mouseRawY };
 }
 
 VOID InputSystem::MouseInput::m_MouseButtonChanged(UINT8 button, BOOL pressed, LPARAM lParam)

@@ -1,7 +1,8 @@
 #include "Texture.h"
 #include <DirectXTex.h>
 
-Texture::Texture(GFX& gfx, const std::wstring imagePath)
+Texture::Texture(GFX& gfx, const std::wstring imagePath, UINT32 slot)
+	: m_slot(slot)
 {
 	HRESULT hr;
 	using namespace DirectX;
@@ -33,5 +34,5 @@ Texture::Texture(GFX& gfx, const std::wstring imagePath)
 
 void Texture::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->PSSetShaderResources(0, 1, pShaderResourceView.GetAddressOf());
+	GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
 }

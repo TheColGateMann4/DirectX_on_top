@@ -19,11 +19,13 @@ public:
 	void Draw(GFX &gfx, DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
 	{
 		const auto finalTransform = 
-			(DirectX::XMLoadFloat4x4(&m_baseTransform) *													//original node transform
-				(DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *									//local added scale to current node
-					(DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *		//local added rotation to current node
-						DirectX::XMMatrixTranslation(position.x, position.y, position.z)				//local added position to current node
-			))) * transform;																			//passed transform from nodes higher in hierarchy
+			(
+				DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *		//added rotation
+				DirectX::XMMatrixTranslation(position.x, position.y, position.z) *				//added position
+				DirectX::XMMatrixScaling(scale.x, scale.y, scale.z)								//added scale
+			) 
+			* DirectX::XMLoadFloat4x4(&m_baseTransform)											// original transform in node
+			* transform;																		// accumulated transform from upper nodes
 
 		for (const auto& mesh : m_pMeshes)
 		{
@@ -54,14 +56,16 @@ public:
 		if(pressedNode == this)
 			flags |= ImGuiTreeNodeFlags_Selected;
 
-		if (ImGui::TreeNodeEx(m_nodeName.c_str(), flags))
-		{
-			if (ImGui::IsItemClicked())
-				if (pressedNode != this)
-					pressedNode = this;
-				else
-					pressedNode = nullptr;
+		const bool nodeExpanded = ImGui::TreeNodeEx(m_nodeName.c_str(), flags);
 
+		if (ImGui::IsItemClicked())
+			if (pressedNode != this)
+				pressedNode = this;
+			else
+				pressedNode = nullptr;
+
+		if (nodeExpanded)
+		{
 			for (const auto& child : m_pChildrens)
 				child->GenerateTree(pressedNode);
 

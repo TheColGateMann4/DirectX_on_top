@@ -11,6 +11,10 @@ public:
 	DirectX::XMMATRIX GetCamera();
 	DirectX::XMMATRIX GetProjection();
 
+public:
+	void Move(DirectX::XMFLOAT3 moveoffset);
+	void Look(DirectX::XMFLOAT3 lookoffset);
+
 private:
 	DirectX::XMMATRIX m_projection = {};
 
@@ -19,17 +23,13 @@ public:
 	void CreateControlMenu();
 
 private:
-	FLOAT r = 20.0f;
-	FLOAT theta = 0.0f;
-	FLOAT phi = 0.0f;
-	FLOAT chi = 0.0f;
-	FLOAT roll = 0.0f;
-	FLOAT pitch = 0.0f;
-	FLOAT yaw = 0.0f;
-// 	bool toggle;
-// 
-// public:
-// 	int curritem = 0;
-// 	const char* models[6] = { "Cow", "Pumpkin", "Teapot", "Teddybear" };
+	float WrapAngle(float angle, float value);
+
+private:
+	DirectX::XMFLOAT3 m_position = { 0.0f, 3.0f, -12.0f };
+	DirectX::XMFLOAT3 m_view = {};
+
+	static constexpr float m_movespeed = 12.0f;
+	static constexpr float m_sensivity = 0.004f;
 };
 

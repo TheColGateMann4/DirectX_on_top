@@ -31,7 +31,7 @@ public:
 
 		for (size_t i = 0; i < pScene->mNumMeshes; i++)
 		{
-			m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i]));
+			m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials));
 		}
 
 		m_pStartingNode = ParseNode(*pScene->mRootNode);
@@ -39,19 +39,21 @@ public:
 	}
 
 public:
-	static std::unique_ptr<Mesh> ParseMesh(GFX& gfx, const aiMesh& mesh)
+	static std::unique_ptr<Mesh> ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials)
 	{
 		DynamicVertex::VertexBuffer vertexBuffer(std::move(
 			DynamicVertex::VertexLayout()
 			.Append(DynamicVertex::VertexLayout::Position3D)
 			.Append(DynamicVertex::VertexLayout::Normal)
+			.Append(DynamicVertex::VertexLayout::Texture2D)
 		));
 
 		for (size_t i = 0; i < mesh.mNumVertices; i++)
 		{
 			vertexBuffer.Emplace_Back(
 				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]),
-				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i])
+				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]),
+				*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
 			);
 		}
 
@@ -67,8 +69,35 @@ public:
 			indices.push_back(face.mIndices[2]);
 		}
 
-
+		bool useSpecularShader = false;
+		float shinyness = 35.0f;
 		std::vector<std::unique_ptr<Bindable>> bindables;
+
+		if (mesh.mMaterialIndex >= 0)
+		{
+			using namespace std::literals::string_literals;
+
+			const aiMaterial& material = *pMaterials[mesh.mMaterialIndex];
+			aiString textureFileName;
+
+			material.GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName);
+
+			std::string fullTextureName = "Models\\nano_textured\\"s + textureFileName.C_Str();
+			bindables.push_back(std::make_unique<Texture>(gfx, std::wstring(fullTextureName.begin(), fullTextureName.end()), 0));
+
+			if (material.GetTexture(aiTextureType_SPECULAR, 0, &textureFileName) == aiReturn_SUCCESS)
+			{
+				fullTextureName = "Models\\nano_textured\\"s + textureFileName.C_Str();
+				bindables.push_back(std::make_unique<Texture>(gfx, std::wstring(fullTextureName.begin(), fullTextureName.end()), 1));
+				useSpecularShader = true;
+			}
+			else
+			{
+				material.Get(AI_MATKEY_SHININESS, shinyness);
+			}
+
+			bindables.push_back(std::make_unique<SamplerState>(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
+		}
 
 		bindables.push_back(std::make_unique<VertexBuffer>(gfx, vertexBuffer));
 
@@ -76,21 +105,27 @@ public:
 		ID3DBlob* pBlob = pVertexShader->GetByteCode();
 		bindables.push_back(std::move(pVertexShader));
 
+		if (useSpecularShader)
+		{
+			bindables.push_back(std::make_unique<PixelShader>(gfx, L"PixelPhongLightningSpecularShader.cso"));
+		}
+		else
+		{
+			bindables.push_back(std::make_unique<PixelShader>(gfx, L"PixelPhongLightningShader.cso"));
 
-		bindables.push_back(std::make_unique<PixelShader>(gfx, L"PixelPhongLightningShader.cso"));
+			struct ModelMaterial {
+				float specularIntensity = 0.8f;
+				float specularPower;
+				float padding[2];
+			}material;
+
+			material.specularPower = shinyness;
+			bindables.push_back(std::make_unique<PixelConstantBuffer<ModelMaterial>>(gfx, material, 1));
+		}
 
 		bindables.push_back(std::make_unique<IndexBuffer>(gfx, indices));
 
 		bindables.push_back(std::make_unique<InputLayout>(gfx, vertexBuffer.GetLayout().GetDirectXLayout(), pBlob));
-
-		struct ModelMaterial {
-			alignas(16) DirectX::XMFLOAT3 color = {0.0f, 1.0f, 1.0f};
-			float specularIntensity = 1.0f;
-			float specularPower = 70.0f;
-			float padding[2] = {};
-		}material;
-
-		bindables.push_back(std::make_unique<PixelConstantBuffer<ModelMaterial>>(gfx, material, 1));
 
 		return std::make_unique<Mesh>(gfx, std::move(bindables));
 	}

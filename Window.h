@@ -15,7 +15,8 @@ class Window
  public:
 	HWND GetHWnd() noexcept;
 	BOOL ProcessMessage();
-
+	void ShowCursor(bool show);
+	void LockCursor(bool lock);
 public:
 	UINT32 GetWidth();
 	UINT32 GetHeight();
@@ -44,9 +45,12 @@ public:
 	LRESULT HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
  private:
-	UINT32 sWidth;
-	UINT32 sHeight;
-	HWND shWnd;
+	UINT32 m_width;
+	UINT32 m_height;
+	HWND m_hWnd;
+	BOOL m_cursorShowing = true;
+	BOOL m_cursorLocked = false;
+	std::vector<char> m_rawInputDataBuffer = {};
 
  public:
 	InputSystem Input;

@@ -44,23 +44,24 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept
 
 HWND Window::GetHWnd() noexcept
 {
-	return Window::shWnd;
+	return Window::m_hWnd;
 }
 
 UINT32 Window::GetWidth()
 {
-	return Window::sWidth;
+	return Window::m_width;
 }
 
 UINT32 Window::GetHeight()
 {
-	return Window::sHeight;
+	return Window::m_height;
 }
 
 BOOL Window::ProcessMessage()
 {
 	this->Input.Key.clearList(this->Input.m_releasedKeysList); //i know its weird, but i really want to use those and have it work only once
 	this->Input.Key.clearList(this->Input.m_pressedKeysList);
+	this->Input.Mouse.HandleRawInput(NULL, NULL);
 
 	MSG msg;
 
@@ -77,10 +78,41 @@ BOOL Window::ProcessMessage()
 
 	return TRUE;
 }
+
+void Window::ShowCursor(bool show)
+{
+	if (m_cursorShowing == show)
+		return;
+
+	m_cursorShowing = show;
+
+	if(show)
+		while (::ShowCursor(show) < 0);
+	else
+		while (::ShowCursor(show) >= 0);
+}
+
+void Window::LockCursor(bool lock)
+{
+	m_cursorLocked = lock;
+
+	if (lock)
+	{
+		RECT clientSpace;
+		GetClientRect(m_hWnd, &clientSpace);
+		MapWindowPoints(m_hWnd, NULL, reinterpret_cast<POINT*>(&clientSpace), 2);
+		ClipCursor(&clientSpace);
+	}
+	else
+	{
+		ClipCursor(nullptr);
+	}
+}
+
 //! Window
 
 Window::Window(UINT32 width, UINT32 height, const char* name)
-	: sHeight(height), sWidth(width)
+	: m_height(height), m_width(width)
 {
 	RECT rWindow = { NULL };
 
@@ -93,7 +125,7 @@ Window::Window(UINT32 width, UINT32 height, const char* name)
 	if (AdjustWindowRect(&rWindow, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
 		THROW_LAST_ERROR;
 
-	this->shWnd = CreateWindowA(
+	this->m_hWnd = CreateWindowA(
 		WindowClass::GetName(), name,
 		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
 		CW_USEDEFAULT, CW_USEDEFAULT, // XY
@@ -103,21 +135,32 @@ Window::Window(UINT32 width, UINT32 height, const char* name)
 		WindowClass::GetInstance(),
 		this
 	);
-	if (this->shWnd == NULL)
+	if (this->m_hWnd == NULL)
 		THROW_LAST_ERROR;
 
 	this->Graphics.SetResolution(width, height);
-	this->Graphics.Initialize(shWnd);
+	this->Graphics.Initialize(m_hWnd);
 
-	ShowWindow(shWnd, SW_SHOW);
+	ShowWindow(m_hWnd, SW_SHOW);
 
-	ImGui_ImplWin32_Init(shWnd);
+	//initializing imgui
+	ImGui_ImplWin32_Init(m_hWnd);
+
+	//registering mouse raw input device
+	RAWINPUTDEVICE rawInputDevice;
+	rawInputDevice.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+	rawInputDevice.usUsage = 0x02; // HID_USAGE_GENERIC_MOUSE
+	rawInputDevice.dwFlags = 0;
+	rawInputDevice.hwndTarget = m_hWnd;
+
+	if (!RegisterRawInputDevices(&rawInputDevice, 1, sizeof(rawInputDevice)))
+		THROW_LAST_ERROR;
 }
 
 Window::~Window()
 {
 	ImGui_ImplWin32_Shutdown();
-	DestroyWindow(shWnd);
+	DestroyWindow(m_hWnd);
 }
 
 LRESULT WINAPI Window::HandleStartMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -170,7 +213,6 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 
-
 	///*          Keyboard stuff          *///
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
@@ -218,15 +260,16 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{		
 			if (imguiio.WantCaptureKeyboard)
 				break;
+
 			this->Input.Key.m_charBuffer += static_cast<char>(wParam);
 			break;
 		}
 
-		///*          Mouse stuff          *///
+	///*          Mouse stuff          *///
 	case WM_MOUSEMOVE:
 		{
-			Vector2i mousePos = { (UINT32)(short)LOWORD(lParam) ,(UINT32)(short)HIWORD(lParam) };
-			if (mousePos.x < this->sWidth && mousePos.x >= 0 && mousePos.y < this->sHeight && mousePos.y >= 0)
+			Vector2uint mousePos = { (UINT32)(short)LOWORD(lParam) ,(UINT32)(short)HIWORD(lParam) };
+			if (mousePos.x < this->m_width && mousePos.x >= 0 && mousePos.y < this->m_height && mousePos.y >= 0)
 			{
 				this->Input.Mouse.m_position.x = mousePos.x;
 				this->Input.Mouse.m_position.y = mousePos.y;
@@ -264,6 +307,11 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_LBUTTONDOWN:
 		{
+			if (m_cursorShowing)
+				ShowCursor(true);
+			if (m_cursorLocked)
+				LockCursor(true);
+
 			this->Input.Mouse.m_MouseButtonChanged(KEY_LMOUSEBUTTON, TRUE, lParam);
 			break;
 		}
@@ -283,7 +331,40 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			this->Input.Mouse.m_MouseButtonChanged(KEY_MMOUSEBUTTON, FALSE, lParam);
 			break;
 		}
+	case WM_INPUT:
+		{
+			UINT32 size;
 
+			if (GetRawInputData(
+				reinterpret_cast<HRAWINPUT>(lParam),
+				RID_INPUT,
+				nullptr,
+				&size,
+				sizeof(RAWINPUTHEADER)) == -1) 
+			{
+				break;
+			};
+
+			m_rawInputDataBuffer.resize(size);
+
+			if (GetRawInputData(
+				reinterpret_cast<HRAWINPUT>(lParam),
+				RID_INPUT,
+				m_rawInputDataBuffer.data(),
+				&size,
+				sizeof(RAWINPUTHEADER)) == -1)
+			{
+				break;
+			};
+
+			const RAWINPUT& rawInput = reinterpret_cast<const RAWINPUT&>(*m_rawInputDataBuffer.data());
+
+			if (rawInput.header.dwType == RIM_TYPEMOUSE &&
+				(rawInput.data.mouse.lLastX != 0 || rawInput.data.mouse.lLastY != 0))
+			{
+				this->Input.Mouse.HandleRawInput(rawInput.data.mouse.lLastX, rawInput.data.mouse.lLastY);
+			}
+		}
 	}
 
 

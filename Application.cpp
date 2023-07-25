@@ -28,7 +28,7 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 
 BOOL Application::Initiate()
 {
- 	window.Input.Key.allowRepeating(false);
+ 	window.Input.Key.allowRepeating(TRUE);
 
 	while (true)
 	{
@@ -118,8 +118,31 @@ void Application::DoFrame()
 		*/
 
 	FLOAT DeltaTime = timer.Mark();
-	window.Graphics.BeginFrame({ 0,0,0,1 });
 
+	DirectX::XMFLOAT3 movingDir = {};
+	if (window.Input.Key.GetKeyState(KEY_W))
+		movingDir.z += DeltaTime;
+	if (window.Input.Key.GetKeyState(KEY_S))
+		movingDir.z -= DeltaTime;
+	if (window.Input.Key.GetKeyState(KEY_E))
+		movingDir.x += DeltaTime;
+	if (window.Input.Key.GetKeyState(KEY_A))
+		movingDir.x -= DeltaTime;
+	if (window.Input.Key.GetKeyState(VK_SPACE))
+		movingDir.y += DeltaTime;
+	if (window.Input.Key.GetKeyState(VK_CONTROL))
+		movingDir.y -= DeltaTime;
+
+	if (movingDir.x != 0 || movingDir.y != 0 || movingDir.z != 0)
+		window.Graphics.camera.Move(movingDir);
+
+	Vector2int lookOffset = window.Input.Mouse.GetRawInputPos();
+
+	if(cursorLocked && !cursorShowing)
+		if (lookOffset.x != 0 || lookOffset.y != 0)
+			window.Graphics.camera.Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f });
+
+	window.Graphics.BeginFrame({ 0,0,0,1 });
 
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
@@ -128,10 +151,15 @@ void Application::DoFrame()
 
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
-		if(window.Graphics.isImGUIVisible())
-			window.Graphics.ShowImGUI(false);
-		else
-			window.Graphics.ShowImGUI(true);
+		window.Graphics.ShowImGUI(!window.Graphics.isImGUIVisible());
+
+	if (window.Input.Key.GetKeyDown(VK_ESCAPE))
+	{
+		cursorLocked = cursorShowing;
+		cursorShowing = !cursorShowing;
+		window.LockCursor(cursorLocked);
+		window.ShowCursor(cursorShowing);
+	}
 
 	window.Graphics.camera.CreateControlMenu();
 	pointLight.SpawnControlWindow();

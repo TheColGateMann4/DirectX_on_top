@@ -1,68 +1,92 @@
-#include "CameraView.h"
+#include "CameraView.h" 
 #include "imgui/imgui.h"
+#include <algorithm>
+#include <random>
+#include <DirectXMath.h>
 
 void CameraView::SetProjection(DirectX::XMMATRIX projection)
 {
-	this->m_projection = projection;
+	m_projection = projection;
 }
 
 DirectX::XMMATRIX CameraView::GetCamera()
 {
-	const auto position = DirectX::XMVector3Transform(
-		DirectX::XMVectorSet(0.0f, 0.0f, -r, 0.0f),
-		DirectX::XMMatrixRotationRollPitchYaw(phi, -theta, 0.0f)
-	);
-	const auto projection = DirectX::XMMatrixLookAtLH(
-		position, DirectX::XMVectorZero(),
-		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
+	const DirectX::XMVECTOR forwardVector = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
+	const DirectX::XMVECTOR lookVector = DirectX::XMVector3Transform(forwardVector,
+		DirectX::XMMatrixRotationRollPitchYaw(m_view.y, m_view.x, 0.0f)
 	);
 
-	return projection * DirectX::XMMatrixRotationRollPitchYaw(
-		pitch, -yaw, roll
-	);
+	const DirectX::XMVECTOR cameraPosition = DirectX::XMLoadFloat3(&m_position);
+	const DirectX::XMVECTOR lookPosition = DirectX::XMVectorAdd(cameraPosition, lookVector);
+	const DirectX::XMVECTOR upwardsVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	return DirectX::XMMatrixLookAtLH(cameraPosition, lookPosition, upwardsVector);
 }
 
 DirectX::XMMATRIX CameraView::GetProjection()
 {
-	return this->m_projection;
+	return m_projection;
+}
+
+void CameraView::Move(DirectX::XMFLOAT3 moveoffset)
+{
+	DirectX::XMFLOAT3 movedOffsetRelativeToRotation = {};
+
+	DirectX::XMStoreFloat3(
+		&movedOffsetRelativeToRotation,
+		DirectX::XMVector3Transform(
+			DirectX::XMLoadFloat3(&moveoffset),
+			DirectX::XMMatrixRotationRollPitchYaw(m_view.y, m_view.x, m_view.z) *
+			DirectX::XMMatrixScaling(m_movespeed, m_movespeed, m_movespeed)
+			)
+		);
+
+	m_position.x += movedOffsetRelativeToRotation.x;
+	m_position.y += movedOffsetRelativeToRotation.y;
+	m_position.z += movedOffsetRelativeToRotation.z;
+}
+
+void CameraView::Look(DirectX::XMFLOAT3 lookoffset)
+{
+	float halfRotation = 0.995f * (std::_Pi / 2);
+
+	m_view.x = WrapAngle(m_view.x + lookoffset.x * m_sensivity, std::_Pi);					   //pitch
+	m_view.y = std::clamp(m_view.y + lookoffset.y * m_sensivity, -halfRotation, halfRotation); //yaw
+	m_view.z = WrapAngle(m_view.z + lookoffset.z * m_sensivity, std::_Pi);					   //roll
 }
 
 void CameraView::Reset()
 {
-	r = 20.0f;
-	theta = 0.0f;
-	phi = 0.0f;
-	chi = 0.0f;
-	roll = 0.0f;
-	pitch = 0.0f;
-	yaw = 0.0f;
+	m_position = { 0.0f, 3.0f, -12.0f };
+	m_view = {};
 }
 void CameraView::CreateControlMenu()
 {
 	if (ImGui::Begin("Camera Control"))
 	{
 		ImGui::Text("Positione");
-		ImGui::SliderFloat("R", &r, 0.1f, 80.0f, "%.1f");
-		ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
-		ImGui::SliderAngle("Phi", &phi, -89.0, 89.0f);
+		ImGui::SliderFloat("camera X", &m_position.x, -80.0, 80.0f, "%.1f");
+		ImGui::SliderFloat("camera Y", &m_position.y, -80.0, 80.0f, "%.1f");
+		ImGui::SliderFloat("camera Z", &m_position.z, -80.0, 80.0f, "%.1f");
 
 		ImGui::Text("Orientatione");
-		ImGui::SliderAngle("Roll", &roll, -180.0f, 180.0f);
-		ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
-		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
+		ImGui::SliderAngle("camera Yaw", &m_view.x, -180.0f, 180.0f, "%.1f");
+		ImGui::SliderAngle("camera Pitch", &m_view.y, 0.995 * -90.0f, 0.995 * 90.0f, "%.1f");
+		ImGui::SliderAngle("camera Roll", &m_view.z, -180.0f, 180.0f, "%.1f");
 
 		if (ImGui::Button("Reset"))
 		{
 			this->Reset();
 		}
-
-// 		ImGui::Text("Select Model");
-// 
-// 		if (ImGui::Button(models[curritem]))
-// 			toggle = !toggle;
-// 
-// 		if(toggle)
-// 			ImGui::ListBox(" ", &this->curritem, models, 4, 4);
 	}
 	ImGui::End();
+}
+
+float CameraView::WrapAngle(float angle, float value)
+{
+	if (angle < value && angle > -value)
+		return angle;
+
+	float absoluteAngle = std::abs(angle);
+	return ((absoluteAngle / value) - std::floor(absoluteAngle / value)) * value + (value * ((absoluteAngle != angle) ? 1 : -1));
 }

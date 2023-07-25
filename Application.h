@@ -26,9 +26,12 @@ private:
 	UINT32 m_height;
 	const char* m_name;
 
+	bool cursorLocked = false;
+	bool cursorShowing = true;
+
 	//scene
 private:
 	PointLight pointLight;
-	Model model_{ window.Graphics, "boxy.gltf" };
+	Model model_{ window.Graphics, "Models\\nano_textured\\nanosuit.obj" };
 };
 
