@@ -1,15 +1,13 @@
 #pragma once
 #include "Shape.h"
 #include "Graphics.h"
-#include "StaticBindables.h"
 
-class PointLightModel : public StaticBindables<PointLightModel>
+class PointLightModel : public Shape
 {
 public:
 	PointLightModel(GFX& gfx, float radius);
 
 public:
-	VOID Update(FLOAT DeltaTime) noexcept override;
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 public:

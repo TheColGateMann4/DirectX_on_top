@@ -169,10 +169,10 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="BindableClassesMacro.h" />
+    <ClInclude Include="BindableList.h" />
     <ClInclude Include="CameraView.h" />
     <ClInclude Include="ConstantBuffers.h" />
     <ClInclude Include="Cube.h" />
-    <ClInclude Include="CustomShape.h" />
     <ClInclude Include="DXError.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ErrorMacros.h" />
@@ -205,7 +205,6 @@
     <ClInclude Include="Sheet.h" />
     <ClInclude Include="SimpleMesh.h" />
     <ClInclude Include="Sphere.h" />
-    <ClInclude Include="StaticBindables.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Topology.h" />
@@ -220,7 +219,6 @@
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="CameraView.cpp" />
     <ClCompile Include="Cube.cpp" />
-    <ClCompile Include="CustomShape.cpp" />
     <ClCompile Include="DXError.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
     <ClCompile Include="ErrorHandling.cpp" />

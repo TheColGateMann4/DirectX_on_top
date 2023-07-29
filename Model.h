@@ -3,6 +3,7 @@
 #include "Node.h"
 #include "Bindable.h"
 #include "BindableClassesMacro.h"
+#include "BindableList.h"
 #include "Vertex.h"
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
@@ -71,8 +72,8 @@ public:
 
 		bool useSpecularShader = false;
 		float shinyness = 35.0f;
-		std::vector<std::unique_ptr<Bindable>> bindables;
-
+		std::vector<std::shared_ptr<Bindable>> bindables;
+		std::string modelsPath = "Models\\nano_textured\\";
 		if (mesh.mMaterialIndex >= 0)
 		{
 			using namespace std::literals::string_literals;
@@ -82,13 +83,11 @@ public:
 
 			material.GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName);
 
-			std::string fullTextureName = "Models\\nano_textured\\"s + textureFileName.C_Str();
-			bindables.push_back(std::make_unique<Texture>(gfx, std::wstring(fullTextureName.begin(), fullTextureName.end()), 0));
+			bindables.push_back(Texture::GetBindable(gfx, modelsPath + textureFileName.C_Str(), 0));
 
 			if (material.GetTexture(aiTextureType_SPECULAR, 0, &textureFileName) == aiReturn_SUCCESS)
 			{
-				fullTextureName = "Models\\nano_textured\\"s + textureFileName.C_Str();
-				bindables.push_back(std::make_unique<Texture>(gfx, std::wstring(fullTextureName.begin(), fullTextureName.end()), 1));
+				bindables.push_back(Texture::GetBindable(gfx, modelsPath + textureFileName.C_Str(), 1));
 				useSpecularShader = true;
 			}
 			else
@@ -96,22 +95,26 @@ public:
 				material.Get(AI_MATKEY_SHININESS, shinyness);
 			}
 
-			bindables.push_back(std::make_unique<SamplerState>(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
+			bindables.push_back(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
 		}
 
-		bindables.push_back(std::make_unique<VertexBuffer>(gfx, vertexBuffer));
+		std::string bufferUID = modelsPath + mesh.mName.C_Str();
 
-		std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexPhongLightningShader.cso");
+		bindables.push_back(VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer));
+
+		bindables.push_back(IndexBuffer::GetBindable(gfx, bufferUID, indices));
+
+		std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VertexPhongLightningShader.cso");
 		ID3DBlob* pBlob = pVertexShader->GetByteCode();
 		bindables.push_back(std::move(pVertexShader));
 
 		if (useSpecularShader)
 		{
-			bindables.push_back(std::make_unique<PixelShader>(gfx, L"PixelPhongLightningSpecularShader.cso"));
+			bindables.push_back(PixelShader::GetBindable(gfx, "PixelPhongLightningSpecularShader.cso"));
 		}
 		else
 		{
-			bindables.push_back(std::make_unique<PixelShader>(gfx, L"PixelPhongLightningShader.cso"));
+			bindables.push_back(PixelShader::GetBindable(gfx, "PixelPhongLightningShader.cso"));
 
 			struct ModelMaterial {
 				float specularIntensity = 0.8f;
@@ -120,12 +123,10 @@ public:
 			}material;
 
 			material.specularPower = shinyness;
-			bindables.push_back(std::make_unique<PixelConstantBuffer<ModelMaterial>>(gfx, material, 1));
+			bindables.push_back(PixelConstantBuffer<ModelMaterial>::GetBindable(gfx, material, 1));
 		}
 
-		bindables.push_back(std::make_unique<IndexBuffer>(gfx, indices));
-
-		bindables.push_back(std::make_unique<InputLayout>(gfx, vertexBuffer.GetLayout().GetDirectXLayout(), pBlob));
+		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 
 		return std::make_unique<Mesh>(gfx, std::move(bindables));
 	}

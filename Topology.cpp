@@ -1,6 +1,6 @@
 #include "Topology.h"
 
-Topology::Topology(D3D11_PRIMITIVE_TOPOLOGY topologyType)
+Topology::Topology(GFX& gfx, D3D11_PRIMITIVE_TOPOLOGY topologyType)
 	: m_topologyType(topologyType)
 {
 

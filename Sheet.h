@@ -1,12 +1,11 @@
 #pragma once
 #include "Shape.h"
 #include "Graphics.h"
-#include "StaticBindables.h"
 #include "SimpleMesh.h"
 #include "Time.h"
 #include <random>
 
-class Sheet : public StaticBindables<Sheet>
+class Sheet : public Shape
 {
 public:
 	Sheet(GFX& gfx,	const UINT32 TesselationRatio = 1, const UINT32 TextureRatio = 1);

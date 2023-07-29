@@ -1,11 +1,10 @@
 #pragma once
 #include "Shape.h"
 #include "Graphics.h"
-#include "StaticBindables.h"
 #include "SimpleMesh.h"
 #include <random>
 
-class Pyramid : public StaticBindables<Shape>
+class Pyramid : public Shape
 {
 public:
 	Pyramid(GFX& gfx,
@@ -17,7 +16,6 @@ public:
 
 
 public:
-	VOID Update(FLOAT DeltaTime) noexcept override;
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 private:

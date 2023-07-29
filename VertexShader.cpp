@@ -1,7 +1,7 @@
 #include "VertexShader.h"
 #include <d3dcompiler.h>
 
-VertexShader::VertexShader(GFX& gfx, const std::wstring& path)
+VertexShader::VertexShader(GFX& gfx, const std::string& path)
 {
 	HRESULT hr;
 
@@ -9,7 +9,7 @@ VertexShader::VertexShader(GFX& gfx, const std::wstring& path)
 	(
 		D3DReadFileToBlob
 		(
-			path.c_str(), &pBlob
+			std::wstring(path.begin(), path.end()).c_str(), &pBlob
 		)
 	);
 
@@ -17,10 +17,34 @@ VertexShader::VertexShader(GFX& gfx, const std::wstring& path)
 	(
 		GetDevice(gfx)->CreateVertexShader
 		(
-			(VertexShader::pBlob->GetBufferPointer()),
-			(VertexShader::pBlob->GetBufferSize()),
+			pBlob->GetBufferPointer(),
+			pBlob->GetBufferSize(),
 			NULL,
-			&(VertexShader::pVertexShader)
+			&pVertexShader
+		)
+	);
+}
+
+VertexShader::VertexShader(GFX& gfx, const std::string&& path)
+{
+	HRESULT hr;
+
+	THROW_GFX_IF_FAILED
+	(
+		D3DReadFileToBlob
+		(
+			std::wstring(path.begin(), path.end()).c_str(), &pBlob
+		)
+	);
+
+	THROW_GFX_IF_FAILED
+	(
+		GetDevice(gfx)->CreateVertexShader
+		(
+			pBlob->GetBufferPointer(),
+			pBlob->GetBufferSize(),
+			NULL,
+			&pVertexShader
 		)
 	);
 }
@@ -32,5 +56,5 @@ VOID VertexShader::Bind(GFX& gfx) noexcept
 
 ID3DBlob* VertexShader::GetByteCode() const noexcept
 {
-	return VertexShader::pBlob.Get();
+	return pBlob.Get();
 }

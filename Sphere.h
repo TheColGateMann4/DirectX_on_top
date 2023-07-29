@@ -2,10 +2,9 @@
 #include "Shape.h"
 #include "SimpleMesh.h"
 #include "Graphics.h"
-#include "StaticBindables.h"
 #include <random>
 
-class Sphere : public StaticBindables<Sphere>
+class Sphere : public Shape
 {
 public:
 	Sphere(GFX& gfx, std::mt19937& rng,
@@ -17,7 +16,6 @@ public:
 		std::uniform_int_distribution<UINT32>& latdist);
 
 public:
-	VOID Update(FLOAT DeltaTime) noexcept override;
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 public:

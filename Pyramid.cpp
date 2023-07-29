@@ -18,64 +18,57 @@ Pyramid::Pyramid(GFX& gfx, std::mt19937& rng,
 	theta(adist(rng)),
 	phi(adist(rng))
 {
-	if (!IsStaticInitialized())
+	struct Vertex
 	{
-		struct Vertex
+		struct
 		{
-			struct
-			{
-				FLOAT x, y, z;
-			} pos;
-		};
-		SimpleMesh<Vertex> PyramidModel = GetMesh<Vertex>();
+			FLOAT x, y, z;
+		} pos;
+	};
+	SimpleMesh<Vertex> PyramidModel = GetMesh<Vertex>();
 
-		AddStaticBind(std::make_unique<VertexBuffer>(gfx, PyramidModel.m_vertices));
+	AddBindable(std::make_unique<VertexBuffer>(gfx, PyramidModel.m_vertices));
 
-		std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
-		ID3DBlob* pBlob = pVertexShader->GetByteCode();
-		AddStaticBind(std::move(pVertexShader));
+	std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, "VertexShader.cso");
+	ID3DBlob* pBlob = pVertexShader->GetByteCode();
+	AddBindable(std::move(pVertexShader));
 
 
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
+	AddBindable(std::make_unique<PixelShader>(gfx, "PixelShader.cso"));
 
-		AddStaticIndexBufferBind(std::make_unique<IndexBuffer>(gfx, PyramidModel.m_indices));
-
-
-		struct ConstantBufferColor
-		{
-			struct
-			{
-				float r, g, b, a;
-			}face_colors[6];
-		};
-
-		const ConstantBufferColor constbufferColor
-		{
-			{
-				{ 1.0,0.0,1.0 },
-				{ 1.0,0.0,0.0 },
-				{ 0.0,1.0,0.0 },
-				{ 0.0,0.0,1.0 },
-				{ 1.0,1.0,0.0 },
-				{ 0.0,1.0,1.0 },
-			}
-		};
-		AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBufferColor>>(gfx, constbufferColor, 0));
+	AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, PyramidModel.m_indices));
 
 
-		const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
-		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		};
-
-		AddStaticBind(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
-
-		AddStaticBind(std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	}
-	else
+	struct ConstantBufferColor
 	{
-		GetIndexBufferFromVector();
-	}
+		struct
+		{
+			float r, g, b, a;
+		}face_colors[6];
+	};
+
+	const ConstantBufferColor constbufferColor
+	{
+		{
+			{ 1.0,0.0,1.0 },
+			{ 1.0,0.0,0.0 },
+			{ 0.0,1.0,0.0 },
+			{ 0.0,0.0,1.0 },
+			{ 1.0,1.0,0.0 },
+			{ 0.0,1.0,1.0 },
+		}
+	};
+	AddBindable(std::make_unique<PixelConstantBuffer<ConstantBufferColor>>(gfx, constbufferColor, 0));
+
+
+	const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+
+	AddBindable(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
+
+	AddBindable(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
 }
@@ -106,18 +99,6 @@ static SimpleMesh<T> Pyramid::GetMesh()
 	};
 
 	return { std::move(vertices), std::move(indices) };
-}
-
-
-VOID Pyramid::Update(FLOAT DeltaTime) noexcept
-{
-	roll += droll * DeltaTime;
-	pitch += dpitch * DeltaTime;
-	yaw += dyaw * DeltaTime;
-
-	theta += dtheta * DeltaTime;
-	phi += dphi * DeltaTime;
-	chi += dchi * DeltaTime;
 }
 
 DirectX::XMMATRIX Pyramid::GetTranformMatrix() const noexcept

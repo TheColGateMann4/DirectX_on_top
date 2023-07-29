@@ -4,6 +4,7 @@ cbuffer lightBuffer : register(b0)
     
     float3 ambient;
     float3 diffuseColor;
+    float3 lightColor;
     
     float diffuseIntensity;
     float attenuationConst;

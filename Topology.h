@@ -1,12 +1,35 @@
 #pragma once
 #include "Includes.h"
 #include "Bindable.h"
+#include "BindableList.h"
 
 class Topology : public Bindable
 {
 public:
-	Topology(D3D11_PRIMITIVE_TOPOLOGY topologyType);
+	Topology(GFX& gfx, D3D11_PRIMITIVE_TOPOLOGY topologyType);
 	VOID Bind(GFX& gfx) noexcept override;
+
+public:
+	static std::shared_ptr<Topology> GetBindable(GFX& gfx, D3D11_PRIMITIVE_TOPOLOGY topologyType)
+	{
+		return BindableList::GetBindable<Topology>(gfx, topologyType);
+	}
+
+	std::string GetUID() const noexcept override
+	{
+		return GenerateUID(m_topologyType);
+	};
+
+	static std::string GetUID(D3D11_PRIMITIVE_TOPOLOGY topologyType) noexcept
+	{
+		return GenerateUID(topologyType);
+	};
+
+private:
+	static std::string GenerateUID(D3D11_PRIMITIVE_TOPOLOGY topologyType)
+	{
+		return std::to_string(topologyType);
+	}
 
 protected:
 	D3D11_PRIMITIVE_TOPOLOGY m_topologyType;

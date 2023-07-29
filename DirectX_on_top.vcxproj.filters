@@ -108,9 +108,6 @@
     <ClInclude Include="Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StaticBindables.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -162,9 +159,6 @@
     <ClInclude Include="CameraView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CustomShape.h">
-      <Filter>Header Files\Shapes</Filter>
-    </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -181,6 +175,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SimpleMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BindableList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -277,9 +274,6 @@
     </ClCompile>
     <ClCompile Include="CameraView.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomShape.cpp">
-      <Filter>Source Files\Shapes</Filter>
     </ClCompile>
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>

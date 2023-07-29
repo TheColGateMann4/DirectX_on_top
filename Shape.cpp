@@ -10,26 +10,23 @@ VOID Shape::Draw(GFX& gfx, float time) const
 {
 	for (auto& b : binds)
 	{
-		//if (PSConstBuffer* pcb = dynamic_cast<PSConstBuffer*>(b.get()))
-		//	pcb->Bind(gfx, time);
-		//else
-			b->Bind(gfx);
-	}
-	for (auto& b : GetStaticBindables())
-	{
 		b->Bind(gfx);
 	}
 	gfx.DrawIndexed(pIndexBuffer->GetCount());
 }
 
-VOID Shape::AddBindable(std::unique_ptr<Bindable> bind)
+VOID Shape::AddBindable(std::shared_ptr<Bindable> bind) noexcept(!IS_DEBUG)
 {
-	assert("*Must* use AddIndexBuffer to bind Index Buffer" && typeid(bind) != typeid(IndexBuffer));
+	if (typeid(bind.get()) == typeid(IndexBuffer))
+	{
+		assert("Attempting to bind Index Buffer second time" && pIndexBuffer == NULL);
+		pIndexBuffer = static_cast<const IndexBuffer*>(bind.get());
+	}
 
 	binds.push_back(std::move(bind));
 }
 
-VOID Shape::AddIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer) noexcept
+VOID Shape::AddIndexBuffer(std::shared_ptr<IndexBuffer> indexBuffer) noexcept(!IS_DEBUG)
 {
 	assert("Attempting to bind Index Buffer second time" && pIndexBuffer == NULL);
 

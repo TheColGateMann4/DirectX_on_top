@@ -1,23 +1,26 @@
 #include "Texture.h"
 #include <DirectXTex.h>
 
-Texture::Texture(GFX& gfx, const std::wstring imagePath, UINT32 slot)
-	: m_slot(slot)
+Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot)
+	: 
+	m_slot(slot),
+	m_imagePath(imagePath)
 {
 	HRESULT hr;
 	using namespace DirectX;
 
 	TexMetadata texMetaData = {};
 	ScratchImage* textures = new ScratchImage();
+	std::wstring wImagePath = std::wstring(imagePath.begin(), imagePath.end());
 
 	THROW_GFX_IF_FAILED(GetMetadataFromWICFile(
-		imagePath.c_str(),
+		wImagePath.c_str(),
 		WIC_FLAGS_ALL_FRAMES,
 		texMetaData
 	));
 
 	THROW_GFX_IF_FAILED(LoadFromWICFile(
-		imagePath.c_str(),
+		wImagePath.c_str(),
 		WIC_FLAGS_ALL_FRAMES,
 		&texMetaData,
 		*textures

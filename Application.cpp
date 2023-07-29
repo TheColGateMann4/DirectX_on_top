@@ -4,7 +4,6 @@
 #include "Cube.h"
 #include "Pyramid.h"
 #include "Sheet.h"
-#include "CustomShape.h"
 #include <random>
 
 #include "imgui/imgui.h";

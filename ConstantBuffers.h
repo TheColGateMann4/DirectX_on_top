@@ -1,5 +1,7 @@
 #pragma once
 #include "Bindable.h"
+#include "Vertex.h"
+#include "BindableList.h"
 
 template<class C>
 class ConstantBuffer : public Bindable
@@ -56,6 +58,7 @@ public:
 
 		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &(this->pConstantBuffer)));
 	}
+
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 	UINT32 m_slot;
@@ -74,6 +77,43 @@ public:
 	{
 		GetDeviceContext(gfx)->PSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 	}
+
+public:
+	static std::shared_ptr<PixelConstantBuffer> GetBindable(GFX& gfx, const C& consts, UINT32 slot)
+	{
+		return BindableList::GetBindable<PixelConstantBuffer>(gfx, consts, slot);
+	}
+	static std::shared_ptr<PixelConstantBuffer> GetBindable(GFX& gfx, UINT32 slot)
+	{
+		return BindableList::GetBindable<PixelConstantBuffer>(gfx, slot);
+	}
+
+	std::string GetUID() const noexcept override
+	{
+		return GenerateUID(m_slot);
+	};
+
+	static std::string GetUID(const C& consts, UINT32 slot) noexcept
+	{
+		return GenerateUID(slot);
+	};
+
+private:
+	static std::string GenerateUID(const C& consts, UINT32 slot)
+	{
+		GenerateUID(slot);
+	}
+	static std::string GenerateUID(UINT32 slot)
+	{
+		std::string result;
+		result += typeid(PixelConstantBuffer).name();
+		result += "@";
+		result += typeid(C).name();
+		result += "@";
+		result += std::to_string(slot);
+
+		return result;
+	}
 };
 
 template<class C>
@@ -88,5 +128,37 @@ public:
 	void Bind(GFX& gfx) noexcept override
 	{
 		GetDeviceContext(gfx)->VSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
+	}
+
+public:
+	static std::shared_ptr<VertexConstantBuffer> GetBindable(GFX& gfx, const C& consts, UINT32 slot)
+	{
+		return BindableList::GetBindable<VertexConstantBuffer>(gfx, consts, slot);
+	}
+	static std::shared_ptr<VertexConstantBuffer> GetBindable(GFX& gfx, UINT32 slot)
+	{
+		return BindableList::GetBindable<VertexConstantBuffer>(gfx, slot);
+	}
+
+	std::string GetUID() const noexcept override
+	{
+		return GenerateUID(m_slot);
+	};
+
+private:
+	static std::string GenerateUID(const C& consts, UINT32 slot)
+	{
+		GenerateUID(slot);
+	}
+	static std::string GenerateUID(UINT32 slot)
+	{
+		std::string result;
+		result += typeid(PixelConstantBuffer).name();
+		result += "@";
+		result += typeid(C).name();
+		result += "@";
+		result += std::to_string(slot);
+
+		return result;
 	}
 };

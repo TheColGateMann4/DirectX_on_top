@@ -3,5 +3,5 @@
 VOID VertexBuffer::Bind(GFX& gfx) noexcept
 {
 	const UINT offset = NULL;
-	VertexBuffer::GetDeviceContext(gfx)->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &(VertexBuffer::stride), &offset);
+	GetDeviceContext(gfx)->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &m_stride, &offset);
 }

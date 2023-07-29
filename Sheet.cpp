@@ -6,51 +6,45 @@
 
 Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 {
-	if (!IsStaticInitialized())
+	struct Vertex
 	{
-		struct Vertex
+		struct
 		{
-			struct
-			{
-				FLOAT x, y, z;
-			} position;
-			struct
-			{
-				FLOAT u, v;
-			} texture;
-		};
-		SimpleMesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio, TextureRatio);
-
-		AddStaticBind(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
-
-		std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexTextureShader.cso");
-		ID3DBlob* pBlob = pVertexShader->GetByteCode();
-		AddStaticBind(std::move(pVertexShader));
-
-
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelTextureShader.cso"));
-
-		AddStaticIndexBufferBind(std::make_unique<IndexBuffer>(gfx, TesselatedSheet.m_indices));
-
-		AddStaticBind(std::make_unique<SamplerState>(gfx, D3D11_TEXTURE_ADDRESS_WRAP)); //D3D11_TEXTURE_ADDRESS_WRAP
-
-		AddStaticBind(std::make_unique<Texture>(gfx, L"movingprimordial.gif"));
-
-
-		const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
+			FLOAT x, y, z;
+		} position;
+		struct
 		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
-		};
+			FLOAT u, v;
+		} texture;
+	};
+	SimpleMesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio, TextureRatio);
 
-		AddStaticBind(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
+	AddBindable(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
 
-		AddStaticBind(std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	}
-	else
+	std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, "VertexTextureShader.cso");
+	ID3DBlob* pBlob = pVertexShader->GetByteCode();
+	AddBindable(std::move(pVertexShader));
+
+
+	AddBindable(std::make_unique<PixelShader>(gfx, "PixelTextureShader.cso"));
+
+	AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, TesselatedSheet.m_indices));
+
+	AddBindable(std::make_unique<SamplerState>(gfx, D3D11_TEXTURE_ADDRESS_WRAP)); //D3D11_TEXTURE_ADDRESS_WRAP
+
+	AddBindable(std::make_unique<Texture>(gfx, "movingprimordial.gif"));
+
+
+	const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
 	{
-		GetIndexBufferFromVector();
-	}
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	AddBindable(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
+
+	AddBindable(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+
 	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
 	AddBindable(std::make_unique<PSConstBuffer>(gfx));
 }

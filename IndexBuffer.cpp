@@ -1,7 +1,8 @@
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer(GFX& gfx, const std::vector<UINT32> indices)
-	: m_count( (UINT32)indices.size())
+IndexBuffer::IndexBuffer(GFX& gfx, const std::string bufferUID, const std::vector<UINT32>& indices)
+	: m_count( (UINT32)indices.size()),
+	m_bufferUID(bufferUID)
 {
 	HRESULT hr;
 
@@ -16,12 +17,12 @@ IndexBuffer::IndexBuffer(GFX& gfx, const std::vector<UINT32> indices)
 	D3D11_SUBRESOURCE_DATA isd = {};
 	isd.pSysMem = indices.data();
 
-	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&ibd, &isd, &(IndexBuffer::pIndexBuffer)));
+	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&ibd, &isd, &pIndexBuffer));
 }
 
 VOID IndexBuffer::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->IASetIndexBuffer(IndexBuffer::pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
+	GetDeviceContext(gfx)->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 }
 
 UINT32 IndexBuffer::GetCount() const noexcept

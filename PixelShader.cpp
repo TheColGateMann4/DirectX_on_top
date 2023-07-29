@@ -1,16 +1,16 @@
 #include "PixelShader.h"
 #include <d3dcompiler.h>
 
-PixelShader::PixelShader(GFX& gfx, const std::wstring& path)
+PixelShader::PixelShader(GFX& gfx, const std::string path)
+	: m_path(path)
 {
 	HRESULT hr;
 	Microsoft::WRL::ComPtr<ID3DBlob> pBlob;
-
 	THROW_GFX_IF_FAILED
 	(
 		D3DReadFileToBlob
 		(
-			path.c_str(), &pBlob
+			std::wstring(path.begin(), path.end()).c_str(), &pBlob
 		)
 	);
 
@@ -21,7 +21,7 @@ PixelShader::PixelShader(GFX& gfx, const std::wstring& path)
 			pBlob->GetBufferPointer(),
 			pBlob->GetBufferSize(),
 			NULL,
-			&(PixelShader::pPixelShader)
+			&pPixelShader
 		)
 	);
 }

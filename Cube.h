@@ -1,11 +1,10 @@
 #pragma once
 #include "Shape.h"
 #include "Graphics.h"
-#include "StaticBindables.h"
 #include "SimpleMesh.h"
 #include <random>
 
-class Cube : public StaticBindables<Cube>
+class Cube : public Shape
 {
 public:
 	Cube(GFX& gfx,
@@ -17,7 +16,6 @@ public:
 
 
 public:
-	void Update(FLOAT DeltaTime) noexcept override;
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 private:

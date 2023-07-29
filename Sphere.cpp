@@ -20,46 +20,43 @@ Sphere::Sphere(GFX& gfx, std::mt19937& rng,
 	theta(adist(rng)),
 	phi(adist(rng))
 {
-	if (!IsStaticInitialized())
+	auto pVertexShader = std::make_unique<VertexShader>(gfx, "VertexShader.cso");
+	auto pBlob = pVertexShader->GetByteCode();
+	AddBindable(std::move(pVertexShader));
+
+	AddBindable(std::make_unique<PixelShader>(gfx, "PixelShader.cso"));
+
+	struct ConstantBufferColor
 	{
-		auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
-		auto pBlob = pVertexShader->GetByteCode();
-		AddStaticBind(std::move(pVertexShader));
-
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
-
-		struct ConstantBufferColor
+		struct
 		{
-			struct
-			{
-				float r, g, b, a;
-			}face_colors[8];
-		};
+			float r, g, b, a;
+		}face_colors[8];
+	};
 
-		const ConstantBufferColor constbufferColor
+	const ConstantBufferColor constbufferColor
+	{
 		{
-			{
-				{ 1.0f,1.0f,1.0f },
-				{ 1.0f,0.0f,0.0f },
-				{ 0.0f,1.0f,0.0f },
-				{ 1.0f,1.0f,0.0f },
-				{ 0.0f,0.0f,1.0f },
-				{ 1.0f,0.0f,1.0f },
-				{ 0.0f,1.0f,1.0f },
-				{ 0.0f,0.0f,0.0f },
-			}
-		};
-		AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBufferColor>>(gfx, constbufferColor, 0));
+			{ 1.0f,1.0f,1.0f },
+			{ 1.0f,0.0f,0.0f },
+			{ 0.0f,1.0f,0.0f },
+			{ 1.0f,1.0f,0.0f },
+			{ 0.0f,0.0f,1.0f },
+			{ 1.0f,0.0f,1.0f },
+			{ 0.0f,1.0f,1.0f },
+			{ 0.0f,0.0f,0.0f },
+		}
+	};
+	AddBindable(std::make_unique<PixelConstantBuffer<ConstantBufferColor>>(gfx, constbufferColor, 0));
 
-		const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
-		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
-		};
+	const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
 
-		AddStaticBind(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
+	AddBindable(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
 
-		AddStaticBind(std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	}
+	AddBindable(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 	struct Vertex
 	{
@@ -77,17 +74,6 @@ Sphere::Sphere(GFX& gfx, std::mt19937& rng,
 	AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, mesh.m_indices));
 
 	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
-}
-
-VOID Sphere::Update(FLOAT DeltaTime) noexcept
-{
-	pitch += dpitch * DeltaTime;
-	yaw += dyaw * DeltaTime;
-	roll += droll * DeltaTime;
-
-	theta += dtheta * DeltaTime;
-	phi += dphi * DeltaTime;
-	chi += dchi * DeltaTime;
 }
 
 DirectX::XMMATRIX Sphere::GetTranformMatrix() const noexcept

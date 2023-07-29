@@ -30,42 +30,49 @@ namespace DynamicVertex
 			using Systype = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* semantic = "Position";
+			static constexpr const char* code = "P2";
 		};
 		template<> struct Map<Position3D>
 		{
 			using Systype = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "Position";
+			static constexpr const char* code = "P3";
 		};
 		template<> struct Map<Texture2D>
 		{
 			using Systype = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* semantic = "TEXCOORD";
+			static constexpr const char* code = "T2";
 		};
 		template<> struct Map<Normal>
 		{
 			using Systype = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "NORMAL";
+			static constexpr const char* code = "N";
 		};
 		template<> struct Map<Float3Color>
 		{
 			using Systype = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "COLOR";
+			static constexpr const char* code = "C3";
 		};
 		template<> struct Map<Float4Color>
 		{
 			using Systype = DirectX::XMFLOAT4;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			static constexpr const char* semantic = "COLOR";
+			static constexpr const char* code = "C4";
 		};
 		template<> struct Map<RGBAColor>
 		{
 			using Systype = DirectX::XMFLOAT4;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R8G8B8A8_UNORM;
 			static constexpr const char* semantic = "COLOR";
+			static constexpr const char* code = "RGBA";
 		};
 
 
@@ -103,6 +110,29 @@ namespace DynamicVertex
 				}
 				assert("invalid element type" && false);
 				return { "INVALID", 0, DXGI_FORMAT_UNKNOWN, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
+			}
+
+			const char* GetCode() const noexcept
+			{
+				switch (m_type)
+				{
+					case Position2D:
+						return Map<Position2D>::code;
+					case Position3D:
+						return Map<Position3D>::code;
+					case Texture2D:
+						return Map<Texture2D>::code;
+					case Normal:
+						return Map<Normal>::code;
+					case Float3Color:
+						return Map<Float3Color>::code;
+					case Float4Color:
+						return Map<Float4Color>::code;
+					case RGBAColor:
+						return Map<RGBAColor>::code;
+				}
+				assert("Invalid Vertex Element Has Been Passed." && false);
+				return "Invalid";
 			}
 
 		private:
@@ -168,6 +198,11 @@ namespace DynamicVertex
 			return m_elements.empty() ? 0 : m_elements.back().GetNextOffset();
 		}
 
+		size_t GetStructureSize() const noexcept(!IS_DEBUG)
+		{
+			return GetByteSize() / GetElementCount();
+		}
+
 		size_t GetElementCount() const noexcept
 		{
 			return m_elements.size();
@@ -180,6 +215,16 @@ namespace DynamicVertex
 
 			for (auto& element : m_elements)
 				result.push_back(element.GetDirectXLayout());
+
+			return result;
+		}
+
+		std::string GetUID() const
+		{
+			std::string result = {};
+
+			for (auto& element : m_elements)
+				result += element.GetCode();
 
 			return result;
 		}
