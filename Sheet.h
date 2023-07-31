@@ -8,33 +8,31 @@
 class Sheet : public Shape
 {
 public:
-	Sheet(GFX& gfx,	const UINT32 TesselationRatio = 1, const UINT32 TextureRatio = 1);
+	Sheet(GFX& gfx, const UINT32 TesselationRatio = 1, const UINT32 TextureRatio = 1);
 
 public:
-	DirectX::XMMATRIX GetTranformMatrix() const noexcept;
-	VOID Update(FLOAT DeltaTime) noexcept;
+	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
+
+public:
+	void SpawnControlWindow(GFX& gfx);
 
 private:
-	template <class V>
-	SimpleMesh<V> GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio);
+	void UpdateConstBuffer(GFX& gfx);
+	void Reset();
 
 private:
-	// positional
+	SimpleMesh GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio);
 
-	FLOAT r = 17.0f;
-	FLOAT roll = (float)std::_Pi * 0.5f; //(float)std::_Pi * 0.125f
-	FLOAT pitch = (float)std::_Pi * 1.5f; //(float)std::_Pi * 2.0f
-	FLOAT yaw = 0.0f; //0.5f;
-	FLOAT theta = 0.0f;
-	FLOAT phi = (float)std::_Pi * 1.5f;
-	FLOAT chi = (float)std::_Pi * 1.0f;
+private:
+	DirectX::XMFLOAT3 m_position = {};
+	DirectX::XMFLOAT3 m_rotation = {};
+	DirectX::XMFLOAT3 m_scale = {10.0f, 10.0f, 10.0f};
 
-	// speed (delta/s)
-	FLOAT droll; //= 3.0f;
-	FLOAT dpitch;
-	FLOAT dyaw;
-	FLOAT dtheta;
-	FLOAT dphi;
-	FLOAT dchi;
+	struct ModelMaterial {
+		float specularIntensity = 0.8f;
+		float specularPower = 50.0f;
+		bool normalMapEnabled = true;
+		float padding[1];
+	}m_constBuffer;
 };
 

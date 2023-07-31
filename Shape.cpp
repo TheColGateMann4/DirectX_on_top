@@ -17,10 +17,10 @@ VOID Shape::Draw(GFX& gfx, float time) const
 
 VOID Shape::AddBindable(std::shared_ptr<Bindable> bind) noexcept(!IS_DEBUG)
 {
-	if (typeid(bind.get()) == typeid(IndexBuffer))
+	if (typeid(*bind) == typeid(IndexBuffer))
 	{
 		assert("Attempting to bind Index Buffer second time" && pIndexBuffer == NULL);
-		pIndexBuffer = static_cast<const IndexBuffer*>(bind.get());
+		pIndexBuffer = &static_cast<IndexBuffer&>(*bind);
 	}
 
 	binds.push_back(std::move(bind));

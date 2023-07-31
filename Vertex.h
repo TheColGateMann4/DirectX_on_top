@@ -29,14 +29,14 @@ namespace DynamicVertex
 		{
 			using Systype = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32_FLOAT;
-			static constexpr const char* semantic = "Position";
+			static constexpr const char* semantic = "POSITION";
 			static constexpr const char* code = "P2";
 		};
 		template<> struct Map<Position3D>
 		{
 			using Systype = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
-			static constexpr const char* semantic = "Position";
+			static constexpr const char* semantic = "POSITION";
 			static constexpr const char* code = "P3";
 		};
 		template<> struct Map<Texture2D>
@@ -137,7 +137,7 @@ namespace DynamicVertex
 
 		private:
 			template<VertexComponent type>
-			static constexpr D3D11_INPUT_ELEMENT_DESC GenerateElementDesc(size_t offset) noexcept(!IS_DEBUG)
+			static constexpr D3D11_INPUT_ELEMENT_DESC GenerateElementDesc(size_t offset) noexcept
 			{
 				return {Map<type>::semantic, 0, Map<type>::dxgiformat, 0, (UINT32)offset, D3D11_INPUT_PER_VERTEX_DATA, 0};
 			}

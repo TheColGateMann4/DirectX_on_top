@@ -1,11 +1,6 @@
 #include "Application.h"
 #include "KeyMacros.h"
-#include "Sphere.h"
-#include "Cube.h"
-#include "Pyramid.h"
-#include "Sheet.h"
 #include <random>
-
 #include "imgui/imgui.h";
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
@@ -146,6 +141,7 @@ void Application::DoFrame()
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
 	model_.Draw(window.Graphics);
+	modelSheet.Draw(window.Graphics, DeltaTime);
 	pointLight.Draw(window.Graphics);
 
 
@@ -161,8 +157,8 @@ void Application::DoFrame()
 	}
 
 	window.Graphics.camera.CreateControlMenu();
-	pointLight.SpawnControlWindow();
-	model_.ControlWindow();
+	pointLight.SpawnControlWindow(window.Graphics);
+	modelSheet.SpawnControlWindow(window.Graphics);
 
 	window.Graphics.FinishFrame();
 }

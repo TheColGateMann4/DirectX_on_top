@@ -11,7 +11,7 @@ public:
 	ID3DBlob* GetByteCode() const noexcept;
 
 public:
-	static std::shared_ptr<VertexShader> GetBindable(GFX& gfx, const std::string& path)
+	static std::shared_ptr<VertexShader> GetBindable(GFX& gfx, const std::string path)
 	{
 		return BindableList::GetBindable<VertexShader>(gfx, path);
 	}

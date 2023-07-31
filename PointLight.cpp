@@ -7,7 +7,7 @@ PointLight::PointLight(GFX& gfx, float radius)
 	Reset(); // lazy setting values on startup
 }
 
-void PointLight::SpawnControlWindow() noexcept
+void PointLight::SpawnControlWindow(GFX& gfx) noexcept
 {
 	if (ImGui::Begin("Light"))
 	{
@@ -17,10 +17,9 @@ void PointLight::SpawnControlWindow() noexcept
 		ImGui::SliderFloat("Z", &m_pcstruct.position.z, -60.0f, 60.0f);
 
 		ImGui::Text("Color");
-		ImGui::ColorEdit3("Light Color", &m_pcstruct.ambient.x, ImGuiColorEditFlags_NoAlpha);
+		ImGui::ColorEdit3("Light Color", &m_pcstruct.lightColor.x, ImGuiColorEditFlags_NoAlpha);
 		ImGui::SliderFloat("Diffuse Intensity", &m_pcstruct.diffuseIntensity, 0.00001f, 1.0f);
 		ImGui::ColorEdit3("Ambient", &m_pcstruct.ambient.x, ImGuiColorEditFlags_NoAlpha);
-		ImGui::ColorEdit3("Diffuse Color", &m_pcstruct.diffuseColor.x, ImGuiColorEditFlags_NoAlpha);
 
 		ImGui::Text("Falloff");
 		ImGui::SliderFloat("Attenuation Const", &m_pcstruct.attenuationConst, 0.00001f, 1.0f);
@@ -31,6 +30,15 @@ void PointLight::SpawnControlWindow() noexcept
 		{
 			Reset();
 		}
+
+		DirectX::XMFLOAT3 modelColor = m_model.GetColor();
+		if (m_pcstruct.lightColor.x != modelColor.x ||
+			m_pcstruct.lightColor.y != modelColor.y ||
+			m_pcstruct.lightColor.z != modelColor.z )
+		{
+			m_model.UpdateLightColorBuffer(gfx, m_pcstruct.lightColor);
+		}
+
 	}
 	ImGui::End();
 }
@@ -39,7 +47,6 @@ void PointLight::Reset() noexcept
 {
 	m_pcstruct.position = { 0.0f,0.0f,-8.0f };
 	m_pcstruct.ambient = { 0.05f, 0.05f, 0.05f };
-	m_pcstruct.diffuseColor = { 1.0f, 1.0f, 1.0f };
 	m_pcstruct.lightColor = { 1.0f, 1.0f, 1.0f };
 
 	m_pcstruct.diffuseIntensity = 1.0f;

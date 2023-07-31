@@ -9,7 +9,7 @@ public:
 	PointLight(GFX &gfx, float radius = 0.5f);
 
 public:
-	void SpawnControlWindow() noexcept;
+	void SpawnControlWindow(GFX& gfx) noexcept;
 	void Reset() noexcept;
 
 public:
@@ -20,7 +20,6 @@ private:
 	struct PixelConstantStruct { 
 		alignas(16) DirectX::XMFLOAT3 position;
 		alignas(16) DirectX::XMFLOAT3 ambient;
-		alignas(16) DirectX::XMFLOAT3 diffuseColor;
 		alignas(16) DirectX::XMFLOAT3 lightColor;
 
 		float diffuseIntensity;

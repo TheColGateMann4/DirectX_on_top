@@ -6,6 +6,7 @@
 #include "ImguiManager.h"
 #include "PointLight.h"
 #include "Model.h"
+#include "Sheet.h"
 
 class Application
 {
@@ -33,5 +34,6 @@ private:
 private:
 	PointLight pointLight;
 	Model model_{ window.Graphics, "Models\\nano_textured\\nanosuit.obj" };
+	Sheet modelSheet{ window.Graphics };
 };
 

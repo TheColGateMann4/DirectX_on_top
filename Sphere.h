@@ -4,33 +4,41 @@
 #include "Graphics.h"
 #include <random>
 
-class Sphere : public Shape
+class Sphere //: public Shape
 {
-public:
-	Sphere(GFX& gfx, std::mt19937& rng,
-		std::uniform_real_distribution<float>& adist,
-		std::uniform_real_distribution<float>& ddist,
-		std::uniform_real_distribution<float>& odist,
-		std::uniform_real_distribution<float>& rdist,
-		std::uniform_int_distribution<UINT32>& longdist,
-		std::uniform_int_distribution<UINT32>& latdist);
+// public:
+// 	Sphere(GFX& gfx, std::mt19937& rng,
+// 		std::uniform_real_distribution<float>& adist,
+// 		std::uniform_real_distribution<float>& ddist,
+// 		std::uniform_real_distribution<float>& odist,
+// 		std::uniform_real_distribution<float>& rdist,
+// 		std::uniform_int_distribution<UINT32>& longdist,
+// 		std::uniform_int_distribution<UINT32>& latdist);
+// 
+// public:
+// 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 public:
-	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
-
-public:
-	template <class T>
-	static SimpleMesh<T> GetMesh(UINT32 verticalDivisions = 12, UINT32 horizontalDivisions = 24)
+	static SimpleMesh GetMesh(UINT32 verticalDivisions = 12, UINT32 horizontalDivisions = 24)
 	{
 		assert(verticalDivisions >= 3);
 		assert(horizontalDivisions >= 3);
+
+		auto GetFloat3FromVector = [](DirectX::XMVECTOR vec)
+		{
+			DirectX::XMFLOAT3 result;
+			DirectX::XMStoreFloat3(&result, vec);
+			return result;
+		};
 
 		constexpr float radius = 1.0f;
 		const auto base = DirectX::XMVectorSet(0.0f, 0.0f, radius, 0.0f);
 		const float verticalAngle = (float)std::_Pi / verticalDivisions;
 		const float horizontalAngle = 2.0f * (float)std::_Pi / horizontalDivisions;
 
-		std::vector<T> vertices;
+		DynamicVertex::VertexLayout layout = DynamicVertex::VertexLayout().Append(DynamicVertex::VertexLayout::Position3D);
+		DynamicVertex::VertexBuffer vertices(std::move(layout));
+
 		for (UINT32 currVerticalDivisions = 1; currVerticalDivisions < verticalDivisions; currVerticalDivisions++)
 		{
 			const auto verticalBase = DirectX::XMVector3Transform(
@@ -39,22 +47,19 @@ public:
 			);
 			for (UINT32 currHorizontalDivision = 0; currHorizontalDivision < horizontalDivisions; currHorizontalDivision++)
 			{
-				vertices.emplace_back();
-				auto v = DirectX::XMVector3Transform(
+				DirectX::XMVECTOR position = DirectX::XMVector3Transform(
 					verticalBase,
 					DirectX::XMMatrixRotationZ(horizontalAngle * currHorizontalDivision)
 				);
-				DirectX::XMStoreFloat3(&vertices.back().position, v);
+				vertices.Emplace_Back(GetFloat3FromVector(position));
 			}
 		}
 
 		// add the cap vertices
-		const auto iNorthPole = (UINT32)vertices.size();
-		vertices.emplace_back();
-		DirectX::XMStoreFloat3(&vertices.back().position, base);
-		const auto iSouthPole = (UINT32)vertices.size();
-		vertices.emplace_back();
-		DirectX::XMStoreFloat3(&vertices.back().position, DirectX::XMVectorNegate(base));
+		const auto iNorthPole = (UINT32)vertices.GetSize();
+		vertices.Emplace_Back(GetFloat3FromVector(base));
+		const auto iSouthPole = (UINT32)vertices.GetSize();
+		vertices.Emplace_Back(GetFloat3FromVector(DirectX::XMVectorNegate(base)));
 
 		const auto ResolveIndex = [horizontalDivisions](UINT32 currVerticalDivision, UINT32 currHorizontalDivision)
 		{ return currVerticalDivision * horizontalDivisions + currHorizontalDivision; };

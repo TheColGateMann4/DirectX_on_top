@@ -9,31 +9,23 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 	{
 		DirectX::XMFLOAT3 position;
 	};
-	SimpleMesh<Vertex> model = Sphere::GetMesh<Vertex>(35, 35);
+	SimpleMesh model = Sphere::GetMesh(35, 35);
 	model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
-	AddBindable(std::make_unique<VertexBuffer>(gfx, model.m_vertices));
-	AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, model.m_indices));
 
-	auto pvs = std::make_unique<VertexShader>(gfx, "VertexShader.cso");
+	AddBindable(VertexBuffer::GetBindable(gfx, "3535SPHERE", model.m_vertices));
+	AddIndexBuffer(IndexBuffer::GetBindable(gfx, "3535SPHERE", model.m_indices));
+
+	auto pvs = VertexShader::GetBindable(gfx, "VertexShader.cso");
 	auto pvsbc = pvs->GetByteCode();
 	AddBindable(std::move(pvs));
 
-	AddBindable(std::make_unique<PixelShader>(gfx, "PixelSolidColorShader.cso"));
+	AddBindable(PixelShader::GetBindable(gfx, "PixelSolidColorShader.cso"));
 
-	__declspec(align(16))
-		struct PSColorConstant
-	{
-		DirectX::XMFLOAT3 color = { 1.0f,1.0f,1.0f };
-	} colorConstBuffer;
-	AddBindable(std::make_unique<PixelConstantBuffer<PSColorConstant>>(gfx, colorConstBuffer, 0));
+	AddBindable(PixelConstantBuffer<PSColorConstant>::GetBindable(gfx, m_color, 0));
 
-	const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
-	{
-		{ "Position",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
-	};
-	AddBindable(std::make_unique<InputLayout>(gfx, ied, pvsbc));
+	AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), pvsbc));
 
-	AddBindable(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
 }
@@ -46,4 +38,11 @@ DirectX::XMMATRIX PointLightModel::GetTranformMatrix() const noexcept
 VOID PointLightModel::SetPosition(DirectX::XMFLOAT3 position)
 {
 	this->m_position = position;
+}
+
+void PointLightModel::UpdateLightColorBuffer(GFX& gfx, DirectX::XMFLOAT3 color)
+{
+	m_color.color = color;
+	PixelConstantBuffer<PSColorConstant>* pPixelConstBuffer = GetBindable<PixelConstantBuffer<PSColorConstant>>();
+	pPixelConstBuffer->Update(gfx, m_color);
 }

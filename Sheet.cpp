@@ -17,45 +17,49 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 			FLOAT u, v;
 		} texture;
 	};
-	SimpleMesh<Vertex> TesselatedSheet = GetTesselatedMesh<Vertex>(TesselationRatio, TextureRatio);
+	SimpleMesh TesselatedSheet = GetTesselatedMesh(TesselationRatio, TextureRatio);
 
-	AddBindable(std::make_unique<VertexBuffer>(gfx, TesselatedSheet.m_vertices));
+	AddBindable(PixelShader::GetBindable(gfx, "PixelShaderTextureLightningwUV.cso"));
 
-	std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, "VertexTextureShader.cso");
+	std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VertexShaderTextureLightningwUV.cso");
 	ID3DBlob* pBlob = pVertexShader->GetByteCode();
 	AddBindable(std::move(pVertexShader));
 
+	std::string bufferName = std::to_string(TesselationRatio) + std::to_string(TextureRatio) + "SHEET";
 
-	AddBindable(std::make_unique<PixelShader>(gfx, "PixelTextureShader.cso"));
+	AddBindable(VertexBuffer::GetBindable(gfx, bufferName, TesselatedSheet.m_vertices));
+	AddIndexBuffer(IndexBuffer::GetBindable(gfx, bufferName, TesselatedSheet.m_indices));
 
-	AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, TesselatedSheet.m_indices));
+	AddBindable(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
 
-	AddBindable(std::make_unique<SamplerState>(gfx, D3D11_TEXTURE_ADDRESS_WRAP)); //D3D11_TEXTURE_ADDRESS_WRAP
+	AddBindable(Texture::GetBindable(gfx, "Images\\brickwall.jpg", 0));
 
-	AddBindable(std::make_unique<Texture>(gfx, "movingprimordial.gif"));
+	AddBindable(Texture::GetBindable(gfx, "Images\\brickwallUV.jpg", 1));
 
+	AddBindable(PixelConstantBuffer<ModelMaterial>::GetBindable(gfx, m_constBuffer, 1));
 
-	const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
+	AddBindable(InputLayout::GetBindable(gfx, TesselatedSheet.GetLayout(), pBlob));
 
-	AddBindable(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
+	AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-	AddBindable(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
-	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
-	AddBindable(std::make_unique<PSConstBuffer>(gfx));
+	AddBindable(std::make_shared<TransformConstBuffer>(gfx, *this));
 }
 
-template <class V>
-SimpleMesh<V> Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio)
+SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio)
 {
 	if (TesselationRatio == 0)
 		std::abort();
 
-	SimpleMesh<V> tesselatedMesh = {};
+	DynamicVertex::VertexLayout layout = 
+		DynamicVertex::VertexLayout()
+			.Append(DynamicVertex::VertexLayout::Position3D)
+			.Append(DynamicVertex::VertexLayout::Normal)
+			.Append(DynamicVertex::VertexLayout::Texture2D);
+
+	DynamicVertex::VertexBuffer vertices(std::move(layout));
+	
+	std::vector<UINT32> indices;
+
 	const float maxNormalizedPosition = 1.0f;
 	const float minNormalizedPosition = 0.0f;
 	const float lengthOfTriangle = (maxNormalizedPosition - minNormalizedPosition) / TesselationRatio;
@@ -63,48 +67,85 @@ SimpleMesh<V> Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT
 	for (UINT32 row = 0; row < TesselationRatio + 1; row++)
 		for (UINT32 column = 0; column < TesselationRatio + 1; column++)
 		{
-			tesselatedMesh.m_vertices.push_back({ { column * lengthOfTriangle, 0, row * lengthOfTriangle }, {(column * lengthOfTriangle) * textureRatio,( row * lengthOfTriangle) * textureRatio} });
+			vertices.Emplace_Back(
+				DirectX::XMFLOAT3( column * lengthOfTriangle, 0, row * lengthOfTriangle ),
+				DirectX::XMFLOAT3( 0.0f, 0.0f, -1.0f),
+				DirectX::XMFLOAT2((column * lengthOfTriangle) * textureRatio,(row * lengthOfTriangle) * textureRatio)
+			);
 
 			if (row < TesselationRatio && column < TesselationRatio)
 			{
 				//front
-				tesselatedMesh.m_indices.push_back(((row + 1) * (TesselationRatio + 1)) + column);
-				tesselatedMesh.m_indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
-				tesselatedMesh.m_indices.push_back((row * (TesselationRatio + 1)) + column);
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column);
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
+				indices.push_back((row * (TesselationRatio + 1)) + column);
 
-				tesselatedMesh.m_indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
-				tesselatedMesh.m_indices.push_back((row * (TesselationRatio + 1)) + column + 1);
-				tesselatedMesh.m_indices.push_back((row * (TesselationRatio + 1)) + column);
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
+				indices.push_back((row * (TesselationRatio + 1)) + column + 1);
+				indices.push_back((row * (TesselationRatio + 1)) + column);
 				
 				//back
-				tesselatedMesh.m_indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
-				tesselatedMesh.m_indices.push_back(((row + 1) * (TesselationRatio + 1)) + column);
-				tesselatedMesh.m_indices.push_back((row * (TesselationRatio + 1)) + column);
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column);
+				indices.push_back((row * (TesselationRatio + 1)) + column);
 
-				tesselatedMesh.m_indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
-				tesselatedMesh.m_indices.push_back((row * (TesselationRatio + 1)) + column);
-				tesselatedMesh.m_indices.push_back((row * (TesselationRatio + 1)) + column + 1);
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
+				indices.push_back((row * (TesselationRatio + 1)) + column);
+				indices.push_back((row * (TesselationRatio + 1)) + column + 1);
 			}
 		}
 
-	return tesselatedMesh;
-}
-
-VOID Sheet::Update(FLOAT DeltaTime) noexcept
-{
-	roll += droll * DeltaTime;
-	pitch += dpitch * DeltaTime;
-	yaw += dyaw * DeltaTime;
-
-	theta += dtheta * DeltaTime;
-	phi += dphi * DeltaTime;
-	chi += dchi * DeltaTime;
+	return { std::move(vertices), std::move(indices) };
 }
 
 DirectX::XMMATRIX Sheet::GetTranformMatrix() const noexcept
 {
-	return
-		DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-		DirectX::XMMatrixTranslation(r, 0.0, 0.0) *
-		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
+	return DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
+		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) * 
+		DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
+}
+
+void Sheet::SpawnControlWindow(GFX& gfx)
+{
+	if (ImGui::Begin("Brick Wall"))
+	{
+		ImGui::Text("Position");
+		ImGui::SliderFloat("pX", &m_position.x, -30.0f, 30.0f);
+		ImGui::SliderFloat("pY", &m_position.y, -30.0f, 30.0f);
+		ImGui::SliderFloat("pZ", &m_position.z, -30.0f, 30.0f);
+
+		ImGui::Text("Rotation");
+		ImGui::SliderFloat("rX", &m_rotation.x, -std::_Pi, std::_Pi);
+		ImGui::SliderFloat("rY", &m_rotation.y, -std::_Pi, std::_Pi);
+		ImGui::SliderFloat("rZ", &m_rotation.z, -std::_Pi, std::_Pi);
+
+		ImGui::Text("Propeties");
+		bool changedP = ImGui::SliderFloat("specularIntensity", &m_constBuffer.specularIntensity, 0.1f, 100.0f, "%.1f");
+		bool changedI = ImGui::SliderFloat("specularPower", &m_constBuffer.specularPower, 0.1f, 100.0f, "%.1f");
+		bool changedM = ImGui::Checkbox("EnableNormalMap", &m_constBuffer.normalMapEnabled);
+
+		bool changed = changedP || changedI || changedM;
+		if (ImGui::Button("Reset"))
+		{
+			changed = true;
+			this->Reset();
+		}
+
+		if (changed)
+			UpdateConstBuffer(gfx);
+	}
+	ImGui::End();
+}
+
+void Sheet::Reset()
+{
+	m_constBuffer.specularIntensity = 0.8f;
+	m_constBuffer.specularPower = 50.0f;
+	m_constBuffer.normalMapEnabled = true;
+}
+
+void Sheet::UpdateConstBuffer(GFX& gfx)
+{
+	PixelConstantBuffer<ModelMaterial>* pPixelConstBuffer = GetBindable<PixelConstantBuffer<ModelMaterial>>();
+	pPixelConstBuffer->Update(gfx, m_constBuffer);
 }

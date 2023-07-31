@@ -19,11 +19,9 @@ public:
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 private:
-	template <class T>
-	static SimpleMesh<T> GetNormalMesh(float scale);
+	static SimpleMesh GetNormalMesh(float scale);
 
-	template <class T>
-	static SimpleMesh<T> GetUnwrappedMesh(float scale);
+	static SimpleMesh GetUnwrappedMesh(float scale);
 
 private:
 	// positional

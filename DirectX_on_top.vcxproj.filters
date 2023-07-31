@@ -332,5 +332,11 @@
     <FxCompile Include="PixelPhongLightningSpecularShader.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="PixelShaderTextureLightningwUV.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShaderTextureLightningwUV.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

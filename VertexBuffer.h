@@ -7,26 +7,6 @@
 class VertexBuffer : public Bindable
 {
 public:
-	template<class V>
-	VertexBuffer(GFX& gfx, const std::vector<V>& vertices)
-		: m_stride(sizeof(V))
-	{
-		HRESULT hr;
-
-		D3D11_BUFFER_DESC vertexBufferDesc = {};
-		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		vertexBufferDesc.CPUAccessFlags = NULL;
-		vertexBufferDesc.MiscFlags = NULL;
-		vertexBufferDesc.ByteWidth = (UINT32)(m_stride * vertices.size());
-		vertexBufferDesc.StructureByteStride = m_stride;
-
-		D3D11_SUBRESOURCE_DATA vertexBufferResourceData = {};
-		vertexBufferResourceData.pSysMem = vertices.data();
-
-		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&vertexBufferDesc, &vertexBufferResourceData, &pVertexBuffer));
-	}
-
 	VertexBuffer(GFX& gfx, const DynamicVertex::VertexBuffer& vertexBuffer)
 		:
 		VertexBuffer(gfx, "UNKNOWN", vertexBuffer)
@@ -34,7 +14,7 @@ public:
 
 	VertexBuffer(GFX& gfx, const std::string bufferUID, const DynamicVertex::VertexBuffer& vertexBuffer)
 		: 
-		m_stride((UINT32)vertexBuffer.GetLayout().GetStructureSize()),
+		m_stride((UINT32)vertexBuffer.GetLayout().GetByteSize()),
 		m_bufferUID(bufferUID)
 	{
 		HRESULT hr;

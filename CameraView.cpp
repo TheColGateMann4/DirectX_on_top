@@ -12,6 +12,7 @@ void CameraView::SetProjection(DirectX::XMMATRIX projection)
 DirectX::XMMATRIX CameraView::GetCamera()
 {
 	const DirectX::XMVECTOR forwardVector = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	const DirectX::XMVECTOR upwardsVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	const DirectX::XMVECTOR lookVector = DirectX::XMVector3Transform(forwardVector,
 		DirectX::XMMatrixRotationRollPitchYaw(m_view.y, m_view.x, 0.0f)
@@ -19,7 +20,6 @@ DirectX::XMMATRIX CameraView::GetCamera()
 
 	const DirectX::XMVECTOR cameraPosition = DirectX::XMLoadFloat3(&m_position);
 	const DirectX::XMVECTOR lookPosition = DirectX::XMVectorAdd(cameraPosition, lookVector);
-	const DirectX::XMVECTOR upwardsVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	return DirectX::XMMatrixLookAtLH(cameraPosition, lookPosition, upwardsVector);
 }
 

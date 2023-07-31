@@ -4,7 +4,7 @@ InputLayout::InputLayout(GFX& gfx, const DynamicVertex::VertexLayout& layout, ID
 	: m_layout(std::move(layout))
 {
 	HRESULT hr;
-	const std::vector<D3D11_INPUT_ELEMENT_DESC>& directXLayout = layout.GetDirectXLayout();
+	const std::vector<D3D11_INPUT_ELEMENT_DESC> directXLayout = m_layout.GetDirectXLayout();
 
 	THROW_GFX_IF_FAILED(
 		GetDevice(gfx)->CreateInputLayout(
@@ -12,7 +12,7 @@ InputLayout::InputLayout(GFX& gfx, const DynamicVertex::VertexLayout& layout, ID
 			(UINT32)directXLayout.size(),
 			pVertexShaderByteCode->GetBufferPointer(),
 			pVertexShaderByteCode->GetBufferSize(),
-			&(InputLayout::pInputLayout))
+			&pInputLayout)
 	);
 }
 
@@ -23,10 +23,10 @@ InputLayout::InputLayout(GFX& gfx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& 
 	THROW_GFX_IF_FAILED(
 		GetDevice(gfx)->CreateInputLayout(
 			layout.data(),
-			(UINT32)std::size(layout),
+			(UINT32)layout.size(),
 			pVertexShaderByteCode->GetBufferPointer(),
 			pVertexShaderByteCode->GetBufferSize(),
-			&(InputLayout::pInputLayout))
+			&pInputLayout)
 	);
 }
 

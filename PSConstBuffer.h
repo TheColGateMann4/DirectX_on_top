@@ -9,7 +9,7 @@ public:
 		: vcbuf(gfx, slot) {};
 	void Bind(GFX& gfx, float time) noexcept
 	{
-		DirectX::XMFLOAT3 arr = {};
+		DirectX::XMFLOAT4 arr = {};
 		arr.x = time;
 		vcbuf.Update(gfx, arr);
 		vcbuf.Bind(gfx);
@@ -17,6 +17,6 @@ public:
 	void Bind(GFX& gfx) noexcept override {};
 
 protected:
-	PixelConstantBuffer<DirectX::XMFLOAT3> vcbuf;
+	PixelConstantBuffer<DirectX::XMFLOAT4> vcbuf;
 };
 

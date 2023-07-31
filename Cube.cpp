@@ -1,5 +1,6 @@
 #include "Cube.h"
 #include "BindableClassesMacro.h"
+#include "Vertex.h"
 
 Cube::Cube(GFX& gfx,
 	std::mt19937& rng,
@@ -27,18 +28,18 @@ Cube::Cube(GFX& gfx,
 		} pos;
 	};
 
-	SimpleMesh<Vertex> CubeModel = GetUnwrappedMesh<Vertex>(0.8f);
+	SimpleMesh CubeModel = GetUnwrappedMesh(0.8f);
 
-	AddBindable(std::make_unique<VertexBuffer>(gfx, CubeModel.m_vertices));
+	AddBindable(VertexBuffer::GetBindable(gfx, "Cube", CubeModel.m_vertices));
 
-	std::unique_ptr<VertexShader> pVertexShader = std::make_unique<VertexShader>(gfx, "VertexShader.cso");
+	std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VertexShader.cso");
 	ID3DBlob* pBlob = pVertexShader->GetByteCode();
 	AddBindable(std::move(pVertexShader));
 
 
-	AddBindable(std::make_unique<PixelShader>(gfx, "PixelShader.cso"));
+	AddBindable(PixelShader::GetBindable(gfx, "PixelShader.cso"));
 
-	AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, CubeModel.m_indices));
+	AddIndexBuffer(IndexBuffer::GetBindable(gfx, "Cube", CubeModel.m_indices));
 
 
 	struct ConstantBufferColor
@@ -60,19 +61,13 @@ Cube::Cube(GFX& gfx,
 			{ 0.0,1.0,1.0 },
 		}
 	};
-	AddBindable(std::make_unique<PixelConstantBuffer<ConstantBufferColor>>(gfx, constbufferColor, 0));
+	AddBindable(PixelConstantBuffer<ConstantBufferColor>::GetBindable(gfx, constbufferColor, 0));
 
+	AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pBlob));
 
-	const std::vector<D3D11_INPUT_ELEMENT_DESC> inputElementDesc =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
+	AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-	AddBindable(std::make_unique<InputLayout>(gfx, inputElementDesc, pBlob));
-
-	AddBindable(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
-	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
+	AddBindable(std::make_shared<TransformConstBuffer>(gfx, *this));
 
 	DirectX::XMStoreFloat3x3(
 		&ModelScale,
@@ -80,10 +75,9 @@ Cube::Cube(GFX& gfx,
 	);
 }
 
-template <class T>
-static SimpleMesh<T> Cube::GetNormalMesh(float scale)
+SimpleMesh Cube::GetNormalMesh(float scale)
 {
-	std::vector<T> vertices
+	std::vector<DirectX::XMFLOAT3> vertices
 	{
 		{ -scale,-scale,-scale },
 		{ scale, -scale, -scale },
@@ -94,6 +88,12 @@ static SimpleMesh<T> Cube::GetNormalMesh(float scale)
 		{ -scale,scale,scale },
 		{ scale,scale,scale }
 	};
+
+	DynamicVertex::VertexLayout layout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
+	DynamicVertex::VertexBuffer vertexBuffer(std::move(layout));
+	for (const auto& position : vertices)
+		vertexBuffer.Emplace_Back(position);
+
 	std::vector<UINT32> indices =
 	{
 		0,2,1, 2,3,1,
@@ -104,13 +104,12 @@ static SimpleMesh<T> Cube::GetNormalMesh(float scale)
 		0,1,4, 1,5,4
 	};
 
-	return { std::move(vertices), std::move(indices) };
+	return { std::move(vertexBuffer), std::move(indices) };
 }
 
-template <class T>
-static SimpleMesh<T> Cube::GetUnwrappedMesh(float scale)
+SimpleMesh Cube::GetUnwrappedMesh(float scale)
 {
-	std::vector<T> vertices =
+	std::vector<DirectX::XMFLOAT3> vertices =
 	{
 		{ -scale, -scale,-scale },
 		{ -scale, scale, -scale },
@@ -127,6 +126,11 @@ static SimpleMesh<T> Cube::GetUnwrappedMesh(float scale)
 		{-scale, scale, scale},
 		{-scale, -scale, scale}
 	};
+	DynamicVertex::VertexLayout layout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
+	DynamicVertex::VertexBuffer vertexBuffer(std::move(layout));
+	for (const auto& position : vertices)
+		vertexBuffer.Emplace_Back(position);
+
 	std::vector<UINT32> indices =
 	{
 		1,2,0, 3,2,1,	 // Front
@@ -137,7 +141,7 @@ static SimpleMesh<T> Cube::GetUnwrappedMesh(float scale)
 		6,12,13, 6,13,7	 // Back
 	};
 
-	return { std::move(vertices), std::move(indices) };
+	return { std::move(vertexBuffer), std::move(indices) };
 }
 
 DirectX::XMMATRIX Cube::GetTranformMatrix() const noexcept
