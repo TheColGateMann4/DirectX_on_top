@@ -161,7 +161,7 @@ public:
 	}
 
 public:
-	void ControlWindow()
+	void SpawnControlWindow()
 	{
 		if (ImGui::Begin("Object Controler"))
 		{

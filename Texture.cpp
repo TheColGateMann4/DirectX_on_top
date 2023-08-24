@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include <DirectXTex.h>
 
-Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot)
+Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool uvmap)
 	: 
 	m_slot(slot),
 	m_imagePath(imagePath)
@@ -18,6 +18,11 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot)
 		WIC_FLAGS_ALL_FRAMES,
 		texMetaData
 	));
+
+	if (uvmap)
+	{
+		texMetaData.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	}
 
 	THROW_GFX_IF_FAILED(LoadFromWICFile(
 		wImagePath.c_str(),

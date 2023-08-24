@@ -26,7 +26,7 @@ private:
 private:
 	DirectX::XMFLOAT3 m_position = {};
 	DirectX::XMFLOAT3 m_rotation = {};
-	DirectX::XMFLOAT3 m_scale = {10.0f, 10.0f, 10.0f};
+	DirectX::XMFLOAT3 m_scale = { 1.0f, 1.0f, 1.0f };
 
 	struct ModelMaterial {
 		float specularIntensity = 0.8f;

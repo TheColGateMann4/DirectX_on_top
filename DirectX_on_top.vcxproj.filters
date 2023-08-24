@@ -180,6 +180,9 @@
     <ClInclude Include="BindableList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TransformConstBufferWithPixelShader.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">

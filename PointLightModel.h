@@ -18,10 +18,9 @@ public:
 	void SetPosition(DirectX::XMFLOAT3 position);
 
 private:
-	__declspec(align(16))
 	struct PSColorConstant
 	{
-		DirectX::XMFLOAT3 color = { 1.0f,1.0f,1.0f };
+		alignas(16) DirectX::XMFLOAT3 color = { 1.0f,1.0f,1.0f };
 	}m_color;
 
 	DirectX::XMFLOAT3 m_position = {};

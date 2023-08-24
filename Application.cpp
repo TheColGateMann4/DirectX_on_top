@@ -144,7 +144,6 @@ void Application::DoFrame()
 	modelSheet.Draw(window.Graphics, DeltaTime);
 	pointLight.Draw(window.Graphics);
 
-
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
 		window.Graphics.ShowImGUI(!window.Graphics.isImGUIVisible());
 
@@ -159,6 +158,7 @@ void Application::DoFrame()
 	window.Graphics.camera.CreateControlMenu();
 	pointLight.SpawnControlWindow(window.Graphics);
 	modelSheet.SpawnControlWindow(window.Graphics);
+	model_.SpawnControlWindow();
 
 	window.Graphics.FinishFrame();
 }

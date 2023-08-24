@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Includes.h"
 #include "SimpleMesh.h"
+#include "TransformConstBufferWithPixelShader.h"
 
 Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 {
@@ -34,7 +35,7 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 
 	AddBindable(Texture::GetBindable(gfx, "Images\\brickwall.jpg", 0));
 
-	AddBindable(Texture::GetBindable(gfx, "Images\\brickwallUV.jpg", 1));
+	AddBindable(Texture::GetBindable(gfx, "Images\\brickwallUV.jpg", 1, true));
 
 	AddBindable(PixelConstantBuffer<ModelMaterial>::GetBindable(gfx, m_constBuffer, 1));
 
@@ -42,7 +43,7 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 
 	AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-	AddBindable(std::make_shared<TransformConstBuffer>(gfx, *this));
+	AddBindable(std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2));
 }
 
 SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio)
@@ -68,7 +69,7 @@ SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 
 		for (UINT32 column = 0; column < TesselationRatio + 1; column++)
 		{
 			vertices.Emplace_Back(
-				DirectX::XMFLOAT3( column * lengthOfTriangle, 0, row * lengthOfTriangle ),
+				DirectX::XMFLOAT3( column * lengthOfTriangle * 15, row * lengthOfTriangle * 15, 0 ),
 				DirectX::XMFLOAT3( 0.0f, 0.0f, -1.0f),
 				DirectX::XMFLOAT2((column * lengthOfTriangle) * textureRatio,(row * lengthOfTriangle) * textureRatio)
 			);
@@ -100,9 +101,9 @@ SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 
 
 DirectX::XMMATRIX Sheet::GetTranformMatrix() const noexcept
 {
-	return DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
-		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) * 
-		DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
+	return DirectX::XMMatrixRotationRollPitchYaw(m_rotation.z, m_rotation.y, m_rotation.x) *
+		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);// *
+		//DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
 }
 
 void Sheet::SpawnControlWindow(GFX& gfx)
@@ -115,9 +116,14 @@ void Sheet::SpawnControlWindow(GFX& gfx)
 		ImGui::SliderFloat("pZ", &m_position.z, -30.0f, 30.0f);
 
 		ImGui::Text("Rotation");
-		ImGui::SliderFloat("rX", &m_rotation.x, -std::_Pi, std::_Pi);
-		ImGui::SliderFloat("rY", &m_rotation.y, -std::_Pi, std::_Pi);
-		ImGui::SliderFloat("rZ", &m_rotation.z, -std::_Pi, std::_Pi);
+		ImGui::SliderAngle("rX", &m_rotation.x, -180.0, 180.0);
+		ImGui::SliderAngle("rY", &m_rotation.y, -180.0, 180.0);
+		ImGui::SliderAngle("rZ", &m_rotation.z, -180.0, 180.0);
+
+		ImGui::Text("Scale");
+		ImGui::SliderFloat("sX", &m_scale.x, 0.1f, 50.0f);
+		ImGui::SliderFloat("sY", &m_scale.y, 0.1f, 50.0f);
+		ImGui::SliderFloat("sZ", &m_scale.z, 0.1f, 50.0f);
 
 		ImGui::Text("Propeties");
 		bool changedP = ImGui::SliderFloat("specularIntensity", &m_constBuffer.specularIntensity, 0.1f, 100.0f, "%.1f");
@@ -142,6 +148,9 @@ void Sheet::Reset()
 	m_constBuffer.specularIntensity = 0.8f;
 	m_constBuffer.specularPower = 50.0f;
 	m_constBuffer.normalMapEnabled = true;
+	m_rotation = {};
+	m_position = {};
+	m_scale = {1.0f, 1.0f, 1.0f};
 }
 
 void Sheet::UpdateConstBuffer(GFX& gfx)

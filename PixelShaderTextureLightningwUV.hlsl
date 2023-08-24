@@ -19,6 +19,12 @@ cbuffer objectBuffer : register(b1)
     float padding[1];
 };
 
+cbuffer transformBuffer : register(b2)
+{
+    matrix modelView;
+    matrix modelViewProjection;
+};
+
 Texture2D diffuseTexture : register(t0);
 Texture2D uvmapTexture : register(t1);
 SamplerState samplerr : register(s0);
@@ -28,9 +34,11 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     if (normalMapEnabled)
     {
         const float3 normalMap = uvmapTexture.Sample(samplerr, textureCoords).rgb;
-        normal.x = normalMap.x;
-        normal.y = normalMap.y;
-        normal.z = normalMap.z;
+        
+        normal.x = (normalMap.r - 0.2f) * 2.0f;
+        normal.y = (normalMap.g - 0.2f) * 2.0f;
+        normal.z = -normalMap.b;
+        normal = mul(normal, (float3x3) modelView);
     }
     
     const float3 VectorLength = lightPosition - positionRelativeToCamera;
