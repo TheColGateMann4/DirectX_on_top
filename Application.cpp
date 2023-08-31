@@ -140,8 +140,8 @@ void Application::DoFrame()
 
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
-	model_.Draw(window.Graphics);
-	modelSheet.Draw(window.Graphics, DeltaTime);
+	//modelNano.Draw(window.Graphics);
+	modelWall.Draw(window.Graphics);
 	pointLight.Draw(window.Graphics);
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
@@ -155,10 +155,10 @@ void Application::DoFrame()
 		window.ShowCursor(cursorShowing);
 	}
 
-	window.Graphics.camera.CreateControlMenu();
+	window.Graphics.camera.SpawnControlWindow();
 	pointLight.SpawnControlWindow(window.Graphics);
-	modelSheet.SpawnControlWindow(window.Graphics);
-	model_.SpawnControlWindow();
+	//modelNano.SpawnControlWindow();
+	modelWall.SpawnControlWindow();
 
 	window.Graphics.FinishFrame();
 }

@@ -33,7 +33,7 @@ private:
 	//scene
 private:
 	PointLight pointLight;
-	Model model_{ window.Graphics, "Models\\nano_textured\\nanosuit.obj" };
-	Sheet modelSheet{ window.Graphics };
+	//Model modelNano{ window.Graphics, "Models\\nano_textured\\nanosuit.obj" };
+	Model modelWall{ window.Graphics, "Models\\goblin\\GoblinX.obj" };
 };
 

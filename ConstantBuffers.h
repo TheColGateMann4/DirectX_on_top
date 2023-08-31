@@ -38,6 +38,8 @@ public:
 		constBufferDesc.ByteWidth = sizeof(consts);
 		constBufferDesc.StructureByteStride = 0;
 
+		m_bufferSize = sizeof(consts);
+
 		D3D11_SUBRESOURCE_DATA constBufferResourceData = {};
 		constBufferResourceData.pSysMem = &consts;
 
@@ -56,12 +58,15 @@ public:
 		constBufferDesc.ByteWidth = sizeof(C);
 		constBufferDesc.StructureByteStride = 0;
 
+		m_bufferSize = sizeof(C);
+
 		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &(this->pConstantBuffer)));
 	}
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 	UINT32 m_slot;
+	UINT32 m_bufferSize;
 };
 
 template<class C>
@@ -70,6 +75,7 @@ class PixelConstantBuffer : public ConstantBuffer<C>
 	using Bindable::GetDeviceContext;
 	using ConstantBuffer<C>::pConstantBuffer;
 	using ConstantBuffer<C>::m_slot;
+	using ConstantBuffer<C>::m_bufferSize;
 public:
 	using ConstantBuffer<C>::ConstantBuffer;
 

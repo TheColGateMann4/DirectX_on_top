@@ -15,11 +15,11 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 	AddBindable(VertexBuffer::GetBindable(gfx, "3535SPHERE", model.m_vertices));
 	AddIndexBuffer(IndexBuffer::GetBindable(gfx, "3535SPHERE", model.m_indices));
 
-	auto pvs = VertexShader::GetBindable(gfx, "VertexShader.cso");
+	auto pvs = VertexShader::GetBindable(gfx, "VS.cso");
 	auto pvsbc = pvs->GetByteCode();
 	AddBindable(std::move(pvs));
 
-	AddBindable(PixelShader::GetBindable(gfx, "PixelSolidColorShader.cso"));
+	AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
 	AddBindable(PixelConstantBuffer<PSColorConstant>::GetBindable(gfx, m_color, 0));
 

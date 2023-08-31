@@ -16,6 +16,8 @@ namespace DynamicVertex
 		{
 			Position2D,
 			Position3D,
+			Tangent,
+			Bitangent,
 			Texture2D,
 			Normal,
 			Float3Color,
@@ -38,6 +40,20 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "POSITION";
 			static constexpr const char* code = "P3";
+		};
+		template<> struct Map<Tangent>
+		{
+			using Systype = DirectX::XMFLOAT3;
+			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
+			static constexpr const char* semantic = "TANGENT";
+			static constexpr const char* code = "T";
+		};
+		template<> struct Map<Bitangent>
+		{
+			using Systype = DirectX::XMFLOAT3;
+			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
+			static constexpr const char* semantic = "BITANGENT";
+			static constexpr const char* code = "BT";
 		};
 		template<> struct Map<Texture2D>
 		{
@@ -97,6 +113,10 @@ namespace DynamicVertex
 					return GenerateElementDesc<Position2D>(GetOffset());
 				case Position3D:
 					return GenerateElementDesc<Position3D>(GetOffset());
+				case Tangent:
+					return GenerateElementDesc<Tangent>(GetOffset());
+				case Bitangent:
+					return GenerateElementDesc<Bitangent>(GetOffset());
 				case Texture2D:
 					return GenerateElementDesc<Texture2D>(GetOffset());
 				case Normal:
@@ -120,6 +140,10 @@ namespace DynamicVertex
 						return Map<Position2D>::code;
 					case Position3D:
 						return Map<Position3D>::code;
+					case Tangent:
+						return Map<Tangent>::code;
+					case Bitangent:
+						return Map<Bitangent>::code;
 					case Texture2D:
 						return Map<Texture2D>::code;
 					case Normal:
@@ -151,6 +175,10 @@ namespace DynamicVertex
 					return sizeof(Map<Position2D>::Systype);
 				case Position3D:
 					return sizeof(Map<Position3D>::Systype);
+				case Tangent:
+					return sizeof(Map<Tangent>::Systype);
+				case Bitangent:
+					return sizeof(Map<Bitangent>::Systype);
 				case Texture2D:
 					return sizeof(Map<Texture2D>::Systype);
 				case Normal:
@@ -283,6 +311,16 @@ namespace DynamicVertex
 			case VertexLayout::Position3D:
 			{
 				SetAttr<VertexLayout::Position3D>(pAttrib, std::forward<T>(val));
+				break;
+			}
+			case VertexLayout::Tangent:
+			{
+				SetAttr<VertexLayout::Tangent>(pAttrib, std::forward<T>(val));
+				break;
+			}
+			case VertexLayout::Bitangent:
+			{
+				SetAttr<VertexLayout::Bitangent>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::Texture2D:

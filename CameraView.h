@@ -20,7 +20,7 @@ private:
 
 public:
 	void Reset();
-	void CreateControlMenu();
+	void SpawnControlWindow();
 
 private:
 	float WrapAngle(float angle, float value);

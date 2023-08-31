@@ -284,6 +284,9 @@
     <ClCompile Include="PointLightModel.cpp">
       <Filter>Source Files\Shapes</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -296,49 +299,64 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VertexWaveShader.hlsl">
+    <FxCompile Include="VS_wave.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelFaceShader.hlsl">
+    <FxCompile Include="PS_FaceColors.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VertexBlendShader.hlsl">
+    <FxCompile Include="VS_Blend.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelBlendShader.hlsl">
+    <FxCompile Include="PS_Blend.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
+    <FxCompile Include="VS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelTextureShader.hlsl">
+    <FxCompile Include="PS_Texture.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VertexTextureShader.hlsl">
+    <FxCompile Include="VS_Texture.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="PS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelTextureAnimationShader.hlsl">
+    <FxCompile Include="PS_TextureAnimation.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelPhongLightningShader.hlsl">
+    <FxCompile Include="PS_Phong_Texture.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VertexPhongLightningShader.hlsl">
+    <FxCompile Include="VS_Phong.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelSolidColorShader.hlsl">
+    <FxCompile Include="PS_Solid.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelPhongLightningSpecularShader.hlsl">
+    <FxCompile Include="PS_Phong_Texture_SpecularMap.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PixelShaderTextureLightningwUV.hlsl">
+    <FxCompile Include="PS_Phong_Texture_Specular_Normals.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShaderTextureLightningwUV.hlsl">
+    <FxCompile Include="VS_Phong_Texture_Normals.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Model_Phong_Texture_Normals.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Model_Phong_Texture_Specular_Normals.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Model_Phong_Texture_SpecularMap_Normals.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Phong_Position_Normals.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_NoMaps.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

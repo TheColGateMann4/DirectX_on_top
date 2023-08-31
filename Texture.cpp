@@ -30,7 +30,7 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool uvmap)
 		&texMetaData,
 		*textures
 	));
-
+	m_hasAlpha = DirectX::HasAlpha(textures->GetImage(0, 0, 0)->format);
 	THROW_GFX_IF_FAILED(CreateShaderResourceView(
 		GetDevice(gfx),
 		textures->GetImages(),

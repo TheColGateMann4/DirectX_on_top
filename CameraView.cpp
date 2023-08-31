@@ -60,7 +60,7 @@ void CameraView::Reset()
 	m_position = { 0.0f, 3.0f, -12.0f };
 	m_view = {};
 }
-void CameraView::CreateControlMenu()
+void CameraView::SpawnControlWindow()
 {
 	if (ImGui::Begin("Camera Control"))
 	{
