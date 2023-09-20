@@ -158,7 +158,7 @@ void Application::DoFrame()
 	window.Graphics.camera.SpawnControlWindow();
 	pointLight.SpawnControlWindow(window.Graphics);
 	//modelNano.SpawnControlWindow();
-	modelWall.SpawnControlWindow();
+	modelWall.SpawnControlWindow(window.Graphics);
 
 	window.Graphics.FinishFrame();
 }

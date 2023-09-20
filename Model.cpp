@@ -1,4 +1,5 @@
 #include "Model.h"
+#include <Shlwapi.h>
 
 
 
@@ -18,16 +19,26 @@ Model::Model(GFX& gfx, std::string fileName)
 		THROW_MODEL_EXCEPTION(importer.GetErrorString());
 	}
 
+	{
+		size_t foundCharacter;
+		if (!PathIsDirectory(fileName.data()))
+			if ((foundCharacter = fileName.find_last_of('\\')) != std::string::npos || (foundCharacter = fileName.find_last_of('\\')) != std::string::npos)
+				fileName.resize(foundCharacter + 1);
+			else
+				THROW_INTERNAL_ERROR("FAILED TO PROCESS MODEL PATH", "Model path couldn't be processed for assimp");
+
+	}
+
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
-		m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials));
+		m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials, fileName));
 	}
 
 	m_pStartingNode = ParseNode(*pScene->mRootNode);
 	m_pressedNode = m_pStartingNode.get();
 }
 
-std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials)
+std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string modelPath)
 {
 	bool hasSpecularMap = false;
 	bool hasNormalMap = false;
@@ -36,7 +47,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	float shinyness = 35.0f;
 	const float scale = 6.0f;
 	std::vector<std::shared_ptr<Bindable>> bindables;
-	std::string modelsPath = "Models\\goblin\\";
+
 	DirectX::XMFLOAT4 SpecularColor = { 0.18f, 0.18f, 0.18f, 1.0f };
 	DirectX::XMFLOAT4 DiffuseColor = { 0.45f, 0.45f, 0.85f, 1.0f };
 
@@ -47,7 +58,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
-			bindables.push_back(Texture::GetBindable(gfx, modelsPath + textureFileName.C_Str(), 0));
+			bindables.push_back(Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 0));
 			hasDiffuseMap = true;
 		}
 		else
@@ -58,7 +69,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
-			const auto specularTexture = Texture::GetBindable(gfx, modelsPath + textureFileName.C_Str(), 1);
+			const auto specularTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 1);
 			hasAlphaGloss = specularTexture->HasAlpha();
 			bindables.push_back(std::move(specularTexture));
 			hasSpecularMap = true;
@@ -75,7 +86,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		if (material.GetTexture(aiTextureType_NORMALS, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
-			const auto normalTexture = Texture::GetBindable(gfx, modelsPath + textureFileName.C_Str(), 2);
+			const auto normalTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 2);
 			hasAlphaGloss = normalTexture->HasAlpha();
 			bindables.push_back(std::move(normalTexture));
 			hasNormalMap = true;
@@ -121,7 +132,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			indices.push_back(face.mIndices[2]);
 		}
 
-		std::string bufferUID = modelsPath + mesh.mName.C_Str();
+		std::string bufferUID = modelPath + mesh.mName.C_Str();
 
 		bindables.push_back(VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer));
 
@@ -133,11 +144,11 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		bindables.push_back(PixelShader::GetBindable(gfx, "PS_Model_Phong_Texture_SpecularMap_Normals.cso"));
 
-		ModelMaterial modelMaterial = {};
+		Node::ModelMaterial modelMaterial = {};
 		modelMaterial.normalMapHasAlpha = hasAlphaGloss ? TRUE : FALSE;
 		modelMaterial.specularPower = shinyness;
 
-		bindables.push_back(PixelConstantBuffer<ModelMaterial>::GetBindable(gfx, modelMaterial, 1));
+		bindables.push_back(PixelConstantBuffer<Node::ModelMaterial>::GetBindable(gfx, modelMaterial, 1));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -175,7 +186,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			indices.push_back(face.mIndices[2]);
 		}
 
-		std::string bufferUID = modelsPath + mesh.mName.C_Str();
+		std::string bufferUID = modelPath + mesh.mName.C_Str();
 
 		bindables.push_back(VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer));
 
@@ -230,7 +241,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			indices.push_back(face.mIndices[2]);
 		}
 
-		std::string bufferUID = modelsPath + mesh.mName.C_Str();
+		std::string bufferUID = modelPath + mesh.mName.C_Str();
 
 		bindables.push_back(VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer));
 
@@ -249,7 +260,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		}modelMaterial;
 
 		modelMaterial.specularIntensity = (SpecularColor.x + SpecularColor.y + SpecularColor.z) / 3;
-		modelMaterial.specularIntensity = shinyness;
+		modelMaterial.specularPower = shinyness;
 
 		bindables.push_back(PixelConstantBuffer<ModelMaterialDiffuse>::GetBindable(gfx, modelMaterial, 1));
 
@@ -283,7 +294,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			indices.push_back(face.mIndices[2]);
 		}
 
-		std::string bufferUID = modelsPath + mesh.mName.C_Str();
+		std::string bufferUID = modelPath + mesh.mName.C_Str();
 
 		bindables.push_back(VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer));
 
@@ -295,12 +306,12 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		bindables.push_back(PixelShader::GetBindable(gfx, "PS_Phong_NoMaps.cso"));
 
-		ModelMaterialNoMaps modelMaterial = {};
+		Node::ModelMaterialNoMaps modelMaterial = {};
 		modelMaterial.materialColor = DiffuseColor;
 		modelMaterial.specularColor = SpecularColor;
 		modelMaterial.specularPower = shinyness;
 
-		bindables.push_back(PixelConstantBuffer<ModelMaterialNoMaps>::GetBindable(gfx, modelMaterial, 1));
+		bindables.push_back(PixelConstantBuffer<Node::ModelMaterialNoMaps>::GetBindable(gfx, modelMaterial, 1));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -341,7 +352,7 @@ void Model::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
 	m_pStartingNode->Draw(gfx, DirectX::XMMatrixIdentity());
 }
 
-void Model::SpawnControlWindow()
+void Model::SpawnControlWindow(GFX& gfx)
 {
 	if (ImGui::Begin("Object Controler"))
 	{
@@ -366,6 +377,8 @@ void Model::SpawnControlWindow()
 			ImGui::SliderFloat("sX", &m_pressedNode->scale.x, 0.1f, 30.0f);
 			ImGui::SliderFloat("sY", &m_pressedNode->scale.y, 0.1f, 30.0f);
 			ImGui::SliderFloat("sZ", &m_pressedNode->scale.z, 0.1f, 30.0f);
+
+			m_pressedNode->GenerateShaderOptions(gfx);
 
 			if (ImGui::Button("Reset"))
 				m_pressedNode->ResetLocalTranform();

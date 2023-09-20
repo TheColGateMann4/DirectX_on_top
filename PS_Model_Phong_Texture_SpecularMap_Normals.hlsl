@@ -57,14 +57,17 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     const float3 w = normal * dot(VectorLength, normal);
     const float3 r = w * 2.0f - VectorLength;
     
-    const float4 specularSample = t_specularTexture.Sample(s_sampler, textureCoords);
-    const float3 specularColor = specularSample.rgb;
-    float specularPower = 0;
+    const float3 specularColor = b_specularColor;
+    float specularPower = b_specularPower;
     
-    if (b_normalMapHasAlpha)
-        specularPower = pow(2.0f, specularSample.a * 13.0f);
-    else
-        specularPower = b_specularPower;
+    if (b_specularMapEnable)
+    {
+        const float4 specularSample = t_specularTexture.Sample(s_sampler, textureCoords);
+        const float3 specularColor = specularSample.rgb * b_specularMapWeight;
+        
+        if (b_normalMapHasAlpha)
+            specularPower = pow(2.0f, specularSample.a * 13.0f);
+    }
     
     const float3 specular = attenuation * (b_lightColor * b_diffuseIntensity) * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), specularPower);
     

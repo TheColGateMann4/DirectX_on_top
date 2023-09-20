@@ -31,7 +31,7 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL) 
     const float3 w = normal * dot(VectorLength, normal);
     const float3 r = w * 2.0f - VectorLength;
     
-    const float3 specular = attenuation * (b_lightColor * b_diffuseIntensity) * b_specularColor.rgb * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), b_specularPower);
+    const float4 specular = attenuation * (float4(b_lightColor, 1.0f) * b_diffuseIntensity) * b_specularColor * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), b_specularPower);
     
-    return float4(saturate((diffuse + b_ambient) * b_materialColor.rgb + specular), 1.0f);
+    return saturate(float4(diffuse + b_ambient, 1.0f) * b_materialColor + specular);
 }
