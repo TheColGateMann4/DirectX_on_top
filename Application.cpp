@@ -140,8 +140,9 @@ void Application::DoFrame()
 
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
-	//modelNano.Draw(window.Graphics);
+	modelNano.Draw(window.Graphics);
 	modelWall.Draw(window.Graphics);
+	modelGoblin.Draw(window.Graphics);
 	pointLight.Draw(window.Graphics);
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
@@ -157,8 +158,9 @@ void Application::DoFrame()
 
 	window.Graphics.camera.SpawnControlWindow();
 	pointLight.SpawnControlWindow(window.Graphics);
-	//modelNano.SpawnControlWindow();
+	modelNano.SpawnControlWindow(window.Graphics);
 	modelWall.SpawnControlWindow(window.Graphics);
+	modelGoblin.SpawnControlWindow(window.Graphics);
 
 	window.Graphics.FinishFrame();
 }

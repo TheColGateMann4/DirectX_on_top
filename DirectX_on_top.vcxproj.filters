@@ -37,6 +37,9 @@
     <Filter Include="Imgui\Backend">
       <UniqueIdentifier>{c3395999-abc6-4d5b-8047-435f2df3489b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Header Files">
+      <UniqueIdentifier>{dae04c4b-72b1-4b48-b2cf-26a0291eb2a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes.h">
@@ -359,5 +362,13 @@
     <FxCompile Include="PS_Phong_NoMaps.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PointLightConstBuffer.hlsli">
+      <Filter>Shader\Header Files</Filter>
+    </None>
+    <None Include="ShaderFunctions.hlsli">
+      <Filter>Shader\Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
