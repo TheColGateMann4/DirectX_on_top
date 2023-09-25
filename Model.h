@@ -15,10 +15,10 @@
 class Model
 {
 public:
-	Model(GFX& gfx, std::string fileName);
+	Model(GFX& gfx, std::string fileName, float scale = 1.0f);
 
 private:
-	static std::unique_ptr<Mesh> ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string modelPath);
+	static std::unique_ptr<Mesh> ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string modelPath, float scale);
 
 	std::unique_ptr<Node> ParseNode(const aiNode& node) noexcept;
 
@@ -34,4 +34,5 @@ private:
 
 private:
 	Node* m_pressedNode = nullptr;
+	float m_scale = 1.0f;
 };

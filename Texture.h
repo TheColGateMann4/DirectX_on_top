@@ -41,6 +41,6 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShaderResourceView;
 	std::string m_imagePath;
 	UINT32 m_slot;
-	bool m_hasAlpha;
+	bool m_hasAlpha = false;
 };
 

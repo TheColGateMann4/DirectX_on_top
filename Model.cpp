@@ -3,7 +3,7 @@
 
 
 
-Model::Model(GFX& gfx, std::string fileName)
+Model::Model(GFX& gfx, std::string fileName, float scale)
 {
 	Assimp::Importer importer;
 	const auto pScene = importer.ReadFile(fileName.c_str(),
@@ -31,21 +31,21 @@ Model::Model(GFX& gfx, std::string fileName)
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
-		m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials, fileName));
+		m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials, fileName, scale));
 	}
 
 	m_pStartingNode = ParseNode(*pScene->mRootNode);
-	m_pressedNode = m_pStartingNode.get();
+	//m_pressedNode = m_pStartingNode.get();
+	m_scale = scale;
 }
 
-std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string modelPath)
+std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string modelPath, float scale)
 {
 	bool hasSpecularMap = false;
 	bool hasNormalMap = false;
 	bool hasDiffuseMap = false;
 	bool hasAlphaGloss = false;
 	float shinyness = 35.0f;
-	const float scale = 6.0f;
 	std::vector<std::shared_ptr<Bindable>> bindables;
 
 	DirectX::XMFLOAT4 SpecularColor = { 0.18f, 0.18f, 0.18f, 1.0f };
@@ -148,7 +148,62 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		modelMaterial.normalMapHasAlpha = hasAlphaGloss ? TRUE : FALSE;
 		modelMaterial.specularPower = shinyness;
 
-		bindables.push_back(PixelConstantBuffer<Node::ModelMaterial>::GetBindable(gfx, modelMaterial, 1));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterial>>(PixelConstantBuffer<Node::ModelMaterial>(gfx, modelMaterial, 1)));
+
+		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
+	}
+	else if (hasSpecularMap && !hasNormalMap && hasDiffuseMap)
+	{
+		DynamicVertex::VertexBuffer vertexBuffer(std::move(
+			DynamicVertex::VertexLayout()
+			.Append(DynamicVertex::VertexLayout::Position3D)
+			.Append(DynamicVertex::VertexLayout::Normal)
+			.Append(DynamicVertex::VertexLayout::Tangent)
+			.Append(DynamicVertex::VertexLayout::Bitangent)
+			.Append(DynamicVertex::VertexLayout::Texture2D)
+		));
+
+		for (size_t i = 0; i < mesh.mNumVertices; i++)
+		{
+			vertexBuffer.Emplace_Back(
+				DirectX::XMFLOAT3(mesh.mVertices[i].x * scale, mesh.mVertices[i].y * scale, mesh.mVertices[i].z * scale),
+				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]),
+				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i]),
+				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mBitangents[i]),
+				*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
+			);
+		}
+
+		std::vector<UINT32> indices;
+		indices.reserve(mesh.mNumFaces * 3);
+
+		for (size_t i = 0; i < mesh.mNumFaces; i++)
+		{
+			const auto& face = mesh.mFaces[i];
+			assert(face.mNumIndices == 3);
+			indices.push_back(face.mIndices[0]);
+			indices.push_back(face.mIndices[1]);
+			indices.push_back(face.mIndices[2]);
+		}
+
+		std::string bufferUID = modelPath + mesh.mName.C_Str();
+
+		bindables.push_back(VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer));
+
+		bindables.push_back(IndexBuffer::GetBindable(gfx, bufferUID, indices));
+
+		std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Model_Phong_Texture_Normals.cso");
+		ID3DBlob* pBlob = pVertexShader->GetByteCode();
+		bindables.push_back(std::move(pVertexShader));
+
+		bindables.push_back(PixelShader::GetBindable(gfx, "PS_Model_Phong_Texture_SpecularMap_Normals.cso"));
+
+		Node::ModelMaterial modelMaterial = {};
+		modelMaterial.normalMapEnabled = FALSE;
+		modelMaterial.normalMapHasAlpha = FALSE;
+		modelMaterial.specularPower = shinyness;
+
+		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterial>>(PixelConstantBuffer<Node::ModelMaterial>(gfx, modelMaterial, 1)));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -207,7 +262,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		modelMaterial.specularIntensity = (SpecularColor.x + SpecularColor.y + SpecularColor.z) / 3;
 		modelMaterial.specularPower = shinyness;
-		bindables.push_back(PixelConstantBuffer<ModelMaterialDiffuseNormal>::GetBindable(gfx, modelMaterial, 1));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<ModelMaterialDiffuseNormal>>(PixelConstantBuffer<ModelMaterialDiffuseNormal>(gfx, modelMaterial, 1)));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -262,7 +317,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		modelMaterial.specularIntensity = (SpecularColor.x + SpecularColor.y + SpecularColor.z) / 3;
 		modelMaterial.specularPower = shinyness;
 
-		bindables.push_back(PixelConstantBuffer<ModelMaterialDiffuse>::GetBindable(gfx, modelMaterial, 1));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<ModelMaterialDiffuse>>(PixelConstantBuffer<ModelMaterialDiffuse>(gfx, modelMaterial, 1)));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -311,7 +366,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		modelMaterial.specularColor = SpecularColor;
 		modelMaterial.specularPower = shinyness;
 
-		bindables.push_back(PixelConstantBuffer<Node::ModelMaterialNoMaps>::GetBindable(gfx, modelMaterial, 1));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterialNoMaps>>(PixelConstantBuffer<Node::ModelMaterialNoMaps>(gfx, modelMaterial, 1)));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}

@@ -30,7 +30,23 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool uvmap)
 		&texMetaData,
 		*textures
 	));
-	m_hasAlpha = DirectX::HasAlpha(textures->GetImage(0, 0, 0)->format);
+
+	if(DirectX::HasAlpha(textures->GetImage(0, 0, 0)->format))
+	{
+		const DirectX::Image *image = textures->GetImages();
+
+		auto imageHasAlpha = [](const DirectX::Image* image)
+		{
+			for (unsigned int y = 0; y < image->height; y++)
+				for (unsigned int x = 0; x < image->width; x++)
+					if ((UINT8)image->pixels[((4 * (x + 1)) + image->width * y) - 1] != 255)
+						return true;
+			return false;
+		};
+
+		m_hasAlpha = imageHasAlpha(image);
+	}
+			
 	THROW_GFX_IF_FAILED(CreateShaderResourceView(
 		GetDevice(gfx),
 		textures->GetImages(),
