@@ -23,7 +23,10 @@ Model::Model(GFX& gfx, std::string fileName, float scale)
 		size_t foundCharacter;
 		if (!PathIsDirectory(fileName.data()))
 			if ((foundCharacter = fileName.find_last_of('\\')) != std::string::npos || (foundCharacter = fileName.find_last_of('\\')) != std::string::npos)
-				fileName.resize(foundCharacter + 1);
+			{
+				m_fileName = std::string(fileName.begin() + (foundCharacter + 1), fileName.end());
+				m_filePath = std::string(fileName.begin(), fileName.end() - (fileName.length() - (foundCharacter + 1)));
+			}
 			else
 				THROW_INTERNAL_ERROR("FAILED TO PROCESS MODEL PATH", "Model path couldn't be processed for assimp");
 
@@ -31,7 +34,7 @@ Model::Model(GFX& gfx, std::string fileName, float scale)
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
-		m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials, fileName, scale));
+		m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials, m_filePath, m_fileName, scale));
 	}
 
 	m_pStartingNode = ParseNode(*pScene->mRootNode);
@@ -39,7 +42,7 @@ Model::Model(GFX& gfx, std::string fileName, float scale)
 	m_scale = scale;
 }
 
-std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string modelPath, float scale)
+std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string &modelPath, std::string &modelName, float scale)
 {
 	bool hasSpecularMap = false;
 	bool hasNormalMap = false;
@@ -257,11 +260,13 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			float specularIntensity;
 			float specularPower;
 			BOOL normalMapEnabled = TRUE;
-			float padding[1];
+			BOOL isRetardedBrickWallWithMessedUpNormals = FALSE;
 		}modelMaterial;
 
 		modelMaterial.specularIntensity = (SpecularColor.x + SpecularColor.y + SpecularColor.z) / 3;
 		modelMaterial.specularPower = shinyness;
+		modelMaterial.isRetardedBrickWallWithMessedUpNormals = (modelName == "brick_wall.obj");
+
 		bindables.push_back(std::make_shared<PixelConstantBuffer<ModelMaterialDiffuseNormal>>(PixelConstantBuffer<ModelMaterialDiffuseNormal>(gfx, modelMaterial, 1)));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));

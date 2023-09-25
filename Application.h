@@ -33,7 +33,7 @@ private:
 	//scene
 private:
 	PointLight pointLight;
-	Model modelNano{ window.Graphics, "Models\\nano_textured\\nanosuit.obj", 1.0f };
+	Model modelNano{ window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f };
 	Model modelWall{ window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f};
 	Model modelGoblin{ window.Graphics, "Models\\muro\\muro.obj", 3.0f};
 };

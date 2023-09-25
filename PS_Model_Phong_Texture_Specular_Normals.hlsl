@@ -6,7 +6,7 @@ cbuffer objectBuffer : register(b1)
     float b_specularIntensity;
     float b_specularPower;
     bool b_normalMapEnabled;
-    float padding[1];
+    bool b_isRetardedBrickWallWithMessedUpNormals;
 };
 
 cbuffer transformBuffer : register(b2)
@@ -23,7 +23,7 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
 {
     if (b_normalMapEnabled)
     {
-        normal = GetNormalInViewSpace(normal, viewTangent, viewBitangent, textureCoords, s_sampler, t_uvmapTexture);
+        normal = GetNormalInViewSpace(normal, viewTangent, viewBitangent, textureCoords, s_sampler, t_uvmapTexture, b_isRetardedBrickWallWithMessedUpNormals);
     }
     
     const float3 VectorLength = b_viewLightPosition - positionRelativeToCamera;
