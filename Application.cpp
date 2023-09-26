@@ -24,6 +24,10 @@ BOOL Application::Initiate()
 {
  	window.Input.Key.allowRepeating(TRUE);
 
+	models.push_back(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
+	models.push_back(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
+	models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
+
 	while (true)
 	{
 		BOOL result = this->window.ProcessMessage();
@@ -140,9 +144,9 @@ void Application::DoFrame()
 
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
-	modelNano.Draw(window.Graphics);
-	modelWall.Draw(window.Graphics);
-	modelGoblin.Draw(window.Graphics);
+	for(auto& model : models)
+		model->Draw(window.Graphics);
+
 	pointLight.Draw(window.Graphics);
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
@@ -158,9 +162,15 @@ void Application::DoFrame()
 
 	window.Graphics.camera.SpawnControlWindow();
 	pointLight.SpawnControlWindow(window.Graphics);
-	modelNano.SpawnControlWindow(window.Graphics);
-	modelWall.SpawnControlWindow(window.Graphics);
-	modelGoblin.SpawnControlWindow(window.Graphics);
+
+	if (ImGui::Begin("Object Controler"))
+	{
+
+	}
+	ImGui::End();
+
+	for (auto& model : models)
+		model->SpawnControlWindow(window.Graphics);
 
 	window.Graphics.FinishFrame();
 }

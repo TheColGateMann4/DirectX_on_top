@@ -9,6 +9,7 @@ class ConstantBuffer : public Bindable
 public:
 	void Update(GFX& gfx, const C& consts)
 	{
+		constBufferData = consts;
 		HRESULT hr;
 
 		D3D11_MAPPED_SUBRESOURCE subresourceData;
@@ -28,6 +29,7 @@ public:
 	ConstantBuffer(GFX& gfx, const C& consts, UINT32 slot)
 		: m_slot(slot)
 	{
+		constBufferData = consts;
 		HRESULT hr;
 
 		D3D11_BUFFER_DESC constBufferDesc = {};
@@ -48,6 +50,7 @@ public:
 	ConstantBuffer(GFX& gfx, UINT32 slot)
 		: m_slot(slot)
 	{
+		constBufferData = {};
 		HRESULT hr;
 
 		D3D11_BUFFER_DESC constBufferDesc = {};
@@ -62,6 +65,9 @@ public:
 
 		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &(this->pConstantBuffer)));
 	}
+
+public:
+	C constBufferData;
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
@@ -78,6 +84,7 @@ class PixelConstantBuffer : public ConstantBuffer<C>
 	using ConstantBuffer<C>::m_bufferSize;
 public:
 	using ConstantBuffer<C>::ConstantBuffer;
+	using ConstantBuffer<C>::constBufferData;
 
 	void Bind(GFX& gfx) noexcept override
 	{

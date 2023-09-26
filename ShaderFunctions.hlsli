@@ -18,13 +18,14 @@ float3 GetNormalInViewSpace(
     if(isRetardedBrickWallWithMessedUpNormals)
     {
         result.x = normalMapSample.x * 4.0f - 1.0f;
-        result.y = -normalMapSample.y * 4.0f + 1.0f;
+        result.y = normalMapSample.y * 4.0f - 1.0f;
         result.z = -normalMapSample.z * 2.0f + 1.0f;
     }
     else
+    {
         result = normalMapSample * 2.0f - 1.0f;
-    
-    result.y = -result.y;
+        result.y = -result.y;
+    }
     
     return normalize(mul(result, (float3x3) tangentTransform));
 }

@@ -100,6 +100,9 @@ public:
 
 		if (auto bindableShaderMaterial = m_pMeshes.front()->GetBindable<PixelConstantBuffer<ModelMaterial>>())
 		{
+			if (!materialsDefined)
+				shaderMaterial = bindableShaderMaterial->constBufferData;
+
 			bool normalMapEnabledChanged = ImGui::Checkbox("normalMapEnabled", (bool*)(&shaderMaterial.normalMapEnabled));
 			bool normalMapHasAlphaChanged = ImGui::Checkbox("normalMapHasAlpha", (bool*)(&shaderMaterial.normalMapHasAlpha));
 			bool specularMapEnabledChanged = ImGui::Checkbox("specularMapEnabled", (bool*)(&shaderMaterial.specularMapEnabled));
@@ -112,6 +115,9 @@ public:
 		}
 		else if (auto bindableShaderMaterial = m_pMeshes.front()->GetBindable<PixelConstantBuffer<ModelMaterialNoMaps>>())
 		{
+			if(!materialsDefined)
+				shaderMaterialNoMaps = bindableShaderMaterial->constBufferData;
+
 			bool materialColorChanged = ImGui::ColorPicker4("materialColor", (float*)(&shaderMaterialNoMaps.materialColor.x));
 			bool specularColorChanged = ImGui::ColorPicker4("specularColor", (float*)(&shaderMaterialNoMaps.specularColor.x));
 			bool specularPowerChanged = ImGui::SliderFloat("specularPower", &shaderMaterialNoMaps.specularPower, 0.0f, 1000.0f, "%f");
@@ -119,6 +125,7 @@ public:
 			if(materialColorChanged || specularColorChanged || specularPowerChanged)
 				bindableShaderMaterial->Update(gfx, shaderMaterialNoMaps);
 		}
+		materialsDefined = true;
 	}
 
 private:
@@ -135,6 +142,7 @@ private:
 	std::string m_nodeName;
 	ModelMaterial shaderMaterial;
 	ModelMaterialNoMaps shaderMaterialNoMaps;
+	bool materialsDefined = false;
 
 public:
 	DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
