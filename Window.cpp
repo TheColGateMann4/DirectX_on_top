@@ -147,7 +147,7 @@ std::vector<std::string> Window::MultiselectToFilePaths(std::string* multiSelect
 			return result;
 		}
 
-	for (;;)
+	for (size_t i = 0; i < multiSelectStr->length();i++)
 	{
 		currentEndPos = multiSelectStr->find('\0', currentEndPos + 1);
 		if (currentEndPos == std::string::npos || currentEndPos == lastEndPos + 1)
