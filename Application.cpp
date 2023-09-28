@@ -170,13 +170,14 @@ void Application::DoFrame()
 			std::string filePathsMultiSelect = {};
 			filePathsMultiSelect.resize(MAX_PATH);
 
-			window.OpenFileExplorer(&filePathsMultiSelect);
-
-			std::vector<std::string> filePaths = window.MultiselectToFilePaths(&filePathsMultiSelect);
-
-			for (auto& filePath : filePaths)
+			if(window.OpenFileExplorer(&filePathsMultiSelect) != 0)
 			{
-				models.push_back(std::make_unique<Model>(window.Graphics, filePath, 1.0f));
+				std::vector<std::string> filePaths = window.MultiselectToFilePaths(&filePathsMultiSelect);
+
+				for (auto& filePath : filePaths)
+				{
+					models.push_back(std::make_unique<Model>(window.Graphics, filePath, 1.0f));
+				}
 			}
 		}
 	}
