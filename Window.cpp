@@ -3,6 +3,7 @@
 #include "KeyMacros.h"
 #include "resource.h"
 #include "imgui/backend/imgui_impl_win32.h"
+#include <shlobj_core.h>
 //! WindowClass
 
 Window::WindowClass Window::WindowClass::sWindowClass;
@@ -108,6 +109,61 @@ void Window::LockCursor(bool lock)
 		ClipCursor(nullptr);
 	}
 }
+
+
+BOOL Window::OpenFileExplorer(std::string* filename)
+{
+
+	GetCurrentDirectory(MAX_PATH, filename->data());
+
+	std::string myExtension = "Model Files\0.OBJ\0\0";
+
+	OPENFILENAMEA openFileStructure = {};
+	openFileStructure.lStructSize = sizeof(openFileStructure);
+	openFileStructure.hwndOwner = NULL;
+	openFileStructure.lpstrFilter = myExtension.data();
+	openFileStructure.nFilterIndex = 1;
+	openFileStructure.lpstrFile = filename->data();
+	openFileStructure.nMaxFile = MAX_PATH;
+	openFileStructure.Flags = OFN_DONTADDTORECENT | OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_PATHMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
+	openFileStructure.lpstrTitle = "Import New Model";
+
+	return GetOpenFileName(&openFileStructure);
+}
+
+std::vector<std::string> Window::MultiselectToFilePaths(std::string* multiSelectStr)
+{
+	std::vector<std::string> result = {};
+
+	size_t currentEndPos = multiSelectStr->find('\0');
+	size_t lastEndPos = currentEndPos;
+
+	std::string filepath = std::string(multiSelectStr->begin(), multiSelectStr->end() - (multiSelectStr->length() - currentEndPos)); //searching for first \0 that is used to indicate files
+
+	if (currentEndPos + 1 < multiSelectStr->length())
+		if (multiSelectStr->at(currentEndPos + 1) == '\0')
+		{
+			result.push_back(filepath);
+			return result;
+		}
+
+	for (;;)
+	{
+		currentEndPos = multiSelectStr->find('\0', currentEndPos + 1);
+		if (currentEndPos == std::string::npos || currentEndPos == lastEndPos + 1)
+			break;
+
+		std::string fileNameAndExtension = std::string(multiSelectStr->begin() + lastEndPos, multiSelectStr->end() - (multiSelectStr->length() - currentEndPos));
+		result.push_back(filepath + '\\' + fileNameAndExtension);
+
+
+		lastEndPos = currentEndPos;
+	}
+
+	return result;
+}
+
+
 
 //! Window
 

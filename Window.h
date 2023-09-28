@@ -17,6 +17,11 @@ class Window
 	BOOL ProcessMessage();
 	void ShowCursor(bool show);
 	void LockCursor(bool lock);
+
+public:
+	BOOL OpenFileExplorer(std::string* filename);
+	std::vector<std::string> MultiselectToFilePaths(std::string* multiSelectStr);
+
 public:
 	UINT32 GetWidth();
 	UINT32 GetHeight();

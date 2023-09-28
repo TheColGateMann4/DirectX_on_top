@@ -7,7 +7,7 @@
 #include <sdkddkver.h>
 
 //removing useless stuff from windows.h
-#define WIN32_LEAN_AND_MEAN
+// #define WIN32_LEAN_AND_MEAN
 // #define NOGDICAPMASKS
 // #define NOSYSMETRICS
 // #define NOMENUS
