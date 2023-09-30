@@ -193,6 +193,7 @@
     <ClInclude Include="KeyMacros.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelHierarchy.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="PointLight.h" />
@@ -236,6 +237,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelHierarchy.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PointLightModel.cpp" />

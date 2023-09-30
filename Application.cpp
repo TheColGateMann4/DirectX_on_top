@@ -24,9 +24,9 @@ BOOL Application::Initiate()
 {
  	window.Input.Key.allowRepeating(TRUE);
 
-	models.push_back(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
-	models.push_back(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
-	models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
+	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
+	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
+	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
 
 	while (true)
 	{
@@ -144,8 +144,7 @@ void Application::DoFrame()
 
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
-	for(auto& model : models)
-		model->Draw(window.Graphics);
+	modelHierarchy.DrawModels(window.Graphics);
 
 	pointLight.Draw(window.Graphics);
 
@@ -163,28 +162,7 @@ void Application::DoFrame()
 	window.Graphics.camera.SpawnControlWindow();
 	pointLight.SpawnControlWindow(window.Graphics);
 
-	if (ImGui::Begin("Object Controler"))
-	{
-		if (ImGui::Button("Import Model"))
-		{
-			std::string filePathsMultiSelect = {};
-			filePathsMultiSelect.resize(MAX_PATH);
-
-			if(window.OpenFileExplorer(&filePathsMultiSelect) != 0)
-			{
-				std::vector<std::string> filePaths = window.MultiselectToFilePaths(&filePathsMultiSelect);
-
-				for (auto& filePath : filePaths)
-				{
-					models.push_back(std::make_unique<Model>(window.Graphics, filePath, 1.0f));
-				}
-			}
-		}
-	}
-	ImGui::End();
-
-	for (auto& model : models)
-		model->SpawnControlWindow(window.Graphics);
+	modelHierarchy.DrawModelHierarchy(window.Graphics);
 
 	window.Graphics.FinishFrame();
 }

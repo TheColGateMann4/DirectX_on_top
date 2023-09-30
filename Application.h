@@ -7,6 +7,7 @@
 #include "PointLight.h"
 #include "Model.h"
 #include "Sheet.h"
+#include "ModelHierarchy.h"
 
 class Application
 {
@@ -33,6 +34,6 @@ private:
 	//scene
 private:
 	PointLight pointLight;
-	std::vector<std::unique_ptr<Model>> models;
+	ModelHierarchy modelHierarchy;
 };
 

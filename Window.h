@@ -20,7 +20,7 @@ class Window
 
 public:
 	BOOL OpenFileExplorer(std::string* filename);
-	std::vector<std::string> MultiselectToFilePaths(std::string* multiSelectStr);
+	BOOL MultiselectToFilePaths(std::string* multiSelectStr, std::vector<std::string>* filePaths);
 
 public:
 	UINT32 GetWidth();

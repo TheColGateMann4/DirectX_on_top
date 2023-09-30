@@ -131,10 +131,8 @@ BOOL Window::OpenFileExplorer(std::string* filename)
 	return GetOpenFileName(&openFileStructure);
 }
 
-std::vector<std::string> Window::MultiselectToFilePaths(std::string* multiSelectStr)
+BOOL Window::MultiselectToFilePaths(std::string* multiSelectStr, std::vector<std::string>* filePaths)
 {
-	std::vector<std::string> result = {};
-
 	size_t currentEndPos = multiSelectStr->find('\0');
 	size_t lastEndPos = currentEndPos;
 
@@ -143,8 +141,11 @@ std::vector<std::string> Window::MultiselectToFilePaths(std::string* multiSelect
 	if (currentEndPos + 1 < multiSelectStr->length())
 		if (multiSelectStr->at(currentEndPos + 1) == '\0')
 		{
-			result.push_back(filepath);
-			return result;
+			if (std::string(multiSelectStr->end() - 4, multiSelectStr->end()) != ".obj")
+				return 0; // no .obj extension and only one file was selected
+
+			filePaths->push_back(filepath);
+			return 1; // just one file was selected
 		}
 
 	for (size_t i = 0; i < multiSelectStr->length();i++)
@@ -154,13 +155,15 @@ std::vector<std::string> Window::MultiselectToFilePaths(std::string* multiSelect
 			break;
 
 		std::string fileNameAndExtension = std::string(multiSelectStr->begin() + lastEndPos, multiSelectStr->end() - (multiSelectStr->length() - currentEndPos));
-		result.push_back(filepath + '\\' + fileNameAndExtension);
+		
+		if(std::string(fileNameAndExtension.end() - 4, fileNameAndExtension.end()) == ".obj") // doing check for at least 4 characters is pointless, because if a user manages to do this he is weird
+			filePaths->push_back(filepath + '\\' + fileNameAndExtension);
 
 
 		lastEndPos = currentEndPos;
 	}
 
-	return result;
+	return 2; // multiple files were selected
 }
 
 

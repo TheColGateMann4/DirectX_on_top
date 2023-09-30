@@ -26,15 +26,18 @@ public:
 	void Draw(GFX& gfx) const noexcept(!IS_DEBUG);
 
 public:
-	void SpawnControlWindow(GFX& gfx);
+	void MakeHierarchy(GFX& gfx);
+	void MakePropeties(GFX& gfx);
 
 private:
 	std::unique_ptr<Node> m_pStartingNode;
 	std::vector<std::unique_ptr<Mesh>> m_pMeshes;
 
 private:
-	Node* m_pressedNode = nullptr;
 	float m_scale = 1.0f;
 	std::string m_filePath = "";
 	std::string m_fileName = "";
+
+public:
+	Node* m_pressedNode = nullptr;
 };
