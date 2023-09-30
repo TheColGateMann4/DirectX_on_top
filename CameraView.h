@@ -26,8 +26,8 @@ private:
 	float WrapAngle(float angle, float value);
 
 private:
-	DirectX::XMFLOAT3 m_position = { 0.0f, 3.0f, -12.0f };
-	DirectX::XMFLOAT3 m_view = {};
+	DirectX::XMFLOAT3 m_position = { -37.5f, 7.0f, 1.0f };
+	DirectX::XMFLOAT3 m_view = { 0.5f * std::_Pi, 0.0f, 0.0f};
 
 	static constexpr float m_movespeed = 12.0f;
 	static constexpr float m_sensivity = 0.004f;

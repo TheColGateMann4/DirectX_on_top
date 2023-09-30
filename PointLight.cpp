@@ -45,7 +45,7 @@ void PointLight::SpawnControlWindow(GFX& gfx) noexcept
 
 void PointLight::Reset() noexcept
 {
-	m_pcstruct.position = { 0.0f,0.0f,-8.0f };
+	m_pcstruct.position = { -1.4f, 3.0f, 1.35f };
 	m_pcstruct.ambient = { 0.05f, 0.05f, 0.05f };
 	m_pcstruct.lightColor = { 1.0f, 1.0f, 1.0f };
 

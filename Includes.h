@@ -48,6 +48,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <random>
 
 #define OBJLOADER_READ_SIZE 1024
 

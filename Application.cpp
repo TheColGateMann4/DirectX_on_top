@@ -17,16 +17,17 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 		AspectRatioY = (float)height / (float)width;
 		aspectRatioX = 1.0f;
 	}
- 	window.Graphics.camera.SetProjection(DirectX::XMMatrixPerspectiveLH(aspectRatioX, AspectRatioY, 0.5f, 40.0f));
+ 	window.Graphics.camera.SetProjection(DirectX::XMMatrixPerspectiveLH(aspectRatioX, AspectRatioY, 0.5f, 400.0f));
 }
 
 BOOL Application::Initiate()
 {
  	window.Input.Key.allowRepeating(TRUE);
 
-	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
-	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
-	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
+	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
+	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
+	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
+	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 
 	while (true)
 	{
