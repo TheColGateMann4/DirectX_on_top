@@ -1,15 +1,5 @@
-cbuffer lightBuffer : register(b0)
-{
-    float3 b_lightPosition;
-    
-    float3 b_ambient;
-    float3 b_lightColor;
-    
-    float b_diffuseIntensity;
-    float b_attenuationConst;
-    float b_attenuationLinear;
-    float b_attenuationQuadratic;
-};
+#include "ShaderFunctions.hlsli"
+#include "PointLightConstBuffer.hlsli"
 
 Texture2D t_diffuseTexture : register(t0);
 Texture2D t_specularTexture : register(t1);
@@ -17,7 +7,7 @@ SamplerState s_sampler : register(s0);
 
 float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD) : SV_TARGET
 {
-    const float3 VectorLength = b_lightPosition - positionRelativeToCamera;
+    const float3 VectorLength = b_viewLightPosition - positionRelativeToCamera;
     const float lengthOfVectorLength = length(VectorLength);
     const float3 DirectionToLightSource = VectorLength / lengthOfVectorLength;
     

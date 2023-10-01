@@ -18,12 +18,12 @@ void PointLight::SpawnControlWindow(GFX& gfx) noexcept
 
 		ImGui::Text("Color");
 		ImGui::ColorEdit3("Light Color", &m_pcstruct.lightColor.x, ImGuiColorEditFlags_NoAlpha);
-		ImGui::SliderFloat("Diffuse Intensity", &m_pcstruct.diffuseIntensity, 0.00001f, 1.0f);
+		ImGui::SliderFloat("Diffuse Intensity", &m_pcstruct.diffuseIntensity, 0.01f, 2.0f, "%.2f");
 		ImGui::ColorEdit3("Ambient", &m_pcstruct.ambient.x, ImGuiColorEditFlags_NoAlpha);
 
 		ImGui::Text("Falloff");
-		ImGui::SliderFloat("Attenuation Const", &m_pcstruct.attenuationConst, 0.00001f, 1.0f);
-		ImGui::SliderFloat("Attenuation Linear", &m_pcstruct.attenuationLinear, 0.00001f, 1.0f);
+		ImGui::SliderFloat("Attenuation Const", &m_pcstruct.attenuationConst, 0.05f, 10.0f, "%.2f");
+		ImGui::SliderFloat("Attenuation Linear", &m_pcstruct.attenuationLinear, 0.0001f, 4.0f, "%.4f");
 		ImGui::SliderFloat("Attenuation Quadratic", &m_pcstruct.attenuationQuadratic, 0.00001f, 1.0f);
 
 		if (ImGui::Button("Reset"))

@@ -24,6 +24,8 @@ SamplerState s_sampler : register(s0);
 
 float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD) : SV_TARGET
 {
+    normal = normalize(normal);
+    
     const float3 VectorLength = b_lightPosition - positionRelativeToCamera;
     const float lengthOfVectorLength = length(VectorLength);
     const float3 DirectionToLightSource = VectorLength / lengthOfVectorLength;

@@ -4,7 +4,7 @@
 cbuffer objectBuffer : register(b1)
 {
     bool b_normalMapEnabled;
-    bool b_normalMapHasAlpha;
+    bool b_specularMapHasAlpha;
     bool b_specularMapEnable;
     float b_specularPower;
     float3 b_specularColor;
@@ -23,9 +23,11 @@ float4 main(
         float3 viewBitangent : BITANGENT,
         float2 textureCoords : TEXCOORD ) : SV_TARGET
 {   
+    normal = normalize(normal);
+    
     if (b_normalMapEnabled)
     {
-        normal = GetNormalInViewSpace(normal, viewTangent, viewBitangent, textureCoords, s_sampler, t_uvmapTexture);
+        normal = GetNormalInViewSpace(normal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_uvmapTexture);
     }
     
     const float3 VectorLength = b_viewLightPosition - positionRelativeToCamera;
@@ -36,7 +38,7 @@ float4 main(
 	
     const float3 diffuse = GetDiffuse(normal, attenuation, DirectionToLightSource, b_lightColor, b_diffuseIntensity);
     
-    const float3 specularColor = b_specularColor;
+    const float3 specularColor = b_specularColor * b_specularMapWeight;
     float specularPower = b_specularPower;
     
     if (b_specularMapEnable)
@@ -44,7 +46,7 @@ float4 main(
         const float4 specularSample = t_specularTexture.Sample(s_sampler, textureCoords);
         const float3 specularColor = specularSample.rgb * b_specularMapWeight;
         
-        if (b_normalMapHasAlpha)
+        if (b_specularMapHasAlpha)
             specularPower = pow(2.0f, specularSample.a * 13.0f);
     }
     

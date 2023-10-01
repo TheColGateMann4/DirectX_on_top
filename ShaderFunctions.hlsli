@@ -5,29 +5,16 @@ float3 GetNormalInViewSpace(
         const in float3 viewBitangent : BITANGENT,
         const in float2 textureCoords : TEXCOORD,
         uniform SamplerState s_sampler,
-        uniform Texture2D t_uvmapTexture,
-        const in bool isRetardedBrickWallWithMessedUpNormals = false)
+        uniform Texture2D t_uvmapTexture)
 {
     //transform rotation in tangent space
     const float3x3 tangentTransform = { viewTangent, viewBitangent, normal };
         
     const float3 normalMapSample = t_uvmapTexture.Sample(s_sampler, textureCoords).rgb;
         
-    float3 result;
+    float3 tangentNormal = normalMapSample * 2.0f - 1.0f;
     
-    if(isRetardedBrickWallWithMessedUpNormals)
-    {
-        result.x = normalMapSample.x * 4.0f - 1.0f;
-        result.y = normalMapSample.y * 4.0f - 1.0f;
-        result.z = -normalMapSample.z * 2.0f + 1.0f;
-    }
-    else
-    {
-        result = normalMapSample * 2.0f - 1.0f;
-        result.y = -result.y;
-    }
-    
-    return normalize(mul(result, (float3x3) tangentTransform));
+    return normalize(mul(tangentNormal, tangentTransform));
 }
 
 float GetAttenuation(
@@ -36,7 +23,7 @@ float GetAttenuation(
         uniform float b_attenuationLinear,
         uniform float b_attenuationQuadratic)
 {
-    return 1 / (b_attenuationConst + b_attenuationLinear * lengthOfVectorLength + b_attenuationQuadratic * (lengthOfVectorLength * lengthOfVectorLength));
+    return 1.0f / (b_attenuationConst + b_attenuationLinear * lengthOfVectorLength + b_attenuationQuadratic * (lengthOfVectorLength * lengthOfVectorLength));
 }
 
 float3 GetDiffuse(

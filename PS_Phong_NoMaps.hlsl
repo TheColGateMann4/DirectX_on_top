@@ -20,6 +20,8 @@ cbuffer objectBuffer : register(b1)
 
 float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL) : SV_TARGET
 {
+    normal = normalize(normal);
+    
     const float3 VectorLength = b_lightPosition - positionRelativeToCamera;
     const float lengthOfVectorLength = length(VectorLength);
     const float3 DirectionToLightSource = VectorLength / lengthOfVectorLength;

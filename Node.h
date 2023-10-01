@@ -12,7 +12,7 @@ class Node
 public:
 	struct ModelMaterial {
 		BOOL normalMapEnabled = TRUE;
-		BOOL normalMapHasAlpha = FALSE;
+		BOOL specularMapHasAlpha = FALSE;
 		BOOL specularMapEnabled = TRUE;
 		float specularPower = 3.1f;
 		DirectX::XMFLOAT3 specularColor = { 0.75f,0.75f,0.75f };
@@ -104,7 +104,7 @@ public:
 				shaderMaterial = bindableShaderMaterial->constBufferData;
 
 			bool normalMapEnabledChanged = ImGui::Checkbox("normalMapEnabled", (bool*)(&shaderMaterial.normalMapEnabled));
-			bool normalMapHasAlphaChanged = ImGui::Checkbox("normalMapHasAlpha", (bool*)(&shaderMaterial.normalMapHasAlpha));
+			bool normalMapHasAlphaChanged = ImGui::Checkbox("normalMapHasAlpha", (bool*)(&shaderMaterial.specularMapHasAlpha));
 			bool specularMapEnabledChanged = ImGui::Checkbox("specularMapEnabled", (bool*)(&shaderMaterial.specularMapEnabled));
 			bool specularPowerChanged = ImGui::SliderFloat("specularPower", &shaderMaterial.specularPower, 0.0f, 1000.0f, "%f");
 			bool specularColorChanged = ImGui::ColorPicker3("specularColor", (float*)(&shaderMaterial.specularColor.x));
