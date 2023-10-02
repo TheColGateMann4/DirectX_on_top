@@ -35,7 +35,7 @@ Sheet::Sheet(GFX& gfx, const UINT32 TesselationRatio, const UINT32 TextureRatio)
 
 	AddBindable(Texture::GetBindable(gfx, "Images\\brickwall.jpg", 0));
 
-	AddBindable(Texture::GetBindable(gfx, "Images\\brickwallUV.jpg", 1, true));
+	AddBindable(Texture::GetBindable(gfx, "Images\\brickwallUV.jpg", 1));
 
 	AddBindable(PixelConstantBuffer<ModelMaterial>::GetBindable(gfx, m_constBuffer, 1));
 

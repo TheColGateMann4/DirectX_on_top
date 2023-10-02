@@ -51,12 +51,6 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	float shinyness = 35.0f;
 	std::vector<std::shared_ptr<Bindable>> bindables;
 
-	std::string nameee = mesh.mName.C_Str();
-	if (nameee == "sponza_377") //sponza_117
-	{
-		std::cout << "found";
-	}
-
 	DirectX::XMFLOAT4 SpecularColor = { 0.18f, 0.18f, 0.18f, 1.0f };
 	DirectX::XMFLOAT4 DiffuseColor = { 0.45f, 0.45f, 0.85f, 1.0f };
 

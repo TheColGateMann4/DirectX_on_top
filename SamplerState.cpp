@@ -10,6 +10,9 @@ SamplerState::SamplerState(GFX& gfx, D3D11_TEXTURE_ADDRESS_MODE mode)
 	samplerDesc.AddressU = mode;
 	samplerDesc.AddressV = mode;
 	samplerDesc.AddressW = mode;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MinLOD = 0.0f;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateSamplerState(&samplerDesc, &pSamplerState))
 }
