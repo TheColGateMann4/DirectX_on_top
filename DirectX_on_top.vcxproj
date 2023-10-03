@@ -201,6 +201,7 @@
     <ClInclude Include="PointLightModel.h" />
     <ClInclude Include="PSConstBuffer.h" />
     <ClInclude Include="Pyramid.h" />
+    <ClInclude Include="RasterizerState.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SamplerState.h" />
     <ClInclude Include="Shape.h" />
@@ -244,6 +245,7 @@
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PointLightModel.cpp" />
     <ClCompile Include="Pyramid.cpp" />
+    <ClCompile Include="RasterizerState.cpp" />
     <ClCompile Include="SamplerState.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sheet.cpp" />

@@ -2,6 +2,7 @@
 
 BlendState::BlendState(GFX& gfx, bool blend)
 {
+	m_blend = blend;
 	HRESULT hr;
 
 	D3D11_BLEND_DESC blendDesc = {};

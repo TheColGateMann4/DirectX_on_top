@@ -385,6 +385,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		std::runtime_error("Wrong combination of model texture maps.");
 	}
 
+	bindables.push_back(RasterizerState::GetBindable(gfx, diffuseMapHasAlpha));	// only objects here that take advantage of it are with alpha blending on diffuse texture
+
 	return std::make_unique<Mesh>(gfx, std::move(bindables));
 }
 
