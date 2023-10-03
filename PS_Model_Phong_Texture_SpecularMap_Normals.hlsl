@@ -28,10 +28,16 @@ float4 main(
     
     normal = normalize(normal);
     
-    if (b_normalMapEnabled)
+    if (dot(normal, positionRelativeToCamera) >= 0.0f)
     {
-        normal = GetNormalInViewSpace(normal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_uvmapTexture);
+        normal = -normal;
     }
+    
+    
+        if (b_normalMapEnabled)
+        {
+            normal = GetNormalInViewSpace(normal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_uvmapTexture);
+        }
     
     const float3 VectorLength = b_viewLightPosition - positionRelativeToCamera;
     const float lengthOfVectorLength = length(VectorLength);

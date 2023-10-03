@@ -25,6 +25,11 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     
     normal = normalize(normal);
     
+    if (dot(normal, positionRelativeToCamera) >= 0.0f)
+    {
+        normal = -normal;
+    }
+    
     if (b_normalMapEnabled)
     {
         normal = GetNormalInViewSpace(normal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_uvmapTexture);
