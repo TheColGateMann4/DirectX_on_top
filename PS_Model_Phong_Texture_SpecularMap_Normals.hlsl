@@ -24,6 +24,8 @@ float4 main(
         float2 textureCoords : TEXCOORD ) : SV_TARGET
 {   
     float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
+    
+#ifdef TEXTURE_WITH_MASK
     clip(diffuseSample.a < 0.1f ? -1.0f : 1.0f);
     
     normal = normalize(normal);
@@ -32,12 +34,12 @@ float4 main(
     {
         normal = -normal;
     }
+#endif
     
-    
-        if (b_normalMapEnabled)
-        {
-            normal = GetNormalInViewSpace(normal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_uvmapTexture);
-        }
+    if (b_normalMapEnabled)
+    {
+        normal = GetNormalInViewSpace(normal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_uvmapTexture);
+    }
     
     const float3 VectorLength = b_viewLightPosition - positionRelativeToCamera;
     const float lengthOfVectorLength = length(VectorLength);

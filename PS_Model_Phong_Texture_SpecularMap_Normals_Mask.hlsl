@@ -1,0 +1,2 @@
+#define TEXTURE_WITH_MASK
+#include "PS_Model_Phong_Texture_SpecularMap_Normals.hlsl"

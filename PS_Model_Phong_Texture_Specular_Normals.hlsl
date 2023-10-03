@@ -19,16 +19,8 @@ Texture2D t_uvmapTexture : register(t2);
 SamplerState s_sampler : register(s0);
 
 float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float3 viewTangent : TANGENT, float3 viewBitangent : BITANGENT, float2 textureCoords : TEXCOORD) : SV_TARGET
-{
-    float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
-    clip(diffuseSample.a < 1.0f ? -1.0f : 1.0f);
-    
+{    
     normal = normalize(normal);
-    
-    if (dot(normal, positionRelativeToCamera) >= 0.0f)
-    {
-        normal = -normal;
-    }
     
     if (b_normalMapEnabled)
     {
@@ -44,6 +36,8 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     const float3 diffuse = GetDiffuse(normal, attenuation, DirectionToLightSource, b_lightColor, b_diffuseIntensity);
     
     const float3 specular = GetSpecular(positionRelativeToCamera, normal, VectorLength, attenuation, b_specularPower, b_lightColor, b_diffuseIntensity);
+    
+    float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
     
     return float4(saturate((diffuse + b_ambient) * diffuseSample.rgb + specular), diffuseSample.a);
 }

@@ -149,7 +149,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		ID3DBlob* pBlob = pVertexShader->GetByteCode();
 		bindables.push_back(std::move(pVertexShader));
 
-		bindables.push_back(PixelShader::GetBindable(gfx, "PS_Model_Phong_Texture_SpecularMap_Normals.cso"));
+		bindables.push_back(PixelShader::GetBindable(gfx, diffuseMapHasAlpha ? "PS_Model_Phong_Texture_SpecularMap_Normals_Mask.cso" : "PS_Model_Phong_Texture_SpecularMap_Normals.cso"));
 
 		Node::ModelMaterial modelMaterial = {};
 		modelMaterial.specularMapHasAlpha = normalMapHasAlpha;
