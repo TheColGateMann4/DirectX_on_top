@@ -189,6 +189,9 @@
     <ClInclude Include="ModelHierarchy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BlendState.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -295,6 +298,9 @@
     </ClCompile>
     <ClCompile Include="ModelHierarchy.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BlendState.cpp">
+      <Filter>Source Files\Bindable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

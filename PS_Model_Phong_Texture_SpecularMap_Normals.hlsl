@@ -23,6 +23,9 @@ float4 main(
         float3 viewBitangent : BITANGENT,
         float2 textureCoords : TEXCOORD ) : SV_TARGET
 {   
+    float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
+    clip(diffuseSample.a < 0.1f ? -1.0f : 1.0f);
+    
     normal = normalize(normal);
     
     if (b_normalMapEnabled)
@@ -51,6 +54,7 @@ float4 main(
     }
     
     const float3 specular = GetSpecular(positionRelativeToCamera, normal, VectorLength, attenuation, specularPower, b_lightColor, b_diffuseIntensity);
+   
     
-    return float4(saturate((diffuse + b_ambient) * t_diffuseTexture.Sample(s_sampler, textureCoords).rgb + specular * specularColor), 1.0f);
+    return float4(saturate((diffuse + b_ambient) * diffuseSample.rgb + specular * specularColor), diffuseSample.a);
 }

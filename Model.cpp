@@ -45,10 +45,13 @@ Model::Model(GFX& gfx, std::string fileName, float scale)
 std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string &modelPath, std::string &modelName, float scale)
 {
 	bool hasSpecularMap = false;
+	bool specularHasAlpha = false;
 	bool hasNormalMap = false;
+	bool normalMapHasAlpha = false;
 	bool hasDiffuseMap = false;
-	bool hasAlphaGloss = false;
+	bool diffuseMapHasAlpha = false;
 	float shinyness = 35.0f;
+
 	std::vector<std::shared_ptr<Bindable>> bindables;
 
 	DirectX::XMFLOAT4 SpecularColor = { 0.18f, 0.18f, 0.18f, 1.0f };
@@ -61,7 +64,9 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
-			bindables.push_back(Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 0));
+			auto diffuseTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 0);
+			diffuseMapHasAlpha = diffuseTexture->HasAlpha();
+			bindables.push_back(std::move(diffuseTexture));
 			hasDiffuseMap = true;
 		}
 		else
@@ -72,7 +77,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		if (material.GetTexture(aiTextureType_NORMALS, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
 			const auto normalTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 2);
-			hasAlphaGloss = normalTexture->HasAlpha();
+			normalMapHasAlpha = normalTexture->HasAlpha();
 			bindables.push_back(std::move(normalTexture));
 			hasNormalMap = true;
 		}
@@ -80,7 +85,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
 			const auto specularTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 1);
-			hasAlphaGloss = specularTexture->HasAlpha();
+			specularHasAlpha = specularTexture->HasAlpha();
 			bindables.push_back(std::move(specularTexture));
 			hasSpecularMap = true;
 		}
@@ -89,7 +94,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(SpecularColor));
 		}
 
-		if (!hasAlphaGloss)
+		if (!specularHasAlpha)
 		{
 			material.Get(AI_MATKEY_SHININESS, shinyness);
 		}
@@ -147,7 +152,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		bindables.push_back(PixelShader::GetBindable(gfx, "PS_Model_Phong_Texture_SpecularMap_Normals.cso"));
 
 		Node::ModelMaterial modelMaterial = {};
-		modelMaterial.specularMapHasAlpha = hasAlphaGloss;
+		modelMaterial.specularMapHasAlpha = normalMapHasAlpha;
 		modelMaterial.specularPower = shinyness;
 		modelMaterial.specularColor = DirectX::XMFLOAT3(SpecularColor.x, SpecularColor.y, SpecularColor.z);
 

@@ -1,0 +1,41 @@
+#pragma once
+#include "Includes.h"
+#include "Graphics.h"
+#include "Bindable.h"
+#include "BindableList.h"
+
+class BlendState : public Bindable
+{
+public:
+	BlendState(GFX& gfx, bool blend);
+
+public:
+	void Bind(GFX& gfx) noexcept override;
+
+public:
+	static std::shared_ptr<BlendState> GetBindable(GFX& gfx, bool blend)
+	{
+		return BindableList::GetBindable<BlendState>(gfx, blend);
+	}
+
+	std::string GetUID() const noexcept override
+	{
+		return GenerateUID(m_blend);
+	};
+
+	static std::string GetUID(bool blend) noexcept
+	{
+		return GenerateUID(blend);
+	};
+
+private:
+	static std::string GenerateUID(bool blend)
+	{
+		return std::to_string(blend);
+	}
+
+protected:
+	bool m_blend;
+	Microsoft::WRL::ComPtr<ID3D11BlendState> pBlendState;
+};
+

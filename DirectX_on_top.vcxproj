@@ -170,6 +170,7 @@
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="BindableClassesMacro.h" />
     <ClInclude Include="BindableList.h" />
+    <ClInclude Include="BlendState.h" />
     <ClInclude Include="CameraView.h" />
     <ClInclude Include="ConstantBuffers.h" />
     <ClInclude Include="Cube.h" />
@@ -219,6 +220,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Bindable.cpp" />
+    <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="CameraView.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DXError.cpp" />
