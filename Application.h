@@ -34,6 +34,6 @@ private:
 	//scene
 private:
 	PointLight pointLight;
-	ModelHierarchy modelHierarchy;
+	ModelHierarchy modelHierarchy = ModelHierarchy(&window);
 };
 
