@@ -141,8 +141,8 @@ BOOL Window::MultiselectToFilePaths(std::string* multiSelectStr, std::vector<std
 	if (currentEndPos + 1 < multiSelectStr->length())
 		if (multiSelectStr->at(currentEndPos + 1) == '\0')
 		{
-			if (std::string(multiSelectStr->end() - 4, multiSelectStr->end()) != ".obj")
-				return 0; // no .obj extension and only one file was selected
+// 			if (std::string(multiSelectStr->end() - 4, multiSelectStr->end()) != ".obj")
+// 				return 0; // no .obj extension and only one file was selected
 
 			filePaths->push_back(filepath);
 			return 1; // just one file was selected

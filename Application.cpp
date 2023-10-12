@@ -145,7 +145,7 @@ void Application::DoFrame()
 
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
-	modelHierarchy.DrawModels(window.Graphics);
+	modelHierarchy.DrawModels();
 
 	pointLight.Draw(window.Graphics);
 
@@ -163,7 +163,7 @@ void Application::DoFrame()
 	window.Graphics.camera.SpawnControlWindow();
 	pointLight.SpawnControlWindow(window.Graphics);
 
-	modelHierarchy.DrawModelHierarchy(window.Graphics);
+	modelHierarchy.DrawModelHierarchy();
 
 	window.Graphics.FinishFrame();
 }

@@ -6,7 +6,7 @@
 #include <cassert>
 #include <typeinfo>
 
-VOID Shape::Draw(GFX& gfx, float time) const
+VOID Shape::Draw(GFX& gfx, float time) const noexcept(!IS_DEBUG)
 {
 	for (auto& b : binds)
 	{

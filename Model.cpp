@@ -1,5 +1,6 @@
 #include "Model.h"
-#include <Shlwapi.h>
+#include "DynamicConstantBuffer.h"
+#include <Shlwapi.h> // PathIsDirectory
 
 
 
@@ -156,7 +157,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		modelMaterial.specularPower = shinyness;
 		modelMaterial.specularColor = DirectX::XMFLOAT3(SpecularColor.x, SpecularColor.y, SpecularColor.z);
 
-		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterial>>(PixelConstantBuffer<Node::ModelMaterial>(gfx, modelMaterial, 1)));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterial>>(gfx, modelMaterial, 1));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -212,7 +213,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		modelMaterial.specularPower = shinyness;
 		modelMaterial.specularMapWeight = 1.0f;
 
-		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterial>>(PixelConstantBuffer<Node::ModelMaterial>(gfx, modelMaterial, 1)));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterial>>(gfx, modelMaterial, 1));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -272,7 +273,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		modelMaterial.specularIntensity = (SpecularColor.x + SpecularColor.y + SpecularColor.z) / 3.0f;
 		modelMaterial.specularPower = shinyness;
 
-		bindables.push_back(std::make_shared<PixelConstantBuffer<ModelMaterialDiffuseNormal>>(PixelConstantBuffer<ModelMaterialDiffuseNormal>(gfx, modelMaterial, 1)));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<ModelMaterialDiffuseNormal>>(gfx, modelMaterial, 1));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -327,7 +328,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		modelMaterial.specularIntensity = (SpecularColor.x + SpecularColor.y + SpecularColor.z) / 3;
 		modelMaterial.specularPower = shinyness;
 
-		bindables.push_back(std::make_shared<PixelConstantBuffer<ModelMaterialDiffuse>>(PixelConstantBuffer<ModelMaterialDiffuse>(gfx, modelMaterial, 1)));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<ModelMaterialDiffuse>>(gfx, modelMaterial, 1));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -376,7 +377,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		modelMaterial.specularColor = SpecularColor;
 		modelMaterial.specularPower = shinyness;
 
-		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterialNoMaps>>(PixelConstantBuffer<Node::ModelMaterialNoMaps>(gfx, modelMaterial, 1)));
+		bindables.push_back(std::make_shared<PixelConstantBuffer<Node::ModelMaterialNoMaps>>(gfx, modelMaterial, 1));
 
 		bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 	}
@@ -385,7 +386,15 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		std::runtime_error("Wrong combination of model texture maps.");
 	}
 
-	bindables.push_back(RasterizerState::GetBindable(gfx, diffuseMapHasAlpha));	// only objects here that take advantage of it are with alpha blending on diffuse texture
+// 	BufferLayout layout;
+// 	layout.Add<Struct>("mystruct");
+// 	layout["mystruct"].Add<Float>("myfloat");
+// 	layout["mystruct"].Add<Float2>("myfloat2");
+// 	layout["mystruct"].Add<Float3>("myfloat3");
+// 	layout["mystruct"].Add<Float4>("myfloat4");
+// 	layout["mystruct"].Add<Bool>("myBool");
+
+	bindables.push_back(RasterizerState::GetBindable(gfx, diffuseMapHasAlpha));
 
 	return std::make_unique<Mesh>(gfx, std::move(bindables));
 }

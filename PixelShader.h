@@ -5,7 +5,7 @@
 class PixelShader : public Bindable
 {
 public:
-	PixelShader(GFX& gfx, const std::string path);
+	PixelShader(GFX& gfx, std::string path);
 	VOID Bind(GFX& gfx) noexcept override;
 
 public:

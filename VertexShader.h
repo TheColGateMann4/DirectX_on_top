@@ -5,8 +5,7 @@
 class VertexShader : public Bindable
 {
 public:
-	VertexShader(GFX& gfx, const std::string& path);
-	VertexShader(GFX& gfx, const std::string&& path);
+	VertexShader(GFX& gfx, std::string path);
 	VOID Bind(GFX& gfx) noexcept;
 	ID3DBlob* GetByteCode() const noexcept;
 

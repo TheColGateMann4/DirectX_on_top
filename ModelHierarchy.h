@@ -13,8 +13,8 @@ public:
 		: m_window(window)	{}
 
 public:
-	void DrawModels(GFX& gfx);
-	void DrawModelHierarchy(GFX& gfx);
+	void DrawModels();
+	void DrawModelHierarchy();
 
 private:
 	void CleanupPressedNodes();

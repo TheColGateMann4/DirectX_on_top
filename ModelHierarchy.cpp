@@ -1,13 +1,13 @@
 #include "ModelHierarchy.h"
 
 
-void ModelHierarchy::DrawModels(GFX& gfx)
+void ModelHierarchy::DrawModels()
 {
 	for (auto& model : models)
-		model->Draw(gfx);
+		model->Draw(m_window->Graphics);
 }
 
-void ModelHierarchy::DrawModelHierarchy(GFX& gfx)
+void ModelHierarchy::DrawModelHierarchy()
 {
 	if (ImGui::Begin("Object Controler"))
 	{
@@ -31,14 +31,14 @@ void ModelHierarchy::DrawModelHierarchy(GFX& gfx)
 	// could remake this hierarchy stuff, but instead faster way is to check pressed nodes in here
 
 	for (auto& model : models)
-		model->MakeHierarchy(gfx);
+		model->MakeHierarchy(m_window->Graphics);
 
 	CleanupPressedNodes(); // doing this between hierarchy and propeties lets us smoothly change pressed nodes without any flicking propeties(two are showing at once for 1 frame)
 
 	ImGui::NextColumn();
 
 	for (auto& model : models)
-		model->MakePropeties(gfx);
+		model->MakePropeties(m_window->Graphics);
 
 	ImGui::End();
 }
