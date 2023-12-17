@@ -1,6 +1,7 @@
 #pragma once
 #include "Includes.h"
 #include "Graphics.h"
+#include "IndexBuffer.h"
 
 class Bindable;
 
@@ -11,7 +12,7 @@ public:
 	Shape(const Shape&) = delete;
 
 public:
-	void Draw(GFX& gfx, float time) const noexcept(!IS_DEBUG);
+	void Draw(GFX& gfx) const noexcept(!IS_DEBUG);
 	virtual DirectX::XMMATRIX GetTranformMatrix() const noexcept = 0;
 
 public:
@@ -26,7 +27,7 @@ public:
 
 public:
 	void AddBindable(std::shared_ptr<Bindable> bindable) noexcept(!IS_DEBUG);
-	void AddIndexBuffer(std::shared_ptr<class IndexBuffer> indexBuffer) noexcept(!IS_DEBUG);
+	void AddIndexBuffer(std::shared_ptr<IndexBuffer> indexBuffer) noexcept(!IS_DEBUG);
 
 private:
 	const class IndexBuffer* pIndexBuffer = NULL;

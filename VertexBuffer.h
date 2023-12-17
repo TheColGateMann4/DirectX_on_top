@@ -28,7 +28,7 @@ public:
 		vertexBufferDesc.StructureByteStride = m_stride;
 
 		D3D11_SUBRESOURCE_DATA vertexBufferResourceData = {};
-		vertexBufferResourceData.pSysMem = vertexBuffer.GetData();
+		vertexBufferResourceData.pSysMem = vertexBuffer.GetConstData();
 
 		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&vertexBufferDesc, &vertexBufferResourceData, &pVertexBuffer));
 	}
@@ -43,7 +43,7 @@ public:
 	}
 
 	template <class ...Params>
-	static std::string GetUID(const std::string bufferUID, Params&& ...params)
+	static std::string GetUID(const std::string bufferUID, Params&&...)
 	{
 		return GenerateUID(bufferUID);
 	};

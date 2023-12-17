@@ -2,8 +2,25 @@
 #include "imgui/imgui.h"
 
 PointLight::PointLight(GFX& gfx, float radius)
-	: m_model(gfx, radius), m_pcbuffer(gfx, 0)
+	: m_model(gfx, radius)
 {
+	DynamicConstantBuffer::BufferLayout layout;
+
+	layout.Add<DynamicConstantBuffer::DataType::Float3>("position");
+	layout.Add<DynamicConstantBuffer::DataType::Float3>("ambient");
+	layout.Add<DynamicConstantBuffer::DataType::Float3>("lightColor");
+
+	layout.Add<DynamicConstantBuffer::DataType::Float>("diffuseIntensity");
+	layout.Add<DynamicConstantBuffer::DataType::Float>("attenuationConst");
+	layout.Add<DynamicConstantBuffer::DataType::Float>("attenuationLinear");
+	layout.Add<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic");
+
+	layout.GetFinished();
+
+	constBufferData = DynamicConstantBuffer::BufferData(layout);
+
+	m_pcbuffer = NonCachedBuffer(gfx, layout, 0, true);
+
 	Reset(); // lazy setting values on startup
 }
 
@@ -11,62 +28,69 @@ void PointLight::SpawnControlWindow(GFX& gfx) noexcept
 {
 	if (ImGui::Begin("Light"))
 	{
+		DynamicConstantBuffer::BufferData& bufferData = constBufferData;
+
+		DirectX::XMFLOAT3& position = *bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position");
 		ImGui::Text("Position");
-		ImGui::SliderFloat("X", &m_pcstruct.position.x, -60.0f, 60.0f);
-		ImGui::SliderFloat("Y", &m_pcstruct.position.y, -60.0f, 60.0f);
-		ImGui::SliderFloat("Z", &m_pcstruct.position.z, -60.0f, 60.0f);
+		ImGui::SliderFloat("X", &position.x, -60.0f, 60.0f);
+		ImGui::SliderFloat("Y", &position.y, -60.0f, 60.0f);
+		ImGui::SliderFloat("Z", &position.z, -60.0f, 60.0f);
 
 		ImGui::Text("Color");
-		ImGui::ColorEdit3("Light Color", &m_pcstruct.lightColor.x, ImGuiColorEditFlags_NoAlpha);
-		ImGui::SliderFloat("Diffuse Intensity", &m_pcstruct.diffuseIntensity, 0.01f, 2.0f, "%.2f");
-		ImGui::ColorEdit3("Ambient", &m_pcstruct.ambient.x, ImGuiColorEditFlags_NoAlpha);
+		ImGui::ColorEdit3("Light Color", reinterpret_cast<float*>(bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor")), ImGuiColorEditFlags_NoAlpha);
+		ImGui::SliderFloat("Diffuse Intensity", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("diffuseIntensity"), 0.01f, 2.0f, "%.2f");
+		ImGui::ColorEdit3("Ambient", reinterpret_cast<float*>(bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("ambient")), ImGuiColorEditFlags_NoAlpha);
 
 		ImGui::Text("Falloff");
-		ImGui::SliderFloat("Attenuation Const", &m_pcstruct.attenuationConst, 0.05f, 10.0f, "%.2f");
-		ImGui::SliderFloat("Attenuation Linear", &m_pcstruct.attenuationLinear, 0.0001f, 4.0f, "%.4f");
-		ImGui::SliderFloat("Attenuation Quadratic", &m_pcstruct.attenuationQuadratic, 0.00001f, 1.0f);
+		auto cipa = bufferData.GetElementPointerValue <DynamicConstantBuffer::DataType::Float>("attenuationLinear");
+		ImGui::SliderFloat("Attenuation Const", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationConst"), 0.05f, 10.0f, "%.2f");
+		ImGui::SliderFloat("Attenuation Linear", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationLinear"), 0.0001f, 4.0f, "%.4f");
+		ImGui::SliderFloat("Attenuation Quadratic", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic"), 0.00001f, 1.0f);
 
 		if (ImGui::Button("Reset"))
 		{
 			Reset();
 		}
 
+		DirectX::XMFLOAT3 editedColor = *bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor");
 		DirectX::XMFLOAT3 modelColor = m_model.GetColor();
-		if (m_pcstruct.lightColor.x != modelColor.x ||
-			m_pcstruct.lightColor.y != modelColor.y ||
-			m_pcstruct.lightColor.z != modelColor.z )
-		{
-			m_model.UpdateLightColorBuffer(gfx, m_pcstruct.lightColor);
-		}
 
+		if (editedColor.x != modelColor.x ||
+			editedColor.y != modelColor.y ||
+			editedColor.z != modelColor.z )
+		{
+			m_model.UpdateLightColorBuffer(gfx, editedColor);
+		}
 	}
 	ImGui::End();
 }
 
 void PointLight::Reset() noexcept
 {
-	m_pcstruct.position = { -1.4f, 3.0f, 1.35f };
-	m_pcstruct.ambient = { 0.05f, 0.05f, 0.05f };
-	m_pcstruct.lightColor = { 1.0f, 1.0f, 1.0f };
+	DynamicConstantBuffer::BufferData &bufferData = constBufferData;
 
-	m_pcstruct.diffuseIntensity = 1.0f;
-	m_pcstruct.attenuationConst = 1.0f;
-	m_pcstruct.attenuationLinear = 0.045f;
-	m_pcstruct.attenuationQuadratic = 0.0075f;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position") = { -1.4f, 3.0f, 1.35f };
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("ambient") = { 0.05f, 0.05f, 0.05f };
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor") = { 1.0f, 1.0f, 1.0f };
+
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("diffuseIntensity") = 1.0f;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationConst") = 1.0f;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationLinear") = 0.045f;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic") = 0.0075f;
 
 }
 
 void PointLight::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
 {
-	m_model.SetPosition(m_pcstruct.position);
-	m_model.Draw(gfx, 0.0f);
+	m_model.SetPosition(*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"));
+	m_model.Draw(gfx);
 }
 
 void PointLight::Bind(GFX& gfx, DirectX::XMMATRIX CameraView_) const noexcept
 {
-	auto temp = m_pcstruct;
-	const auto position = DirectX::XMLoadFloat3(&m_pcstruct.position);
-	DirectX::XMStoreFloat3(&temp.position, DirectX::XMVector3Transform(position, CameraView_));
+	auto temp = constBufferData;
+	const auto position = DirectX::XMLoadFloat3(constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"));
+	DirectX::XMStoreFloat3(temp.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"), DirectX::XMVector3Transform(position, CameraView_));
 	m_pcbuffer.Update(gfx, temp);
 	m_pcbuffer.Bind(gfx);
 }

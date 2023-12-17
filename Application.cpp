@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "KeyMacros.h"
+#include "imgui/imgui.h"
 #include <random>
-#include "imgui/imgui.h";
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name), window(width, height, name), pointLight(window.Graphics)

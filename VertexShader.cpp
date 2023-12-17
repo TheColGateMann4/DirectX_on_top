@@ -1,4 +1,5 @@
 #include "VertexShader.h"
+#include "StringConverting.h"
 #include <d3dcompiler.h>
 
 VertexShader::VertexShader(GFX& gfx, std::string path)
@@ -6,12 +7,13 @@ VertexShader::VertexShader(GFX& gfx, std::string path)
 	HRESULT hr;
 
 	path = "Shaders\\" + path;
+	std::wstring wpath = StringConverting::NarrowToWide(path);
 
 	THROW_GFX_IF_FAILED
 	(
 		D3DReadFileToBlob
 		(
-			std::wstring(path.begin(), path.end()).c_str(), &pBlob
+			wpath.c_str(), &pBlob
 		)
 	);
 

@@ -125,7 +125,7 @@ BOOL Window::OpenFileExplorer(std::string* filename)
 	openFileStructure.nFilterIndex = 1;
 	openFileStructure.lpstrFile = filename->data();
 	openFileStructure.nMaxFile = MAX_PATH;
-	openFileStructure.Flags = OFN_DONTADDTORECENT | OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_PATHMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
+	openFileStructure.Flags = OFN_DONTADDTORECENT | OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_FORCESHOWHIDDEN | OFN_PATHMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER | OFN_NOCHANGEDIR;
 	openFileStructure.lpstrTitle = "Import New Model";
 
 	return GetOpenFileName(&openFileStructure);

@@ -3,9 +3,13 @@
 
 cbuffer objectBuffer : register(b1)
 {
-    float b_specularIntensity;
-    float b_specularPower;
     bool b_normalMapEnabled;
+    bool b_normalMapHasAlpha;
+    bool b_specularMap;
+    bool b_specularMapHasAlpha;
+    float b_specularIntensity;
+    float4 b_specularColor;
+    float b_specularPower;
 };
 
 cbuffer transformBuffer : register(b2)
@@ -39,5 +43,10 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     
     float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
     
-    return float4(saturate((diffuse + b_ambient) * diffuseSample.rgb + specular), diffuseSample.a);
+    const float3 diffesePlusAmbient = diffuse + b_ambient;
+    const float3 timesDiffuseSample = diffesePlusAmbient * diffuseSample.rgb;
+    const float3 plusSpecular = timesDiffuseSample + specular;
+    const float3 saturated = saturate(plusSpecular);
+    
+    return float4(saturated, diffuseSample.a);
 }

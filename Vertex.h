@@ -291,6 +291,11 @@ namespace DynamicVertex
 			}
 			else
 			{
+				std::string exceptione = "type";
+				exceptione += typeid(SrcType).name();
+				exceptione += "didn't match";
+				std::cout << exceptione;
+				
 				assert("type attribute didn't match" && false);
 			}
 		}
@@ -391,7 +396,11 @@ namespace DynamicVertex
 			: m_layout(std::move(layout)) {}
 
 	public:
-		const char* GetData() const noexcept(!IS_DEBUG)
+		const char* GetConstData() const noexcept(!IS_DEBUG)
+		{
+			return m_buffer.data();
+		}
+		char* GetData() noexcept(!IS_DEBUG)
 		{
 			return m_buffer.data();
 		}
@@ -411,6 +420,16 @@ namespace DynamicVertex
 		size_t GetBytesSize() const noexcept(!IS_DEBUG)
 		{
 			return m_buffer.size();
+		}
+
+		// might be unsafe
+		void Emplace_Back_Empty(size_t numberOfVertices) noexcept(!IS_DEBUG)
+		{
+			const size_t layoutSize = m_layout.GetByteSize();
+			const size_t addedSize = layoutSize * numberOfVertices;
+
+			m_buffer.resize(m_buffer.size() + addedSize);
+			memset(static_cast<void*>((m_buffer.data() + m_buffer.size()) - addedSize), '\0', addedSize);
 		}
 
 		template<class ...Params>
@@ -433,7 +452,7 @@ namespace DynamicVertex
 
 		Vertex Front() noexcept(!IS_DEBUG)
 		{
-			assert(m_buffer.size() != 0);
+			assert(m_buffer.size() / m_layout.GetByteSize() != 0);
 			return Vertex{
 				m_buffer.data(),
 				m_layout
@@ -442,7 +461,7 @@ namespace DynamicVertex
 
 		Vertex operator[](size_t i) noexcept(!IS_DEBUG)
 		{
-			assert(i < m_buffer.size());
+			assert(i < m_buffer.size() / m_layout.GetByteSize());
 			return Vertex{ m_buffer.data() + (i * m_layout.GetByteSize()) , m_layout };
 		}
 

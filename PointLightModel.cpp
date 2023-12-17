@@ -4,11 +4,9 @@
 #include "Sphere.h"
 
 PointLightModel::PointLightModel(GFX& gfx, float radius)
+	:
+	m_colorBuffer(DynamicConstantBuffer::BufferLayout("F3"))
 {
-	struct Vertex
-	{
-		DirectX::XMFLOAT3 position;
-	};
 	SimpleMesh model = Sphere::GetMesh(35, 35);
 	model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
 
@@ -21,7 +19,7 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
-	AddBindable(PixelConstantBuffer<PSColorConstant>::GetBindable(gfx, m_color, 0));
+	AddBindable(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 0, true));
 
 	AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), pvsbc));
 
@@ -42,7 +40,7 @@ VOID PointLightModel::SetPosition(DirectX::XMFLOAT3 position)
 
 void PointLightModel::UpdateLightColorBuffer(GFX& gfx, DirectX::XMFLOAT3 color)
 {
-	m_color.color = color;
-	PixelConstantBuffer<PSColorConstant>* pPixelConstBuffer = GetBindable<PixelConstantBuffer<PSColorConstant>>();
-	pPixelConstBuffer->Update(gfx, m_color);
+	*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = color; // should be named color, but since we make layout by identificator string we don't have normal name
+	CachedBuffer* pPixelConstBuffer = GetBindable<CachedBuffer>();
+	pPixelConstBuffer->Update(gfx, m_colorBuffer);
 }

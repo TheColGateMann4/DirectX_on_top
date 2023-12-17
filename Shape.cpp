@@ -1,12 +1,11 @@
 #include "Shape.h"
 #include "IndexBuffer.h"
-#include "PSConstBuffer.h"
 #include "ConstantBuffers.h"
 #include "TransformConstBuffer.h"
 #include <cassert>
 #include <typeinfo>
 
-VOID Shape::Draw(GFX& gfx, float time) const noexcept(!IS_DEBUG)
+VOID Shape::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	for (auto& b : binds)
 	{

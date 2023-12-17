@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "ConstantBuffers.h"
 #include "PointLightModel.h"
+#include "DynamicConstantBuffer.h"
 
 class PointLight
 {
@@ -17,20 +18,8 @@ public:
 	void Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
 
 private:
-	struct PixelConstantStruct { 
-		alignas(16) DirectX::XMFLOAT3 position;
-		alignas(16) DirectX::XMFLOAT3 ambient;
-		alignas(16) DirectX::XMFLOAT3 lightColor;
-
-		float diffuseIntensity;
-		float attenuationConst;
-		float attenuationLinear;
-		float attenuationQuadratic;
-	};
-
-	PixelConstantStruct m_pcstruct = {};
-
 	mutable PointLightModel m_model;
-	mutable PixelConstantBuffer<PixelConstantStruct> m_pcbuffer;
+	mutable NonCachedBuffer m_pcbuffer;
+	mutable DynamicConstantBuffer::BufferData constBufferData;
 };
 

@@ -2,176 +2,219 @@
 #include "Bindable.h"
 #include "Vertex.h"
 #include "BindableList.h"
+#include "DynamicConstantBuffer.h"
 
-template<class C>
 class ConstantBuffer : public Bindable
 {
 public:
-	void Update(GFX& gfx, const C& consts)
+	ConstantBuffer()
+		:	
+			pConstantBuffer(nullptr),
+			m_slot(0),
+			m_isPixelShader(false)
+	{}
+
+	ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
+		: m_slot(slot),
+		m_isPixelShader(isPixelShader)
 	{
-		constBufferData = consts;
+		HRESULT hr;
+
+		bufferData.MakeFinished();
+
+		D3D11_BUFFER_DESC constBufferDesc = {};
+		constBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		constBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		constBufferDesc.MiscFlags = NULL;
+		constBufferDesc.ByteWidth = bufferData.GetSize();
+		constBufferDesc.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA constBufferResourceData = {};
+		constBufferResourceData.pSysMem = bufferData.GetBytes();
+
+		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &pConstantBuffer));
+	}
+
+	ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferLayout& layout,UINT32 slot, bool isPixelShader)
+		: m_slot(slot),
+		m_isPixelShader(isPixelShader)
+	{
+		HRESULT hr;
+
+		(void)layout.GetFinished();
+
+		D3D11_BUFFER_DESC constBufferDesc = {};
+		constBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		constBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		constBufferDesc.MiscFlags = NULL;
+		constBufferDesc.ByteWidth = DynamicConstantBuffer::BufferLayout::GetLayoutSize(layout);
+		constBufferDesc.StructureByteStride = 0;
+
+		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &pConstantBuffer));
+	}
+
+
+public:
+	void Update(GFX& gfx, const DynamicConstantBuffer::BufferData& bufferData)
+	{
+		assert(pConstantBuffer != nullptr);
+
 		HRESULT hr;
 
 		D3D11_MAPPED_SUBRESOURCE subresourceData;
 
 		THROW_GFX_IF_FAILED(
 			GetDeviceContext(gfx)->Map(
-				pConstantBuffer.Get(),
-				NULL,
+				this->pConstantBuffer.Get(),
+				0,
 				D3D11_MAP_WRITE_DISCARD,
 				NULL,
 				&subresourceData)
 		);
-		memcpy(subresourceData.pData, &consts, sizeof(consts));
+		memcpy(subresourceData.pData, bufferData.GetBytes(), bufferData.GetSize());
 
-		GetDeviceContext(gfx)->Unmap(pConstantBuffer.Get(), NULL);
+		GetDeviceContext(gfx)->Unmap(this->pConstantBuffer.Get(), NULL);
 	}
-	ConstantBuffer(GFX& gfx, const C& consts, UINT32 slot)
-		: m_slot(slot)
+
+	void Bind(GFX& gfx) noexcept override
 	{
-		constBufferData = consts;
-		HRESULT hr;
+		assert(pConstantBuffer != nullptr);
 
-		D3D11_BUFFER_DESC constBufferDesc = {};
-		constBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		constBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		constBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		constBufferDesc.MiscFlags = NULL;
-		constBufferDesc.ByteWidth = sizeof(consts);
-		constBufferDesc.StructureByteStride = 0;
-
-		m_bufferSize = sizeof(consts);
-
-		D3D11_SUBRESOURCE_DATA constBufferResourceData = {};
-		constBufferResourceData.pSysMem = &consts;
-
-		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &(this->pConstantBuffer)));
-	}
-	ConstantBuffer(GFX& gfx, UINT32 slot)
-		: m_slot(slot)
-	{
-		constBufferData = {};
-		HRESULT hr;
-
-		D3D11_BUFFER_DESC constBufferDesc = {};
-		constBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		constBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		constBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		constBufferDesc.MiscFlags = NULL;
-		constBufferDesc.ByteWidth = sizeof(C);
-		constBufferDesc.StructureByteStride = 0;
-
-		m_bufferSize = sizeof(C);
-
-		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &(this->pConstantBuffer)));
+		if (m_isPixelShader)
+			GetDeviceContext(gfx)->PSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
+		else
+			GetDeviceContext(gfx)->VSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 	}
 
 public:
-	C constBufferData;
+	const ConstantBuffer& operator=(ConstantBuffer& toAssign)
+	{
+		if (pConstantBuffer != NULL)
+			pConstantBuffer->Release();
+
+		pConstantBuffer = toAssign.pConstantBuffer;
+		m_slot = toAssign.m_slot;
+		m_isPixelShader = toAssign.m_isPixelShader;
+
+		return *this;
+	}
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 	UINT32 m_slot;
-	UINT32 m_bufferSize;
+	bool m_isPixelShader;
 };
 
-template<class C>
-class PixelConstantBuffer : public ConstantBuffer<C>
+
+
+
+class CachedBuffer : public ConstantBuffer
 {
-	using Bindable::GetDeviceContext;
-	using ConstantBuffer<C>::pConstantBuffer;
-	using ConstantBuffer<C>::m_slot;
-	using ConstantBuffer<C>::m_bufferSize;
-public:
-	using ConstantBuffer<C>::ConstantBuffer;
-	using ConstantBuffer<C>::constBufferData;
-
-	void Bind(GFX& gfx) noexcept override
-	{
-		GetDeviceContext(gfx)->PSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
-	}
 
 public:
-	static std::shared_ptr<PixelConstantBuffer> GetBindable(GFX& gfx, const C& consts, UINT32 slot)
+	CachedBuffer()
+		:
+		ConstantBuffer::ConstantBuffer()
+	{}
+
+	CachedBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
+		:
+		constBufferData(bufferData),
+		ConstantBuffer::ConstantBuffer(gfx, bufferData, slot, isPixelShader)
+	{}
+
+	CachedBuffer(GFX& gfx, DynamicConstantBuffer::BufferLayout& layout, UINT32 slot, bool isPixelShader)
+		:
+		ConstantBuffer::ConstantBuffer(gfx, layout, slot, isPixelShader)
+	{}
+
+public:
+	void Update(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData)
 	{
-		return BindableList::GetBindable<PixelConstantBuffer>(gfx, consts, slot);
+		bufferData.MakeFinished();
+		constBufferData = bufferData;
+
+		ConstantBuffer::Update(gfx, bufferData);
 	}
-	static std::shared_ptr<PixelConstantBuffer> GetBindable(GFX& gfx, UINT32 slot)
+
+	using ConstantBuffer::Bind;
+
+public:
+	static std::shared_ptr<CachedBuffer> GetBindable(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
 	{
-		return BindableList::GetBindable<PixelConstantBuffer>(gfx, slot);
+		return BindableList::GetBindable<CachedBuffer>(gfx, bufferData, slot, isPixelShader);
 	}
 
 	std::string GetUID() const noexcept override
 	{
-		return GenerateUID(m_slot);
+		return GenerateUID(constBufferData, m_slot, m_isPixelShader);
 	};
 
-	static std::string GetUID(const C& consts, UINT32 slot) noexcept
+	static std::string GetUID(const DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader) noexcept
 	{
-		return GenerateUID(slot);
+		return GenerateUID(bufferData, slot, isPixelShader);
 	};
 
 private:
-	static std::string GenerateUID(const C& consts, UINT32 slot)
+	static std::string GenerateUID(const DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
 	{
-		GenerateUID(slot);
+		return bufferData.GetConstLayout().GetIdentificator() + '@' + std::to_string(slot) + '@' + (char)('0' + isPixelShader);
 	}
-	static std::string GenerateUID(UINT32 slot)
-	{
-		std::string result;
-		result += typeid(PixelConstantBuffer).name();
-		result += "@";
-		result += typeid(C).name();
-		result += "@";
-		result += std::to_string(slot);
 
-		return result;
+public:
+	const CachedBuffer& operator=(CachedBuffer& toAssign)
+	{
+		constBufferData = toAssign.constBufferData;
+
+		if(pConstantBuffer != NULL)
+			pConstantBuffer->Release();
+
+		pConstantBuffer = toAssign.pConstantBuffer;
+		m_slot = toAssign.m_slot;
+		m_isPixelShader = toAssign.m_isPixelShader;
+
+		return *this;
 	}
+
+public:
+	DynamicConstantBuffer::BufferData constBufferData;
+
+private:
+	using ConstantBuffer::pConstantBuffer;
+	using ConstantBuffer::m_slot;
+	using ConstantBuffer::m_isPixelShader;
 };
 
-template<class C>
-class VertexConstantBuffer : public ConstantBuffer<C>
+
+
+
+
+class NonCachedBuffer : public ConstantBuffer
 {
-	using Bindable::GetDeviceContext;
-	using ConstantBuffer<C>::pConstantBuffer;
-	using ConstantBuffer<C>::m_slot;
 public:
-	using ConstantBuffer<C>::ConstantBuffer;
-
-	void Bind(GFX& gfx) noexcept override
-	{
-		GetDeviceContext(gfx)->VSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
-	}
+	using ConstantBuffer::ConstantBuffer;
 
 public:
-	static std::shared_ptr<VertexConstantBuffer> GetBindable(GFX& gfx, const C& consts, UINT32 slot)
-	{
-		return BindableList::GetBindable<VertexConstantBuffer>(gfx, consts, slot);
-	}
-	static std::shared_ptr<VertexConstantBuffer> GetBindable(GFX& gfx, UINT32 slot)
-	{
-		return BindableList::GetBindable<VertexConstantBuffer>(gfx, slot);
-	}
+	using ConstantBuffer::Update;
+	using ConstantBuffer::Bind;
 
-	std::string GetUID() const noexcept override
+public:
+	const NonCachedBuffer& operator=(NonCachedBuffer toAssign) // made specially for one case, thats why non const and by value, might be changed for a future
 	{
-		return GenerateUID(m_slot);
-	};
+		if (pConstantBuffer != NULL)
+			pConstantBuffer->Release();
+
+		pConstantBuffer = toAssign.pConstantBuffer;
+		m_slot = toAssign.m_slot;
+		m_isPixelShader = toAssign.m_isPixelShader;
+
+		return *this;
+	}
 
 private:
-	static std::string GenerateUID(const C& consts, UINT32 slot)
-	{
-		GenerateUID(slot);
-	}
-	static std::string GenerateUID(UINT32 slot)
-	{
-		std::string result;
-		result += typeid(PixelConstantBuffer).name();
-		result += "@";
-		result += typeid(C).name();
-		result += "@";
-		result += std::to_string(slot);
-
-		return result;
-	}
+	using ConstantBuffer::pConstantBuffer;
+	using ConstantBuffer::m_slot;
+	using ConstantBuffer::m_isPixelShader;
 };

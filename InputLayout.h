@@ -29,21 +29,21 @@ public:
 		return GenerateUID(m_layout); 
 	};
 
-	static std::string GetUID(const DynamicVertex::VertexLayout& layout, ID3DBlob* pVertexShaderByteCode = nullptr) noexcept
+	static std::string GetUID(const DynamicVertex::VertexLayout& layout, ID3DBlob* = nullptr) noexcept
 	{
 		return GenerateUID(layout);
 	};
-	static std::string GetUID(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, ID3DBlob* pVertexShaderByteCode = nullptr) noexcept
+	static std::string GetUID(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, ID3DBlob* = nullptr) noexcept
 	{
 		return GenerateUID(layout);
 	};
 
 private:
-	static std::string GenerateUID(const DynamicVertex::VertexLayout& layout, ID3DBlob* pVertexShaderByteCode = nullptr)
+	static std::string GenerateUID(const DynamicVertex::VertexLayout& layout, ID3DBlob* = nullptr)
 	{ 
 		return layout.GetUID(); 
 	}
-	static std::string GenerateUID(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, ID3DBlob* pVertexShaderByteCode = nullptr)
+	static std::string GenerateUID(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, ID3DBlob* = nullptr)
 	{
 		std::string result = {};
 		for (const D3D11_INPUT_ELEMENT_DESC& element : layout)

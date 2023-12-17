@@ -22,7 +22,7 @@ public:
 	}
 
 	template <class ...Params>
-	static std::string GetUID(const std::string bufferUID, Params&& ...params)
+	static std::string GetUID(const std::string bufferUID, Params&&...)
 	{
 		return GenerateUID(bufferUID);
 	};

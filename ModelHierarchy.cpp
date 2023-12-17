@@ -26,21 +26,21 @@ void ModelHierarchy::DrawModelHierarchy()
 					}
 			}
 		}
+
+		// could remake this hierarchy stuff, but instead faster way is to check pressed nodes in here
+
+		for (auto& model : models)
+			model->MakeHierarchy(m_window->Graphics);
+
+		CleanupPressedNodes(); // doing this between hierarchy and propeties lets us smoothly change pressed nodes without any flicking propeties(two are showing at once for 1 frame)
+
+		ImGui::NextColumn();
+
+		for (auto& model : models)
+			model->MakePropeties(m_window->Graphics);
+
+		ImGui::End();
 	}
-
-	// could remake this hierarchy stuff, but instead faster way is to check pressed nodes in here
-
-	for (auto& model : models)
-		model->MakeHierarchy(m_window->Graphics);
-
-	CleanupPressedNodes(); // doing this between hierarchy and propeties lets us smoothly change pressed nodes without any flicking propeties(two are showing at once for 1 frame)
-
-	ImGui::NextColumn();
-
-	for (auto& model : models)
-		model->MakePropeties(m_window->Graphics);
-
-	ImGui::End();
 }
 
 void ModelHierarchy::CleanupPressedNodes()

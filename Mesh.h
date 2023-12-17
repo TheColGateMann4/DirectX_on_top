@@ -24,7 +24,7 @@ public:
 	void Draw(GFX& gfx, DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
 	{
 		DirectX::XMStoreFloat4x4(&m_transform, transform);
-		Shape::Draw(gfx, 0.0f);
+		Shape::Draw(gfx);
 	}
 
 public:

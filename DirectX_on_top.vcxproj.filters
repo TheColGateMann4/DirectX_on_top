@@ -129,9 +129,6 @@
     <ClInclude Include="SamplerState.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="PSConstBuffer.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
       <Filter>Imgui</Filter>
     </ClInclude>
@@ -368,28 +365,28 @@
     <FxCompile Include="PS_Phong_Texture_SpecularMap.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Specular_Normals.hlsl">
+    <FxCompile Include="VS_Phong_Texture_Normals_NoTangent.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Phong_Texture_Normals.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Model_Phong_Texture_Normals.hlsl">
+    <FxCompile Include="PS_Phong_Texture_Normals_Specular.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Model_Phong_Texture_Specular_Normals.hlsl">
+    <FxCompile Include="PS_Phong_Texture_Normals_SpecularMap.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Model_Phong_Texture_SpecularMap_Normals.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong_Position_Normals.hlsl">
+    <FxCompile Include="VS_Phong_Normals.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="PS_Phong_NoMaps.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Model_Phong_Texture_SpecularMap_Normals_Mask.hlsl">
+    <FxCompile Include="PS_Phong_Texture_Mask_Normals_SpecularMap.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_Normals_Specular_NoTangent.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
