@@ -4,11 +4,12 @@
 cbuffer objectBuffer : register(b1)
 {
     bool b_normalMapEnabled;
-    bool b_specularMapHasAlpha;
+    bool b_normalMapHasAlpha;
     bool b_specularMapEnable;
-    float b_specularPower;
-    float3 b_specularColor;
+    bool b_specularMapHasAlpha;
     float b_specularMapWeight;
+    float4 b_specularColor;
+    float b_specularPower;
 };
 
 Texture2D t_diffuseTexture : register(t0);
@@ -49,7 +50,7 @@ float4 main(
 	
     const float3 diffuse = GetDiffuse(normal, attenuation, DirectionToLightSource, b_lightColor, b_diffuseIntensity);
     
-    const float3 specularColor = b_specularColor * b_specularMapWeight;
+    const float3 specularColor = b_specularColor.rgb * b_specularMapWeight;
     float specularPower = b_specularPower;
     
     if (b_specularMapEnable)
