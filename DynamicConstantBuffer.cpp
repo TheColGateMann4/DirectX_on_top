@@ -457,9 +457,6 @@ void DynamicConstantBuffer::BufferData::MakeFinished()
 
 	ResizeBuffer(m_size + bytesAdded);
 
-	if (m_size == 48)
-		std::cout << "co";
-
 	for (const auto& addedSpace : addedSpacesVector)
 	{
 		size_t sourceSizeToMove = possibleSizeWithoutPaddingAtTheEnd - (addedSpace * 4);

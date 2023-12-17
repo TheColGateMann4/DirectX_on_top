@@ -43,10 +43,5 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     
     float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
     
-    const float3 diffesePlusAmbient = diffuse + b_ambient;
-    const float3 timesDiffuseSample = diffesePlusAmbient * diffuseSample.rgb;
-    const float3 plusSpecular = timesDiffuseSample + specular;
-    const float3 saturated = saturate(plusSpecular);
-    
-    return float4(saturated, diffuseSample.a);
+    return float4(saturate((diffuse + b_ambient) * diffuseSample.rgb + specular), diffuseSample.a);
 }

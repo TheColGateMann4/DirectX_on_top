@@ -62,9 +62,6 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 	DynamicConstantBuffer::BufferData constBufferData;
 
-	if (std::string(mesh.mName.C_Str()).find("320", 0) != std::string::npos)
-		std::cout << "aaa";
-
 	if (mesh.mMaterialIndex >= 0)
 	{
 		const aiMaterial& material = *pMaterials[mesh.mMaterialIndex];
@@ -161,9 +158,6 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		pixelShaderName += ".cso";
 		vertexShaderName += ".cso";
 	}
-
-	if ((pixelShaderName == "PS_Phong_Texture_Normals_SpecularMap.cso")) // && DynamicConstantBuffer::BufferLayout::GetLayoutSize(constBufferData.GetConstLayout()) != 40
-		std::cout << "ten tu";
 
 	DynamicVertex::VertexLayout vertexBufferLayout = {};
 
