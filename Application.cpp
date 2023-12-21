@@ -145,6 +145,8 @@ void Application::DoFrame()
 
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
+	mycube.Draw(window.Graphics);
+
 	modelHierarchy.DrawModels();
 
 	pointLight.Draw(window.Graphics);
@@ -159,6 +161,8 @@ void Application::DoFrame()
 		window.LockCursor(cursorLocked);
 		window.ShowCursor(cursorShowing);
 	}
+
+	mycube.SpawnControlWindow(window.Graphics);
 
 	window.Graphics.camera.SpawnControlWindow();
 	pointLight.SpawnControlWindow(window.Graphics);

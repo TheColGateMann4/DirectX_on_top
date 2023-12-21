@@ -7,6 +7,7 @@
 #include "PixelShader.h"
 #include "Topology.h"
 #include "TransformConstBuffer.h"
+#include "TransformConstBufferWithPixelShader.h"
 #include "VertexBuffer.h"
 #include "VertexShader.h"
 #include "Texture.h"

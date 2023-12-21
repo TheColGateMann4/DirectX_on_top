@@ -365,9 +365,6 @@
     <FxCompile Include="PS_Phong_Texture_SpecularMap.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Phong_Texture_Normals_NoTangent.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="VS_Phong_Texture_Normals.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
@@ -387,6 +384,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="PS_Phong_Texture_Normals_Specular_NoTangent.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_Normals_Specular_Cube.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Phong_Cube.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

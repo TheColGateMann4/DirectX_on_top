@@ -1,4 +1,3 @@
-
 float3 GetNormalInViewSpace(
         const in float3 normal : NORMAL,
         const in float3 viewTangent : TANGENT,
@@ -49,4 +48,24 @@ float3 GetSpecular(
     const float3 r = w * 2.0f - VectorLength;
     
     return attenuation * (b_lightColor * b_diffuseIntensity) * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), specularPower);
+}
+
+
+// Rotation with angle (in radians) and axis
+// https://gist.github.com/keijiro/ee439d5e7388f3aafc5296005c8c3f33
+float3x3 AngleAxis3x3(float angle, float3 axis)
+{
+    float c, s;
+    sincos(angle, s, c);
+
+    float t = 1 - c;
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+
+    return float3x3(
+        t * x * x + c, t * x * y - s * z, t * x * z + s * y,
+        t * x * y + s * z, t * y * y + c, t * y * z - s * x,
+        t * x * z - s * y, t * y * z + s * x, t * z * z + c
+    );
 }

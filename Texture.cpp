@@ -42,7 +42,7 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot)
 	textureDesc.Height = texMetaData.height;
 	textureDesc.MipLevels = 0;
 	textureDesc.ArraySize = 1;
-	textureDesc.Format = texMetaData.format;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;

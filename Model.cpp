@@ -39,7 +39,6 @@ Model::Model(GFX& gfx, std::string fileName, float scale)
 	}
 
 	m_pStartingNode = ParseNode(*pScene->mRootNode);
-	//m_pressedNode = m_pStartingNode.get();
 	m_scale = scale;
 }
 

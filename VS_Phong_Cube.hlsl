@@ -16,7 +16,7 @@ VSOUT main(float3 position : POSITION, float3 normal : NORMAL, float2 textureCoo
 {
     VSOUT vsout;
     vsout.positionRelativeToCamera = (float3) mul(float4(position, 1.0f), modelView);
-    vsout.normal = mul(normal, (float3x3) modelView);
+    vsout.normal = normal;
     vsout.textureCoords = textureCoords;
     vsout.position = mul(float4(position, 1.0f), modelViewProjection);
     

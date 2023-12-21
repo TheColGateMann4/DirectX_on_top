@@ -6,7 +6,7 @@
 #include "ImguiManager.h"
 #include "PointLight.h"
 #include "Model.h"
-#include "Sheet.h"
+#include "Cube.h"
 #include "ModelHierarchy.h"
 
 class Application
@@ -34,6 +34,7 @@ private:
 	//scene
 private:
 	PointLight pointLight;
-	ModelHierarchy modelHierarchy = ModelHierarchy(&window);
+	Cube mycube{ window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"};
+	ModelHierarchy modelHierarchy{ &window };
 };
 
