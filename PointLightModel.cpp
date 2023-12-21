@@ -19,7 +19,7 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
-	AddBindable(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 0, true));
+	AddBindable(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 1, true));
 
 	AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), pvsbc));
 

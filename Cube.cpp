@@ -3,7 +3,8 @@
 #include "Vertex.h"
 #include "imgui/imgui.h"
 
-Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture)
+Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, bool enableOutline)
+	: m_glowEnabled(enableOutline)
 {
 	SimpleMesh CubeModel = GetUnwrappedMesh(scale, true);
 
@@ -21,9 +22,9 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 	layout.Add<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled");
 
 	DynamicConstantBuffer::BufferData bufferData(std::move(layout));
-	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity") = 150.0f;
-	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 2.0f;
-	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = FALSE;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity") = 2.0f;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 150.0f;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = TRUE;
 
 	AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
 
@@ -49,7 +50,75 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 	AddBindable(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
 
+	AddBindable(DepthStencil::GetBindable(gfx, DepthStencil::Write));
+
 	AddBindable(std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2));
+
+	if (enableOutline)
+		m_outlineBindables = getOutline(gfx);
+}
+
+std::vector<std::shared_ptr<Bindable>> Cube::getOutline(GFX& gfx)
+{
+	std::vector<std::shared_ptr<Bindable>> outlineBindables = this->getAllBindables(m_pOutlineIndexBuffer);
+
+	for (size_t i = 0; i < outlineBindables.size(); i++)
+	{
+		if (const PixelShader* pBindable = dynamic_cast<PixelShader*>(outlineBindables[i].get()))
+		{
+			outlineBindables.erase(outlineBindables.begin() + i);
+		}
+		else if (const VertexShader* pBindable = dynamic_cast<VertexShader*>(outlineBindables[i].get()))
+		{
+			outlineBindables.erase(outlineBindables.begin() + i);
+		}
+		else if (const InputLayout* pBindable = dynamic_cast<InputLayout*>(outlineBindables[i].get()))
+		{
+			outlineBindables.erase(outlineBindables.begin() + i);
+		}
+		else if (const CachedBuffer* pBindable = dynamic_cast<CachedBuffer*>(outlineBindables[i].get()))
+		{
+			outlineBindables.erase(outlineBindables.begin() + i);
+		}
+		else if (const DepthStencil* pBindable = dynamic_cast<DepthStencil*>(outlineBindables[i].get()))
+		{
+			outlineBindables.erase(outlineBindables.begin() + i);
+		}
+	}
+
+
+	std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS_Outline.cso");
+	ID3DBlob* pBlob = pVertexShader->GetByteCode();
+
+
+	DynamicConstantBuffer::BufferLayout bufferLayout;
+	bufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
+
+	DynamicConstantBuffer::BufferData bufferData(std::move(bufferLayout));
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = { 0.0f, 1.0f, 1.0f, 1.0f };
+
+
+	outlineBindables.push_back(pVertexShader);
+	outlineBindables.push_back(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
+	outlineBindables.push_back(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
+	outlineBindables.push_back(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
+	outlineBindables.push_back(DepthStencil::GetBindable(gfx, DepthStencil::Mask));
+
+	return outlineBindables;
+}
+
+void Cube::DrawWithOutline(GFX& gfx) const noexcept(!IS_DEBUG)
+{
+	if (m_glowEnabled)
+	{
+		for (auto& b : m_outlineBindables)
+		{
+			b->Bind(gfx);
+		}
+		gfx.DrawIndexed(m_pOutlineIndexBuffer->GetCount());
+	}
+
+	Shape::Draw(gfx);
 }
 
 void Cube::ResetLocalTransform() noexcept
@@ -97,6 +166,27 @@ void Cube::SpawnControlWindow(GFX& gfx) noexcept
 			cachedBuffer->Update(gfx, shaderMaterial);
 
 		materialsDefined = true;
+
+		ImGui::Text("Glow Settings");
+
+		if (ImGui::Checkbox("enable", &m_glowEnabled))
+			m_outlineBindables = getOutline(gfx);
+
+		if (m_glowEnabled)
+		{
+			for (const auto& outlineBindable : m_outlineBindables)
+			{
+				if (CachedBuffer* cachedOutlineBuffer = dynamic_cast<CachedBuffer*>(outlineBindable.get()))
+				{
+					DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
+
+					bool outlineColorChanged = ImGui::ColorPicker3("color", (float*)bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("color"));
+				
+					if (outlineColorChanged)
+						cachedOutlineBuffer->Update(gfx, bufferData);
+				}
+			}
+		}
 
 		ImGui::End();
 	}

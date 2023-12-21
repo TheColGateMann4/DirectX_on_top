@@ -264,6 +264,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 	bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 
+	bindables.push_back(DepthStencil::GetBindable(gfx, DepthStencil::Off));
+
 	bindables.push_back(RasterizerState::GetBindable(gfx, diffuseMapHasAlpha));
 
 	return std::make_unique<Mesh>(gfx, std::move(bindables));

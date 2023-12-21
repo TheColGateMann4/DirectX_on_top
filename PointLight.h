@@ -10,7 +10,7 @@ public:
 	PointLight(GFX &gfx, float radius = 0.5f);
 
 public:
-	void SpawnControlWindow(GFX& gfx) noexcept;
+	void SpawnControlWindow(GFX& gfx, float deltaTime) noexcept;
 	void Reset() noexcept;
 
 public:
@@ -21,5 +21,13 @@ private:
 	mutable PointLightModel m_model;
 	mutable NonCachedBuffer m_pcbuffer;
 	mutable DynamicConstantBuffer::BufferData constBufferData;
+
+private:
+	bool enableChroma = false;
+	float chromaDeltaTime = 0.02f;
+	float lastDeltaTime = 0.0f;
+	int colorToDecrement = 0;
+	bool incrementingNow = true;
+	bool justSwitched = false;
 };
 

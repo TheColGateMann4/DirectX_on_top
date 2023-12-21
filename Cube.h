@@ -8,7 +8,12 @@
 class Cube : public Shape
 {
 public:
-	Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture);
+	Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, bool enableOutline);
+
+	std::vector<std::shared_ptr<Bindable>> getOutline(GFX& gfx);
+
+public:
+	void DrawWithOutline(GFX& gfx) const noexcept(!IS_DEBUG);
 
 public:
 	void ResetLocalTransform() noexcept;
@@ -29,4 +34,9 @@ private:
 private:
 	DynamicConstantBuffer::BufferData shaderMaterial;
 	bool materialsDefined = false;
+
+private:
+	bool m_glowEnabled = false;
+	std::vector<std::shared_ptr<Bindable>> m_outlineBindables = {};
+	const class IndexBuffer* m_pOutlineIndexBuffer = nullptr;
 };

@@ -19,7 +19,7 @@ public:
 	template <class T>
 	T* GetBindable() noexcept
 	{
-		for (auto& b : binds)
+		for (auto& b : m_binds)
 			if (T* r = dynamic_cast<T*>(b.get()))
 				return r;
 		return nullptr;
@@ -29,7 +29,13 @@ public:
 	void AddBindable(std::shared_ptr<Bindable> bindable) noexcept(!IS_DEBUG);
 	void AddIndexBuffer(std::shared_ptr<IndexBuffer> indexBuffer) noexcept(!IS_DEBUG);
 
+	std::vector<std::shared_ptr<Bindable>>& getAllBindables(const IndexBuffer* &pIndexBuffer) noexcept
+	{
+		pIndexBuffer = m_pIndexBuffer;
+		return m_binds;
+	}
+
 private:
-	const class IndexBuffer* pIndexBuffer = NULL;
-	std::vector<std::shared_ptr<Bindable>> binds;
+	class IndexBuffer* m_pIndexBuffer = nullptr;
+	std::vector<std::shared_ptr<Bindable>> m_binds;
 };

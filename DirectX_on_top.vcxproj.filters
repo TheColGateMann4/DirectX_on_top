@@ -198,6 +198,9 @@
     <ClInclude Include="DynamicConstantBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DepthStencil.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -390,6 +393,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Phong_Cube.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Outline.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

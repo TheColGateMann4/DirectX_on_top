@@ -7,28 +7,28 @@
 
 VOID Shape::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
 {
-	for (auto& b : binds)
+	for (auto& b : m_binds)
 	{
 		b->Bind(gfx);
 	}
-	gfx.DrawIndexed(pIndexBuffer->GetCount());
+	gfx.DrawIndexed(m_pIndexBuffer->GetCount());
 }
 
 VOID Shape::AddBindable(std::shared_ptr<Bindable> bind) noexcept(!IS_DEBUG)
 {
 	if (typeid(*bind) == typeid(IndexBuffer))
 	{
-		assert("Attempting to bind Index Buffer second time" && pIndexBuffer == NULL);
-		pIndexBuffer = &static_cast<IndexBuffer&>(*bind);
+		assert("Attempting to bind Index Buffer second time" && m_pIndexBuffer == NULL);
+		m_pIndexBuffer = static_cast<IndexBuffer*>(bind.get());
 	}
 
-	binds.push_back(std::move(bind));
+	m_binds.push_back(std::move(bind));
 }
 
 VOID Shape::AddIndexBuffer(std::shared_ptr<IndexBuffer> indexBuffer) noexcept(!IS_DEBUG)
 {
-	assert("Attempting to bind Index Buffer second time" && pIndexBuffer == NULL);
+	assert("Attempting to bind Index Buffer second time" && m_pIndexBuffer == NULL);
 
-	pIndexBuffer = indexBuffer.get();
-	binds.push_back(std::move(indexBuffer));
+	m_pIndexBuffer = indexBuffer.get();
+	m_binds.push_back(std::move(indexBuffer));
 }

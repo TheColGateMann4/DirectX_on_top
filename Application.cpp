@@ -145,11 +145,13 @@ void Application::DoFrame()
 
 	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
 
-	mycube.Draw(window.Graphics);
 
 	modelHierarchy.DrawModels();
 
+	
 	pointLight.Draw(window.Graphics);
+
+	mycube.DrawWithOutline(window.Graphics);
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
 		window.Graphics.ShowImGUI(!window.Graphics.isImGUIVisible());
@@ -165,7 +167,7 @@ void Application::DoFrame()
 	mycube.SpawnControlWindow(window.Graphics);
 
 	window.Graphics.camera.SpawnControlWindow();
-	pointLight.SpawnControlWindow(window.Graphics);
+	pointLight.SpawnControlWindow(window.Graphics, timer.Get());
 
 	modelHierarchy.DrawModelHierarchy();
 

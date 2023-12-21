@@ -34,7 +34,7 @@ private:
 	//scene
 private:
 	PointLight pointLight;
-	Cube mycube{ window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"};
+	Cube mycube{ window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", true};
 	ModelHierarchy modelHierarchy{ &window };
 };
 
