@@ -3,19 +3,26 @@
 #include "ConstantBuffers.h"
 #include "PointLightModel.h"
 #include "DynamicConstantBuffer.h"
+#include "SceneObject.h"
 
-class PointLight
+class PointLight : public SceneObject
 {
 public:
 	PointLight(GFX &gfx, float radius = 0.5f);
 
 public:
-	void SpawnControlWindow(GFX& gfx, float deltaTime) noexcept;
+	void MakePropeties(GFX& gfx, float deltaTime) override;
 	void Reset() noexcept;
 
 public:
-	void Draw(GFX &gfx) const noexcept(!IS_DEBUG);
+	void Draw(GFX &gfx) const noexcept(!IS_DEBUG) override;
 	void Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
+
+public:
+	std::string GetName() const override
+	{
+		return "PointLight";
+	}
 
 private:
 	mutable PointLightModel m_model;

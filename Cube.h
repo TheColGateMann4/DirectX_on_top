@@ -3,9 +3,11 @@
 #include "Graphics.h"
 #include "SimpleMesh.h"
 #include "DynamicConstantBuffer.h"
+#include "Mesh.h"
+#include "SceneObject.h"
 #include <random>
 
-class Cube : public Shape
+class Cube : public SceneObject
 {
 public:
 	Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, bool enableOutline);
@@ -13,14 +15,21 @@ public:
 	std::vector<std::shared_ptr<Bindable>> getOutline(GFX& gfx);
 
 public:
+	void Draw(GFX& gfx) const noexcept(!IS_DEBUG) override;
 	void DrawWithOutline(GFX& gfx) const noexcept(!IS_DEBUG);
 
 public:
 	void ResetLocalTransform() noexcept;
-	void SpawnControlWindow(GFX& gfx) noexcept;
+	void MakePropeties(GFX& gfx, float deltaTime) override;
 
 public:
-	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
+	std::string GetName() const override
+	{
+		return "Cube";
+	}
+
+public:
+	DirectX::XMMATRIX GetTranformMatrix() const noexcept;
 
 private:
 	static SimpleMesh GetNormalMesh(float scale);
@@ -39,4 +48,7 @@ private:
 	bool m_glowEnabled = false;
 	std::vector<std::shared_ptr<Bindable>> m_outlineBindables = {};
 	const class IndexBuffer* m_pOutlineIndexBuffer = nullptr;
+
+private:
+	std::unique_ptr<Mesh> m_mesh;
 };

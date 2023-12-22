@@ -8,13 +8,15 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 {
 	SimpleMesh CubeModel = GetUnwrappedMesh(scale, true);
 
-	AddBindable(VertexBuffer::GetBindable(gfx, "Cube", CubeModel.m_vertices));
+	std::vector<std::shared_ptr<Bindable>> meshBindables = {};
+
+	meshBindables.push_back(VertexBuffer::GetBindable(gfx, "Cube", CubeModel.m_vertices));
 
 	std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
 	ID3DBlob* pBlob = pVertexShader->GetByteCode();
-	AddBindable(std::move(pVertexShader));
+	meshBindables.push_back(std::move(pVertexShader));
 
-	AddBindable(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
+	meshBindables.push_back(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
 
 	DynamicConstantBuffer::BufferLayout layout;
 	layout.Add<DynamicConstantBuffer::DataType::Float>("specularIntensity");
@@ -26,33 +28,23 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 150.0f;
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = TRUE;
 
-	AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
+	meshBindables.push_back(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
 
+	meshBindables.push_back(IndexBuffer::GetBindable(gfx, "Cube", CubeModel.m_indices));
 
-	AddIndexBuffer(IndexBuffer::GetBindable(gfx, "Cube", CubeModel.m_indices));
+	meshBindables.push_back(Texture::GetBindable(gfx, diffuseTexture, 0));
 
+	meshBindables.push_back(Texture::GetBindable(gfx, normalTexture, 1));
 
-// 	DynamicConstantBuffer::BufferLayout layout;
-// 	layout.Add<DynamicConstantBuffer::Array>("colors");
-// 	layout["colors"]->Add<DynamicConstantBuffer::Float3>(6);
-// 
-// 	DynamicConstantBuffer::BufferData bufferData(std::move(layout));
-// 	bufferData += std::vector<DirectX::XMFLOAT3>{{ 1.0, 0.0, 1.0 },{ 1.0,0.0,0.0 },{ 0.0,1.0,0.0 },{ 0.0,0.0,1.0 },{ 1.0,1.0,0.0 },{ 0.0,1.0,1.0 }};
-// 	AddBindable(CachedBuffer::GetBindable(gfx, bufferData, 0, true));
+	meshBindables.push_back(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pBlob));
 
-	AddBindable(Texture::GetBindable(gfx, diffuseTexture, 0));
+	meshBindables.push_back(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-	AddBindable(Texture::GetBindable(gfx, normalTexture, 1));
+	meshBindables.push_back(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
 
-	AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pBlob));
+	meshBindables.push_back(DepthStencil::GetBindable(gfx, DepthStencil::Write));
 
-	AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
-	AddBindable(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
-
-	AddBindable(DepthStencil::GetBindable(gfx, DepthStencil::Write));
-
-	AddBindable(std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2));
+	m_mesh = std::make_unique<Mesh>(gfx, std::move(meshBindables));
 
 	if (enableOutline)
 		m_outlineBindables = getOutline(gfx);
@@ -60,7 +52,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 std::vector<std::shared_ptr<Bindable>> Cube::getOutline(GFX& gfx)
 {
-	std::vector<std::shared_ptr<Bindable>> outlineBindables = this->getAllBindables(m_pOutlineIndexBuffer);
+	std::vector<std::shared_ptr<Bindable>> outlineBindables = m_mesh->getAllBindables(m_pOutlineIndexBuffer);
 
 	for (size_t i = 0; i < outlineBindables.size(); i++)
 	{
@@ -107,6 +99,18 @@ std::vector<std::shared_ptr<Bindable>> Cube::getOutline(GFX& gfx)
 	return outlineBindables;
 }
 
+void Cube::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
+{
+	const auto finalTransform =
+		(
+			DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
+			DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) *
+			DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z)
+			);
+
+	m_mesh->Draw(gfx, finalTransform);
+}
+
 void Cube::DrawWithOutline(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	if (m_glowEnabled)
@@ -118,7 +122,7 @@ void Cube::DrawWithOutline(GFX& gfx) const noexcept(!IS_DEBUG)
 		gfx.DrawIndexed(m_pOutlineIndexBuffer->GetCount());
 	}
 
-	Shape::Draw(gfx);
+	Draw(gfx);
 }
 
 void Cube::ResetLocalTransform() noexcept
@@ -128,67 +132,65 @@ void Cube::ResetLocalTransform() noexcept
 	m_scale = { 1.0f, 1.0f, 1.0f };
 }
 
-void Cube::SpawnControlWindow(GFX& gfx) noexcept
+void Cube::MakePropeties(GFX & gfx, float deltaTime)
 {
-	if (ImGui::Begin("Cube"))
+	if (!GetPressedState())
+		return;
+
+	ImGui::Text("Position");
+	ImGui::SliderFloat("pX", &m_position.x, -30.0f, 30.0f);
+	ImGui::SliderFloat("pY", &m_position.y, -30.0f, 30.0f);
+	ImGui::SliderFloat("pZ", &m_position.z, -30.0f, 30.0f);
+
+	ImGui::Text("Rotation");
+	ImGui::SliderFloat("rX", &m_rotation.x, -std::_Pi, std::_Pi);
+	ImGui::SliderFloat("rY", &m_rotation.y, -std::_Pi, std::_Pi);
+	ImGui::SliderFloat("rZ", &m_rotation.z, -std::_Pi, std::_Pi);
+
+	ImGui::Text("Scale");
+	ImGui::SliderFloat("sX", &m_scale.x, 0.01f, 100.0f);
+	ImGui::SliderFloat("sY", &m_scale.y, 0.01f, 100.0f);
+	ImGui::SliderFloat("sZ", &m_scale.z, 0.01f, 100.0f);
+
+	if (ImGui::Button("Reset"))
+		ResetLocalTransform();
+
+	CachedBuffer* cachedBuffer = m_mesh->GetBindable<CachedBuffer>();
+
+	if (!materialsDefined)
+		shaderMaterial = cachedBuffer->constBufferData;
+
+
+	bool powerChanged = false, intensityChanged = false, normalMapStateChanged = false;
+
+	powerChanged = ImGui::SliderFloat("specularPower", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower"), 0.001f, 150.0f);
+	intensityChanged = ImGui::SliderFloat("specularIntensity", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity"), 0.001f, 150.0f);
+	normalMapStateChanged = ImGui::Checkbox("normalMapEnabled", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled"));
+
+	if (powerChanged || intensityChanged || normalMapStateChanged)
+		cachedBuffer->Update(gfx, shaderMaterial);
+
+	materialsDefined = true;
+
+	ImGui::Text("Glow Settings");
+
+	if (ImGui::Checkbox("enable", &m_glowEnabled))
+		m_outlineBindables = getOutline(gfx);
+
+	if (m_glowEnabled)
 	{
-		ImGui::Text("Position");
-		ImGui::SliderFloat("pX", &m_position.x, -30.0f, 30.0f);
-		ImGui::SliderFloat("pY", &m_position.y, -30.0f, 30.0f);
-		ImGui::SliderFloat("pZ", &m_position.z, -30.0f, 30.0f);
-
-		ImGui::Text("Rotation");
-		ImGui::SliderFloat("rX", &m_rotation.x, -std::_Pi, std::_Pi);
-		ImGui::SliderFloat("rY", &m_rotation.y, -std::_Pi, std::_Pi);
-		ImGui::SliderFloat("rZ", &m_rotation.z, -std::_Pi, std::_Pi);
-
-		ImGui::Text("Scale");
-		ImGui::SliderFloat("sX", &m_scale.x, 0.01f, 100.0f);
-		ImGui::SliderFloat("sY", &m_scale.y, 0.01f, 100.0f);
-		ImGui::SliderFloat("sZ", &m_scale.z, 0.01f, 100.0f);
-
-		if (ImGui::Button("Reset"))
-			ResetLocalTransform();
-
-		CachedBuffer* cachedBuffer = GetBindable<CachedBuffer>();
-
-		if (!materialsDefined)
-			shaderMaterial = cachedBuffer->constBufferData;
-
-
-		bool powerChanged = false, intensityChanged = false, normalMapStateChanged = false;
-
-		powerChanged = ImGui::SliderFloat("specularPower", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower"), 0.001f, 150.0f);
-		intensityChanged = ImGui::SliderFloat("specularIntensity", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity"), 0.001f, 150.0f);
-		normalMapStateChanged = ImGui::Checkbox("normalMapEnabled", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled"));
-
-		if(powerChanged || intensityChanged || normalMapStateChanged)
-			cachedBuffer->Update(gfx, shaderMaterial);
-
-		materialsDefined = true;
-
-		ImGui::Text("Glow Settings");
-
-		if (ImGui::Checkbox("enable", &m_glowEnabled))
-			m_outlineBindables = getOutline(gfx);
-
-		if (m_glowEnabled)
+		for (const auto& outlineBindable : m_outlineBindables)
 		{
-			for (const auto& outlineBindable : m_outlineBindables)
+			if (CachedBuffer* cachedOutlineBuffer = dynamic_cast<CachedBuffer*>(outlineBindable.get()))
 			{
-				if (CachedBuffer* cachedOutlineBuffer = dynamic_cast<CachedBuffer*>(outlineBindable.get()))
-				{
-					DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
+				DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
 
-					bool outlineColorChanged = ImGui::ColorPicker3("color", (float*)bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("color"));
-				
-					if (outlineColorChanged)
-						cachedOutlineBuffer->Update(gfx, bufferData);
-				}
+				bool outlineColorChanged = ImGui::ColorPicker3("color", (float*)bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("color"));
+
+				if (outlineColorChanged)
+					cachedOutlineBuffer->Update(gfx, bufferData);
 			}
 		}
-
-		ImGui::End();
 	}
 }
 
@@ -368,8 +370,5 @@ SimpleMesh Cube::GetUnwrappedMesh(float scale, bool getExtendedStuff)
 
 DirectX::XMMATRIX Cube::GetTranformMatrix() const noexcept
 {
-	return
-		DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
-		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) *
-		DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
+	return m_mesh->GetTranformMatrix();
 }

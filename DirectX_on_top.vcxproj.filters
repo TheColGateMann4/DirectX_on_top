@@ -183,7 +183,7 @@
     <ClInclude Include="TransformConstBufferWithPixelShader.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="ModelHierarchy.h">
+    <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BlendState.h">
@@ -200,6 +200,12 @@
     </ClInclude>
     <ClInclude Include="DepthStencil.h">
       <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -244,9 +250,6 @@
     </ClCompile>
     <ClCompile Include="PixelShader.cpp">
       <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="Shape.cpp">
-      <Filter>Source Files\Shapes</Filter>
     </ClCompile>
     <ClCompile Include="Cube.cpp">
       <Filter>Source Files\Shapes</Filter>
@@ -305,7 +308,7 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ModelHierarchy.cpp">
+    <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BlendState.cpp">
@@ -315,6 +318,9 @@
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="DynamicConstantBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

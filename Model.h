@@ -11,8 +11,9 @@
 #include "imgui/imgui.h"
 #include <random>
 #include "ErrorMacros.h"
+#include "SceneObject.h"
 
-class Model
+class Model : public SceneObject
 {
 public:
 	Model(GFX& gfx, std::string fileName, float scale = 1.0f);
@@ -26,8 +27,14 @@ public:
 	void Draw(GFX& gfx) const noexcept(!IS_DEBUG);
 
 public:
-	void MakeHierarchy(GFX& gfx);
-	void MakePropeties(GFX& gfx);
+	void MakeHierarchy(GFX& gfx) override;
+	void MakePropeties(GFX& gfx, float deltaTime) override;
+
+public:
+	std::string GetName() const override
+	{
+		return m_fileName;
+	}
 
 private:
 	std::unique_ptr<Node> m_pStartingNode;

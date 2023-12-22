@@ -7,7 +7,7 @@
 #include "PointLight.h"
 #include "Model.h"
 #include "Cube.h"
-#include "ModelHierarchy.h"
+#include "Scene.h"
 
 class Application
 {
@@ -31,10 +31,7 @@ private:
 	bool cursorLocked = false;
 	bool cursorShowing = true;
 
-	//scene
 private:
-	PointLight pointLight;
-	Cube mycube{ window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", true};
-	ModelHierarchy modelHierarchy{ &window };
+	Scene modelHierarchy{ &window };
 };
 

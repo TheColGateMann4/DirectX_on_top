@@ -4,7 +4,7 @@
 #include <random>
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
-	: m_width(width), m_height(height), m_name(name), window(width, height, name), pointLight(window.Graphics)
+	: m_width(width), m_height(height), m_name(name), window(width, height, name)
 {
 	float aspectRatioX, AspectRatioY;
 	if (width > height)
@@ -27,7 +27,9 @@ BOOL Application::Initiate()
 	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
 	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
 	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
+	modelHierarchy.models.push_back(std::make_unique<PointLight>(window.Graphics));
 	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
+	modelHierarchy.models.push_back(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", true));
 
 	while (true)
 	{
@@ -143,15 +145,7 @@ void Application::DoFrame()
 
 	window.Graphics.BeginFrame({ 0,0,0,1 });
 
-	pointLight.Bind(window.Graphics, window.Graphics.camera.GetCamera());
-
-
-	modelHierarchy.DrawModels();
-
-	
-	pointLight.Draw(window.Graphics);
-
-	mycube.DrawWithOutline(window.Graphics);
+	modelHierarchy.DrawModels(window.Graphics, window.Graphics.camera.GetCamera());
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
 		window.Graphics.ShowImGUI(!window.Graphics.isImGUIVisible());
@@ -164,12 +158,9 @@ void Application::DoFrame()
 		window.ShowCursor(cursorShowing);
 	}
 
-	mycube.SpawnControlWindow(window.Graphics);
-
 	window.Graphics.camera.SpawnControlWindow();
-	pointLight.SpawnControlWindow(window.Graphics, timer.Get());
 
-	modelHierarchy.DrawModelHierarchy();
+	modelHierarchy.DrawModelHierarchy(timer.Get());
 
 	window.Graphics.FinishFrame();
 }

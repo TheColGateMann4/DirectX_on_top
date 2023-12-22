@@ -303,31 +303,37 @@ void Model::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
 void Model::MakeHierarchy(GFX&)
 {
 	ImGui::Columns(2, nullptr, true);
+
+	bool previous = m_pressedNode != nullptr;
+
 	m_pStartingNode->GenerateTree(m_pressedNode);
+
+	if(previous != (m_pressedNode != nullptr))
+		SetPressedState(m_pressedNode != nullptr);
 }
 
-void Model::MakePropeties(GFX& gfx)
+void Model::MakePropeties(GFX& gfx, float deltaTime)
 {
-	if (m_pressedNode != nullptr)
-	{
-		ImGui::Text("Position");
-		ImGui::SliderFloat("pX", &m_pressedNode->position.x, -30.0f, 30.0f);
-		ImGui::SliderFloat("pY", &m_pressedNode->position.y, -30.0f, 30.0f);
-		ImGui::SliderFloat("pZ", &m_pressedNode->position.z, -30.0f, 30.0f);
+	if (!GetPressedState())
+		return;
 
-		ImGui::Text("Rotation");
-		ImGui::SliderFloat("rX", &m_pressedNode->rotation.x, -std::_Pi, std::_Pi);
-		ImGui::SliderFloat("rY", &m_pressedNode->rotation.y, -std::_Pi, std::_Pi);
-		ImGui::SliderFloat("rZ", &m_pressedNode->rotation.z, -std::_Pi, std::_Pi);
+	ImGui::Text("Position");
+	ImGui::SliderFloat("pX", &m_pressedNode->position.x, -30.0f, 30.0f);
+	ImGui::SliderFloat("pY", &m_pressedNode->position.y, -30.0f, 30.0f);
+	ImGui::SliderFloat("pZ", &m_pressedNode->position.z, -30.0f, 30.0f);
 
-		ImGui::Text("Scale");
-		ImGui::SliderFloat("sX", &m_pressedNode->scale.x, 0.01f, 100.0f);
-		ImGui::SliderFloat("sY", &m_pressedNode->scale.y, 0.01f, 100.0f);
-		ImGui::SliderFloat("sZ", &m_pressedNode->scale.z, 0.01f, 100.0f);
+	ImGui::Text("Rotation");
+	ImGui::SliderFloat("rX", &m_pressedNode->rotation.x, -std::_Pi, std::_Pi);
+	ImGui::SliderFloat("rY", &m_pressedNode->rotation.y, -std::_Pi, std::_Pi);
+	ImGui::SliderFloat("rZ", &m_pressedNode->rotation.z, -std::_Pi, std::_Pi);
 
-		if (ImGui::Button("Reset"))
-			m_pressedNode->ResetLocalTranform();
+	ImGui::Text("Scale");
+	ImGui::SliderFloat("sX", &m_pressedNode->scale.x, 0.01f, 100.0f);
+	ImGui::SliderFloat("sY", &m_pressedNode->scale.y, 0.01f, 100.0f);
+	ImGui::SliderFloat("sZ", &m_pressedNode->scale.z, 0.01f, 100.0f);
 
-		m_pressedNode->GenerateShaderOptions(gfx);
-	}
+	if (ImGui::Button("Reset"))
+		m_pressedNode->ResetLocalTranform();
+
+	m_pressedNode->GenerateShaderOptions(gfx);
 }

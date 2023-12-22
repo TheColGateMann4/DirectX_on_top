@@ -10,22 +10,26 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 	SimpleMesh model = Sphere::GetMesh(35, 35);
 	model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
 
-	AddBindable(VertexBuffer::GetBindable(gfx, "3535SPHERE", model.m_vertices));
-	AddIndexBuffer(IndexBuffer::GetBindable(gfx, "3535SPHERE", model.m_indices));
+	std::vector<std::shared_ptr<Bindable>> meshBindables = {};
+
+	meshBindables.push_back(VertexBuffer::GetBindable(gfx, "3535SPHERE", model.m_vertices));
+	meshBindables.push_back(IndexBuffer::GetBindable(gfx, "3535SPHERE", model.m_indices));
 
 	auto pvs = VertexShader::GetBindable(gfx, "VS.cso");
 	auto pvsbc = pvs->GetByteCode();
-	AddBindable(std::move(pvs));
+	meshBindables.push_back(std::move(pvs));
 
-	AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
+	meshBindables.push_back(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
-	AddBindable(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 1, true));
+	*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = { 1.0f, 1.0f, 1.0f };
 
-	AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), pvsbc));
+	meshBindables.push_back(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 1, true));
 
-	AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	meshBindables.push_back(InputLayout::GetBindable(gfx, model.GetLayout(), pvsbc));
 
-	AddBindable(std::make_unique<TransformConstBuffer>(gfx, *this));
+	meshBindables.push_back(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+
+	m_mesh = std::make_unique<Mesh>(gfx, meshBindables);
 }
 
 DirectX::XMMATRIX PointLightModel::GetTranformMatrix() const noexcept
@@ -41,6 +45,6 @@ VOID PointLightModel::SetPosition(DirectX::XMFLOAT3 position)
 void PointLightModel::UpdateLightColorBuffer(GFX& gfx, DirectX::XMFLOAT3 color)
 {
 	*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = color; // should be named color, but since we make layout by identificator string we don't have normal name
-	CachedBuffer* pPixelConstBuffer = GetBindable<CachedBuffer>();
+	CachedBuffer* pPixelConstBuffer = m_mesh->GetBindable<CachedBuffer>();
 	pPixelConstBuffer->Update(gfx, m_colorBuffer);
 }

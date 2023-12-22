@@ -10,14 +10,13 @@ class Mesh : public Shape
 public:
 	Mesh(GFX &gfx, std::vector<std::shared_ptr<Bindable>> binds)
 	{
-		binds.push_back(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
 		for (auto& bind : binds)
 		{
 			AddBindable(std::move(bind));
 		}
 
-		AddBindable(std::make_shared<TransformConstBuffer>(gfx, *this));
+		AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		AddBindable(std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2));
 	}
 
 public:

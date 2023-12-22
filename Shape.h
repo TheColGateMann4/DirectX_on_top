@@ -2,6 +2,8 @@
 #include "Includes.h"
 #include "Graphics.h"
 #include "IndexBuffer.h"
+#include <cassert>
+#include <typeinfo>
 
 class Bindable;
 
@@ -12,7 +14,15 @@ public:
 	Shape(const Shape&) = delete;
 
 public:
-	void Draw(GFX& gfx) const noexcept(!IS_DEBUG);
+	void Draw(GFX& gfx) const noexcept(!IS_DEBUG)
+	{
+		for (auto& b : m_binds)
+		{
+			b->Bind(gfx);
+		}
+		gfx.DrawIndexed(m_pIndexBuffer->GetCount());
+	}
+
 	virtual DirectX::XMMATRIX GetTranformMatrix() const noexcept = 0;
 
 public:
@@ -26,8 +36,16 @@ public:
 	}
 
 public:
-	void AddBindable(std::shared_ptr<Bindable> bindable) noexcept(!IS_DEBUG);
-	void AddIndexBuffer(std::shared_ptr<IndexBuffer> indexBuffer) noexcept(!IS_DEBUG);
+	void AddBindable(std::shared_ptr<Bindable> bind) noexcept(!IS_DEBUG)
+	{
+		if (typeid(*bind) == typeid(IndexBuffer))
+		{
+			assert("Attempting to bind Index Buffer second time" && m_pIndexBuffer == NULL);
+			m_pIndexBuffer = static_cast<IndexBuffer*>(bind.get());
+		}
+
+		m_binds.push_back(std::move(bind));
+	}
 
 	std::vector<std::shared_ptr<Bindable>>& getAllBindables(const IndexBuffer* &pIndexBuffer) noexcept
 	{
