@@ -220,15 +220,6 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 				vertexBuffer.GetData() + vertexBuffer.GetLayout().GetByteSize() * i + vertexBuffer.GetLayout().ResolveByIndex(currentElementIndex).GetOffset(),
 				*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
 		);
-
-
-// 		vertexBuffer.Emplace_Back(
-// 			DirectX::XMFLOAT3(mesh.mVertices[i].x * scale, mesh.mVertices[i].y * scale, mesh.mVertices[i].z * scale),
-// 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]),
-// 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i]),
-// 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mBitangents[i]),
-// 			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
-// 		);
 	}
 
 	std::vector<UINT32> indices;

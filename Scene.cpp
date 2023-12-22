@@ -51,32 +51,6 @@ void Scene::DrawModelHierarchy(float deltaTime)
 
 void Scene::CleanupPressedNodes()
 {
-// 	Node** previousNode = nullptr;
-// 
-// 	for (auto& model : models)
-// 	{
-// 		if (model->m_pressedNode == nullptr)
-// 			continue;
-// 
-// 		if (model->m_pressedNode != this->m_pressedNode)
-// 		{
-// 			if (previousNode != nullptr)
-// 				*previousNode = nullptr;
-// 
-// 			previousNode = &model->m_pressedNode;
-// 		}
-// 		else
-// 		{
-// 			if (previousNode != nullptr)
-// 				model->m_pressedNode = nullptr;
-// 			else
-// 				previousNode = &model->m_pressedNode;
-// 		}
-// 	}
-// 
-// 	if (previousNode != nullptr)
-// 		this->m_pressedNode = *previousNode;
-
 	SceneObject* previousObject = nullptr;
 
 	for (auto& model : models)
