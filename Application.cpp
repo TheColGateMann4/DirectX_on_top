@@ -137,7 +137,7 @@ void Application::DoFrame()
 	if (movingDir.x != 0 || movingDir.y != 0 || movingDir.z != 0)
 		window.Graphics.camera.Move(movingDir);
 
-	Vector2int lookOffset = window.Input.Mouse.GetRawInputPos();
+	DirectX::XMINT2 lookOffset = window.Input.Mouse.GetRawInputPos();
 
 	if(cursorLocked && !cursorShowing)
 		if (lookOffset.x != 0 || lookOffset.y != 0)

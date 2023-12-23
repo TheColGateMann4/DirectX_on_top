@@ -143,9 +143,9 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 	ImGui::SliderFloat("pZ", &m_position.z, -30.0f, 30.0f);
 
 	ImGui::Text("Rotation");
-	ImGui::SliderFloat("rX", &m_rotation.x, -std::_Pi, std::_Pi);
-	ImGui::SliderFloat("rY", &m_rotation.y, -std::_Pi, std::_Pi);
-	ImGui::SliderFloat("rZ", &m_rotation.z, -std::_Pi, std::_Pi);
+	ImGui::SliderFloat("rX", &m_rotation.x, -_Pi, _Pi);
+	ImGui::SliderFloat("rY", &m_rotation.y, -_Pi, _Pi);
+	ImGui::SliderFloat("rZ", &m_rotation.z, -_Pi, _Pi);
 
 	ImGui::Text("Scale");
 	ImGui::SliderFloat("sX", &m_scale.x, 0.01f, 100.0f);

@@ -124,7 +124,7 @@ VOID GFX::SetResolution(UINT32 width, UINT32 height)
 	this->m_height = height;
 }
 
-VOID GFX::BeginFrame(Vector4f color_)
+VOID GFX::BeginFrame(DirectX::XMFLOAT4 color_)
 {
 	//imgui
 	if (this->m_imgui_enabled)
@@ -166,9 +166,9 @@ VOID GFX::FinishFrame()
 	}
 }
 
-VOID GFX::ClearBuffer(Vector4f color_)
+VOID GFX::ClearBuffer(DirectX::XMFLOAT4 color_)
 {
-	const FLOAT color[] = { color_.x, color_.y, color_.z, color_.t };
+	const FLOAT color[] = { color_.x, color_.y, color_.z, color_.w };
 	pDeviceContext->ClearRenderTargetView(pTargetView.Get(), color);
 	pDeviceContext->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1, 0);
 }

@@ -33,8 +33,8 @@ public:
 
 		constexpr float radius = 1.0f;
 		const auto base = DirectX::XMVectorSet(0.0f, 0.0f, radius, 0.0f);
-		const float verticalAngle = (float)std::_Pi / verticalDivisions;
-		const float horizontalAngle = 2.0f * (float)std::_Pi / horizontalDivisions;
+		const float verticalAngle = (float)_Pi / verticalDivisions;
+		const float horizontalAngle = 2.0f * (float)_Pi / horizontalDivisions;
 
 		DynamicVertex::VertexLayout layout = DynamicVertex::VertexLayout().Append(DynamicVertex::VertexLayout::Position3D);
 		DynamicVertex::VertexBuffer vertices(std::move(layout));

@@ -50,7 +50,8 @@
 #include <memory>
 #include <random>
 
-#define OBJLOADER_READ_SIZE 1024
+
+constexpr float _Pi = 3.14159265358979f;
 
 #ifdef _DEBUG
 	#include <iostream>
@@ -58,46 +59,3 @@
 #else
 	#define IS_DEBUG FALSE
 #endif
-
-//std::string os_;
-//os_ += 'k';
-//os_ += std::to_string(wParam);
-//os_ += ' ';
-//OutputDebugStringW(std::wstring(os_.begin(), os_.end()).c_str());
-
-/*
-
-		size_t len = strlen(except.what()) + 1;
-		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
-		memcpy(GlobalLock(hMem), except.what(), len);
-		GlobalUnlock(hMem);
-		OpenClipboard(0);
-		EmptyClipboard();
-		SetClipboardData(CF_TEXT, hMem);
-		CloseClipboard();
-
-*/
-
-struct Vector2uint {
-	UINT32 x, y;
-};
- 
-struct Vector2int {
-	INT32 x, y;
-};
-
-struct Vector2f {
-	FLOAT x, y, z;
-};
-
-struct Vector3f {
-	FLOAT x, y, z;
-};
-
-struct Vector4f {
-	FLOAT x, y, z, t;
-};
-
-struct Colorc {
-	unsigned char r, g, b;
-};

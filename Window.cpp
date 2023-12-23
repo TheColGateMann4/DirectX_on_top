@@ -327,7 +327,7 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	///*          Mouse stuff          *///
 	case WM_MOUSEMOVE:
 		{
-			Vector2uint mousePos = { (UINT32)(short)LOWORD(lParam) ,(UINT32)(short)HIWORD(lParam) };
+			DirectX::XMUINT2 mousePos = { (UINT32)(short)LOWORD(lParam) ,(UINT32)(short)HIWORD(lParam) };
 			if (mousePos.x < this->m_width && mousePos.x >= 0 && mousePos.y < this->m_height && mousePos.y >= 0)
 			{
 				this->Input.Mouse.m_position.x = mousePos.x;

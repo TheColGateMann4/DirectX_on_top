@@ -48,11 +48,11 @@ void CameraView::Move(DirectX::XMFLOAT3 moveoffset)
 
 void CameraView::Look(DirectX::XMFLOAT3 lookoffset)
 {
-	float halfRotation = 0.995f * (std::_Pi / 2);
+	float halfRotation = 0.995f * (_Pi / 2);
 
-	m_view.x = WrapAngle(m_view.x + lookoffset.x * m_sensivity, std::_Pi);					   //pitch
+	m_view.x = WrapAngle(m_view.x + lookoffset.x * m_sensivity, _Pi);					   //pitch
 	m_view.y = std::clamp(m_view.y + lookoffset.y * m_sensivity, -halfRotation, halfRotation); //yaw
-	m_view.z = WrapAngle(m_view.z + lookoffset.z * m_sensivity, std::_Pi);					   //roll
+	m_view.z = WrapAngle(m_view.z + lookoffset.z * m_sensivity, _Pi);					   //roll
 }
 
 void CameraView::Reset()

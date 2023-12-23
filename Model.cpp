@@ -314,9 +314,9 @@ void Model::MakePropeties(GFX& gfx, float deltaTime)
 	ImGui::SliderFloat("pZ", &m_pressedNode->position.z, -30.0f, 30.0f);
 
 	ImGui::Text("Rotation");
-	ImGui::SliderFloat("rX", &m_pressedNode->rotation.x, -std::_Pi, std::_Pi);
-	ImGui::SliderFloat("rY", &m_pressedNode->rotation.y, -std::_Pi, std::_Pi);
-	ImGui::SliderFloat("rZ", &m_pressedNode->rotation.z, -std::_Pi, std::_Pi);
+	ImGui::SliderFloat("rX", &m_pressedNode->rotation.x, -_Pi, _Pi);
+	ImGui::SliderFloat("rY", &m_pressedNode->rotation.y, -_Pi, _Pi);
+	ImGui::SliderFloat("rZ", &m_pressedNode->rotation.z, -_Pi, _Pi);
 
 	ImGui::Text("Scale");
 	ImGui::SliderFloat("sX", &m_pressedNode->scale.x, 0.01f, 100.0f);

@@ -11,9 +11,9 @@ public:
 	VOID Initialize(HWND hWnd);
 	VOID SetResolution(UINT32 width, UINT32 height);
 
-	VOID BeginFrame(Vector4f color_ = { 0,0,0,1 });
+	VOID BeginFrame(DirectX::XMFLOAT4 color_ = { 0.0f , 0.0f, 0.0f, 1.0f });
 	VOID FinishFrame();
-	VOID ClearBuffer(Vector4f color_ = { 0,0,0,1 });
+	VOID ClearBuffer(DirectX::XMFLOAT4 color_ = { 0.0f, 0.0f, 0.0f, 1.0f });
 
 public:
 	VOID ShowImGUI(bool show);

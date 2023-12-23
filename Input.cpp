@@ -117,12 +117,12 @@ VOID InputSystem::KeyInput::busyWritingText(BOOL busy)
 
 */
 
-Vector2uint InputSystem::MouseInput::GetMousePos()
+DirectX::XMUINT2 InputSystem::MouseInput::GetMousePos()
 {
 	return InputSystem::MouseInput::m_position;
 }
 
-BOOL InputSystem::MouseInput::GetMouseButtonDown(UINT8 button, Vector2uint* position)
+BOOL InputSystem::MouseInput::GetMouseButtonDown(UINT8 button, DirectX::XMUINT2* position)
 {
 	if (button > 31)
 		return FALSE;
@@ -133,7 +133,7 @@ BOOL InputSystem::MouseInput::GetMouseButtonDown(UINT8 button, Vector2uint* posi
 	return InputSystem::m_pressedKeysList[button];
 }
 
-BOOL InputSystem::MouseInput::GetMouseButtonUp(UINT8 button, Vector2uint* position)
+BOOL InputSystem::MouseInput::GetMouseButtonUp(UINT8 button, DirectX::XMUINT2* position)
 {
 	if (button > 31)
 		return FALSE;
@@ -149,7 +149,7 @@ INT8 InputSystem::MouseInput::GetMouseWheel()
 	return InputSystem::MouseInput::m_mouseWheelOffset;
 }
 
-Vector2int InputSystem::MouseInput::GetRawInputPos()
+DirectX::XMINT2 InputSystem::MouseInput::GetRawInputPos()
 {
 	return m_rawInputPosition;
 }
