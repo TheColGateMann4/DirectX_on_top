@@ -5,7 +5,7 @@
 class SceneObject
 {
 public:
-	virtual void Draw(GFX& gfx) const noexcept(!IS_DEBUG) = 0;
+	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) = 0;
 
 	virtual void MakeHierarchy(GFX& gfx)
 	{
@@ -15,7 +15,7 @@ public:
 		if (GetPressedState())
 			flags |= ImGuiTreeNodeFlags_Selected;
 
-		const bool nodeExpanded = ImGui::TreeNodeEx(GetName().c_str(), flags);
+		ImGui::TreeNodeEx(GetName().c_str(), flags);
 
 		if (ImGui::IsItemClicked())
 			SetPressedState(!GetPressedState());

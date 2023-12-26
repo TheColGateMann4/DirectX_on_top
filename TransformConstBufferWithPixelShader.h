@@ -1,4 +1,5 @@
 #pragma once
+#include "Shape.h"
 #include "TransformConstBuffer.h"
 #include "ConstantBuffers.h"
 #include "DynamicConstantBuffer.h"

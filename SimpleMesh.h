@@ -7,13 +7,13 @@ class SimpleMesh
 {
 public:
 	SimpleMesh() = default;
-	SimpleMesh(const DynamicVertex::VertexBuffer& vertices, std::vector<UINT32> indices)
+	SimpleMesh(DynamicVertex::VertexBuffer vertices, std::vector<UINT32> indices)
 		: 
 		m_vertices(std::move(vertices)),
 		m_indices(std::move(indices))
 	{
-		assert(vertices.GetSize() > 2);
-		assert(indices.size() % 3 == 0);
+		assert(m_vertices.GetSize() > 2);
+		assert(m_indices.size() % 3 == 0);
 	}
 
 public:
@@ -22,7 +22,7 @@ public:
 		using ElementTypes = DynamicVertex::VertexLayout::VertexComponent;
 		for (UINT32 i = 0; i < m_vertices.GetSize();i++)
 		{
-			auto& position = m_vertices[i].Attr<ElementTypes::Position3D>();
+			auto& position = m_vertices[i].Attribute<ElementTypes::Position3D>();
 			DirectX::XMStoreFloat3(
 				&position,
 				DirectX::XMVector3Transform(DirectX::XMLoadFloat3(&position), matrix)

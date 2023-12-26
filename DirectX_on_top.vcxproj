@@ -196,6 +196,11 @@
     <ClInclude Include="KeyMacros.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="NullPixelShader.h" />
+    <ClInclude Include="RenderJob.h" />
+    <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="RenderSteps.h" />
+    <ClInclude Include="RenderTechnique.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="PixelShader.h" />
@@ -245,6 +250,11 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="NullPixelShader.cpp" />
+    <ClCompile Include="RenderJob.cpp" />
+    <ClCompile Include="RenderPass.cpp" />
+    <ClCompile Include="RenderSteps.cpp" />
+    <ClCompile Include="RenderTechnique.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="PointLight.cpp" />
@@ -253,6 +263,7 @@
     <ClCompile Include="RasterizerState.cpp" />
     <ClCompile Include="RenderQueue.cpp" />
     <ClCompile Include="SamplerState.cpp" />
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sheet.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Texture.cpp" />

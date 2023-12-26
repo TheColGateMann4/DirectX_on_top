@@ -13,7 +13,7 @@ public:
 		: m_window(window)	{}
 
 public:
-	void DrawModels(GFX& gfx, DirectX::XMMATRIX CameraView_);
+	void DrawModels(RenderQueue& renderQueue, GFX& gfx, DirectX::XMMATRIX CameraView_);
 	void DrawModelHierarchy(float deltaTime);
 
 private:
@@ -24,6 +24,6 @@ public:
 
 private:
 	Window* m_window = nullptr;
-	SceneObject* m_pressedNode;
+	SceneObject* m_pressedNode = nullptr;
 };
 

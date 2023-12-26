@@ -24,7 +24,11 @@ private:
 	std::unique_ptr<Node> ParseNode(const aiNode& node) noexcept;
 
 public:
-	void Draw(GFX& gfx) const noexcept(!IS_DEBUG);
+
+	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) override
+	{
+		m_pStartingNode->Render(renderQueue, DirectX::XMMatrixIdentity());
+	}
 
 public:
 	void MakeHierarchy(GFX& gfx) override;

@@ -14,12 +14,12 @@ public:
 		return BindableList::GetBindable<SamplerState>(gfx, mode);
 	}
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(m_mode);
 	};
 
-	static std::string GetUID(D3D11_TEXTURE_ADDRESS_MODE mode) noexcept
+	static std::string GetStaticUID(D3D11_TEXTURE_ADDRESS_MODE mode) noexcept
 	{
 		return GenerateUID(mode);
 	};

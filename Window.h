@@ -1,8 +1,8 @@
 #pragma once
 #include "Includes.h"
 #include "ErrorHandling.h"
-#include "Input.h"
 #include "Graphics.h"
+#include "Input.h"
 
 class Window
 {

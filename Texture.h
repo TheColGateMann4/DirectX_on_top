@@ -16,12 +16,12 @@ public:
 		return BindableList::GetBindable<Texture>(gfx, imagePath, slot);
 	}
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(m_imagePath, m_slot);
 	};
 
-	static std::string GetUID(const std::string imagePath, UINT32 slot = 0) noexcept
+	static std::string GetStaticUID(const std::string imagePath, UINT32 slot = 0) noexcept
 	{
 		return GenerateUID(imagePath, slot);
 	};

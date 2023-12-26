@@ -101,6 +101,12 @@ public:
 		return *this;
 	}
 
+public:
+	UINT32 GetSlot() const
+	{
+		return m_slot;
+	}
+
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 	UINT32 m_slot;
@@ -147,12 +153,12 @@ public:
 		return BindableList::GetBindable<CachedBuffer>(gfx, bufferData, slot, isPixelShader);
 	}
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(constBufferData, m_slot, m_isPixelShader);
 	};
 
-	static std::string GetUID(const DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader) noexcept
+	static std::string GetStaticUID(const DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader) noexcept
 	{
 		return GenerateUID(bufferData, slot, isPixelShader);
 	};

@@ -18,12 +18,12 @@ public:
 		return BindableList::GetBindable<RasterizerState>(gfx, disableBackfaceCulling);
 	}
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(m_disableBackfaceCulling);
 	};
 
-	static std::string GetUID(bool disableBackfaceCulling) noexcept
+	static std::string GetStaticUID(bool disableBackfaceCulling) noexcept
 	{
 		return GenerateUID(disableBackfaceCulling);
 	};

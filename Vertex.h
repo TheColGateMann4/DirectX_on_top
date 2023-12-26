@@ -261,6 +261,8 @@ namespace DynamicVertex
 		std::vector<Element> m_elements;
 	};
 
+	class VertexBuffer;
+
 	class Vertex
 	{
 		friend class VertexBuffer;
@@ -274,14 +276,14 @@ namespace DynamicVertex
 
 	public:
 		template<VertexLayout::VertexComponent type>
-		auto& Attr() noexcept(!IS_DEBUG)
+		auto& Attribute() noexcept(!IS_DEBUG)
 		{
 			auto pAttrib = m_pData + m_layout.Resolve<type>().GetOffset();
 			return *reinterpret_cast<class VertexLayout::Map<type>::Systype*>(pAttrib);
 		}
 
 		template<VertexLayout::VertexComponent DestLayoutType, class SrcType>
-		void SetAttr(char* pAttr, SrcType&& val) noexcept(!IS_DEBUG)
+		void SetAttribute(char* pAttr, SrcType&& val) noexcept(!IS_DEBUG)
 		{
 			using DestType = typename VertexLayout::Map<DestLayoutType>::Systype;
 
@@ -291,17 +293,12 @@ namespace DynamicVertex
 			}
 			else
 			{
-				std::string exceptione = "type";
-				exceptione += typeid(SrcType).name();
-				exceptione += "didn't match";
-				std::cout << exceptione;
-				
 				assert("type attribute didn't match" && false);
 			}
 		}
 
 		template<class T>
-		void SetAttrByIndex(size_t i, T&& val) noexcept(!IS_DEBUG)
+		void SetAttributeByIndex(size_t i, T&& val) noexcept(!IS_DEBUG)
 		{
 			const auto& element = m_layout.ResolveByIndex(i);
 			auto pAttrib = m_pData + element.GetOffset();
@@ -310,47 +307,47 @@ namespace DynamicVertex
 			{
 			case VertexLayout::Position2D:
 			{
-				SetAttr<VertexLayout::Position2D>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::Position2D>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::Position3D:
 			{
-				SetAttr<VertexLayout::Position3D>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::Position3D>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::Tangent:
 			{
-				SetAttr<VertexLayout::Tangent>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::Tangent>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::Bitangent:
 			{
-				SetAttr<VertexLayout::Bitangent>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::Bitangent>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::Texture2D:
 			{
-				SetAttr<VertexLayout::Texture2D>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::Texture2D>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::Normal:
 			{
-				SetAttr<VertexLayout::Normal>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::Normal>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::Float3Color:
 			{
-				SetAttr<VertexLayout::Float3Color>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::Float3Color>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::Float4Color:
 			{
-				SetAttr<VertexLayout::Float4Color>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::Float4Color>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			case VertexLayout::RGBAColor:
 			{
-				SetAttr<VertexLayout::RGBAColor>(pAttrib, std::forward<T>(val));
+				SetAttribute<VertexLayout::RGBAColor>(pAttrib, std::forward<T>(val));
 				break;
 			}
 			default:
@@ -361,10 +358,10 @@ namespace DynamicVertex
 		}
 	private:
 		template<class First, class ...Rest>
-		void SetAttrByIndex(size_t i, First&& first, Rest&&... rest) noexcept(!IS_DEBUG)
+		void SetAttributeByIndex(size_t i, First&& first, Rest&&... rest) noexcept(!IS_DEBUG)
 		{
-			SetAttrByIndex(i, std::forward<First>(first));
-			SetAttrByIndex(i + 1, std::forward<Rest>(rest)...);
+			SetAttributeByIndex(i, std::forward<First>(first));
+			SetAttributeByIndex(i + 1, std::forward<Rest>(rest)...);
 		}
 
 	private:
@@ -382,7 +379,7 @@ namespace DynamicVertex
 		template<VertexLayout::VertexComponent type>
 		const auto& Attr() const noexcept(!IS_DEBUG)
 		{
-			return const_cast<Vertex&>(m_vertex).Attr<type>();
+			return const_cast<Vertex&>(m_vertex).Attribute<type>();
 		}
 
 	private:
@@ -437,7 +434,7 @@ namespace DynamicVertex
 		{
 			assert(sizeof...(params) == m_layout.GetElementCount() && "Number of parameters doesn't match the specified structure");
 			m_buffer.resize(m_buffer.size() + m_layout.GetByteSize());
-			this->Back().SetAttrByIndex(0, std::forward<Params>(params)...);
+			this->Back().SetAttributeByIndex(0, std::forward<Params>(params)...);
 		}
 
 		//Vertex stuff

@@ -14,12 +14,12 @@ public:
 		return BindableList::GetBindable<PixelShader>(gfx, path);
 	}
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(m_path);
 	};
 
-	static std::string GetUID(const std::string& path) noexcept
+	static std::string GetStaticUID(const std::string& path) noexcept
 	{
 		return GenerateUID(path);
 	};

@@ -18,26 +18,26 @@ public:
 	}
 
 public:
-	void Draw(GFX &gfx, DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
+	void Render(RenderQueue& renderQueue, DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
 	{
-		const auto finalTransform = 
+		const auto finalTransform =
 			(
 				DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *		//added rotation
 				DirectX::XMMatrixTranslation(position.x, position.y, position.z) *				//added position
 				DirectX::XMMatrixScaling(scale.x, scale.y, scale.z)								//added scale
-			)
+				)
 			* DirectX::XMLoadFloat4x4(&m_baseTransform)											// original transform in node
 			* transform;																		// accumulated transform from upper nodes
 
 		for (const auto& mesh : m_pMeshes)
 		{
-			mesh->Draw(gfx, finalTransform);
+			mesh->Render(renderQueue, finalTransform);
 		}
 
 		//passing accumulated transform to objects lower in hierarchy
 		for (const auto& pChild : m_pChildrens)
 		{
-			pChild->Draw(gfx, finalTransform);
+			pChild->Render(renderQueue, finalTransform);
 		}
 	}
 
@@ -80,7 +80,7 @@ public:
 		if (m_pMeshes.empty())
 			return;
 
-		auto bindableShaderMaterial = m_pMeshes.front()->GetBindable<CachedBuffer>();
+		auto bindableShaderMaterial = m_pMeshes.front()->GetBindable<CachedBuffer>(0,0,1);
 
 		if (!materialsDefined)
 			shaderMaterial = bindableShaderMaterial->constBufferData;

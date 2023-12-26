@@ -18,12 +18,12 @@ public:
 		return BindableList::GetBindable<BlendState>(gfx, blend);
 	}
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(m_blend);
 	};
 
-	static std::string GetUID(bool blend) noexcept
+	static std::string GetStaticUID(bool blend) noexcept
 	{
 		return GenerateUID(blend);
 	};

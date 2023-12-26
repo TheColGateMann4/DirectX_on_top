@@ -19,7 +19,7 @@ private:
 	template <class T, class ...Params>
 	std::shared_ptr<T> m_GetBindable(GFX &gfx, Params&& ...params)
 	{
-		const auto uid = typeid(T).name() + std::string("@") + T::GetUID(std::forward<Params>(params)...);
+		const auto uid = typeid(T).name() + std::string("@") + T::GetStaticUID(std::forward<Params>(params)...);
 		const auto pBind = m_bindables.find(uid);
 
 		if (pBind == m_bindables.end())

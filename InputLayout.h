@@ -24,16 +24,16 @@ public:
 		return BindableList::GetBindable<InputLayout>(gfx, layout, pVertexShaderByteCode);
 	}
 
-	std::string GetUID() const noexcept override 
+	std::string GetLocalUID() const noexcept override 
 	{ 
 		return GenerateUID(m_layout); 
 	};
 
-	static std::string GetUID(const DynamicVertex::VertexLayout& layout, ID3DBlob* = nullptr) noexcept
+	static std::string GetStaticUID(const DynamicVertex::VertexLayout& layout, ID3DBlob* = nullptr) noexcept
 	{
 		return GenerateUID(layout);
 	};
-	static std::string GetUID(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, ID3DBlob* = nullptr) noexcept
+	static std::string GetStaticUID(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, ID3DBlob* = nullptr) noexcept
 	{
 		return GenerateUID(layout);
 	};

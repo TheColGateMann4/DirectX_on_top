@@ -15,12 +15,12 @@ public:
 		return BindableList::GetBindable<Topology>(gfx, topologyType);
 	}
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(m_topologyType);
 	};
 
-	static std::string GetUID(D3D11_PRIMITIVE_TOPOLOGY topologyType) noexcept
+	static std::string GetStaticUID(D3D11_PRIMITIVE_TOPOLOGY topologyType) noexcept
 	{
 		return GenerateUID(topologyType);
 	};

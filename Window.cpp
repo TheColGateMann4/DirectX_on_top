@@ -2,8 +2,11 @@
 #include "ErrorMacros.h"
 #include "KeyMacros.h"
 #include "resource.h"
+#include "Graphics.h"
 #include "imgui/backend/imgui_impl_win32.h"
 #include <shlobj_core.h>
+
+
 //! WindowClass
 
 Window::WindowClass Window::WindowClass::sWindowClass;

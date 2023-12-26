@@ -13,8 +13,7 @@ public:
 		vcbuf(gfx, TCBLayout, slot, false)
 	{}
 
-protected:
-
+public:
 	void Bind(GFX& gfx) noexcept override
 	{
 		DynamicConstantBuffer::BufferData constBuffer(TCBLayout);
@@ -31,7 +30,7 @@ protected:
 		vcbuf.Bind(gfx);
 	}
 
-	void GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) noexcept
+	void GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept
 	{
 		const auto ModelTransformView = m_parent.GetTranformMatrix() * gfx.camera.GetCamera();
 

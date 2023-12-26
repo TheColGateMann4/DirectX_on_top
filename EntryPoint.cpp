@@ -9,11 +9,11 @@ int WINAPI WinMain
 	_In_ int
 )
 {
-#ifdef IS_DEBUG
-	AllocConsole();
-	FILE* pConsole;
-	freopen_s(&pConsole, "CONOUT$", "w", stdout);
-#endif
+// #ifdef IS_DEBUG
+// 	AllocConsole();
+// 	FILE* pConsole;
+// 	freopen_s(&pConsole, "CONOUT$", "w", stdout);
+// #endif
 
 	try
 	{
@@ -33,12 +33,10 @@ int WINAPI WinMain
 		errorHandler.ThrowMessage("Unknown Error", "No Details Available");
 	}
 
-#ifdef IS_DEBUG
-	fclose(pConsole);
-	FreeConsole();
-#endif
+// #ifdef IS_DEBUG
+// 	fclose(pConsole);
+// 	FreeConsole();
+// #endif
 
 	return FALSE;
 }
-
-//TODO: Get Includes right

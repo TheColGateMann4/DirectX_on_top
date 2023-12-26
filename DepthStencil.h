@@ -16,11 +16,15 @@ public:
 
 public:
 	DepthStencil(GFX& gfx, StencilMode mode)
+		: m_mode(mode)
 	{
-		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = CD3D11_DEPTH_STENCIL_DESC(CD3D11_DEFAULT());
+		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = CD3D11_DEPTH_STENCIL_DESC{ CD3D11_DEFAULT{} };
 
 		if (mode == StencilMode::Write)
 		{
+			depthStencilDesc.DepthEnable = FALSE;
+			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
 			depthStencilDesc.StencilEnable = TRUE;
 			depthStencilDesc.StencilWriteMask = 0xFF;
 			depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
@@ -29,13 +33,15 @@ public:
 		else if (mode == StencilMode::Mask)
 		{
 			depthStencilDesc.DepthEnable = FALSE;
+			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
 			depthStencilDesc.StencilEnable = TRUE;
 			depthStencilDesc.StencilReadMask = 0xFF;
 			depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
 			depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		}
 
-		GetDevice(gfx)->CreateDepthStencilState(&depthStencilDesc, pDepthStencil.GetAddressOf());
+		GetDevice(gfx)->CreateDepthStencilState(&depthStencilDesc, &pDepthStencil);
 	}
 
 public:
@@ -50,12 +56,12 @@ public:
 		return BindableList::GetBindable<DepthStencil>(gfx, mode);
 	}
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(m_mode);
 	};
 
-	static std::string GetUID(StencilMode mode) noexcept
+	static std::string GetStaticUID(StencilMode mode) noexcept
 	{
 		return GenerateUID(mode);
 	};

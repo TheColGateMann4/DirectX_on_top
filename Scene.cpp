@@ -1,16 +1,16 @@
 #include "Scene.h"
 #include "PointLight.h"
 
-void Scene::DrawModels(GFX& gfx, DirectX::XMMATRIX CameraView_)
+void Scene::DrawModels(RenderQueue& renderQueue, GFX& gfx, DirectX::XMMATRIX CameraView_)
 {
 	for (const auto& model : models)
 		if(const PointLight* pointLight = dynamic_cast<PointLight*>(model.get()))
 		{
 			pointLight->Bind(gfx, CameraView_);
-			model->Draw(m_window->Graphics);
+			pointLight->RenderOnScene(renderQueue);
 		}
 		else
-			model->Draw(m_window->Graphics);
+			model->RenderOnScene(renderQueue);
 }
 
 void Scene::DrawModelHierarchy(float deltaTime)

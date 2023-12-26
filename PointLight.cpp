@@ -109,6 +109,12 @@ void PointLight::MakePropeties(GFX& gfx, float deltaTime)
 	}
 }
 
+void PointLight::RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG)
+{
+	m_model.SetPosition(*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"));
+	m_model.Render(renderQueue);
+}
+
 void PointLight::Reset() noexcept
 {
 	DynamicConstantBuffer::BufferData &bufferData = constBufferData;
@@ -122,12 +128,6 @@ void PointLight::Reset() noexcept
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationLinear") = 0.045f;
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic") = 0.0075f;
 
-}
-
-void PointLight::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
-{
-	m_model.SetPosition(*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"));
-	m_model.Draw(gfx);
 }
 
 void PointLight::Bind(GFX& gfx, DirectX::XMMATRIX CameraView_) const noexcept

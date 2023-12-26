@@ -1,11 +1,15 @@
 #pragma once
 #include "Includes.h"
 #include "Graphics.h"
-#include "IndexBuffer.h"
-#include <cassert>
-#include <typeinfo>
+#include "RenderTechnique.h"
 
 class Bindable;
+class IndexBuffer;
+class VertexBuffer;
+class Topology;
+class TransformConstBufferWithPixelShader;
+
+class RenderQueue;
 
 class Shape
 {
@@ -14,46 +18,40 @@ public:
 	Shape(const Shape&) = delete;
 
 public:
-	void Draw(GFX& gfx) const noexcept(!IS_DEBUG)
+	virtual void Render(RenderQueue& renderQueue) const noexcept(!IS_DEBUG);
+
+public:
+	void Bind(GFX& gfx) const noexcept;
+
+public:
+	//slotNumber is only used when trying to get contant buffer
+	//techniqueNumber and techniqueNumber are defaulted since normal technique and normal step are always defined first - at least for now
+	template<class T>
+	T* GetBindable(size_t techniqueNumber = 0, size_t stepNumber = 0, size_t slotNumber = 0) const noexcept
 	{
-		for (auto& b : m_binds)
-		{
-			b->Bind(gfx);
-		}
-		gfx.DrawIndexed(m_pIndexBuffer->GetCount());
+		return m_techniques.at(techniqueNumber).GetBindable<T>(stepNumber, slotNumber);
 	}
 
+public:
+	void SetIndexBuffer(std::shared_ptr<IndexBuffer>& pIndexBuffer)
+	{
+		m_pIndexBuffer = pIndexBuffer;
+	}
+
+public:
+	void AddRenderTechnique(const RenderTechnique& technique);
+
+public:
 	virtual DirectX::XMMATRIX GetTranformMatrix() const noexcept = 0;
 
-public:
-	template <class T>
-	T* GetBindable() noexcept
-	{
-		for (auto& b : m_binds)
-			if (T* r = dynamic_cast<T*>(b.get()))
-				return r;
-		return nullptr;
-	}
+	UINT32 GetIndexCount() const noexcept;
 
 public:
-	void AddBindable(std::shared_ptr<Bindable> bind) noexcept(!IS_DEBUG)
-	{
-		if (typeid(*bind) == typeid(IndexBuffer))
-		{
-			assert("Attempting to bind Index Buffer second time" && m_pIndexBuffer == NULL);
-			m_pIndexBuffer = static_cast<IndexBuffer*>(bind.get());
-		}
-
-		m_binds.push_back(std::move(bind));
-	}
-
-	std::vector<std::shared_ptr<Bindable>>& getAllBindables(const IndexBuffer* &pIndexBuffer) noexcept
-	{
-		pIndexBuffer = m_pIndexBuffer;
-		return m_binds;
-	}
+	std::shared_ptr<IndexBuffer> m_pIndexBuffer = nullptr;
+	std::shared_ptr<VertexBuffer> m_pVertexBuffer = nullptr;
+	std::shared_ptr<Topology> m_pTopology = nullptr;
+	std::shared_ptr<TransformConstBufferWithPixelShader> m_pTransformConstBuffer = nullptr;
 
 private:
-	class IndexBuffer* m_pIndexBuffer = nullptr;
-	std::vector<std::shared_ptr<Bindable>> m_binds;
+	std::vector<RenderTechnique> m_techniques = {};
 };

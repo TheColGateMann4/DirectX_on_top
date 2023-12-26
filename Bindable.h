@@ -9,7 +9,7 @@ public:
 	virtual void Bind(GFX& gfx) noexcept = 0;
 	virtual ~Bindable() = default;
 
-	virtual std::string GetUID() const noexcept	{ return ""; };
+	virtual std::string GetLocalUID() const noexcept { return ""; };
 
 protected:
 	static ID3D11DeviceContext* GetDeviceContext(GFX& gfx) noexcept;

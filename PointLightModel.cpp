@@ -3,6 +3,8 @@
 #include "SimpleMesh.h"
 #include "Sphere.h"
 
+
+
 PointLightModel::PointLightModel(GFX& gfx, float radius)
 	:
 	m_colorBuffer(DynamicConstantBuffer::BufferLayout("F3"))
@@ -10,26 +12,40 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 	SimpleMesh model = Sphere::GetMesh(35, 35);
 	model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
 
-	std::vector<std::shared_ptr<Bindable>> meshBindables = {};
+	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, "3535SPHERE", model.m_indices);
+	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, "3535SPHERE", model.m_vertices);
+	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2);
 
-	meshBindables.push_back(VertexBuffer::GetBindable(gfx, "3535SPHERE", model.m_vertices));
-	meshBindables.push_back(IndexBuffer::GetBindable(gfx, "3535SPHERE", model.m_indices));
+	{
+		RenderTechnique normalTechnique;
 
-	auto pvs = VertexShader::GetBindable(gfx, "VS.cso");
-	auto pvsbc = pvs->GetByteCode();
-	meshBindables.push_back(std::move(pvs));
+		{
+			RenderSteps normalStep(PASS_NORMAL);
 
-	meshBindables.push_back(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
+			std::shared_ptr<VertexShader> vertexShader = VertexShader::GetBindable(gfx, "VS.cso");
+			ID3DBlob* pBlob = vertexShader->GetByteCode();
 
-	*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = { 1.0f, 1.0f, 1.0f };
+			*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = { 1.0f, 1.0f, 1.0f };
 
-	meshBindables.push_back(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 1, true));
 
-	meshBindables.push_back(InputLayout::GetBindable(gfx, model.GetLayout(), pvsbc));
+			normalStep.AddBindable(std::move(vertexShader));
 
-	meshBindables.push_back(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
-	m_mesh = std::make_unique<Mesh>(gfx, meshBindables);
+			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 1, true));
+
+			normalStep.AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), pBlob));
+
+			normalStep.AddBindable(BlendState::GetBindable(gfx, false));
+
+			normalStep.AddBindable(RasterizerState::GetBindable(gfx, false));
+
+			normalTechnique.AddRenderStep(normalStep);
+		}
+
+		AddRenderTechnique(normalTechnique);
+	}
 }
 
 DirectX::XMMATRIX PointLightModel::GetTranformMatrix() const noexcept
@@ -45,6 +61,6 @@ VOID PointLightModel::SetPosition(DirectX::XMFLOAT3 position)
 void PointLightModel::UpdateLightColorBuffer(GFX& gfx, DirectX::XMFLOAT3 color)
 {
 	*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = color; // should be named color, but since we make layout by identificator string we don't have normal name
-	CachedBuffer* pPixelConstBuffer = m_mesh->GetBindable<CachedBuffer>();
-	pPixelConstBuffer->Update(gfx, m_colorBuffer);
+ 	CachedBuffer* pPixelConstBuffer = GetBindable<CachedBuffer>( 0, 0, 0 );
+ 	pPixelConstBuffer->Update(gfx, m_colorBuffer);
 }

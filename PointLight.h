@@ -15,7 +15,7 @@ public:
 	void Reset() noexcept;
 
 public:
-	void Draw(GFX &gfx) const noexcept(!IS_DEBUG) override;
+	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) override;
 	void Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
 
 public:

@@ -22,12 +22,12 @@ public:
 	}
 
 	template <class ...Params>
-	static std::string GetUID(const std::string bufferUID, Params&&...)
+	static std::string GetStaticUID(const std::string bufferUID, Params&&...)
 	{
 		return GenerateUID(bufferUID);
 	};
 
-	std::string GetUID() const noexcept override
+	std::string GetLocalUID() const noexcept override
 	{
 		return GenerateUID(m_bufferUID);
 	};

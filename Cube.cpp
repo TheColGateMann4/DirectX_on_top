@@ -3,126 +3,103 @@
 #include "Vertex.h"
 #include "imgui/imgui.h"
 
-Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, bool enableOutline)
-	: m_glowEnabled(enableOutline)
+#include "RenderTechnique.h"
+#include "RenderPass.h"
+#include "RenderSteps.h"
+
+Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture)
 {
 	SimpleMesh CubeModel = GetUnwrappedMesh(scale, true);
 
-	std::vector<std::shared_ptr<Bindable>> meshBindables = {};
 
-	meshBindables.push_back(VertexBuffer::GetBindable(gfx, "Cube", CubeModel.m_vertices));
+	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), CubeModel.m_indices);
+	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), CubeModel.m_vertices);
+	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2);
 
-	std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
-	ID3DBlob* pBlob = pVertexShader->GetByteCode();
-	meshBindables.push_back(std::move(pVertexShader));
-
-	meshBindables.push_back(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
-
-	DynamicConstantBuffer::BufferLayout layout;
-	layout.Add<DynamicConstantBuffer::DataType::Float>("specularIntensity");
-	layout.Add<DynamicConstantBuffer::DataType::Float>("specularPower");
-	layout.Add<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled");
-
-	DynamicConstantBuffer::BufferData bufferData(std::move(layout));
-	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity") = 2.0f;
-	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 150.0f;
-	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = TRUE;
-
-	meshBindables.push_back(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
-
-	meshBindables.push_back(IndexBuffer::GetBindable(gfx, "Cube", CubeModel.m_indices));
-
-	meshBindables.push_back(Texture::GetBindable(gfx, diffuseTexture, 0));
-
-	meshBindables.push_back(Texture::GetBindable(gfx, normalTexture, 1));
-
-	meshBindables.push_back(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pBlob));
-
-	meshBindables.push_back(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
-	meshBindables.push_back(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
-
-	meshBindables.push_back(DepthStencil::GetBindable(gfx, DepthStencil::Write));
-
-	m_mesh = std::make_unique<Mesh>(gfx, std::move(meshBindables));
-
-	if (enableOutline)
-		m_outlineBindables = getOutline(gfx);
-}
-
-std::vector<std::shared_ptr<Bindable>> Cube::getOutline(GFX& gfx)
-{
-	std::vector<std::shared_ptr<Bindable>> outlineBindables = m_mesh->getAllBindables(m_pOutlineIndexBuffer);
-
-	for (size_t i = 0; i < outlineBindables.size(); i++)
 	{
-		if (const PixelShader* pBindable = dynamic_cast<PixelShader*>(outlineBindables[i].get()))
+		RenderTechnique normalTechnique;
+
 		{
-			outlineBindables.erase(outlineBindables.begin() + i);
+			RenderSteps normalStep(PASS_NORMAL);
+
+			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
+			ID3DBlob* pBlob = pVertexShader->GetByteCode();
+
+			DynamicConstantBuffer::BufferLayout layout;
+			layout.Add<DynamicConstantBuffer::DataType::Float>("specularIntensity");
+			layout.Add<DynamicConstantBuffer::DataType::Float>("specularPower");
+			layout.Add<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled");
+
+			DynamicConstantBuffer::BufferData bufferData(std::move(layout));
+			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity") = 2.0f;
+			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 150.0f;
+			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = TRUE;
+
+
+			normalStep.AddBindable(std::move(pVertexShader));
+
+			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
+
+			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
+
+			normalStep.AddBindable(Texture::GetBindable(gfx, diffuseTexture, 0));
+
+			normalStep.AddBindable(Texture::GetBindable(gfx, normalTexture, 1));
+
+			normalStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pBlob));
+
+			normalStep.AddBindable(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
+
+			normalTechnique.AddRenderStep(normalStep);
 		}
-		else if (const VertexShader* pBindable = dynamic_cast<VertexShader*>(outlineBindables[i].get()))
-		{
-			outlineBindables.erase(outlineBindables.begin() + i);
-		}
-		else if (const InputLayout* pBindable = dynamic_cast<InputLayout*>(outlineBindables[i].get()))
-		{
-			outlineBindables.erase(outlineBindables.begin() + i);
-		}
-		else if (const CachedBuffer* pBindable = dynamic_cast<CachedBuffer*>(outlineBindables[i].get()))
-		{
-			outlineBindables.erase(outlineBindables.begin() + i);
-		}
-		else if (const DepthStencil* pBindable = dynamic_cast<DepthStencil*>(outlineBindables[i].get()))
-		{
-			outlineBindables.erase(outlineBindables.begin() + i);
-		}
+
+		AddRenderTechnique(normalTechnique);
 	}
 
-
-	std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS_Outline.cso");
-	ID3DBlob* pBlob = pVertexShader->GetByteCode();
-
-
-	DynamicConstantBuffer::BufferLayout bufferLayout;
-	bufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
-
-	DynamicConstantBuffer::BufferData bufferData(std::move(bufferLayout));
-	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = { 0.0f, 1.0f, 1.0f, 1.0f };
-
-
-	outlineBindables.push_back(pVertexShader);
-	outlineBindables.push_back(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
-	outlineBindables.push_back(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
-	outlineBindables.push_back(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
-	outlineBindables.push_back(DepthStencil::GetBindable(gfx, DepthStencil::Mask));
-
-	return outlineBindables;
-}
-
-void Cube::Draw(GFX& gfx) const noexcept(!IS_DEBUG)
-{
-	const auto finalTransform =
-		(
-			DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
-			DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) *
-			DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z)
-			);
-
-	m_mesh->Draw(gfx, finalTransform);
-}
-
-void Cube::DrawWithOutline(GFX& gfx) const noexcept(!IS_DEBUG)
-{
-	if (m_glowEnabled)
 	{
-		for (auto& b : m_outlineBindables)
-		{
-			b->Bind(gfx);
-		}
-		gfx.DrawIndexed(m_pOutlineIndexBuffer->GetCount());
-	}
+		RenderTechnique outlineTechnique;
 
-	Draw(gfx);
+		{
+			RenderSteps maskStep(PASS_WRITE);
+
+// 			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
+// 			ID3DBlob* pBlob = pVertexShader->GetByteCode();
+// 
+// 			maskStep.AddBindable(pVertexShader);
+// 			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
+
+			outlineTechnique.AddRenderStep(maskStep);
+		}
+
+		{
+			RenderSteps maskStep(PASS_MASK);
+
+
+			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS_Outline.cso");
+			ID3DBlob* pBlob = pVertexShader->GetByteCode();
+
+
+			DynamicConstantBuffer::BufferLayout bufferLayout;
+			bufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
+
+			DynamicConstantBuffer::BufferData bufferData(std::move(bufferLayout));
+			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = { 0.0f, 1.0f, 1.0f, 1.0f };
+
+
+			maskStep.AddBindable(pVertexShader);
+
+			maskStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
+
+			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
+
+			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
+
+			outlineTechnique.AddRenderStep(maskStep);
+		}
+
+		AddRenderTechnique(outlineTechnique);
+	}
 }
 
 void Cube::ResetLocalTransform() noexcept
@@ -155,7 +132,7 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 	if (ImGui::Button("Reset"))
 		ResetLocalTransform();
 
-	CachedBuffer* cachedBuffer = m_mesh->GetBindable<CachedBuffer>();
+	CachedBuffer* cachedBuffer = GetBindable<CachedBuffer>(0,0,1);
 
 	if (!materialsDefined)
 		shaderMaterial = cachedBuffer->constBufferData;
@@ -174,23 +151,19 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 
 	ImGui::Text("Glow Settings");
 
-	if (ImGui::Checkbox("enable", &m_glowEnabled))
-		m_outlineBindables = getOutline(gfx);
+	//if (ImGui::Checkbox("enable", &m_glowEnabled))
+	//	m_outlineBindables = getOutline(gfx);
 
 	if (m_glowEnabled)
 	{
-		for (const auto& outlineBindable : m_outlineBindables)
-		{
-			if (CachedBuffer* cachedOutlineBuffer = dynamic_cast<CachedBuffer*>(outlineBindable.get()))
-			{
-				DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
+		CachedBuffer* cachedOutlineBuffer = GetBindable<CachedBuffer>(1, 1, 1);
 
-				bool outlineColorChanged = ImGui::ColorPicker3("color", (float*)bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("color"));
+		DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
 
-				if (outlineColorChanged)
-					cachedOutlineBuffer->Update(gfx, bufferData);
-			}
-		}
+		bool outlineColorChanged = ImGui::ColorPicker3("color", (float*)bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("color"));
+
+		if (outlineColorChanged)
+			cachedOutlineBuffer->Update(gfx, bufferData);
 	}
 }
 
@@ -370,5 +343,7 @@ SimpleMesh Cube::GetUnwrappedMesh(float scale, bool getExtendedStuff)
 
 DirectX::XMMATRIX Cube::GetTranformMatrix() const noexcept
 {
-	return m_mesh->GetTranformMatrix();
+	return DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
+		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z) *
+		DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
 }

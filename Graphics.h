@@ -1,11 +1,15 @@
 #pragma  once
 #include "Includes.h"
 #include "CameraView.h"
+#include "RenderQueue.h"
 #include <wrl.h>
 
 class GFX
 {
 	friend class Bindable;
+
+public:
+	GFX() = default;
 
 public:
 	VOID Initialize(HWND hWnd);
@@ -24,6 +28,8 @@ public:
 
 public:
 	CameraView camera;
+
+	RenderQueue renderQueue;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
