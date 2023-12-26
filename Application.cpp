@@ -160,7 +160,7 @@ void Application::DoFrame()
 		window.ShowCursor(cursorShowing);
 	}
 
-	window.Graphics.camera.SpawnControlWindow();
+	//window.Graphics.camera.SpawnControlWindow();
 
 	modelHierarchy.DrawModelHierarchy(timer.Get());
 

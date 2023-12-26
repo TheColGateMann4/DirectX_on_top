@@ -88,7 +88,7 @@ VOID GFX::Initialize(HWND hWnd)
 	depthDecs.Height = this->m_height;
 	depthDecs.MipLevels = 1;
 	depthDecs.ArraySize = 1;
-	depthDecs.Format = DXGI_FORMAT_D32_FLOAT;
+	depthDecs.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthDecs.SampleDesc.Count = 1;
 	depthDecs.SampleDesc.Quality = 0;
 	depthDecs.Usage = D3D11_USAGE_DEFAULT;
@@ -97,7 +97,7 @@ VOID GFX::Initialize(HWND hWnd)
 	THROW_GFX_IF_FAILED(pDevice->CreateTexture2D(&depthDecs, NULL, &pDepthStencil));
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDecs = {};
-	depthStencilViewDecs.Format = DXGI_FORMAT_D32_FLOAT;
+	depthStencilViewDecs.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilViewDecs.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDecs.Texture2D.MipSlice = 0;
 
@@ -170,7 +170,7 @@ VOID GFX::ClearBuffer(DirectX::XMFLOAT4 color_)
 {
 	const FLOAT color[] = { color_.x, color_.y, color_.z, color_.w };
 	pDeviceContext->ClearRenderTargetView(pTargetView.Get(), color);
-	pDeviceContext->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1, 0);
+	pDeviceContext->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
 VOID GFX::ShowImGUI(bool show)
