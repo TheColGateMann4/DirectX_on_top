@@ -5,10 +5,12 @@
 #include "RenderPass.h"
 
 class RenderQueue;
-class Shape;
 
 class RenderSteps
 {
+	friend class Shape;
+	friend class RenderJob;
+
 public:
 	RenderSteps(PASS_TYPE stepType)
 		: m_stepType(stepType)
@@ -47,5 +49,6 @@ public:
 private:
 	PASS_TYPE m_stepType;
 	std::vector<std::shared_ptr<Bindable>> m_bindables = {};
+	bool m_active = true;
 };
 

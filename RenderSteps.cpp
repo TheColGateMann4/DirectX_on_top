@@ -8,8 +8,9 @@ void RenderSteps::Execute(RenderQueue& renderQueue, const Shape* shape) const no
 
 void RenderSteps::Bind(GFX& gfx) const noexcept
 {
-	for (const auto& bindable : m_bindables)
-		bindable->Bind(gfx);
+	if(m_active)
+		for (const auto& bindable : m_bindables)
+			bindable->Bind(gfx);
 }
 
 void RenderSteps::AddBindable(std::shared_ptr<Bindable> bindable)

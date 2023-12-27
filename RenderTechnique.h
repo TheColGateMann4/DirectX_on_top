@@ -4,10 +4,11 @@
 #include "RenderSteps.h"
 
 class RenderQueue;
-class Shape;
 
 class RenderTechnique
 {
+	friend class Shape;
+
 public:
 	void Execute(RenderQueue& renderQueue, const Shape* shape) const noexcept;
 

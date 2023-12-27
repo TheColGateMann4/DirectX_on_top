@@ -54,7 +54,7 @@
 constexpr float _Pi = 3.14159265358979f;
 
 #ifdef _DEBUG
-	//#include <iostream>
+	#include <iostream>
 	#define IS_DEBUG TRUE
 #else
 	#define IS_DEBUG FALSE

@@ -63,12 +63,6 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 		{
 			RenderSteps maskStep(PASS_WRITE);
 
-// 			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
-// 			ID3DBlob* pBlob = pVertexShader->GetByteCode();
-// 
-// 			maskStep.AddBindable(pVertexShader);
-// 			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
-
 			outlineTechnique.AddRenderStep(maskStep);
 		}
 
@@ -137,6 +131,12 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 	if (!materialsDefined)
 		shaderMaterial = cachedBuffer->constBufferData;
 
+	ImGui::Text("Mesh Settings");
+
+	if (ImGui::Checkbox("EnableMesh", &m_objectMeshEnabled))
+	{
+		this->SetTechniqueActive(0, 0, m_objectMeshEnabled);
+	}
 
 	bool powerChanged = false, intensityChanged = false, normalMapStateChanged = false;
 
@@ -151,10 +151,12 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 
 	ImGui::Text("Glow Settings");
 
-	//if (ImGui::Checkbox("enable", &m_glowEnabled))
-	//	m_outlineBindables = getOutline(gfx);
+	if (ImGui::Checkbox("EnableGlow", &m_objectGlowEnabled))
+	{
+		this->SetTechniqueActive(1, 1, m_objectGlowEnabled);
+	}
 
-	if (m_glowEnabled)
+	if (m_objectGlowEnabled)
 	{
 		CachedBuffer* cachedOutlineBuffer = GetBindable<CachedBuffer>(1, 1, 1);
 

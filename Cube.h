@@ -42,7 +42,8 @@ private:
 private:
 	DynamicConstantBuffer::BufferData shaderMaterial;
 	bool materialsDefined = false;
-	bool m_glowEnabled = true;
+	bool m_objectGlowEnabled = true;
+	bool m_objectMeshEnabled = true;
 
 private:
 	std::vector<std::shared_ptr<Bindable>> m_outlineBindables = {};

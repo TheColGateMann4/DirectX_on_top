@@ -10,6 +10,9 @@ RenderJob::RenderJob(const Shape* shape, const RenderSteps* technique)
 
 void RenderJob::Bind(GFX& gfx) const
 {
+	if (!m_step->m_active)
+		return;
+
 	m_shape->Bind(gfx);
 	m_step->Bind(gfx);
 

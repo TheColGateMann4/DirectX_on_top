@@ -33,9 +33,16 @@ public:
 	}
 
 public:
-	void SetIndexBuffer(std::shared_ptr<IndexBuffer>& pIndexBuffer)
+
+	void SetTechniqueActive(size_t techniqueNum, size_t stepNum, bool active)
 	{
-		m_pIndexBuffer = pIndexBuffer;
+		std::cout << m_techniques.size() - 1 << " >= " << techniqueNum << '\n';
+		std::cout << m_techniques.at(techniqueNum).m_steps.size() - 1 << " >= " << stepNum << '\n';
+
+		assert((m_techniques.size() - 1 >= techniqueNum) && "tried to get technique out of buffer");
+		assert((m_techniques.at(techniqueNum).m_steps.size() - 1 >= stepNum) && "tried to get technique out of buffer");
+		
+		m_techniques.at(techniqueNum).m_steps.at(stepNum).m_active = active;
 	}
 
 public:
