@@ -107,6 +107,11 @@ public:
 		return m_slot;
 	}
 
+	bool isPixelShaderType() const
+	{
+		return m_isPixelShader;
+	}
+
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 	UINT32 m_slot;

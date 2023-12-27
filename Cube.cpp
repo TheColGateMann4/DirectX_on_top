@@ -74,18 +74,28 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 			ID3DBlob* pBlob = pVertexShader->GetByteCode();
 
 
-			DynamicConstantBuffer::BufferLayout bufferLayout;
-			bufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
+			DynamicConstantBuffer::BufferLayout vertexBufferLayout;
+			vertexBufferLayout.Add<DynamicConstantBuffer::DataType::Float>("scaleFactor");
 
-			DynamicConstantBuffer::BufferData bufferData(std::move(bufferLayout));
-			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = { 0.0f, 1.0f, 1.0f, 1.0f };
+			DynamicConstantBuffer::BufferData vertexBufferData(std::move(vertexBufferLayout));
+			*vertexBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("scaleFactor") = 1.05f;
+
+
+			maskStep.AddBindable(CachedBuffer::GetBindable(gfx, vertexBufferData, 1, false));
+
+
+			DynamicConstantBuffer::BufferLayout PixelbufferLayout;
+			PixelbufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
+
+			DynamicConstantBuffer::BufferData pixelBufferData(std::move(PixelbufferLayout));
+			*pixelBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = { 0.0f, 1.0f, 1.0f, 1.0f };
 
 
 			maskStep.AddBindable(pVertexShader);
 
 			maskStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
-			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
+			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, true));
 
 			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
 
@@ -158,14 +168,28 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 
 	if (m_objectGlowEnabled)
 	{
-		CachedBuffer* cachedOutlineBuffer = GetBindable<CachedBuffer>(1, 1, 1);
+		{
+			CachedBuffer* cachedOutlineBuffer = GetBindable<CachedBuffer>(1, 1, 1);
 
-		DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
+			DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
 
-		bool outlineColorChanged = ImGui::ColorPicker3("color", (float*)bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("color"));
+			bool outlineColorChanged = ImGui::ColorPicker3("color", (float*)bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("color"));
 
-		if (outlineColorChanged)
-			cachedOutlineBuffer->Update(gfx, bufferData);
+			if (outlineColorChanged)
+				cachedOutlineBuffer->Update(gfx, bufferData);
+		}
+
+
+		{
+			CachedBuffer* cachedOutlineFactorBuffer = GetBindable<CachedBuffer>(1, 1, 1, false);
+
+			DynamicConstantBuffer::BufferData bufferData = cachedOutlineFactorBuffer->constBufferData;
+
+			bool outlineFactorChanged = ImGui::SliderFloat("ScaleFactor", (float*)bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("scaleFactor"), 1.001f, 2.0f);
+		
+			if (outlineFactorChanged)
+				cachedOutlineFactorBuffer->Update(gfx, bufferData);
+		}
 	}
 }
 

@@ -12,7 +12,6 @@ public:
 public:
 	void Bind(GFX& gfx) const;
 
-
 private:
 	const Shape* m_shape = nullptr;
 	const RenderSteps* m_step = nullptr;

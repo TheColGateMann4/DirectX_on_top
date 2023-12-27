@@ -24,12 +24,13 @@ public:
 	void Bind(GFX& gfx) const noexcept;
 
 public:
-	//slotNumber is only used when trying to get contant buffer
-	//techniqueNumber and techniqueNumber are defaulted since normal technique and normal step are always defined first - at least for now
+	// slotNumber is only used when trying to get contant buffer
+	// techniqueNumber and stepNumber are defaulted since normal technique and normal step are always defined first - at least for now
+	// isPixelShader is strictly for contant buffers, its defaulted to true since cached buffers for vertexShaders are very rare occurances
 	template<class T>
-	T* GetBindable(size_t techniqueNumber = 0, size_t stepNumber = 0, size_t slotNumber = 0) const noexcept
+	T* GetBindable(size_t techniqueNumber = 0, size_t stepNumber = 0, size_t slotNumber = 0, bool isPixelShader = true) const noexcept
 	{
-		return m_techniques.at(techniqueNumber).GetBindable<T>(stepNumber, slotNumber);
+		return m_techniques.at(techniqueNumber).GetBindable<T>(stepNumber, slotNumber, isPixelShader);
 	}
 
 public:

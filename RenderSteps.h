@@ -25,14 +25,16 @@ public:
 
 public:
 	template<class T>
-	T* GetBindable(size_t slotNumber = 0) const noexcept
+	T* GetBindable(size_t slotNumber, bool isPixelShader) const noexcept
 	{
 		for (auto& bindable : m_bindables)
 		{
 			if (T* bindableOfDesiredType = dynamic_cast<T*>(bindable.get()))
-				if(std::is_base_of_v<ConstantBuffer, T> || typeid(T) == typeid(ConstantBuffer))
-					if (bindableOfDesiredType->GetSlot() == slotNumber)
+				if (std::is_base_of_v<ConstantBuffer, T> || typeid(T) == typeid(ConstantBuffer))
+				{
+					if ((bindableOfDesiredType->GetSlot() == slotNumber) && (bindableOfDesiredType->isPixelShaderType() == isPixelShader))
 						return bindableOfDesiredType;
+				}
 				else
 					return bindableOfDesiredType;
 		}
