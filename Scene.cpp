@@ -6,6 +6,8 @@ void Scene::DrawModels(RenderQueue& renderQueue, GFX& gfx, DirectX::XMMATRIX Cam
 	for (const auto& model : models)
 		if(const PointLight* pointLight = dynamic_cast<PointLight*>(model.get()))
 		{
+			// its fine only when PointLight is first in hierarchy, otherwise objects might not get light buffer with position and light settings.
+			// If it wouldn't be first, we would need to first loop searching for light to bind it
 			pointLight->Bind(gfx, CameraView_);
 			pointLight->RenderOnScene(renderQueue);
 		}

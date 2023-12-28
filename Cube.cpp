@@ -43,9 +43,9 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
 
-			normalStep.AddBindable(Texture::GetBindable(gfx, diffuseTexture, 0));
+			normalStep.AddBindable(Texture::GetBindable(gfx, diffuseTexture, 0, true));
 
-			normalStep.AddBindable(Texture::GetBindable(gfx, normalTexture, 1));
+			normalStep.AddBindable(Texture::GetBindable(gfx, normalTexture, 1, true));
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pBlob));
 
@@ -138,7 +138,7 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 
 	CachedBuffer* cachedBuffer = GetBindable<CachedBuffer>(0,0,1);
 
-	if (!materialsDefined)
+	if (!m_materialsDefined)
 		shaderMaterial = cachedBuffer->constBufferData;
 
 	ImGui::Text("Mesh Settings");
@@ -157,7 +157,7 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 	if (powerChanged || intensityChanged || normalMapStateChanged)
 		cachedBuffer->Update(gfx, shaderMaterial);
 
-	materialsDefined = true;
+	m_materialsDefined = true;
 
 	ImGui::Text("Glow Settings");
 
@@ -169,7 +169,7 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 	if (m_objectGlowEnabled)
 	{
 		{
-			CachedBuffer* cachedOutlineBuffer = GetBindable<CachedBuffer>(1, 1, 1);
+			CachedBuffer* cachedOutlineBuffer = GetBindable<CachedBuffer>(1, 1, 1, true);
 
 			DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
 

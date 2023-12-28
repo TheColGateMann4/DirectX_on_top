@@ -80,9 +80,9 @@ public:
 		if (m_pMeshes.empty())
 			return;
 
-		auto bindableShaderMaterial = m_pMeshes.front()->GetBindable<CachedBuffer>(0,0,1);
+		auto bindableShaderMaterial = m_pMeshes.front()->GetBindable<CachedBuffer>(0,0,1, true);
 
-		if (!materialsDefined)
+		if (!m_materialsDefined)
 			shaderMaterial = bindableShaderMaterial->constBufferData;
 
 		bool normalMapEnabledChanged, normalMapHasAlphaChanged, specularMapEnabledChanged, specularPowerChanged, specularColorChanged, specularMapWeightChanged, materialColorChanged;
@@ -104,7 +104,7 @@ public:
 
 		bindableShaderMaterial->Update(gfx, shaderMaterial);
 
-		materialsDefined = true;
+		m_materialsDefined = true;
 	}
 
 private:
@@ -120,7 +120,7 @@ private:
 	DirectX::XMFLOAT4X4 m_baseTransform;
 	std::string m_nodeName;
 	DynamicConstantBuffer::BufferData shaderMaterial;
-	bool materialsDefined = false;
+	bool m_materialsDefined = false;
 
 public:
 	DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };

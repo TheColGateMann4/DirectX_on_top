@@ -54,7 +54,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 	std::string pixelShaderName = "PS_Phong", vertexShaderName = "VS_Phong";
 
-	std::vector<std::shared_ptr<Bindable>> bindables;
+	std::vector<std::shared_ptr<Bindable>> normalMeshBindables;
 
 	DirectX::XMFLOAT4 SpecularColor = { 0.18f, 0.18f, 0.18f, 1.0f };
 	DirectX::XMFLOAT4 DiffuseColor = { 0.45f, 0.45f, 0.85f, 1.0f };
@@ -71,7 +71,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			auto diffuseTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 0);
 			diffuseMapHasAlpha = diffuseTexture->HasAlpha();
 
-			bindables.push_back(std::move(diffuseTexture));
+			normalMeshBindables.push_back(std::move(diffuseTexture));
 			hasDiffuseMap = true;
 
 			pixelShaderName += "_Texture";
@@ -92,7 +92,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		{
 			auto normalTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 2);
 			normalMapHasAlpha = normalTexture->HasAlpha();
-			bindables.push_back(std::move(normalTexture));
+			normalMeshBindables.push_back(std::move(normalTexture));
 			hasNormalMap = true;
 
 			constBufferData += (BOOL)hasNormalMap;
@@ -114,7 +114,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		{
 			auto specularTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 1);
 			specularHasAlpha = specularTexture->HasAlpha();
-			bindables.push_back(std::move(specularTexture));
+			normalMeshBindables.push_back(std::move(specularTexture));
 			hasSpecularMap = true;
 
 			constBufferData += (BOOL)true;
@@ -146,7 +146,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		if (hasSpecularMap || hasDiffuseMap || hasNormalMap)
 		{
-			bindables.push_back(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
+			normalMeshBindables.push_back(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
 			vertexShaderName += "_Texture_Normals";
 		}
 		else
@@ -242,12 +242,12 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	ID3DBlob* pBlob = pVertexShader->GetByteCode();
 
 
-	std::unique_ptr<Mesh> resultMesh;
+	std::unique_ptr<Mesh> resultMesh = std::make_unique<Mesh>();
 
-// 	resultMesh->m_pIndexBuffer = IndexBuffer::GetBindable(gfx, bufferUID, indices);
-// 	resultMesh->m_pVertexBuffer = VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer);
-// 	resultMesh->m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-// 	resultMesh->m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *resultMesh, 0, 2);
+	resultMesh->m_pIndexBuffer = IndexBuffer::GetBindable(gfx, bufferUID, indices);
+	resultMesh->m_pVertexBuffer = VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer);
+	resultMesh->m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	resultMesh->m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *resultMesh, 0, 2);
 
 	{
 		RenderTechnique normalTechnique;
@@ -264,7 +264,10 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 			normalStep.AddBindable(RasterizerState::GetBindable(gfx, diffuseMapHasAlpha));
 
-			bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
+			normalStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
+
+			for (auto& bindable : normalMeshBindables)
+				normalStep.AddBindable(bindable);
 
 
 			normalTechnique.AddRenderStep(normalStep);

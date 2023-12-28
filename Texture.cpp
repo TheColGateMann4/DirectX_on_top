@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include <DirectXTex.h>
 
-Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot)
+Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube)
 	: 
 	m_slot(slot),
 	m_imagePath(imagePath)
@@ -42,13 +42,16 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot)
 	textureDesc.Height = texMetaData.height;
 	textureDesc.MipLevels = 0;
 	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.Format = texMetaData.format;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+	if (isCube)
+		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
 

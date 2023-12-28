@@ -41,7 +41,7 @@ private:
 
 private:
 	DynamicConstantBuffer::BufferData shaderMaterial;
-	bool materialsDefined = false;
+	bool m_materialsDefined = false;
 	bool m_objectGlowEnabled = true;
 	bool m_objectMeshEnabled = true;
 

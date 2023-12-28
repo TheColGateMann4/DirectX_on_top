@@ -28,7 +28,7 @@ BOOL Application::Initiate()
 	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
 	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
 	modelHierarchy.models.push_back(std::make_unique<PointLight>(window.Graphics));
-	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
+	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 	modelHierarchy.models.push_back(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));
 
 	while (true)
