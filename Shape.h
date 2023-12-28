@@ -37,9 +37,6 @@ public:
 
 	void SetTechniqueActive(size_t techniqueNum, size_t stepNum, bool active)
 	{
-		std::cout << m_techniques.size() - 1 << " >= " << techniqueNum << '\n';
-		std::cout << m_techniques.at(techniqueNum).m_steps.size() - 1 << " >= " << stepNum << '\n';
-
 		assert((m_techniques.size() - 1 >= techniqueNum) && "tried to get technique out of buffer");
 		assert((m_techniques.at(techniqueNum).m_steps.size() - 1 >= stepNum) && "tried to get technique out of buffer");
 		
