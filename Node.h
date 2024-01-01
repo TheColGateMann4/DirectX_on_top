@@ -94,11 +94,11 @@ public:
 
 
 		if (bindableShaderMaterial->constBufferData.ElementExists("normalMapEnabled"))
-			checkChanged(ImGui::Checkbox("normalMapEnabled", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled")));
+			checkChanged(ImGui::Checkbox("normalMapEnabled", (bool*)shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled")));
 		if (bindableShaderMaterial->constBufferData.ElementExists("normalMapHasAlpha"))
-			checkChanged(ImGui::Checkbox("normalMapHasAlpha", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapHasAlpha")));
+			checkChanged(ImGui::Checkbox("normalMapHasAlpha", (bool*)shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapHasAlpha")));
 		if (bindableShaderMaterial->constBufferData.ElementExists("specularMapEnabled"))
-			checkChanged(ImGui::Checkbox("specularMapEnabled", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("specularMapEnabled")));
+			checkChanged(ImGui::Checkbox("specularMapEnabled", (bool*)shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("specularMapEnabled")));
 		if (bindableShaderMaterial->constBufferData.ElementExists("specularPowerChanged"))
 			checkChanged(ImGui::SliderFloat("specularPowerChanged", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPowerChanged"), 0.0f, 1000.0f, "%f"));
 		if (bindableShaderMaterial->constBufferData.ElementExists("specularColor"))

@@ -18,6 +18,7 @@ cbuffer objectBuffer : register(b1)
     float b_specularIntensity;
     float b_specularPower;
     bool b_normalMapEnabled;
+    float b_normalMapWeight;
 };
 
 cbuffer transformBuffer : register(b2)
@@ -66,11 +67,11 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
         
         float3x3 rotationMatrix = AngleAxis3x3(angle, axis);
         
+        normal.z = mul(normal.z, b_normalMapWeight);
         normal = mul(normal, rotationMatrix);
     }
     
     normal = normalize(mul(normal, (float3x3) b_modelView));
-   
     
     const float3 VectorLength = b_lightPosition - positionRelativeToCamera;
     const float lengthOfVectorLength = length(VectorLength);

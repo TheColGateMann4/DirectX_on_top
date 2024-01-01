@@ -30,11 +30,13 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 			layout.Add<DynamicConstantBuffer::DataType::Float>("specularIntensity");
 			layout.Add<DynamicConstantBuffer::DataType::Float>("specularPower");
 			layout.Add<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled");
+			layout.Add<DynamicConstantBuffer::DataType::Float>("normalMapWeight");
 
 			DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity") = 2.0f;
 			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 150.0f;
-			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = TRUE;
+			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = (size_t)1;
+			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("normalMapWeight") = 1.0f;
 
 
 			normalStep.AddBindable(std::move(pVertexShader));
@@ -148,13 +150,22 @@ void Cube::MakePropeties(GFX & gfx, float deltaTime)
 		this->SetTechniqueActive(0, 0, m_objectMeshEnabled);
 	}
 
-	bool powerChanged = false, intensityChanged = false, normalMapStateChanged = false;
+	bool changed = false;
 
-	powerChanged = ImGui::SliderFloat("specularPower", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower"), 0.001f, 150.0f);
-	intensityChanged = ImGui::SliderFloat("specularIntensity", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity"), 0.001f, 150.0f);
-	normalMapStateChanged = ImGui::Checkbox("normalMapEnabled", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled"));
+	auto checkChanged = [&changed](bool returnFromStatement) mutable
+		{
+			changed = changed || returnFromStatement;
+		};
 
-	if (powerChanged || intensityChanged || normalMapStateChanged)
+	BOOL* normalMapEnabled = shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled");
+
+	checkChanged(ImGui::SliderFloat("specularPower", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower"), 0.001f, 150.0f));
+	checkChanged(ImGui::SliderFloat("specularIntensity", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity"), 0.001f, 150.0f));
+	checkChanged(ImGui::Checkbox("normalMapEnabled", (bool*)normalMapEnabled));
+	checkChanged(ImGui::SliderFloat("normalMapWeight", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("normalMapWeight"), 0.1f, 5.0f, "%.2f"));
+
+
+	if (changed)
 		cachedBuffer->Update(gfx, shaderMaterial);
 
 	m_materialsDefined = true;

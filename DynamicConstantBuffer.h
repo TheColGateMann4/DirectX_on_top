@@ -76,7 +76,7 @@ namespace DynamicConstantBuffer
 	};
 	template<> struct DataTypeMap<DataType::Bool>
 	{
-		using type = bool;
+		using type = BOOL;
 		static constexpr bool valid = true;
 		static constexpr size_t hlslsize = 4;
 		static constexpr const char* code = "BO";

@@ -52,7 +52,7 @@ void PointLight::MakePropeties(GFX& gfx, float deltaTime)
 	ImGui::ColorEdit3("Ambient", reinterpret_cast<float*>(bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("ambient")), ImGuiColorEditFlags_NoAlpha);
 
 	ImGui::Text("Falloff");
-	auto cipa = bufferData.GetElementPointerValue <DynamicConstantBuffer::DataType::Float>("attenuationLinear");
+
 	ImGui::SliderFloat("Attenuation Const", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationConst"), 0.05f, 10.0f, "%.2f");
 	ImGui::SliderFloat("Attenuation Linear", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationLinear"), 0.0001f, 4.0f, "%.4f");
 	ImGui::SliderFloat("Attenuation Quadratic", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic"), 0.00001f, 1.0f);
