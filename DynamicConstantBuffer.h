@@ -8,7 +8,8 @@
 
 
 
-#define FOR_ALL_TYPES STATEMENT(Float) \
+#define FOR_ALL_TYPES \
+	STATEMENT(Float) \
 	STATEMENT(Float2) \
 	STATEMENT(Float3) \
 	STATEMENT(Float4) \

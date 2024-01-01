@@ -175,52 +175,9 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 	DynamicVertex::VertexBuffer vertexBuffer(std::move(vertexBufferLayout));
 
-	vertexBuffer.Emplace_Back_Empty(mesh.mNumVertices);
+	vertexBuffer.SetScale(scale);
+	vertexBuffer.MakeFromMesh(mesh);
 
-	for (size_t i = 0; i < mesh.mNumVertices; i++)
-	{
-		size_t currentElementIndex = 0;
-
-		//	Position3D
-		vertexBuffer[i].SetAttribute<DynamicVertex::VertexLayout::VertexComponent::Position3D>(
-			vertexBuffer.GetData() + vertexBuffer.GetLayout().GetByteSize() * i + vertexBuffer.GetLayout().ResolveByIndex(currentElementIndex).GetOffset(),
-			DirectX::XMFLOAT3(mesh.mVertices[i].x* scale, mesh.mVertices[i].y* scale, mesh.mVertices[i].z* scale)
-		);
-		currentElementIndex++;
-
-		// Normal
-		if(hasNormalMap)
-		{
-			vertexBuffer[i].SetAttribute<DynamicVertex::VertexLayout::VertexComponent::Normal>(
-				vertexBuffer.GetData() + vertexBuffer.GetLayout().GetByteSize() * i + vertexBuffer.GetLayout().ResolveByIndex(currentElementIndex).GetOffset(),
-				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i])
-			);
-			currentElementIndex++;
-		}
-
-		// Tangent BiTangent
-		if (hasNormalMap || hasSpecularMap)
-		{
-			vertexBuffer[i].SetAttribute<DynamicVertex::VertexLayout::VertexComponent::Tangent>(
-				vertexBuffer.GetData() + vertexBuffer.GetLayout().GetByteSize() * i + vertexBuffer.GetLayout().ResolveByIndex(currentElementIndex).GetOffset(),
-				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i])
-			);
-			currentElementIndex++;
-
-			vertexBuffer[i].SetAttribute<DynamicVertex::VertexLayout::VertexComponent::Bitangent>(
-				vertexBuffer.GetData() + vertexBuffer.GetLayout().GetByteSize() * i + vertexBuffer.GetLayout().ResolveByIndex(currentElementIndex).GetOffset(),
-				*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mBitangents[i])
-			);
-			currentElementIndex++;
-		}
-
-		// Texture2D
-		if (hasNormalMap || hasSpecularMap || hasDiffuseMap)
-			vertexBuffer[i].SetAttribute<DynamicVertex::VertexLayout::VertexComponent::Texture2D>(
-				vertexBuffer.GetData() + vertexBuffer.GetLayout().GetByteSize() * i + vertexBuffer.GetLayout().ResolveByIndex(currentElementIndex).GetOffset(),
-				*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i])
-		);
-	}
 
 	std::vector<UINT32> indices;
 	indices.reserve(mesh.mNumFaces * 3);
@@ -266,6 +223,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
 
+			//bindables added specially depending on what model uses
 			for (auto& bindable : normalMeshBindables)
 				normalStep.AddBindable(bindable);
 

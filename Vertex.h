@@ -1,6 +1,30 @@
 #pragma once
 #include "Includes.h"
 #include "Graphics.h"
+#include <assimp/scene.h>
+
+#define FOR_ALL_VERTEX_ELEMENTS(additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Position2D, additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Position3D, additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Tangent, additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Bitangent, additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Texture2D, additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Normal, additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Float3Color, additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Float4Color, additionalStatement) \
+	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::RGBAColor, additionalStatement)
+
+#define MAKE_DATA_FOR_VERTEX_COMPONENT(componentFunction) \
+	static Systype GetData(const aiMesh& mesh, const size_t i, float vertexScale)	\
+	{	\
+		return *reinterpret_cast<Systype*>(&mesh.componentFunction[i]);	\
+	}
+
+#define MAKE_DATA_FOR_VERTEX_COMPONENT_POSITION3D(componentFunction) \
+	static Systype GetData(const aiMesh& mesh, const size_t i, float vertexScale)	\
+	{	\
+		return Systype(mesh.componentFunction[i].x * vertexScale, mesh.componentFunction[i].y * vertexScale, mesh.componentFunction[i].z * vertexScale);	\
+	}
 
 namespace DynamicVertex
 {
@@ -11,6 +35,7 @@ namespace DynamicVertex
 
 	class VertexLayout
 	{
+		friend class VertexBuffer;
 	public:
 		enum VertexComponent
 		{
@@ -22,17 +47,29 @@ namespace DynamicVertex
 			Normal,
 			Float3Color,
 			Float4Color,
-			RGBAColor
+			RGBAColor,
+			VerticesNum
 		};
 
 	public:
-		template<VertexComponent> struct Map;
+		template<VertexComponent> struct Map
+		{
+			using Systype = void;
+			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_UNKNOWN;
+			static constexpr const char* semantic = "INVALID";
+			static constexpr const char* code = "00";
+			static constexpr size_t size = 0;
+		};
+
 		template<> struct Map<Position2D>
 		{
 			using Systype = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* semantic = "POSITION";
 			static constexpr const char* code = "P2";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mVertices)
 		};
 		template<> struct Map<Position3D>
 		{
@@ -40,6 +77,9 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "POSITION";
 			static constexpr const char* code = "P3";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT_POSITION3D(mVertices)
 		};
 		template<> struct Map<Tangent>
 		{
@@ -47,6 +87,9 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "TANGENT";
 			static constexpr const char* code = "T";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mTangents)
 		};
 		template<> struct Map<Bitangent>
 		{
@@ -54,6 +97,9 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "BITANGENT";
 			static constexpr const char* code = "BT";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mBitangents)
 		};
 		template<> struct Map<Texture2D>
 		{
@@ -61,6 +107,9 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* semantic = "TEXCOORD";
 			static constexpr const char* code = "T2";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mTextureCoords[0])
 		};
 		template<> struct Map<Normal>
 		{
@@ -68,6 +117,9 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "NORMAL";
 			static constexpr const char* code = "N";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mNormals)
 		};
 		template<> struct Map<Float3Color>
 		{
@@ -75,6 +127,9 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "COLOR";
 			static constexpr const char* code = "C3";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mColors[0])
 		};
 		template<> struct Map<Float4Color>
 		{
@@ -82,6 +137,9 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			static constexpr const char* semantic = "COLOR";
 			static constexpr const char* code = "C4";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mColors[0])
 		};
 		template<> struct Map<RGBAColor>
 		{
@@ -89,8 +147,58 @@ namespace DynamicVertex
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R8G8B8A8_UNORM;
 			static constexpr const char* semantic = "COLOR";
 			static constexpr const char* code = "RGBA";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mColors[0])
+		};
+		template<> struct Map<VerticesNum>
+		{
+			using Systype = size_t;
+			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_UNKNOWN;
+			static constexpr const char* semantic = "INVALID";
+			static constexpr const char* code = "00";
+			static constexpr size_t size = sizeof(Systype);
+
+			MAKE_DATA_FOR_VERTEX_COMPONENT(mFaces)
 		};
 
+	public:
+		enum ComponentGrabberType
+		{
+			GetSystype,
+			GetDXGIFormat,
+			GetSemantic,
+			GetCode,
+			GetSize
+		};
+
+		template<ComponentGrabberType type> struct GetVertexComponentVarible;
+		#define STATEMENT(vertexComponent, vertexComponentMember)\
+			case vertexComponent:	\
+			{	\
+				return Map<vertexComponent>::vertexComponentMember;	\
+			}	\
+
+		#define MAKE_COMPONENT_GRABBER_FOR_TYPE(enumGrabberType, grabberReturnType, vertexComponentMember)\
+		template<> struct GetVertexComponentVarible<enumGrabberType>	\
+		{	\
+			static constexpr grabberReturnType Get(VertexComponent type)	\
+			{	\
+				switch (type)	\
+				{	\
+					FOR_ALL_VERTEX_ELEMENTS(vertexComponentMember)	\
+				}	\
+				return {};	\
+			}	\
+		};
+
+		MAKE_COMPONENT_GRABBER_FOR_TYPE(GetDXGIFormat, DXGI_FORMAT, dxgiformat)
+		MAKE_COMPONENT_GRABBER_FOR_TYPE(GetSemantic, const char*, semantic)
+		MAKE_COMPONENT_GRABBER_FOR_TYPE(GetCode, const char*, semantic)
+		MAKE_COMPONENT_GRABBER_FOR_TYPE(GetSize, size_t, size)
+
+		#undef MAKE_COMPONENT_GRABBER_FOR_TYPE
+		#undef STATEMENT
 
 	public:
 		class Element
@@ -107,56 +215,25 @@ namespace DynamicVertex
 
 			D3D11_INPUT_ELEMENT_DESC GetDirectXLayout() const noexcept(!IS_DEBUG)
 			{
+				#define STATEMENT(vertexComponent, additionalComponent) \
+					case vertexComponent: \
+					{ \
+						return GenerateElementDesc<vertexComponent>(GetOffset()); \
+					}
+
 				switch (m_type)
 				{
-				case Position2D:
-					return GenerateElementDesc<Position2D>(GetOffset());
-				case Position3D:
-					return GenerateElementDesc<Position3D>(GetOffset());
-				case Tangent:
-					return GenerateElementDesc<Tangent>(GetOffset());
-				case Bitangent:
-					return GenerateElementDesc<Bitangent>(GetOffset());
-				case Texture2D:
-					return GenerateElementDesc<Texture2D>(GetOffset());
-				case Normal:
-					return GenerateElementDesc<Normal>(GetOffset());
-				case Float3Color:
-					return GenerateElementDesc<Float3Color>(GetOffset());
-				case Float4Color:
-					return GenerateElementDesc<Float4Color>(GetOffset());
-				case RGBAColor:
-					return GenerateElementDesc<RGBAColor>(GetOffset());
+					FOR_ALL_VERTEX_ELEMENTS(void);
+					#undef STATEMENT
 				}
+
 				assert("invalid element type" && false);
 				return { "INVALID", 0, DXGI_FORMAT_UNKNOWN, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
 			}
 
 			const char* GetCode() const noexcept
 			{
-				switch (m_type)
-				{
-					case Position2D:
-						return Map<Position2D>::code;
-					case Position3D:
-						return Map<Position3D>::code;
-					case Tangent:
-						return Map<Tangent>::code;
-					case Bitangent:
-						return Map<Bitangent>::code;
-					case Texture2D:
-						return Map<Texture2D>::code;
-					case Normal:
-						return Map<Normal>::code;
-					case Float3Color:
-						return Map<Float3Color>::code;
-					case Float4Color:
-						return Map<Float4Color>::code;
-					case RGBAColor:
-						return Map<RGBAColor>::code;
-				}
-				assert("Invalid Vertex Element Has Been Passed." && false);
-				return "Invalid";
+				return GetVertexComponentVarible<ComponentGrabberType::GetCode>::Get(m_type);
 			}
 
 		private:
@@ -169,29 +246,7 @@ namespace DynamicVertex
 
 			static constexpr size_t m_GetTypeSize(VertexComponent type) noexcept(!IS_DEBUG)
 			{
-				switch (type)
-				{
-				case Position2D:
-					return sizeof(Map<Position2D>::Systype);
-				case Position3D:
-					return sizeof(Map<Position3D>::Systype);
-				case Tangent:
-					return sizeof(Map<Tangent>::Systype);
-				case Bitangent:
-					return sizeof(Map<Bitangent>::Systype);
-				case Texture2D:
-					return sizeof(Map<Texture2D>::Systype);
-				case Normal:
-					return sizeof(Map<Normal>::Systype);
-				case Float3Color:
-					return sizeof(Map<Float3Color>::Systype);
-				case Float4Color:
-					return sizeof(Map<Float4Color>::Systype);
-				case RGBAColor:
-					return sizeof(Map<RGBAColor>::Systype);
-				}
-				assert("invalid element type" && false);
-				return false;
+				return GetVertexComponentVarible<ComponentGrabberType::GetSize>::Get(type);
 			}
 
 		private:
@@ -210,7 +265,7 @@ namespace DynamicVertex
 			return m_elements.front();
 		}
 
-		const Element& ResolveByIndex(size_t i) const noexcept(!IS_DEBUG)
+		const Element& GetByIndex(size_t i) const noexcept(!IS_DEBUG)
 		{
 			return m_elements.at(i);
 		}
@@ -300,60 +355,26 @@ namespace DynamicVertex
 		template<class T>
 		void SetAttributeByIndex(size_t i, T&& val) noexcept(!IS_DEBUG)
 		{
-			const auto& element = m_layout.ResolveByIndex(i);
+			const auto& element = m_layout.GetByIndex(i);
 			auto pAttrib = m_pData + element.GetOffset();
+
+
+#define STATEMENT(vertexComponent, additionalComponent)\
+				case vertexComponent:	\
+				{	\
+					SetAttribute<vertexComponent>(pAttrib, std::forward<T>(val));	\
+					break;	\
+				}
 
 			switch (element.GetType())
 			{
-			case VertexLayout::Position2D:
-			{
-				SetAttribute<VertexLayout::Position2D>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			case VertexLayout::Position3D:
-			{
-				SetAttribute<VertexLayout::Position3D>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			case VertexLayout::Tangent:
-			{
-				SetAttribute<VertexLayout::Tangent>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			case VertexLayout::Bitangent:
-			{
-				SetAttribute<VertexLayout::Bitangent>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			case VertexLayout::Texture2D:
-			{
-				SetAttribute<VertexLayout::Texture2D>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			case VertexLayout::Normal:
-			{
-				SetAttribute<VertexLayout::Normal>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			case VertexLayout::Float3Color:
-			{
-				SetAttribute<VertexLayout::Float3Color>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			case VertexLayout::Float4Color:
-			{
-				SetAttribute<VertexLayout::Float4Color>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			case VertexLayout::RGBAColor:
-			{
-				SetAttribute<VertexLayout::RGBAColor>(pAttrib, std::forward<T>(val));
-				break;
-			}
-			default:
-			{
-				assert("Unknown element type" && false);
-			}
+				FOR_ALL_VERTEX_ELEMENTS(void);
+
+				default:
+				{
+					assert("Unknown element type" && false);
+				}
+#undef STATEMENT
 			}
 		}
 	private:
@@ -437,6 +458,43 @@ namespace DynamicVertex
 			this->Back().SetAttributeByIndex(0, std::forward<Params>(params)...);
 		}
 
+		void MakeFromMesh(const aiMesh& mesh)
+		{
+			size_t numberOfVertices = mesh.mNumVertices;
+
+			this->Emplace_Back_Empty(numberOfVertices);
+
+			for (size_t i = 0; i < numberOfVertices; i++)
+			{
+				size_t currentElementIndex = 0;
+				for (const auto& element : m_layout.m_elements)
+				{
+					#define STATEMENT(vertexComponent, additionalComponent) \
+					case vertexComponent:	\
+					{	\
+						(*this)[i].SetAttribute<vertexComponent>(	\
+							this->GetData() + this->GetLayout().GetByteSize() * i + this->GetLayout().GetByIndex(currentElementIndex).GetOffset(),	\
+							::DynamicVertex::VertexLayout::Map<vertexComponent>::GetData(mesh, i, vertexScale)	\
+						);	\
+						break;	\
+					}
+
+					switch (element.GetType())
+					{
+					
+						FOR_ALL_VERTEX_ELEMENTS(void);
+						#undef STATEMENT
+					}
+					currentElementIndex++;
+				}
+			}
+		}
+
+		void SetScale(float scale)
+		{
+			vertexScale = scale;
+		}
+
 		//Vertex stuff
 		Vertex Back() noexcept(!IS_DEBUG)
 		{
@@ -481,5 +539,10 @@ namespace DynamicVertex
 	private:
 		std::vector<char> m_buffer;
 		VertexLayout m_layout;
+		float vertexScale = 1.0f;
 	};
 }
+
+#undef FOR_ALL_VERTEX_ELEMENTS;
+#undef MAKE_DATA_FOR_VERTEX_COMPONENT;
+#undef MAKE_DATA_FOR_VERTEX_COMPONENT_POSITION3D;
