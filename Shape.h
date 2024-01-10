@@ -3,22 +3,15 @@
 #include "Graphics.h"
 #include "RenderTechnique.h"
 
-class Bindable;
-class IndexBuffer;
-class VertexBuffer;
-class Topology;
-class TransformConstBufferWithPixelShader;
-
-class RenderQueue;
-
 class Shape
 {
+	friend class ShapeSceneObject;
 public:
 	Shape() = default;
 	Shape(const Shape&) = delete;
 
 public:
-	virtual void Render(RenderQueue& renderQueue) const noexcept(!IS_DEBUG);
+	virtual void Render(class RenderQueue& renderQueue) const noexcept(!IS_DEBUG);
 
 public:
 	void Bind(GFX& gfx) const noexcept;
@@ -32,15 +25,33 @@ public:
 	{
 		return m_techniques.at(techniqueNumber).GetBindable<T>(stepNumber, slotNumber, isPixelShader);
 	}
+	
+	template<class T>
+	std::vector<T*> GetEveryBindableOfType(size_t techniqueNumber = 0, size_t stepNumber = 0) const noexcept
+	{
+		std::vector<T*> result;
+		m_techniques.at(techniqueNumber).GetEveryBindableOfType<T>(stepNumber, result);
+
+		return result;
+	}
 
 public:
 
-	void SetTechniqueActive(size_t techniqueNum, size_t stepNum, bool active)
+	void SetTechniqueActive(size_t techniqueNum, bool active)
 	{
 		assert((m_techniques.size() - 1 >= techniqueNum) && "tried to get technique out of buffer");
-		assert((m_techniques.at(techniqueNum).m_steps.size() - 1 >= stepNum) && "tried to get technique out of buffer");
 		
-		m_techniques.at(techniqueNum).m_steps.at(stepNum).m_active = active;
+		m_techniques.at(techniqueNum).m_active = active;
+
+		for(auto& step : m_techniques.at(techniqueNum).m_steps)
+			step.m_active = active;
+	}
+
+	bool GetTechniqueActive(size_t techniqueNum)
+	{
+		assert((m_techniques.size() - 1 >= techniqueNum) && "tried to get technique out of buffer");
+
+		return m_techniques.at(techniqueNum).m_active;
 	}
 
 public:
@@ -52,10 +63,10 @@ public:
 	UINT32 GetIndexCount() const noexcept;
 
 public:
-	std::shared_ptr<IndexBuffer> m_pIndexBuffer = nullptr;
-	std::shared_ptr<VertexBuffer> m_pVertexBuffer = nullptr;
-	std::shared_ptr<Topology> m_pTopology = nullptr;
-	std::shared_ptr<TransformConstBufferWithPixelShader> m_pTransformConstBuffer = nullptr;
+	std::shared_ptr<class IndexBuffer> m_pIndexBuffer = nullptr;
+	std::shared_ptr<class VertexBuffer> m_pVertexBuffer = nullptr;
+	std::shared_ptr<class Topology> m_pTopology = nullptr;
+	std::shared_ptr<class TransformConstBufferWithPixelShader> m_pTransformConstBuffer = nullptr;
 
 private:
 	std::vector<RenderTechnique> m_techniques = {};

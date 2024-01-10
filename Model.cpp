@@ -273,7 +273,7 @@ void Model::MakeHierarchy(GFX&)
 		SetPressedState(m_pressedNode != nullptr);
 }
 
-void Model::MakePropeties(GFX& gfx, float deltaTime)
+void Model::MakeTransformPropeties(GFX& gfx)
 {
 	if (!GetPressedState())
 		return;
@@ -287,11 +287,6 @@ void Model::MakePropeties(GFX& gfx, float deltaTime)
 	ImGui::SliderFloat("rX", &m_pressedNode->rotation.x, -_Pi, _Pi);
 	ImGui::SliderFloat("rY", &m_pressedNode->rotation.y, -_Pi, _Pi);
 	ImGui::SliderFloat("rZ", &m_pressedNode->rotation.z, -_Pi, _Pi);
-
-	ImGui::Text("Scale");
-	ImGui::SliderFloat("sX", &m_pressedNode->scale.x, 0.01f, 100.0f);
-	ImGui::SliderFloat("sY", &m_pressedNode->scale.y, 0.01f, 100.0f);
-	ImGui::SliderFloat("sZ", &m_pressedNode->scale.z, 0.01f, 100.0f);
 
 	if (ImGui::Button("Reset"))
 		m_pressedNode->ResetLocalTranform();

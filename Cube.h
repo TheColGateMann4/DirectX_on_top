@@ -4,17 +4,16 @@
 #include "SimpleMesh.h"
 #include "DynamicConstantBuffer.h"
 #include "Mesh.h"
-#include "SceneObject.h"
+#include "ShapeSceneObject.h"
 #include <random>
 
-class Cube : public SceneObject, public Shape
+class Cube : public ShapeSceneObject
 {
 public:
 	Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture);
 
 public:
-	void ResetLocalTransform() noexcept;
-	void MakePropeties(GFX& gfx, float deltaTime) override;
+	//void MakePropeties(GFX& gfx) override;
 
 	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) override
 	{
@@ -27,20 +26,11 @@ public:
 		return "Cube";
 	}
 
-public:
-	DirectX::XMMATRIX GetTranformMatrix() const noexcept;
-
 private:
 	static SimpleMesh GetNormalMesh(float scale);
 	static SimpleMesh GetUnwrappedMesh(float scale, bool getExtendedStuff = false);
 
 private:
-	DirectX::XMFLOAT3 m_position = {};
-	DirectX::XMFLOAT3 m_rotation = {};
-	DirectX::XMFLOAT3 m_scale = {1.0f, 1.0f, 1.0f};
-
-private:
-	DynamicConstantBuffer::BufferData shaderMaterial;
 	bool m_materialsDefined = false;
 	bool m_objectGlowEnabled = true;
 	bool m_objectMeshEnabled = true;

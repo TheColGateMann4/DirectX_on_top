@@ -15,7 +15,7 @@
 	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::RGBAColor, additionalStatement)
 
 #define MAKE_DATA_FOR_VERTEX_COMPONENT(componentFunction) \
-	static Systype GetData(const aiMesh& mesh, const size_t i, float vertexScale)	\
+	static Systype GetData(const aiMesh& mesh, const size_t i, float)	\
 	{	\
 		return *reinterpret_cast<Systype*>(&mesh.componentFunction[i]);	\
 	}
@@ -543,6 +543,6 @@ namespace DynamicVertex
 	};
 }
 
-#undef FOR_ALL_VERTEX_ELEMENTS;
-#undef MAKE_DATA_FOR_VERTEX_COMPONENT;
-#undef MAKE_DATA_FOR_VERTEX_COMPONENT_POSITION3D;
+#undef FOR_ALL_VERTEX_ELEMENTS
+#undef MAKE_DATA_FOR_VERTEX_COMPONENT
+#undef MAKE_DATA_FOR_VERTEX_COMPONENT_POSITION3D

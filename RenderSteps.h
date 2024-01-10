@@ -4,20 +4,23 @@
 #include "ConstantBuffers.h"
 #include "RenderPass.h"
 
-class RenderQueue;
-
 class RenderSteps
 {
 	friend class Shape;
 	friend class RenderJob;
+	friend class RenderTechnique;
 
 public:
+	RenderSteps(PASS_TYPE stepType, std::string name)
+		: m_stepType(stepType), m_name(name)
+	{}
+
 	RenderSteps(PASS_TYPE stepType)
-		: m_stepType(stepType)
+		: m_stepType(stepType), m_name("unknown")
 	{}
 
 public:
-	void Execute(RenderQueue& renderQueue, const Shape* shape) const noexcept;
+	void Execute(class RenderQueue& renderQueue, const Shape* shape) const noexcept;
 
 	void Bind(GFX& gfx) const noexcept;
 
@@ -43,6 +46,16 @@ public:
 		return nullptr;
 	}
 
+	template<class T>
+	void GetEveryBindableOfType(std::vector< std::pair<std::string, std::vector<T*>> >& result)
+	{
+		result.push_back({ m_name, {} });
+
+		for (auto& bindable : m_bindables)
+			if (T* bindableOfDesiredType = dynamic_cast<T*>(bindable.get()))
+				result.back().second.push_back(bindableOfDesiredType);
+	}
+
 	PASS_TYPE GetType() const
 	{
 		return m_stepType;
@@ -51,6 +64,7 @@ public:
 private:
 	PASS_TYPE m_stepType;
 	std::vector<std::shared_ptr<Bindable>> m_bindables = {};
+	std::string m_name;
 	bool m_active = true;
 };
 

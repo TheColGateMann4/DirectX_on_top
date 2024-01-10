@@ -23,15 +23,14 @@ public:
 		const auto finalTransform =
 			(
 				DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *		//added rotation
-				DirectX::XMMatrixTranslation(position.x, position.y, position.z) *				//added position
-				DirectX::XMMatrixScaling(scale.x, scale.y, scale.z)								//added scale
+				DirectX::XMMatrixTranslation(position.x, position.y, position.z)				//added position
 				)
 			* DirectX::XMLoadFloat4x4(&m_baseTransform)											// original transform in node
 			* transform;																		// accumulated transform from upper nodes
 
-		for (const auto& mesh : m_pMeshes)
+		for (const auto& pMesh : m_pMeshes)
 		{
-			mesh->Render(renderQueue, finalTransform);
+			pMesh->Render(renderQueue, finalTransform);
 		}
 
 		//passing accumulated transform to objects lower in hierarchy
@@ -45,7 +44,6 @@ public:
 	{
 		position = { 0.0f, 0.0f, 0.0f };
 		rotation = { 0.0f, 0.0f, 0.0f };
-		scale = { 1.0f, 1.0f, 1.0f };
 	}
 
 public:
@@ -132,6 +130,5 @@ private:
 public:
 	DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 rotation = { 0.0f, 0.0f, 0.0f };
-	DirectX::XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f };
 };
 

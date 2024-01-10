@@ -8,10 +8,11 @@
 class PointLight : public SceneObject
 {
 public:
-	PointLight(GFX &gfx, float radius = 0.5f);
+	PointLight(GFX& gfx, float radius = 0.5f);
 
 public:
-	void MakePropeties(GFX& gfx, float deltaTime) override;
+	virtual void MakeTransformPropeties(GFX& gfx) override;
+	virtual void MakeAdditionalPropeties(GFX& gfx, float deltaTime) override;
 	void Reset() noexcept;
 
 public:

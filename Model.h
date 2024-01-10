@@ -9,7 +9,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include "imgui/imgui.h"
-#include <random>
 #include "ErrorMacros.h"
 #include "SceneObject.h"
 
@@ -32,7 +31,7 @@ public:
 
 public:
 	void MakeHierarchy(GFX& gfx) override;
-	void MakePropeties(GFX& gfx, float deltaTime) override;
+	virtual void MakeTransformPropeties(GFX& gfx) override;
 
 public:
 	std::string GetName() const override

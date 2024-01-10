@@ -123,7 +123,6 @@ protected:
 
 class CachedBuffer : public ConstantBuffer
 {
-
 public:
 	CachedBuffer()
 		:

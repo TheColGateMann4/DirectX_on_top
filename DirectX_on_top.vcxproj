@@ -213,6 +213,7 @@
     <ClInclude Include="SamplerState.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Shape.h" />
+    <ClInclude Include="ShapeSceneObject.h" />
     <ClInclude Include="Sheet.h" />
     <ClInclude Include="SimpleMesh.h" />
     <ClInclude Include="Sphere.h" />

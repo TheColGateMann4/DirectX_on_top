@@ -1,9 +1,9 @@
 #include "DynamicConstantBuffer.h"
-#include <string>
-#include <cmath>
-#include <span>
+#include "imgui/imgui.h"
 
-#define FOR_ALL_TYPES STATEMENT(Float) \
+#define FOR_ALL_TYPES \
+	STATEMENT(Padding) \
+	STATEMENT(Float) \
 	STATEMENT(Float2) \
 	STATEMENT(Float3) \
 	STATEMENT(Float4) \
@@ -50,14 +50,14 @@ size_t DynamicConstantBuffer::BufferLayout::GetOffsetOfElement(const char* eleme
 		result += GetElementSize(element.second->GetType());
 	}
 
-	assert(false, "could not have found element in buffer layout");
+	assert(false && "could not have found element in buffer layout");
 	return 0;
 }
 
 const DynamicConstantBuffer::BufferLayout& DynamicConstantBuffer::BufferLayout::GetFinished(size_t* newSize, std::vector<size_t>* addedSpacesOffsets)
 {
 
-	assert(m_elements.size() != 0, "Trying to finalize layout with vector length 0");
+	assert(m_elements.size() != 0 && "Trying to finalize layout with vector length 0");
 
 
 	std::string newElementName = "padding";
@@ -86,7 +86,7 @@ const DynamicConstantBuffer::BufferLayout& DynamicConstantBuffer::BufferLayout::
 			for (; spaceToAdd > 0; spaceToAdd -= 4) 
 			{
 				std::string paddingNumberString = std::to_string(paddingNumber++);
-				m_elements.insert(m_elements.begin() + i, { newElementName + paddingNumberString, std::make_shared<LayoutElement>(DynamicConstantBuffer::DataType::Float) });
+				m_elements.insert(m_elements.begin() + i, { newElementName + paddingNumberString, std::make_shared<LayoutElement>(DynamicConstantBuffer::DataType::Padding) });
 				
 				if (newSize != nullptr)
 					*newSize += 4;
@@ -122,7 +122,7 @@ const DynamicConstantBuffer::BufferLayout& DynamicConstantBuffer::BufferLayout::
 		//the padding won't ever need to be a two digit number, so we can do it like this
 		std::string paddingNumberString = std::to_string(paddingNumber++);
 
-		m_elements.push_back({ newElementName + paddingNumberString, std::make_shared<LayoutElement>(DynamicConstantBuffer::DataType::Float) });
+		m_elements.push_back({ newElementName + paddingNumberString, std::make_shared<LayoutElement>(DynamicConstantBuffer::DataType::Padding) });
 		
 		if (newSize != nullptr)
 			*newSize += 4;
@@ -216,7 +216,7 @@ void DynamicConstantBuffer::BufferLayout::MakeBufferFromIdentificator(const char
 
 
 	const size_t identificatorSize = strlen(identificator);
-	assert(identificatorSize / 2 == floor(identificatorSize / 2), "incorrect identificator size");
+	assert((identificatorSize / 2 == floor(identificatorSize / 2)) && "incorrect identificator size");
 
 	auto ProcessDatatype = [](const DynamicConstantBuffer::DataType type, auto& localVector) // std::vector<std::pair<std::string, LayoutElement*>>
 		{
@@ -235,7 +235,7 @@ void DynamicConstantBuffer::BufferLayout::MakeBufferFromIdentificator(const char
 		if (codestring[0] == '{')
 		{
 			size_t endOfStructIdentificator = identificatorView.find('}');
-			assert(endOfStructIdentificator != std::string::npos, "Struct closing branch could not be found, identificator got corrupted");
+			assert(endOfStructIdentificator != std::string::npos && "Struct closing branch could not be found, identificator got corrupted");
 
 			ProcessDatatype(DynamicConstantBuffer::DataType::Struct, localVector);
 
@@ -253,7 +253,7 @@ void DynamicConstantBuffer::BufferLayout::MakeBufferFromIdentificator(const char
 		else if (codestring[0] == '(')
 		{
 			size_t endOfArrayIdentificator = identificatorView.find(')');
-			assert(endOfArrayIdentificator != std::string::npos, "Array closing branch could not be found, identificator got corrupted");
+			assert(endOfArrayIdentificator != std::string::npos && "Array closing branch could not be found, identificator got corrupted");
 
 			ProcessDatatype(DynamicConstantBuffer::DataType::Array, localVector);
 
@@ -272,7 +272,7 @@ void DynamicConstantBuffer::BufferLayout::MakeBufferFromIdentificator(const char
 
 		FOR_ALL_TYPES
 
-		assert(false, "identificator " + codestring + " could not be identified");
+		assert(false && "identificator could not be identified");
 
 
 #undef STATEMENT
@@ -304,7 +304,7 @@ DynamicConstantBuffer::LayoutElement* DynamicConstantBuffer::BufferLayout::opera
 			return element.second.get();
 	}
 
-	assert(false, std::string(elementName + "element name could not be found in buffer").c_str());
+	assert(false && "element name could not be found in buffer");
 	return nullptr;
 }
 
@@ -317,7 +317,7 @@ const DynamicConstantBuffer::LayoutElement* DynamicConstantBuffer::BufferLayout:
 			return element.second.get();
 	}
 
-	assert(false, std::string(elementName + "element name could not be found in buffer").c_str());
+	assert(false && "element name could not be found in buffer");
 	return nullptr;
 }
 
@@ -360,11 +360,38 @@ const char* DynamicConstantBuffer::BufferLayout::GetElementCode(DynamicConstantB
 }
 
 
-
-
-DynamicConstantBuffer::LayoutElement::LayoutElement(DynamicConstantBuffer::DataType elementType)
+DynamicConstantBuffer::LayoutElement::LayoutElement(DynamicConstantBuffer::DataType elementType, ImguiAdditionalInfo::ImguiInfo* imguiInfo)
 {
 	m_type = elementType;
+
+	switch (elementType)
+	{
+		case Float:
+		{
+			if (ImguiAdditionalInfo::ImguiFloatInfo* arrr = dynamic_cast<ImguiAdditionalInfo::ImguiFloatInfo*>(imguiInfo))
+				m_imguiInfo = std::make_unique<ImguiAdditionalInfo::ImguiFloatInfo>(*arrr);
+			else
+				m_imguiInfo = std::make_unique<ImguiAdditionalInfo::ImguiFloatInfo>();
+
+			break;
+		}
+		case Float3:
+		case Float4:
+		{
+			if (ImguiAdditionalInfo::ImguiColorInfo* arrr = dynamic_cast<ImguiAdditionalInfo::ImguiColorInfo*>(imguiInfo))
+				m_imguiInfo = std::make_unique<ImguiAdditionalInfo::ImguiColorInfo>(*arrr);
+			else
+				m_imguiInfo = std::make_unique<ImguiAdditionalInfo::ImguiColorInfo>();
+
+			break;
+		}
+		default:
+		{
+			m_imguiInfo = std::make_unique<ImguiAdditionalInfo::ImguiInfo>();
+
+			break;
+		}
+	}
 
 	if (m_type == Struct)
 		m_additionalData = std::make_unique<DynamicConstantBuffer::AdditionalElements::StructData>();
@@ -397,7 +424,7 @@ DynamicConstantBuffer::LayoutElement::~LayoutElement()
 
 const DynamicConstantBuffer::LayoutElement* DynamicConstantBuffer::LayoutElement::operator[](const char* elementName) noexcept
 {
-	assert(this->m_type != Struct, "Cannot add places to not Struct element, element was type " + this->m_type);
+	assert(this->m_type != Struct && "Cannot add places to not Struct element, element was type ");
 
 	auto& additionalData = static_cast<DynamicConstantBuffer::AdditionalElements::StructData&>(*m_additionalData);
 
@@ -407,7 +434,7 @@ const DynamicConstantBuffer::LayoutElement* DynamicConstantBuffer::LayoutElement
 			return structElement.second.get();
 	}
 
-	assert(false, std::string(elementName + "element name could not be found in struct").c_str());
+	assert(false && "element name could not be found in struct");
 	return nullptr;
 }
 
@@ -442,6 +469,70 @@ DynamicConstantBuffer::BufferData::~BufferData()
 {
 	if (m_pDataBuffer != nullptr)
 		delete[] m_pDataBuffer;
+}
+
+bool DynamicConstantBuffer::BufferData::MakeImguiMenu()
+{
+	bool changed = false;
+
+	auto checkChanged = [&changed](bool returnFromStatement) mutable
+		{
+			changed = changed || returnFromStatement;
+		};
+
+	for (auto& element : this->m_layout.GetVector())
+	{
+		const DataType elementType = element.second->GetType();
+		const char* elementName = element.first.c_str();
+		const ImguiAdditionalInfo::ImguiInfo* imguiInfo = element.second->GetImGuiInfo();
+
+		assert(imguiInfo != nullptr && "Imgui propeties weren't defined for given element");
+
+
+		switch (elementType)
+		{
+			case Empty:
+			case Padding:
+			{
+				continue;
+			}
+			case Float:
+			{
+				const ImguiAdditionalInfo::ImguiFloatInfo* imguiFloatInfo = static_cast<const ImguiAdditionalInfo::ImguiFloatInfo*>(imguiInfo);
+				checkChanged(ImGui::SliderFloat(elementName, this->GetElementPointerValue<DynamicConstantBuffer::DataType::Float>(elementName), imguiFloatInfo->v_min, imguiFloatInfo->v_max, imguiFloatInfo->format.c_str(), imguiFloatInfo->flags));
+				break;
+			}
+			case Float3:
+			{
+				const ImguiAdditionalInfo::ImguiColorInfo* imguiColorInfo = static_cast<const ImguiAdditionalInfo::ImguiColorInfo*>(imguiInfo);
+				checkChanged(ImGui::ColorPicker3(elementName, reinterpret_cast<float*>(this->GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>(elementName)), imguiColorInfo->flags));
+				break;
+			}
+			case Float4:
+			{
+				const ImguiAdditionalInfo::ImguiColorInfo* imguiColorInfo = static_cast<const ImguiAdditionalInfo::ImguiColorInfo*>(imguiInfo);
+				checkChanged(ImGui::ColorPicker4(elementName, reinterpret_cast<float*>(this->GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>(elementName)), imguiColorInfo->flags));
+				break;
+			}
+			case Bool:
+			{
+				checkChanged(ImGui::Checkbox(elementName, (bool*)this->GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>(elementName)));
+				break;
+			}
+
+			default:
+			{
+				assert(false && "Buffer element was not defined for imgui display");
+			}
+		}
+	}
+
+	return changed;
+}
+
+bool DynamicConstantBuffer::BufferData::ElementExists(const char* elementName)
+{
+	return m_layout.isExisting(elementName);
 }
 
 void DynamicConstantBuffer::BufferData::MakeFinished()
@@ -490,6 +581,25 @@ void DynamicConstantBuffer::BufferData::Update(const DynamicConstantBuffer::Buff
 
 	m_pDataBuffer = new char[m_size];
 }
+
+#ifdef _DEBUG
+void DynamicConstantBuffer::BufferData::DebugLayout() const
+{
+	const auto& constLayout = GetConstLayout();
+	const auto& layoutVector = constLayout.GetVector();
+
+	for (const auto& layoutElement : layoutVector)
+	{
+		size_t elementOffset = constLayout.GetOffsetOfElement(layoutElement.first.c_str());
+		std::cout << "name: " << layoutElement.first << " offsets: " << elementOffset << " size: " << DynamicConstantBuffer::BufferLayout::GetElementSize(layoutElement.second->GetType()) << '\n';
+	}
+}
+#else
+void DynamicConstantBuffer::BufferData::DebugLayout() const
+{
+
+}
+#endif
 
 void* DynamicConstantBuffer::BufferData::GetBytes() const
 {

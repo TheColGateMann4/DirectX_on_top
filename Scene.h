@@ -7,8 +7,6 @@
 class Scene
 {
 public:
-	Scene() = delete;
-
 	Scene(Window* window)
 		: m_window(window)	{}
 

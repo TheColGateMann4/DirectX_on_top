@@ -5,10 +5,11 @@
 #include <string>
 #include <memory>
 #include <iostream>
-
+#include "imgui/imgui.h"
 
 
 #define FOR_ALL_TYPES \
+	STATEMENT(Padding) \
 	STATEMENT(Float) \
 	STATEMENT(Float2) \
 	STATEMENT(Float3) \
@@ -38,6 +39,13 @@ namespace DynamicConstantBuffer
 	struct DataTypeMap // Empty, Array and Struct will be invalid
 	{
 		static constexpr bool valid = false;
+	};
+	template<> struct DataTypeMap<DataType::Padding>
+	{
+		using type = float;
+		static constexpr bool valid = true;
+		static constexpr size_t hlslsize = sizeof(type);
+		static constexpr const char* code = "PD";
 	};
 	template<> struct DataTypeMap<DataType::Float>
 	{
@@ -109,12 +117,32 @@ namespace DynamicConstantBuffer
 		};
 	}
 
+	namespace ImguiAdditionalInfo
+	{
+		struct ImguiInfo
+		{
+			virtual void aaa() {};
+		};
+		struct ImguiFloatInfo : public ImguiInfo
+		{
+			float v_min = 0.0f;
+			float v_max = 1.0f;
+			std::string format = "%.3f";
+			ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+		};
+		struct ImguiColorInfo : public ImguiInfo
+		{
+			ImGuiColorEditFlags flags = ImGuiColorEditFlags_None;
+		};
+	}
+
 
 	class LayoutElement
 	{
 		friend class BufferLayout;
 	public:
-		LayoutElement(DataType elementType);
+
+		LayoutElement(DataType elementType, ImguiAdditionalInfo::ImguiInfo* imguiInfo = nullptr);
 
 		LayoutElement();
 
@@ -124,7 +152,7 @@ namespace DynamicConstantBuffer
 		template<DataType type>
 		void Add(const char* elementName) // for DataType::Struct
 		{
-			assert(this->m_type == Struct, "Cannot add places to not Struct element, element was type " + this->m_type);
+			assert(this->m_type == Struct && "Cannot add places to not Struct element");
 
 			auto& additionalData = static_cast<DynamicConstantBuffer::AdditionalElements::StructData&>(*m_additionalData);
 
@@ -134,12 +162,12 @@ namespace DynamicConstantBuffer
 		template<DataType type>
 		void Add(size_t additionaLenght = 1) // for DataType::Array; additionaLenght = number of added space
 		{
-			assert(this->m_type == Array, "Cannot add space to not Array element, element was type " + this->m_type);
+			assert(this->m_type == Array && "Cannot add space to not Array element");
 
 			auto& additionalData = static_cast<DynamicConstantBuffer::AdditionalElements::ArrayData&>(*m_additionalData);
 
-			if (additionalData.type != DynamicConstantBuffer::DataType::Empty) // we can do it this was since user won't be using array of empty elements
-				assert(additionalData.type == type, "Assigning element to array with different type");
+			assert(additionalData.type == type && "Assigning element to array with different type");
+			assert(additionalData.type != DynamicConstantBuffer::DataType::Empty && "Trying to make an array of empty type");
 
 			additionalData.type = type;
 			additionalData.size++;
@@ -150,10 +178,13 @@ namespace DynamicConstantBuffer
 
 	public:
 		DataType GetType() const { return m_type; };
+		const ImguiAdditionalInfo::ImguiInfo* GetImGuiInfo() const { return m_imguiInfo.get(); };
+
 
 	private:
 		DataType m_type = DataType::Empty;
-		::std::unique_ptr<AdditionalElements::AdditionalDataBase> m_additionalData = {};
+		::std::unique_ptr<AdditionalElements::AdditionalDataBase> m_additionalData = nullptr;
+		::std::shared_ptr<ImguiAdditionalInfo::ImguiInfo> m_imguiInfo;
 	};
 
 
@@ -167,6 +198,12 @@ namespace DynamicConstantBuffer
 		~BufferLayout();
 
 	public:
+		template<DataType type>
+		void Add(const char* elementName, ImguiAdditionalInfo::ImguiInfo* imguiInfo)
+		{
+			m_elements.push_back({ elementName, std::make_shared<LayoutElement>(type, imguiInfo) });
+		}
+
 		template<DataType type>
 		void Add(const char* elementName)
 		{
@@ -260,10 +297,10 @@ namespace DynamicConstantBuffer
 		}
 
 	public:
-		bool ElementExists(const char* elementName)
-		{
-			return m_layout.isExisting(elementName);
-		}
+		bool MakeImguiMenu();
+
+	public:
+		bool ElementExists(const char* elementName);
 
 		template<DataType type>
 		DynamicConstantBuffer::DataTypeMap<type>::type* GetElementPointerValue(const char* elementName) const
@@ -299,24 +336,7 @@ namespace DynamicConstantBuffer
 	public:
 		void Update(const BufferLayout layout);
 
-#ifdef _DEBUG
-		void DebugLayout() const
-		{
-			const auto& constLayout = GetConstLayout();
-			const auto& layoutVector = constLayout.GetVector();
-
-			for (const auto& layoutElement : layoutVector)
-			{
-				size_t elementOffset = constLayout.GetOffsetOfElement(layoutElement.first.c_str());
-				std::cout << "name: " << layoutElement.first << " offsets: " << elementOffset << " size: " << DynamicConstantBuffer::BufferLayout::GetElementSize(layoutElement.second->GetType()) << '\n';
-			}
-		}
-#else
-		void DebugLayout() const
-		{
-
-		}
-#endif
+		void DebugLayout() const;
 
 	public:
 		void* GetBytes() const;

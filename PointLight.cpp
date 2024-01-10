@@ -24,7 +24,22 @@ PointLight::PointLight(GFX& gfx, float radius)
 	Reset(); // lazy setting values on startup
 }
 
-void PointLight::MakePropeties(GFX& gfx, float deltaTime)
+
+
+void PointLight::MakeTransformPropeties(GFX& gfx)
+{
+	if (!GetPressedState())
+		return;
+
+	DirectX::XMFLOAT3& position = *constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position");
+
+	ImGui::Text("Position");
+	ImGui::SliderFloat("X", &position.x, -60.0f, 60.0f);
+	ImGui::SliderFloat("Y", &position.y, -60.0f, 60.0f);
+	ImGui::SliderFloat("Z", &position.z, -60.0f, 60.0f);
+}
+
+void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 {
 	if (!GetPressedState())
 		return;
@@ -32,11 +47,6 @@ void PointLight::MakePropeties(GFX& gfx, float deltaTime)
 	DynamicConstantBuffer::BufferData& bufferData = constBufferData;
 
 	DirectX::XMFLOAT3* lightColor = bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor");
-	DirectX::XMFLOAT3& position = *bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position");
-	ImGui::Text("Position");
-	ImGui::SliderFloat("X", &position.x, -60.0f, 60.0f);
-	ImGui::SliderFloat("Y", &position.y, -60.0f, 60.0f);
-	ImGui::SliderFloat("Z", &position.z, -60.0f, 60.0f);
 
 	ImGui::Text("Color");
 	ImGui::ColorEdit3("Light Color", reinterpret_cast<float*>(lightColor), ImGuiColorEditFlags_NoAlpha);
@@ -45,7 +55,7 @@ void PointLight::MakePropeties(GFX& gfx, float deltaTime)
 
 	if (enableChroma)
 	{
-		ImGui::SliderFloat("Chroma Delta Time", &chromaDeltaTime, 0.001, 200.0f);
+		ImGui::SliderFloat("Chroma Delta Time", &chromaDeltaTime, 0.001f, 200.0f);
 	}
 
 	ImGui::SliderFloat("Diffuse Intensity", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("diffuseIntensity"), 0.01f, 2.0f, "%.2f");
@@ -132,7 +142,7 @@ void PointLight::Reset() noexcept
 
 void PointLight::Bind(GFX& gfx, DirectX::XMMATRIX CameraView_) const noexcept
 {
-	auto temp = constBufferData;
+	DynamicConstantBuffer::BufferData temp = constBufferData;
 	const auto position = DirectX::XMLoadFloat3(constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"));
 	DirectX::XMStoreFloat3(temp.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"), DirectX::XMVector3Transform(position, CameraView_));
 	m_pcbuffer.Update(gfx, temp);

@@ -45,7 +45,11 @@ void Scene::DrawModelHierarchy(float deltaTime)
 		ImGui::NextColumn();
 
 		for (auto& model : models)
-			model->MakePropeties(m_window->Graphics, deltaTime);
+		{
+			model->MakeTransformPropeties(m_window->Graphics);
+			model->MakePropeties(m_window->Graphics);
+			model->MakeAdditionalPropeties(m_window->Graphics, deltaTime);
+		}
 
 		ImGui::End();
 	}
