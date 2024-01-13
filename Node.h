@@ -73,45 +73,6 @@ public:
 		}
 	}
 
-	void GenerateShaderOptions(GFX& gfx)
-	{
-		if (m_pMeshes.empty())
-			return;
-
-		CachedBuffer* bindableShaderMaterial = m_pMeshes.front()->GetBindable<CachedBuffer>(0,0,1, true);
-
-		if (!m_materialsDefined)
-			shaderMaterial = bindableShaderMaterial->constBufferData;
-
-		bool changed = false;
-
-		auto checkChanged = [&changed](bool returnFromStatement) mutable
-		{
-			changed = changed || returnFromStatement;
-		};
-
-
-		if (bindableShaderMaterial->constBufferData.ElementExists("normalMapEnabled"))
-			checkChanged(ImGui::Checkbox("normalMapEnabled", (bool*)shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled")));
-		if (bindableShaderMaterial->constBufferData.ElementExists("normalMapHasAlpha"))
-			checkChanged(ImGui::Checkbox("normalMapHasAlpha", (bool*)shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapHasAlpha")));
-		if (bindableShaderMaterial->constBufferData.ElementExists("specularMapEnabled"))
-			checkChanged(ImGui::Checkbox("specularMapEnabled", (bool*)shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("specularMapEnabled")));
-		if (bindableShaderMaterial->constBufferData.ElementExists("specularPowerChanged"))
-			checkChanged(ImGui::SliderFloat("specularPowerChanged", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPowerChanged"), 0.0f, 1000.0f, "%f"));
-		if (bindableShaderMaterial->constBufferData.ElementExists("specularColor"))
-			checkChanged(ImGui::ColorPicker4("specularColor", reinterpret_cast<float*>(shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("specularColor"))));
-		if (bindableShaderMaterial->constBufferData.ElementExists("specularMapWeight"))
-			checkChanged(ImGui::SliderFloat("specularMapWeight", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularMapWeight"), 0.0f, 2.0f));
-		if (bindableShaderMaterial->constBufferData.ElementExists("materialColor"))
-			checkChanged(ImGui::ColorPicker4("materialColor", reinterpret_cast<float*>(shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("materialColor"))));
-
-		if(changed)
-			bindableShaderMaterial->Update(gfx, shaderMaterial);
-
-		m_materialsDefined = true;
-	}
-
 private:
 	void AddChild(std::unique_ptr<Node> pChild) noexcept(!IS_DEBUG)
 	{
@@ -124,8 +85,6 @@ private:
 	std::vector<Mesh*> m_pMeshes;
 	DirectX::XMFLOAT4X4 m_baseTransform;
 	std::string m_nodeName;
-	DynamicConstantBuffer::BufferData shaderMaterial;
-	bool m_materialsDefined = false;
 
 public:
 	DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };

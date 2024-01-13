@@ -105,10 +105,20 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			constBufferData += (BOOL)false;
 			constBufferData += (BOOL)false;
 		}
-
+		/*
+		
+			checkChanged(ImGui::SliderFloat("specularPowerChanged", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower"), 0.0f, 1000.0f, "%.2f"));
+			checkChanged(ImGui::SliderFloat("specularMapWeight", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularMapWeight"), 0.0f, 2.0f));
+		*/
 		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Bool>("specularMap");
 		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Bool>("specularMapHasAlpha");
-		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float>("specularMapWeight");
+
+		{
+			DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
+			floatInfo.v_min = 0.0f;
+			floatInfo.v_max = 2.0f;
+			constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float>("specularMapWeight", &floatInfo);
+		}
 
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
@@ -140,9 +150,21 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		constBufferData += SpecularColor;
 
 
-		material.Get(AI_MATKEY_SHININESS, shinyness);
-		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float>("specularPower");
-		constBufferData += shinyness;
+		//getting shinyness
+		{
+			material.Get(AI_MATKEY_SHININESS, shinyness);
+
+			{
+				DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
+				floatInfo.v_min = 0.1f;
+				floatInfo.v_max = 150.0f;
+				floatInfo.format = "%.2f";
+
+				constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float>("specularPower", &floatInfo);
+			}
+
+			constBufferData += shinyness;
+		}
 
 		if (hasSpecularMap || hasDiffuseMap || hasNormalMap)
 		{
@@ -207,10 +229,10 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	resultMesh->m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *resultMesh, 0, 2);
 
 	{
-		RenderTechnique normalTechnique;
+		RenderTechnique normalTechnique("normal");
 
 		{
-			RenderSteps normalStep(PASS_NORMAL);
+			RenderSteps normalStep(PASS_NORMAL, "normal");
 
 
 			normalStep.AddBindable(std::move(pVertexShader));
@@ -265,12 +287,20 @@ void Model::MakeHierarchy(GFX&)
 {
 	ImGui::Columns(2, nullptr, true);
 
-	bool previous = m_pressedNode != nullptr;
+	Node* previous = m_pressedNode;
 
 	m_pStartingNode->GenerateTree(m_pressedNode);
 
-	if(previous != (m_pressedNode != nullptr))
+	if (previous != m_pressedNode)
+	{
+		if(m_pressedNode != m_pStartingNode.get())
+			if(m_pressedNode != nullptr)
+				SetShape(m_pressedNode->m_pMeshes.front());
+			else
+				SetShape(nullptr);
+
 		SetPressedState(m_pressedNode != nullptr);
+	}
 }
 
 void Model::MakeTransformPropeties(GFX& gfx)
@@ -290,6 +320,4 @@ void Model::MakeTransformPropeties(GFX& gfx)
 
 	if (ImGui::Button("Reset"))
 		m_pressedNode->ResetLocalTranform();
-
-	m_pressedNode->GenerateShaderOptions(gfx);
 }

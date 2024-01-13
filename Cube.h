@@ -3,21 +3,24 @@
 #include "Graphics.h"
 #include "SimpleMesh.h"
 #include "DynamicConstantBuffer.h"
+#include "SceneObject.h"
 #include "Mesh.h"
-#include "ShapeSceneObject.h"
 #include <random>
 
-class Cube : public ShapeSceneObject
+class Cube : public SceneObject, public Shape
 {
 public:
 	Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture);
 
 public:
-	//void MakePropeties(GFX& gfx) override;
-
 	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) override
 	{
 		this->Render(renderQueue);
+	}
+
+	virtual DirectX::XMMATRIX GetTranformMatrix() const noexcept override
+	{
+		return this->GetSceneTranformMatrix();
 	}
 
 public:

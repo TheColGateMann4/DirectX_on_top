@@ -9,6 +9,8 @@
 
 Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture)
 {
+	SetShape(this);
+
 	SimpleMesh CubeModel = GetUnwrappedMesh(scale, true);
 
 

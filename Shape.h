@@ -5,7 +5,7 @@
 
 class Shape
 {
-	friend class ShapeSceneObject;
+	friend class SceneObject;
 public:
 	Shape() = default;
 	Shape(const Shape&) = delete;

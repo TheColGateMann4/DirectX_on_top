@@ -41,6 +41,11 @@ void PointLight::MakeTransformPropeties(GFX& gfx)
 
 void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 {
+	// we need to leave pointlight out of dynamic imgui menu maker,
+	// since we have stuff like "Chroma Light" checkbox which changes local value,
+	// also Texts which commment sections would need to be added there as well.
+	// Making this stuff into DynamicConstantBuffer would be pointless or weird
+
 	if (!GetPressedState())
 		return;
 

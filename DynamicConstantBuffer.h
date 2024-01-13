@@ -199,15 +199,12 @@ namespace DynamicConstantBuffer
 
 	public:
 		template<DataType type>
-		void Add(const char* elementName, ImguiAdditionalInfo::ImguiInfo* imguiInfo)
+		void Add(const char* elementName, ImguiAdditionalInfo::ImguiInfo* imguiInfo = nullptr)
 		{
-			m_elements.push_back({ elementName, std::make_shared<LayoutElement>(type, imguiInfo) });
-		}
-
-		template<DataType type>
-		void Add(const char* elementName)
-		{
-			m_elements.push_back({ elementName, std::make_shared<LayoutElement>(type) });
+			if(imguiInfo != nullptr)
+				m_elements.push_back({ elementName, std::make_shared<LayoutElement>(type, imguiInfo) });
+			else
+				m_elements.push_back({ elementName, std::make_shared<LayoutElement>(type) });
 		}
 
 	public:
@@ -323,9 +320,9 @@ namespace DynamicConstantBuffer
 
 	public:
 		template<DataType type>
-		void AddLayoutElement(const char* elementName)
+		void AddLayoutElement(const char* elementName, ImguiAdditionalInfo::ImguiInfo* imguiInfo = nullptr)
 		{
-			m_layout.Add<type>(elementName);
+			m_layout.Add<type>(elementName, imguiInfo);
 			m_size += DynamicConstantBuffer::DataTypeMap<type>::hlslsize;
 
 			m_pDataBuffer = realloc(m_pDataBuffer, m_size);
