@@ -3,6 +3,8 @@
 
 class CameraView
 {
+public:
+	CameraView();
 
 public:
 	void SetProjection(DirectX::XMMATRIX projection);
@@ -20,12 +22,14 @@ private:
 
 public:
 	void Reset();
-	void SpawnControlWindow();
+	std::string SpawnControlWindow();
 
 private:
 	float WrapAngle(float angle, float value);
 
 private:
+	std::vector<std::string> filterOptions = { "Normal", "NegativeColors", "Blur" };
+	std::string currentFilter;
 	DirectX::XMFLOAT3 m_position = { -37.5f, 7.0f, 1.0f };
 	DirectX::XMFLOAT3 m_view = { 0.5f * _Pi, 0.0f, 0.0f};
 

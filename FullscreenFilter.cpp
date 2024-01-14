@@ -27,8 +27,17 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 
 	VertexShader* pVertexShader = dynamic_cast<VertexShader*>(m_bindables.back().get());
 
-	m_bindables.push_back(PixelShader::GetBindable(gfx, "PS_Fullscreen_NegativeColors.cso"));
+	m_bindables.push_back(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
 	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout().GetDirectXLayout(), pVertexShader->GetByteCode()));
+}
+
+void FullscreenFilter::ChangePixelShader(GFX& gfx, std::string ShaderName)
+{
+	for (size_t i = 0; i < m_bindables.size(); i++)
+		if (PixelShader* pPixelShader = dynamic_cast<PixelShader*>(m_bindables.at(i).get()))
+			m_bindables.erase(m_bindables.begin() + i);
+
+	m_bindables.push_back(PixelShader::GetBindable(gfx, ("PS_Fullscreen_" + ShaderName + ".cso").c_str()));
 }
 
 void FullscreenFilter::Render(GFX& gfx) const noexcept

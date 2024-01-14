@@ -12,6 +12,9 @@ public:
 	RenderQueue(GFX& gfx);
 
 public:
+	void ChangeScreenFilter(GFX& gfx, std::string ShaderName);
+
+public:
 	void Render(GFX& gfx);
 
 public:

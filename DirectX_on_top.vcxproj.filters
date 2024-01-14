@@ -46,6 +46,9 @@
     <Filter Include="Header Files\Render">
       <UniqueIdentifier>{606813e8-091d-4af1-821b-d6fe9492c9af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\FullscreenFilters">
+      <UniqueIdentifier>{2c5090a9-7d68-4f8d-9b61-336069c11054}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes.h">
@@ -470,11 +473,17 @@
     <FxCompile Include="VS_Outline.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Fullscreen.hlsl">
-      <Filter>Shader</Filter>
+    <FxCompile Include="PS_Fullscreen_Blur.hlsl">
+      <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_NegativeColors.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\FullscreenFilters</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Fullscreen.hlsl">
+      <Filter>Shader\FullscreenFilters</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Fullscreen_Normal.hlsl">
+      <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

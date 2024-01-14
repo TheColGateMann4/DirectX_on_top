@@ -9,6 +9,11 @@ RenderQueue::RenderQueue(GFX& gfx)
 	m_fullscreenfilter(gfx)
 {}
 
+void RenderQueue::ChangeScreenFilter(GFX& gfx, std::string ShaderName)
+{
+	m_fullscreenfilter.ChangePixelShader(gfx, ShaderName);
+}
+
 void RenderQueue::Render(GFX& gfx)
 {
 	m_depthStencilView.Clear(gfx);

@@ -160,7 +160,10 @@ void Application::DoFrame()
 		window.ShowCursor(cursorShowing);
 	}
 
-	//window.Graphics.camera.SpawnControlWindow();
+	std::string fullscreenFilerName = window.Graphics.camera.SpawnControlWindow();
+
+	if (!fullscreenFilerName.empty())
+		renderQueue.ChangeScreenFilter(window.Graphics, fullscreenFilerName);
 
 	modelHierarchy.DrawModelHierarchy(timer.Get());
 

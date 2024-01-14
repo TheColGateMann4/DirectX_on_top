@@ -4,6 +4,12 @@
 #include <random>
 #include <DirectXMath.h>
 
+
+CameraView::CameraView()
+	:
+		currentFilter(filterOptions.at(0))
+{}
+
 void CameraView::SetProjection(DirectX::XMMATRIX projection)
 {
 	m_projection = projection;
@@ -60,8 +66,10 @@ void CameraView::Reset()
 	m_position = { 0.0f, 3.0f, -12.0f };
 	m_view = {};
 }
-void CameraView::SpawnControlWindow()
+std::string CameraView::SpawnControlWindow()
 {
+	bool changedFilter = false;
+
 	if (ImGui::Begin("Camera Control"))
 	{
 		ImGui::Text("Positione");
@@ -78,8 +86,32 @@ void CameraView::SpawnControlWindow()
 		{
 			this->Reset();
 		}
+
+		if (ImGui::BeginCombo("Filter", currentFilter.c_str()))
+		{
+			for (int i = 0; i < filterOptions.size(); i++)
+			{
+				bool is_selected = (currentFilter == filterOptions[i]);
+				if (ImGui::Selectable(filterOptions[i].c_str(), is_selected))
+				{
+					changedFilter = true;
+					currentFilter = filterOptions[i];
+				}
+
+				if (is_selected)	
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
 	}
 	ImGui::End();
+
+
+	if (changedFilter)
+		return currentFilter;
+
+	return {};
 }
 
 float CameraView::WrapAngle(float angle, float value)
