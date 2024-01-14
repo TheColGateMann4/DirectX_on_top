@@ -325,9 +325,11 @@ namespace DynamicConstantBuffer
 			m_layout.Add<type>(elementName, imguiInfo);
 			m_size += DynamicConstantBuffer::DataTypeMap<type>::hlslsize;
 
-			m_pDataBuffer = realloc(m_pDataBuffer, m_size);
+			void* newBuffer = realloc(m_pDataBuffer, m_size);
 
-			assert(m_pDataBuffer != nullptr);
+			assert(newBuffer != nullptr);
+
+			m_pDataBuffer = newBuffer;
 		}
 
 	public:

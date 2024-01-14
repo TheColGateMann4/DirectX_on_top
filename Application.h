@@ -18,6 +18,7 @@ public:
 public:
 	ImguiManager imguiManager;
 	Window window;
+	RenderQueue renderQueue{window.Graphics};
 	Time timer;
 
 private:

@@ -145,9 +145,9 @@ void Application::DoFrame()
 
 	window.Graphics.BeginFrame({ 0,0,0,1 });
 
-	modelHierarchy.DrawModels(window.Graphics.renderQueue, window.Graphics, window.Graphics.camera.GetCamera());
+	modelHierarchy.DrawModels(renderQueue, window.Graphics, window.Graphics.camera.GetCamera());
 
-	window.Graphics.renderQueue.Render(window.Graphics);
+	renderQueue.Render(window.Graphics);
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
 		window.Graphics.ShowImGUI(!window.Graphics.isImGUIVisible());

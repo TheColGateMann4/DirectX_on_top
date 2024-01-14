@@ -1,7 +1,7 @@
 #include "InputLayout.h"
 
 InputLayout::InputLayout(GFX& gfx, const DynamicVertex::VertexLayout& layout, ID3DBlob* pVertexShaderByteCode)
-	: m_layout(std::move(layout))
+	: m_layout(layout)
 {
 	HRESULT hr;
 	const std::vector<D3D11_INPUT_ELEMENT_DESC> directXLayout = m_layout.GetDirectXLayout();

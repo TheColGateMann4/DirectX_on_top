@@ -10,14 +10,16 @@ class RenderTechnique
 	friend class Shape;
 
 public:
-	RenderTechnique(std::string name)
+	RenderTechnique(std::string name, bool active = true)
 		:
-		m_name(name)
+		m_name(name),
+		m_active(active)
 	{}
 
-	RenderTechnique()
+	RenderTechnique(bool active = true)
 		:
-		m_name("unknown")
+		m_name("unknown"),
+		m_active(active)
 	{}
 
 public:
@@ -38,8 +40,9 @@ public:
 	}
 
 public:
-	void AddRenderStep(const RenderSteps& renderStep)
+	void AddRenderStep(RenderSteps& renderStep)
 	{
+		renderStep.m_active = m_active;
 		m_steps.push_back(renderStep);
 	}
 
@@ -58,7 +61,7 @@ public:
 			step.m_active = active;
 	}
 
-	bool GetTechniqueActive()
+	bool GetTechniqueActive() const
 	{
 		return m_active;
 	}

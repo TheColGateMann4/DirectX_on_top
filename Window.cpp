@@ -46,17 +46,17 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept
 	return Window::WindowClass::sWindowClass.hInstance;
 }
 
-HWND Window::GetHWnd() noexcept
+HWND Window::GetHWnd() const noexcept
 {
 	return Window::m_hWnd;
 }
 
-UINT32 Window::GetWidth()
+UINT32 Window::GetWidth() const
 {
 	return Window::m_width;
 }
 
-UINT32 Window::GetHeight()
+UINT32 Window::GetHeight() const
 {
 	return Window::m_height;
 }
@@ -85,7 +85,7 @@ BOOL Window::ProcessMessage()
 
 void Window::ShowCursor(bool show)
 {
-	if (m_cursorShowing == show)
+	if ((m_cursorShowing == 1) == show)
 		return;
 
 	m_cursorShowing = show;
@@ -209,7 +209,7 @@ Window::Window(UINT32 width, UINT32 height, const char* name)
 	ImGui_ImplWin32_Init(m_hWnd);
 
 	//registering mouse raw input device
-	RAWINPUTDEVICE rawInputDevice;
+	RAWINPUTDEVICE rawInputDevice = {};
 	rawInputDevice.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
 	rawInputDevice.usUsage = 0x02; // HID_USAGE_GENERIC_MOUSE
 	rawInputDevice.dwFlags = 0;
@@ -395,7 +395,7 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	case WM_INPUT:
 		{
-			UINT32 size;
+			UINT32 size = 0;
 
 			if (GetRawInputData(
 				reinterpret_cast<HRAWINPUT>(lParam),

@@ -6,40 +6,43 @@
 
 class GFX
 {
-	friend class Bindable;
+	friend class GraphicResource;
 
 public:
-	GFX() = default;
+	void Initialize(HWND hWnd);
+	void SetResolution(UINT32 width, UINT32 height);
+
+	void BeginFrame(DirectX::XMFLOAT4 color = { 0.0f , 0.0f, 0.0f, 1.0f });
+	void FinishFrame();
+
+	void ClearBuffer(DirectX::XMFLOAT4 color);
 
 public:
-	VOID Initialize(HWND hWnd);
-	VOID SetResolution(UINT32 width, UINT32 height);
-
-	VOID BeginFrame(DirectX::XMFLOAT4 color_ = { 0.0f , 0.0f, 0.0f, 1.0f });
-	VOID FinishFrame();
-	VOID ClearBuffer(DirectX::XMFLOAT4 color_ = { 0.0f, 0.0f, 0.0f, 1.0f });
+	void BindSwapBuffer() const noexcept;
+	void BindSwapBuffer(const class DepthStencilView& depthStencilView) const noexcept;
 
 public:
-	VOID ShowImGUI(bool show);
-	BOOL isImGUIVisible();
+	void ShowImGUI(bool show);
+	BOOL isImGUIVisible() const;
 
 public:
-	VOID DrawIndexed(UINT32 count);
+	void DrawIndexed(UINT32 count);
+
+public:
+	UINT32 GetWidth() const { return m_width; };
+	UINT32 GetHeight() const { return m_height; };
 
 public:
 	CameraView camera;
-
-	RenderQueue renderQueue;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pTargetView;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView;
 
 private:
-	UINT32 m_width;
-	UINT32 m_height;
+	UINT32 m_width = 0;
+	UINT32 m_height = 0;
 	bool m_imgui_enabled = true;
 };

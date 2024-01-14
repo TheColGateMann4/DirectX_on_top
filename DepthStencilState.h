@@ -4,7 +4,7 @@
 #include "Bindable.h"
 #include "BindableList.h"
 
-class DepthStencil : public Bindable
+class DepthStencilState : public Bindable
 {
 public:
 	enum StencilMode
@@ -15,7 +15,7 @@ public:
 	};
 
 public:
-	DepthStencil(GFX& gfx, StencilMode mode)
+	DepthStencilState(GFX& gfx, StencilMode mode)
 		: m_mode(mode)
 	{
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = CD3D11_DEPTH_STENCIL_DESC{ CD3D11_DEFAULT{} };
@@ -51,9 +51,9 @@ public:
 	}
 
 public:
-	static std::shared_ptr<DepthStencil> GetBindable(GFX& gfx, StencilMode mode)
+	static std::shared_ptr<DepthStencilState> GetBindable(GFX& gfx, StencilMode mode)
 	{
-		return BindableList::GetBindable<DepthStencil>(gfx, mode);
+		return BindableList::GetBindable<DepthStencilState>(gfx, mode);
 	}
 
 	std::string GetLocalUID() const noexcept override

@@ -256,6 +256,61 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		resultMesh->AddRenderTechnique(normalTechnique);
 	}
 
+
+	{
+		RenderTechnique outlineTechnique("outline", false);
+
+		{
+			RenderSteps maskStep(PASS_WRITE, "write");
+
+			outlineTechnique.AddRenderStep(maskStep);
+		}
+
+		{
+			RenderSteps maskStep(PASS_MASK, "mask");
+
+
+			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS_Outline.cso");
+			ID3DBlob* pBlob = pVertexShader->GetByteCode();
+
+
+			DynamicConstantBuffer::BufferLayout vertexBufferLayout;
+
+
+			DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo scaleFactorInfo = {};
+			scaleFactorInfo.v_min = 1.001f;
+			scaleFactorInfo.v_max = 2.0f;
+
+			vertexBufferLayout.Add<DynamicConstantBuffer::DataType::Float>("scaleFactor", &scaleFactorInfo);
+
+
+			DynamicConstantBuffer::BufferData vertexBufferData(std::move(vertexBufferLayout));
+			*vertexBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("scaleFactor") = 1.05f;
+
+
+			maskStep.AddBindable(CachedBuffer::GetBindable(gfx, vertexBufferData, 1, false));
+
+
+			DynamicConstantBuffer::BufferLayout PixelbufferLayout;
+			PixelbufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
+
+			DynamicConstantBuffer::BufferData pixelBufferData(std::move(PixelbufferLayout));
+			*pixelBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = { 0.0f, 1.0f, 1.0f, 1.0f };
+
+			maskStep.AddBindable(pVertexShader);
+
+			maskStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
+
+			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, true));
+
+			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
+
+			outlineTechnique.AddRenderStep(maskStep);
+		}
+
+		resultMesh->AddRenderTechnique(outlineTechnique);
+	}
+
 	return resultMesh;
 }
 

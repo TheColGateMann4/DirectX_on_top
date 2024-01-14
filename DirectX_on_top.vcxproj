@@ -174,11 +174,14 @@
     <ClInclude Include="CameraView.h" />
     <ClInclude Include="ConstantBuffers.h" />
     <ClInclude Include="Cube.h" />
-    <ClInclude Include="DepthStencil.h" />
+    <ClInclude Include="DepthStencilState.h" />
+    <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="DXError.h" />
     <ClInclude Include="DynamicConstantBuffer.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ErrorMacros.h" />
+    <ClInclude Include="FullscreenFilter.h" />
+    <ClInclude Include="GraphicResource.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="ImguiManager.h" />
     <ClInclude Include="imgui\backend\imgui_impl_dx11.h" />
@@ -200,6 +203,7 @@
     <ClInclude Include="RenderJob.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="RenderSteps.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="RenderTechnique.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Node.h" />
@@ -229,14 +233,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
-    <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="CameraView.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="DXError.cpp" />
     <ClCompile Include="DynamicConstantBuffer.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
     <ClCompile Include="ErrorHandling.cpp" />
+    <ClCompile Include="FullscreenFilter.cpp" />
+    <ClCompile Include="GraphicResource.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
     <ClCompile Include="imgui\backend\imgui_impl_dx11.cpp" />
@@ -254,6 +260,7 @@
     <ClCompile Include="RenderJob.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="RenderSteps.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="RenderTechnique.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="PixelShader.cpp" />
@@ -269,6 +276,8 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Topology.cpp" />
+    <ClCompile Include="TransformConstBuffer.cpp" />
+    <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -299,6 +308,9 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="PS_Fullscreen_NegativeColors.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="PS_Phong_Texture_Normals_Specular_Cube.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -372,6 +384,13 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="VS_Fullscreen.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="VS_Outline.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

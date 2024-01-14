@@ -7,36 +7,15 @@
 class TransformConstBuffer : public Bindable
 {
 public:
-	TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot = 0)
-		: 
-		m_parent(parent),
-		vcbuf(gfx, TCBLayout, slot, false)
-	{}
+	TransformConstBuffer(class GFX& gfx, const Shape& parent, UINT32 slot = 0);
 
 public:
-	void Bind(GFX& gfx) noexcept override
-	{
-		DynamicConstantBuffer::BufferData constBuffer(TCBLayout);
-
-		GetBuffer(gfx, constBuffer);
-
-		UpdateAndBindConstBuffer(gfx, constBuffer);
-	}
+	void Bind(class GFX& gfx) noexcept override;
 
 protected:
-	void UpdateAndBindConstBuffer(GFX& gfx, const DynamicConstantBuffer::BufferData& constBuffer) noexcept
-	{
-		vcbuf.Update(gfx, constBuffer);
-		vcbuf.Bind(gfx);
-	}
+	void UpdateAndBindConstBuffer(class GFX& gfx, const DynamicConstantBuffer::BufferData& constBuffer) noexcept;
 
-	void GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept
-	{
-		const auto ModelTransformView = m_parent.GetTranformMatrix() * gfx.camera.GetCamera();
-
-		bufferData += DirectX::XMMatrixTranspose(ModelTransformView);
-		bufferData += DirectX::XMMatrixTranspose(ModelTransformView * gfx.camera.GetProjection());
-	}
+	void GetBuffer(class GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept;
 
 protected:
 	const Shape& m_parent;

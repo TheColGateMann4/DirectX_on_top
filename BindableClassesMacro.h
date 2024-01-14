@@ -12,7 +12,7 @@
 #include "SamplerState.h"
 #include "BlendState.h"
 #include "RasterizerState.h"
-#include "DepthStencil.h"
+#include "DepthStencilState.h"
 #include "TransformConstBuffer.h"
 #include "TransformConstBufferWithPixelShader.h"
 #include "NullPixelShader.h"

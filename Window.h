@@ -6,14 +6,14 @@
 
 class Window
 {
- public:
+public:
 	Window(UINT32 width, UINT32 height, const char* name);
 	~Window();
 	Window(const Window&) = delete;
 	Window& operator= (const Window&) = delete;
 
- public:
-	HWND GetHWnd() noexcept;
+public:
+	HWND GetHWnd() const noexcept;
 	BOOL ProcessMessage();
 	void ShowCursor(bool show);
 	void LockCursor(bool lock);
@@ -23,17 +23,17 @@ public:
 	BOOL MultiselectToFilePaths(std::string* multiSelectStr, std::vector<std::string>* filePaths);
 
 public:
-	UINT32 GetWidth();
-	UINT32 GetHeight();
+	UINT32 GetWidth() const;
+	UINT32 GetHeight() const;
 
- private:
+private:
 	class WindowClass 
 	{
-	 public:
+	public:
 		static const char* GetName() noexcept;
-		static HINSTANCE GetInstance() noexcept;;
+		static HINSTANCE GetInstance() noexcept;
 
-	 private:
+	private:
 		WindowClass() noexcept;
 		~WindowClass();
 		WindowClass(const WindowClass&) = delete;
@@ -44,12 +44,12 @@ public:
 		HINSTANCE hInstance;
 	};
 
- private:
+private:
 	static LRESULT WINAPI HandleStartMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	static LRESULT WINAPI MessageHub(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	LRESULT HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
- private:
+private:
 	UINT32 m_width;
 	UINT32 m_height;
 	HWND m_hWnd;
@@ -57,7 +57,7 @@ public:
 	BOOL m_cursorLocked = false;
 	std::vector<char> m_rawInputDataBuffer = {};
 
- public:
+public:
 	InputSystem Input;
 	GFX Graphics;
 };

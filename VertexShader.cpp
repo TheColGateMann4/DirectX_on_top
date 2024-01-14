@@ -3,11 +3,13 @@
 #include <d3dcompiler.h>
 
 VertexShader::VertexShader(GFX& gfx, std::string path)
+	:
+	m_path(path)
 {
 	HRESULT hr;
 
-	path = "Shaders\\" + path;
-	std::wstring wpath = StringConverting::NarrowToWide(path);
+	m_path = "Shaders\\" + m_path;
+	std::wstring wpath = StringConverting::NarrowToWide(m_path);
 
 	THROW_GFX_IF_FAILED
 	(
@@ -29,7 +31,7 @@ VertexShader::VertexShader(GFX& gfx, std::string path)
 	);
 }
 
-VOID VertexShader::Bind(GFX& gfx) noexcept
+void VertexShader::Bind(GFX& gfx) noexcept
 {
 	GetDeviceContext(gfx)->VSSetShader(pVertexShader.Get(), NULL, NULL);
 }

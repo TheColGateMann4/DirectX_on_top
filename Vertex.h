@@ -36,6 +36,7 @@ namespace DynamicVertex
 	class VertexLayout
 	{
 		friend class VertexBuffer;
+
 	public:
 		enum VertexComponent
 		{
@@ -65,7 +66,7 @@ namespace DynamicVertex
 		{
 			using Systype = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgiformat = DXGI_FORMAT_R32G32_FLOAT;
-			static constexpr const char* semantic = "POSITION";
+			static constexpr const char* semantic = "POSITION2D";
 			static constexpr const char* code = "P2";
 			static constexpr size_t size = sizeof(Systype);
 
@@ -204,37 +205,17 @@ namespace DynamicVertex
 		class Element
 		{
 		public:
-			Element(VertexComponent type, size_t offset)
-				: m_type(type), m_offset(offset) {}
+			Element(VertexComponent type, size_t offset);
 
 		public:
-			size_t GetOffset()	     const { return m_offset; }
-			size_t GetNextOffset()   const noexcept(!IS_DEBUG) { return m_offset + m_GetTypeSize(m_type); }
-			size_t GetType()	     const noexcept { return m_type; }
-			size_t GetSize()	     const noexcept(!IS_DEBUG) { return m_GetTypeSize(m_type); }
+			size_t GetOffset() const;
+			size_t GetNextOffset() const noexcept(!IS_DEBUG);
+			size_t GetType() const noexcept;
+			size_t GetSize() const noexcept(!IS_DEBUG);
 
-			D3D11_INPUT_ELEMENT_DESC GetDirectXLayout() const noexcept(!IS_DEBUG)
-			{
-				#define STATEMENT(vertexComponent, additionalComponent) \
-					case vertexComponent: \
-					{ \
-						return GenerateElementDesc<vertexComponent>(GetOffset()); \
-					}
+			D3D11_INPUT_ELEMENT_DESC GetDirectXLayout() const noexcept(!IS_DEBUG);
 
-				switch (m_type)
-				{
-					FOR_ALL_VERTEX_ELEMENTS(void);
-					#undef STATEMENT
-				}
-
-				assert("invalid element type" && false);
-				return { "INVALID", 0, DXGI_FORMAT_UNKNOWN, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
-			}
-
-			const char* GetCode() const noexcept
-			{
-				return GetVertexComponentVarible<ComponentGrabberType::GetCode>::Get(m_type);
-			}
+			const char* GetCode() const noexcept;
 
 		private:
 			template<VertexComponent type>
@@ -244,10 +225,7 @@ namespace DynamicVertex
 			}
 
 
-			static constexpr size_t m_GetTypeSize(VertexComponent type) noexcept(!IS_DEBUG)
-			{
-				return GetVertexComponentVarible<ComponentGrabberType::GetSize>::Get(type);
-			}
+			static constexpr size_t m_GetTypeSize(VertexComponent type) noexcept(!IS_DEBUG);
 
 		private:
 			VertexComponent m_type;
@@ -265,52 +243,19 @@ namespace DynamicVertex
 			return m_elements.front();
 		}
 
-		const Element& GetByIndex(size_t i) const noexcept(!IS_DEBUG)
-		{
-			return m_elements.at(i);
-		}
+		const Element& GetByIndex(size_t i) const noexcept(!IS_DEBUG);
 
-		VertexLayout& Append(VertexComponent type) noexcept(!IS_DEBUG)
-		{
-			m_elements.emplace_back(type, GetByteSize());
-			return *this;
-		}
+		VertexLayout& Append(VertexComponent type) noexcept(!IS_DEBUG);
 
-		size_t GetByteSize() const noexcept(!IS_DEBUG)
-		{
-			return m_elements.empty() ? 0 : m_elements.back().GetNextOffset();
-		}
+		size_t GetByteSize() const noexcept(!IS_DEBUG);
 
-		size_t GetStructureSize() const noexcept(!IS_DEBUG)
-		{
-			return GetByteSize() / GetElementCount();
-		}
+		size_t GetStructureSize() const noexcept(!IS_DEBUG);
 
-		size_t GetElementCount() const noexcept
-		{
-			return m_elements.size();
-		}
+		size_t GetElementCount() const noexcept;
 
-		std::vector<D3D11_INPUT_ELEMENT_DESC> GetDirectXLayout() const noexcept(!IS_DEBUG)
-		{
-			std::vector<D3D11_INPUT_ELEMENT_DESC> result;
-			result.reserve(GetElementCount());
+		std::vector<D3D11_INPUT_ELEMENT_DESC> GetDirectXLayout() const noexcept(!IS_DEBUG);
 
-			for (auto& element : m_elements)
-				result.push_back(element.GetDirectXLayout());
-
-			return result;
-		}
-
-		std::string GetUID() const
-		{
-			std::string result = {};
-
-			for (auto& element : m_elements)
-				result += element.GetCode();
-
-			return result;
-		}
+		std::string GetUID() const;
 
 	private:
 		std::vector<Element> m_elements;
@@ -323,11 +268,7 @@ namespace DynamicVertex
 		friend class VertexBuffer;
 
 	protected:
-		Vertex(char* pData, const VertexLayout& layout)
-			: m_pData(pData), m_layout(layout)
-		{
-			assert(m_pData != nullptr);
-		}
+		Vertex(char* pData, const VertexLayout& layout);
 
 	public:
 		template<VertexLayout::VertexComponent type>
@@ -393,8 +334,7 @@ namespace DynamicVertex
 	class ConstVertex
 	{
 	public:
-		ConstVertex(const Vertex& vertex) noexcept(!IS_DEBUG)
-			:m_vertex(vertex) {}
+		ConstVertex(const Vertex& vertex) noexcept(!IS_DEBUG);
 
 	public:
 		template<VertexLayout::VertexComponent type>
@@ -410,45 +350,23 @@ namespace DynamicVertex
 	class VertexBuffer
 	{
 	public:
-		VertexBuffer(VertexLayout layout) noexcept(!IS_DEBUG)
-			: m_layout(std::move(layout)) {}
+		VertexBuffer(VertexLayout layout) noexcept(!IS_DEBUG);
 
 	public:
-		const char* GetConstData() const noexcept(!IS_DEBUG)
-		{
-			return m_buffer.data();
-		}
-		char* GetData() noexcept(!IS_DEBUG)
-		{
-			return m_buffer.data();
-		}
+		const char* GetConstData() const noexcept(!IS_DEBUG);
 
-		const VertexLayout& GetLayout() const noexcept
-		{
-			return m_layout;
-		}
+		char* GetData() noexcept(!IS_DEBUG);
+
+		const VertexLayout& GetLayout() const noexcept;
 
 		//size in vertices
-		size_t GetSize() const noexcept(!IS_DEBUG)
-		{
-			return m_buffer.size() / m_layout.GetByteSize();
-		}
+		size_t GetSize() const noexcept(!IS_DEBUG);
 
 		//size in bytes
-		size_t GetBytesSize() const noexcept(!IS_DEBUG)
-		{
-			return m_buffer.size();
-		}
+		size_t GetBytesSize() const noexcept(!IS_DEBUG);
 
 		// might be unsafe
-		void Emplace_Back_Empty(size_t numberOfVertices) noexcept(!IS_DEBUG)
-		{
-			const size_t layoutSize = m_layout.GetByteSize();
-			const size_t addedSize = layoutSize * numberOfVertices;
-
-			m_buffer.resize(m_buffer.size() + addedSize);
-			memset(static_cast<void*>((m_buffer.data() + m_buffer.size()) - addedSize), '\0', addedSize);
-		}
+		void Emplace_Back_Empty(size_t numberOfVertices) noexcept(!IS_DEBUG);
 
 		template<class ...Params>
 		void Emplace_Back(Params&&... params) noexcept(!IS_DEBUG)
@@ -458,83 +376,25 @@ namespace DynamicVertex
 			this->Back().SetAttributeByIndex(0, std::forward<Params>(params)...);
 		}
 
-		void MakeFromMesh(const aiMesh& mesh)
-		{
-			size_t numberOfVertices = mesh.mNumVertices;
+		void MakeFromMesh(const aiMesh& mesh);
 
-			this->Emplace_Back_Empty(numberOfVertices);
+		void SetScale(float scale);
 
-			for (size_t i = 0; i < numberOfVertices; i++)
-			{
-				size_t currentElementIndex = 0;
-				for (const auto& element : m_layout.m_elements)
-				{
-					#define STATEMENT(vertexComponent, additionalComponent) \
-					case vertexComponent:	\
-					{	\
-						(*this)[i].SetAttribute<vertexComponent>(	\
-							this->GetData() + this->GetLayout().GetByteSize() * i + this->GetLayout().GetByIndex(currentElementIndex).GetOffset(),	\
-							::DynamicVertex::VertexLayout::Map<vertexComponent>::GetData(mesh, i, vertexScale)	\
-						);	\
-						break;	\
-					}
-
-					switch (element.GetType())
-					{
-					
-						FOR_ALL_VERTEX_ELEMENTS(void);
-						#undef STATEMENT
-					}
-					currentElementIndex++;
-				}
-			}
-		}
-
-		void SetScale(float scale)
-		{
-			vertexScale = scale;
-		}
 
 		//Vertex stuff
-		Vertex Back() noexcept(!IS_DEBUG)
-		{
-			assert(m_buffer.size() != 0);
-			return Vertex{
-				m_buffer.data() + m_buffer.size() - m_layout.GetByteSize(),
-				m_layout
-			};
-		}
+		Vertex Back() noexcept(!IS_DEBUG);
 
-		Vertex Front() noexcept(!IS_DEBUG)
-		{
-			assert(m_buffer.size() / m_layout.GetByteSize() != 0);
-			return Vertex{
-				m_buffer.data(),
-				m_layout
-			};
-		}
+		Vertex Front() noexcept(!IS_DEBUG);
 
-		Vertex operator[](size_t i) noexcept(!IS_DEBUG)
-		{
-			assert(i < m_buffer.size() / m_layout.GetByteSize());
-			return Vertex{ m_buffer.data() + (i * m_layout.GetByteSize()) , m_layout };
-		}
+		Vertex operator[](size_t i) noexcept(!IS_DEBUG);
+
 
 		//Const Vertex Stuff
-		ConstVertex Back() const noexcept(!IS_DEBUG)
-		{
-			return const_cast<VertexBuffer*>(this)->Back();
-		}
+		ConstVertex Back() const noexcept(!IS_DEBUG);
 
-		ConstVertex Front() const noexcept(!IS_DEBUG)
-		{
-			return const_cast<VertexBuffer*>(this)->Front();
-		}
+		ConstVertex Front() const noexcept(!IS_DEBUG);
 
-		ConstVertex operator[](size_t i) const noexcept(!IS_DEBUG)
-		{
-			return const_cast<VertexBuffer&>(*this)[i];
-		}
+		ConstVertex operator[](size_t i) const noexcept(!IS_DEBUG);
 
 	private:
 		std::vector<char> m_buffer;

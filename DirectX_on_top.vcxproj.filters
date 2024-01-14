@@ -162,9 +162,6 @@
     <ClInclude Include="ImguiManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CameraView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -204,7 +201,7 @@
     <ClInclude Include="DynamicConstantBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthStencil.h">
+    <ClInclude Include="DepthStencilState.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="SceneObject.h">
@@ -228,6 +225,21 @@
     <ClInclude Include="NullPixelShader.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="DepthStencilView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FullscreenFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -250,9 +262,6 @@
     </ClCompile>
     <ClCompile Include="Graphics.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bindable.cpp">
-      <Filter>Source Files\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source Files\Bindable</Filter>
@@ -362,6 +371,24 @@
     <ClCompile Include="NullPixelShader.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="DepthStencilView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformConstBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FullscreenFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -441,6 +468,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Outline.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Fullscreen.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Fullscreen_NegativeColors.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

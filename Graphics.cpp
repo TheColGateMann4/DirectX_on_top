@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "DepthStencilView.h"
 #include "ErrorMacros.h"
 
 #include <d3dcompiler.h>
@@ -12,7 +13,7 @@
 #include "imgui/backend/imgui_impl_win32.h";
 
 
-VOID GFX::Initialize(HWND hWnd)
+void GFX::Initialize(HWND hWnd)
 {
 	DXGI_SWAP_CHAIN_DESC scDesc = {};
 	scDesc.BufferDesc.Width = 0;
@@ -54,6 +55,8 @@ VOID GFX::Initialize(HWND hWnd)
 
 	));
 
+
+
 	Microsoft::WRL::ComPtr<ID3D11Resource> pBackBuffer;
 
 	THROW_GFX_IF_FAILED(pSwapChain->GetBuffer(
@@ -69,41 +72,7 @@ VOID GFX::Initialize(HWND hWnd)
 			&pTargetView
 		));
 
-	D3D11_DEPTH_STENCIL_DESC depthStencilDecs = {};
-	depthStencilDecs.DepthEnable = TRUE;
-	depthStencilDecs.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDecs.DepthFunc = D3D11_COMPARISON_LESS;
 
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> pDepthState;
-
-	THROW_GFX_IF_FAILED(pDevice->CreateDepthStencilState(&depthStencilDecs, &pDepthState));
-
-	pDeviceContext->OMSetDepthStencilState(pDepthState.Get(), 1);
-
-
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
-
-	D3D11_TEXTURE2D_DESC depthDecs = {};
-	depthDecs.Width = this->m_width;
-	depthDecs.Height = this->m_height;
-	depthDecs.MipLevels = 1;
-	depthDecs.ArraySize = 1;
-	depthDecs.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthDecs.SampleDesc.Count = 1;
-	depthDecs.SampleDesc.Quality = 0;
-	depthDecs.Usage = D3D11_USAGE_DEFAULT;
-	depthDecs.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-	THROW_GFX_IF_FAILED(pDevice->CreateTexture2D(&depthDecs, NULL, &pDepthStencil));
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDecs = {};
-	depthStencilViewDecs.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDecs.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDecs.Texture2D.MipSlice = 0;
-
-	THROW_GFX_IF_FAILED(pDevice->CreateDepthStencilView(pDepthStencil.Get(), &depthStencilViewDecs, &pDepthStencilView));
-
-	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), pDepthStencilView.Get());
 
 	D3D11_VIEWPORT viewPort = {};
 	viewPort.Width = this->m_width;
@@ -118,13 +87,13 @@ VOID GFX::Initialize(HWND hWnd)
 	ImGui_ImplDX11_Init(pDevice.Get(), pDeviceContext.Get());
 }
 
-VOID GFX::SetResolution(UINT32 width, UINT32 height)
+void GFX::SetResolution(UINT32 width, UINT32 height)
 {
 	this->m_width = width;
 	this->m_height = height;
 }
 
-VOID GFX::BeginFrame(DirectX::XMFLOAT4 color_)
+void GFX::BeginFrame(DirectX::XMFLOAT4 color)
 {
 	//imgui
 	if (this->m_imgui_enabled)
@@ -135,10 +104,10 @@ VOID GFX::BeginFrame(DirectX::XMFLOAT4 color_)
 	}
 
 	//DirectX
-	this->ClearBuffer(color_);
+	this->ClearBuffer(color);
 }
 
-VOID GFX::FinishFrame()
+void GFX::FinishFrame()
 {
 	if (this->m_imgui_enabled)
 	{
@@ -166,24 +135,32 @@ VOID GFX::FinishFrame()
 	}
 }
 
-VOID GFX::ClearBuffer(DirectX::XMFLOAT4 color_)
+void GFX::ClearBuffer(DirectX::XMFLOAT4 color)
 {
-	const FLOAT color[] = { color_.x, color_.y, color_.z, color_.w };
-	pDeviceContext->ClearRenderTargetView(pTargetView.Get(), color);
-	pDeviceContext->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	pDeviceContext->ClearRenderTargetView(pTargetView.Get(), &color.x);
 }
 
-VOID GFX::ShowImGUI(bool show)
+void GFX::BindSwapBuffer() const noexcept
+{
+	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), nullptr);
+}
+
+void GFX::BindSwapBuffer(const class DepthStencilView& depthStencilView) const noexcept
+{
+	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), depthStencilView.pDepthStencilView.Get());
+}
+
+void GFX::ShowImGUI(bool show)
 {
 	this->m_imgui_enabled = show;
 }
 
-BOOL GFX::isImGUIVisible()
+BOOL GFX::isImGUIVisible() const
 {
 	return this->m_imgui_enabled;
 }
 
-VOID GFX::DrawIndexed(UINT32 count)
+void GFX::DrawIndexed(UINT32 count)
 {
 	THROW_INFO_EXCEPTION
 	(
