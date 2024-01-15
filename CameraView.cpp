@@ -105,7 +105,7 @@ std::string CameraView::SpawnControlWindow(int &blurStrength)
 			ImGui::EndCombo();
 		}
 
-		if (currentFilter == "Blur")
+		if (currentFilter == "Blur" || currentFilter == "Outline")
 		{
 			int temp = currentStrength;
 			ImGui::SliderInt("Strength", &currentStrength, 1, 50);

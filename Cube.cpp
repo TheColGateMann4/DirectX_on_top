@@ -80,26 +80,8 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 			RenderSteps maskStep(PASS_MASK, "mask");
 
 
-			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS_Outline.cso");
+			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
 			ID3DBlob* pBlob = pVertexShader->GetByteCode();
-
-
-			DynamicConstantBuffer::BufferLayout vertexBufferLayout;
-
-
-			DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo scaleFactorInfo = {};
-			scaleFactorInfo.v_min = 1.001f;
-			scaleFactorInfo.v_max = 2.0f;
-
-			vertexBufferLayout.Add<DynamicConstantBuffer::DataType::Float>("scaleFactor", &scaleFactorInfo);
-
-
-			DynamicConstantBuffer::BufferData vertexBufferData(std::move(vertexBufferLayout));
-			*vertexBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("scaleFactor") = 1.05f;
-
-
-			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, vertexBufferData, 1, false));
-
 
 			DynamicConstantBuffer::BufferLayout PixelbufferLayout;
 			PixelbufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");

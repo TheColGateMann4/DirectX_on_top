@@ -7,34 +7,45 @@
 FullscreenFilter::FullscreenFilter(GFX& gfx)
 {
 	DynamicVertex::VertexLayout vertexLayout;
-	vertexLayout.Append(DynamicVertex::VertexLayout::Position2D);
+	{
+		vertexLayout.Append(DynamicVertex::VertexLayout::Position2D);
 
-	DynamicVertex::VertexBuffer vertexBuffer(std::move(vertexLayout));
-	vertexBuffer.Emplace_Back(DirectX::XMFLOAT2{ -1.0f, 1.0f });
-	vertexBuffer.Emplace_Back(DirectX::XMFLOAT2{ 1.0f, 1.0f });
-	vertexBuffer.Emplace_Back(DirectX::XMFLOAT2{ -1.0f, -1.0f });
-	vertexBuffer.Emplace_Back(DirectX::XMFLOAT2{ 1.0f, -1.0f });
+		DynamicVertex::VertexBuffer vertexBuffer(vertexLayout);
+		vertexBuffer.Emplace_Back(DirectX::XMFLOAT2{ -1.0f, 1.0f });
+		vertexBuffer.Emplace_Back(DirectX::XMFLOAT2{ 1.0f, 1.0f });
+		vertexBuffer.Emplace_Back(DirectX::XMFLOAT2{ -1.0f, -1.0f });
+		vertexBuffer.Emplace_Back(DirectX::XMFLOAT2{ 1.0f, -1.0f });
 
-	std::vector<UINT32> indices = { 0,1,2,1,3,2 };
+		m_bindables.push_back(VertexBuffer::GetBindable(gfx, "FullScreen", vertexBuffer));
+	}
 
-	DynamicConstantBuffer::BufferLayout constBufferLayout;
-	constBufferLayout.Add<DynamicConstantBuffer::DataType::Int>("strength");
+	{
+		std::vector<UINT32> indices = { 0,1,2,1,3,2 };
 
-	DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
-	*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 3;
-
-	m_bindables.push_back(VertexBuffer::GetBindable(gfx, "FullScreen", vertexBuffer));
-	m_bindables.push_back(IndexBuffer::GetBindable(gfx, "FullScreen", indices));
+		m_bindables.push_back(IndexBuffer::GetBindable(gfx, "FullScreen", indices));
+	}
 
 	pIndexBuffer = dynamic_cast<IndexBuffer*>(m_bindables.back().get());
+
+	{
+		DynamicConstantBuffer::BufferLayout constBufferLayout;
+		constBufferLayout.Add<DynamicConstantBuffer::DataType::Int>("strength");
+
+		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
+		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 3;
+
+		m_bindables.push_back(std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true));
+	}
+
 
 	m_bindables.push_back(VertexShader::GetBindable(gfx, "VS_FullScreen.cso"));
 
 	VertexShader* pVertexShader = dynamic_cast<VertexShader*>(m_bindables.back().get());
 
 	m_bindables.push_back(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
-	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout().GetDirectXLayout(), pVertexShader->GetByteCode()));
-	m_bindables.push_back(std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true));
+	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader->GetByteCode()));
+	m_bindables.push_back(SamplerState::GetBindable(gfx, false, true));
+	m_bindables.push_back(BlendState::GetBindable(gfx, true));
 }
 
 void FullscreenFilter::ChangePixelShader(GFX& gfx, std::string ShaderName)
@@ -50,7 +61,7 @@ void FullscreenFilter::ChangePixelShader(GFX& gfx, std::string ShaderName)
 
 void FullscreenFilter::ChangeBlurStrength(GFX& gfx, int strength)
 {
-	if (currentShaderName != "Blur")
+	if (currentShaderName != "Blur" && currentShaderName != "Outline")
 		return;
 
 	for (size_t i = 0; i < m_bindables.size(); i++)

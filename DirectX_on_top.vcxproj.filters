@@ -485,6 +485,9 @@
     <FxCompile Include="PS_Fullscreen_Normal.hlsl">
       <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
+    <FxCompile Include="PS_Fullscreen_Outline.hlsl">
+      <Filter>Shader\FullscreenFilters</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="PointLightConstBuffer.hlsli">
