@@ -13,6 +13,7 @@ public:
 
 public:
 	void ChangeScreenFilter(GFX& gfx, std::string ShaderName);
+	void ChangeBlurStrength(GFX& gfx, int strength);
 
 public:
 	void Render(GFX& gfx);

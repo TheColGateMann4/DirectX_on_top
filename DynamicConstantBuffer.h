@@ -10,12 +10,13 @@
 
 #define FOR_ALL_TYPES \
 	STATEMENT(Padding) \
+	STATEMENT(Int) \
 	STATEMENT(Float) \
 	STATEMENT(Float2) \
 	STATEMENT(Float3) \
 	STATEMENT(Float4) \
 	STATEMENT(Matrix) \
-	STATEMENT(Bool)
+	STATEMENT(Bool) 
 
 
 namespace DynamicConstantBuffer
@@ -46,6 +47,13 @@ namespace DynamicConstantBuffer
 		static constexpr bool valid = true;
 		static constexpr size_t hlslsize = sizeof(type);
 		static constexpr const char* code = "PD";
+	};
+	template<> struct DataTypeMap<DataType::Int>
+	{
+		using type = int;
+		static constexpr bool valid = true;
+		static constexpr size_t hlslsize = sizeof(type);
+		static constexpr const char* code = "IN";
 	};
 	template<> struct DataTypeMap<DataType::Float>
 	{

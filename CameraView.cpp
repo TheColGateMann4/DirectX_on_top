@@ -66,7 +66,7 @@ void CameraView::Reset()
 	m_position = { 0.0f, 3.0f, -12.0f };
 	m_view = {};
 }
-std::string CameraView::SpawnControlWindow()
+std::string CameraView::SpawnControlWindow(int &blurStrength)
 {
 	bool changedFilter = false;
 
@@ -103,6 +103,15 @@ std::string CameraView::SpawnControlWindow()
 			}
 
 			ImGui::EndCombo();
+		}
+
+		if (currentFilter == "Blur")
+		{
+			int temp = currentStrength;
+			ImGui::SliderInt("Strength", &currentStrength, 1, 50);
+
+			if (currentStrength != temp)
+				blurStrength = currentStrength;
 		}
 	}
 	ImGui::End();

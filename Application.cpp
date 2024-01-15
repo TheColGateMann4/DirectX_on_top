@@ -160,10 +160,14 @@ void Application::DoFrame()
 		window.ShowCursor(cursorShowing);
 	}
 
-	std::string fullscreenFilerName = window.Graphics.camera.SpawnControlWindow();
+	int blurStrength = 0;
+	std::string fullscreenFilerName = window.Graphics.camera.SpawnControlWindow(blurStrength);
 
 	if (!fullscreenFilerName.empty())
 		renderQueue.ChangeScreenFilter(window.Graphics, fullscreenFilerName);
+
+	if (blurStrength != 0)
+		renderQueue.ChangeBlurStrength(window.Graphics, blurStrength);
 
 	modelHierarchy.DrawModelHierarchy(timer.Get());
 

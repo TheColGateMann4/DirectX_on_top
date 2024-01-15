@@ -3,12 +3,13 @@
 
 #define FOR_ALL_TYPES \
 	STATEMENT(Padding) \
+	STATEMENT(Int) \
 	STATEMENT(Float) \
 	STATEMENT(Float2) \
 	STATEMENT(Float3) \
 	STATEMENT(Float4) \
 	STATEMENT(Matrix) \
-	STATEMENT(Bool)
+	STATEMENT(Bool) 
 
 DynamicConstantBuffer::BufferLayout::BufferLayout(const char* bufferIdentificator)
 {

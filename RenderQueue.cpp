@@ -14,6 +14,11 @@ void RenderQueue::ChangeScreenFilter(GFX& gfx, std::string ShaderName)
 	m_fullscreenfilter.ChangePixelShader(gfx, ShaderName);
 }
 
+void RenderQueue::ChangeBlurStrength(GFX& gfx, int strength)
+{
+	m_fullscreenfilter.ChangeBlurStrength(gfx, strength);
+}
+
 void RenderQueue::Render(GFX& gfx)
 {
 	m_depthStencilView.Clear(gfx);
@@ -35,7 +40,7 @@ void RenderQueue::Render(GFX& gfx)
 	m_passes.at(PASS_MASK).Execute(gfx);
 
 	gfx.BindSwapBuffer();
-	SamplerState::GetBindable(gfx, true, true)->Bind(gfx);
+	SamplerState::GetBindable(gfx, false, true)->Bind(gfx);
 	m_renderTarget.BindTexture(gfx, 0);
 	m_fullscreenfilter.Render(gfx);
 }

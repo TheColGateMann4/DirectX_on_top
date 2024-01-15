@@ -22,12 +22,13 @@ private:
 
 public:
 	void Reset();
-	std::string SpawnControlWindow();
+	std::string SpawnControlWindow(int &blurStrength);
 
 private:
 	float WrapAngle(float angle, float value);
 
 private:
+	int currentStrength = 3;
 	std::vector<std::string> filterOptions = { "Normal", "NegativeColors", "Blur" };
 	std::string currentFilter;
 	DirectX::XMFLOAT3 m_position = { -37.5f, 7.0f, 1.0f };
