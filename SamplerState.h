@@ -5,33 +5,34 @@
 class SamplerState : public Bindable
 {
 public:
-	SamplerState(GFX& gfx, D3D11_TEXTURE_ADDRESS_MODE mode);
+	SamplerState(GFX& gfx, bool anisotropicFiltering, bool mirror = false);
 	void Bind(GFX& gfx) noexcept override;
 
 public:
-	static std::shared_ptr<SamplerState> GetBindable(GFX& gfx, D3D11_TEXTURE_ADDRESS_MODE mode)
+	static std::shared_ptr<SamplerState> GetBindable(GFX& gfx, bool anisotropicFiltering, bool mirror)
 	{
-		return BindableList::GetBindable<SamplerState>(gfx, mode);
+		return BindableList::GetBindable<SamplerState>(gfx, anisotropicFiltering, mirror);
 	}
 
 	std::string GetLocalUID() const noexcept override
 	{
-		return GenerateUID(m_mode);
+		return GenerateUID(m_anisotropicFiltering, m_mirror);
 	};
 
-	static std::string GetStaticUID(D3D11_TEXTURE_ADDRESS_MODE mode) noexcept
+	static std::string GetStaticUID(bool anisotropicFiltering, bool mirror) noexcept
 	{
-		return GenerateUID(mode);
+		return GenerateUID(anisotropicFiltering, mirror);
 	};
 
 private:
-	static std::string GenerateUID(D3D11_TEXTURE_ADDRESS_MODE mode)
+	static std::string GenerateUID(bool anisotropicFiltering, bool mirror)
 	{
-		return std::to_string(mode);
+		return std::string{} + char(anisotropicFiltering + '0') + char(mirror + '0');
 	}
 
 protected:
-	D3D11_TEXTURE_ADDRESS_MODE m_mode;
+	bool m_anisotropicFiltering;
+	bool m_mirror;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> pSamplerState;
 };
 

@@ -15,7 +15,7 @@ void CameraView::SetProjection(DirectX::XMMATRIX projection)
 	m_projection = projection;
 }
 
-DirectX::XMMATRIX CameraView::GetCamera()
+DirectX::XMMATRIX CameraView::GetCamera() const
 {
 	const DirectX::XMVECTOR forwardVector = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	const DirectX::XMVECTOR upwardsVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -29,7 +29,7 @@ DirectX::XMMATRIX CameraView::GetCamera()
 	return DirectX::XMMatrixLookAtLH(cameraPosition, lookPosition, upwardsVector);
 }
 
-DirectX::XMMATRIX CameraView::GetProjection()
+DirectX::XMMATRIX CameraView::GetProjection() const
 {
 	return m_projection;
 }
@@ -79,7 +79,7 @@ std::string CameraView::SpawnControlWindow()
 
 		ImGui::Text("Orientatione");
 		ImGui::SliderAngle("camera Yaw", &m_view.x, -180.0f, 180.0f, "%.1f");
-		ImGui::SliderAngle("camera Pitch", &m_view.y, 0.995 * -90.0f, 0.995 * 90.0f, "%.1f");
+		ImGui::SliderAngle("camera Pitch", &m_view.y, 0.995f * -90.0f, 0.995f * 90.0f, "%.1f");
 		ImGui::SliderAngle("camera Roll", &m_view.z, -180.0f, 180.0f, "%.1f");
 
 		if (ImGui::Button("Reset"))
@@ -98,7 +98,7 @@ std::string CameraView::SpawnControlWindow()
 					currentFilter = filterOptions[i];
 				}
 
-				if (is_selected)	
+				if (is_selected)
 					ImGui::SetItemDefaultFocus();
 			}
 

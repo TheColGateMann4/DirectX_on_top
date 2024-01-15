@@ -10,7 +10,7 @@ class RenderTechnique
 	friend class Shape;
 
 public:
-	RenderTechnique(std::string name, bool active = true)
+	RenderTechnique(const char* name, bool active = true)
 		:
 		m_name(name),
 		m_active(active)
@@ -68,7 +68,7 @@ public:
 
 private:
 	std::vector<RenderSteps> m_steps = {};
-	std::string m_name;
+	const char* m_name;
 	bool m_active = true;
 };
 

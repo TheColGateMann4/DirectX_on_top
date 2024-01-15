@@ -19,6 +19,7 @@ void RenderQueue::Render(GFX& gfx)
 	m_depthStencilView.Clear(gfx);
 	m_renderTarget.BindRenderTarget(gfx, m_depthStencilView);
 
+	SamplerState::GetBindable(gfx, true, false)->Bind(gfx);
 	DepthStencilState::GetBindable(gfx, DepthStencilState::Off)->Bind(gfx);
 
 	m_passes.at(PASS_NORMAL).Execute(gfx);
@@ -34,6 +35,7 @@ void RenderQueue::Render(GFX& gfx)
 	m_passes.at(PASS_MASK).Execute(gfx);
 
 	gfx.BindSwapBuffer();
+	SamplerState::GetBindable(gfx, true, true)->Bind(gfx);
 	m_renderTarget.BindTexture(gfx, 0);
 	m_fullscreenfilter.Render(gfx);
 }

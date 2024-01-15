@@ -37,10 +37,6 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), pBlob));
 
-			normalStep.AddBindable(BlendState::GetBindable(gfx, false));
-
-			normalStep.AddBindable(RasterizerState::GetBindable(gfx, false));
-
 			normalTechnique.AddRenderStep(normalStep);
 		}
 

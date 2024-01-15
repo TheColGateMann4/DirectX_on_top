@@ -16,15 +16,16 @@ float4 main(float2 texturePos : TEXCOORD, float4 position : SV_POSITION) : SV_TA
 		for(int j = 0; j < 3; j++)
 		{
 			const float2 offset = float2(-1.0f + 1.0f * i, -1.0f + 1.0f * j);
-			float multipler = 0.0625f;			
+			float multipler = 0.0625f;
 
 			if(offset.x == 0 && offset.y == 0)
 				multipler = 0.250f;
 			else if(offset.x == 0 || offset.y == 0)
-				multipler = 0.125f;
-			
+				multipler = 0.125f;						
+
 			const float2 texturePosition = texturePos + widthDifference * offset;
 			const float4 textureSample = t_texture.Sample(s_sampler, texturePosition);
+
 			result += textureSample * multipler;
 		}
 	}

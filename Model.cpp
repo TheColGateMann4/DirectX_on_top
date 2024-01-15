@@ -168,7 +168,6 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 		if (hasSpecularMap || hasDiffuseMap || hasNormalMap)
 		{
-			normalMeshBindables.push_back(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
 			vertexShaderName += "_Texture_Normals";
 		}
 		else
@@ -288,7 +287,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			*vertexBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("scaleFactor") = 1.05f;
 
 
-			maskStep.AddBindable(CachedBuffer::GetBindable(gfx, vertexBufferData, 1, false));
+			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, vertexBufferData, 1, false));
 
 
 			DynamicConstantBuffer::BufferLayout PixelbufferLayout;

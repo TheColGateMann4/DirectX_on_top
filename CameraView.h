@@ -10,8 +10,8 @@ public:
 	void SetProjection(DirectX::XMMATRIX projection);
 
 public:
-	DirectX::XMMATRIX GetCamera();
-	DirectX::XMMATRIX GetProjection();
+	DirectX::XMMATRIX GetCamera() const;
+	DirectX::XMMATRIX GetProjection() const;
 
 public:
 	void Move(DirectX::XMFLOAT3 moveoffset);

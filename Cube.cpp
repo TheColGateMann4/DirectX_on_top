@@ -61,8 +61,6 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pBlob));
 
-			normalStep.AddBindable(SamplerState::GetBindable(gfx, D3D11_TEXTURE_ADDRESS_WRAP));
-
 			normalTechnique.AddRenderStep(normalStep);
 		}
 
@@ -100,7 +98,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 			*vertexBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("scaleFactor") = 1.05f;
 
 
-			maskStep.AddBindable(CachedBuffer::GetBindable(gfx, vertexBufferData, 1, false));
+			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, vertexBufferData, 1, false));
 
 
 			DynamicConstantBuffer::BufferLayout PixelbufferLayout;
