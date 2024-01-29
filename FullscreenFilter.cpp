@@ -5,6 +5,8 @@
 #include "Graphics.h"
 
 FullscreenFilter::FullscreenFilter(GFX& gfx)
+	:
+	m_gaussFilter(gfx, 7, 2.6f)
 {
 	DynamicVertex::VertexLayout vertexLayout;
 	{
@@ -26,17 +28,6 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 	}
 
 	pIndexBuffer = dynamic_cast<IndexBuffer*>(m_bindables.back().get());
-
-	{
-		DynamicConstantBuffer::BufferLayout constBufferLayout;
-		constBufferLayout.Add<DynamicConstantBuffer::DataType::Int>("strength");
-
-		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
-		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 3;
-
-		m_bindables.push_back(std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true));
-	}
-
 
 	m_bindables.push_back(VertexShader::GetBindable(gfx, "VS_FullScreen.cso"));
 
@@ -74,10 +65,23 @@ void FullscreenFilter::ChangeBlurStrength(GFX& gfx, int strength)
 		}
 }
 
-void FullscreenFilter::Render(GFX& gfx) const noexcept
+void FullscreenFilter::Bind(GFX& gfx) const noexcept
 {
 	for (const auto& bindable : m_bindables)
 		bindable->Bind(gfx);
+}
 
+void FullscreenFilter::Draw(GFX& gfx) const noexcept
+{
 	gfx.DrawIndexed(pIndexBuffer->GetCount());
+}
+
+void FullscreenFilter::BindGaussBlur(class GFX& gfx)
+{
+	m_gaussFilter.Bind(gfx);
+}
+
+GaussBlurFilter* FullscreenFilter::GetGuassBlurFilter()
+{
+	return &m_gaussFilter;
 }

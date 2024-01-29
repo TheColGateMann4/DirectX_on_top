@@ -5,45 +5,77 @@
 RenderQueue::RenderQueue(GFX& gfx)
 	:
 	m_depthStencilView(gfx),
-	m_renderTarget(gfx),
-	m_fullscreenfilter(gfx)
+	m_renderTargetHorizontal(gfx),
+	m_renderTargetVertical(gfx),
+	fullscreenfilter(gfx)
 {}
 
 void RenderQueue::ChangeScreenFilter(GFX& gfx, std::string ShaderName)
 {
-	m_fullscreenfilter.ChangePixelShader(gfx, ShaderName);
+	fullscreenfilter.ChangePixelShader(gfx, ShaderName);
 }
 
 void RenderQueue::ChangeBlurStrength(GFX& gfx, int strength)
 {
-	m_fullscreenfilter.ChangeBlurStrength(gfx, strength);
+	fullscreenfilter.ChangeBlurStrength(gfx, strength);
 }
 
 void RenderQueue::Render(GFX& gfx)
 {
-	m_renderTarget.ClearBuffer(gfx, DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.0f });
-	m_depthStencilView.Clear(gfx);
-	gfx.BindSwapBuffer(m_depthStencilView);
-	BlendState::GetBindable(gfx, false)->Bind(gfx);
-	SamplerState::GetBindable(gfx, true, false)->Bind(gfx);
-	DepthStencilState::GetBindable(gfx, DepthStencilState::Off)->Bind(gfx);
+	if (fullscreenfilter.currentShaderName == "GaussBlur")
+	{
+		m_depthStencilView.Clear(gfx);
+		m_renderTargetVertical.ClearBuffer(gfx);
+		m_renderTargetHorizontal.ClearBuffer(gfx);
+		m_renderTargetHorizontal.BindRenderTarget(gfx, m_depthStencilView);
 
-	m_passes.at(PASS_NORMAL).Execute(gfx);
+		BlendState::GetBindable(gfx, false)->Bind(gfx);
+		SamplerState::GetBindable(gfx, true, false)->Bind(gfx);
+		DepthStencilState::GetBindable(gfx, DepthStencilState::Off)->Bind(gfx);
 
+		m_passes.at(PASS_NORMAL).Execute(gfx);
 
-	NullPixelShader::GetBindable(gfx)->Bind(gfx);
-	DepthStencilState::GetBindable(gfx, DepthStencilState::Write)->Bind(gfx);
+		m_renderTargetVertical.BindRenderTarget(gfx);
+		m_renderTargetHorizontal.BindTexture(gfx, 0);
 
-	m_passes.at(PASS_WRITE).Execute(gfx);
+		fullscreenfilter.Bind(gfx);
+		fullscreenfilter.BindGaussBlur(gfx);
+		fullscreenfilter.GetGuassBlurFilter()->SetHorizontal(gfx, true);
+		fullscreenfilter.Draw(gfx);
 
-	m_renderTarget.BindRenderTarget(gfx);
-	DepthStencilState::GetBindable(gfx, DepthStencilState::Mask)->Bind(gfx);
+		gfx.BindRenderTarget();
+		m_renderTargetVertical.BindTexture(gfx, 0);
+		fullscreenfilter.GetGuassBlurFilter()->SetHorizontal(gfx, false);
+		fullscreenfilter.Draw(gfx);
+	}
+	else
+	{
+		m_renderTargetHorizontal.ClearBuffer(gfx, DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.0f });
+		m_depthStencilView.Clear(gfx);
+		m_renderTargetHorizontal.BindRenderTarget(gfx, m_depthStencilView);
 
-	m_passes.at(PASS_MASK).Execute(gfx);
+		gfx.BindRenderTarget(m_depthStencilView);
+		BlendState::GetBindable(gfx, false)->Bind(gfx);
+		SamplerState::GetBindable(gfx, true, false)->Bind(gfx);
+		DepthStencilState::GetBindable(gfx, DepthStencilState::Off)->Bind(gfx);
 
-	gfx.BindSwapBuffer(m_depthStencilView);
-	m_renderTarget.BindTexture(gfx, 0);
-	m_fullscreenfilter.Render(gfx);
+		m_passes.at(PASS_NORMAL).Execute(gfx);
+		NullPixelShader::GetBindable(gfx)->Bind(gfx);
+		DepthStencilState::GetBindable(gfx, DepthStencilState::Write)->Bind(gfx);
+
+		m_passes.at(PASS_WRITE).Execute(gfx);
+
+		m_renderTargetHorizontal.BindRenderTarget(gfx);
+		DepthStencilState::GetBindable(gfx, DepthStencilState::Mask)->Bind(gfx);
+
+		m_passes.at(PASS_MASK).Execute(gfx);
+
+		SamplerState::GetBindable(gfx, false, true)->Bind(gfx);
+		gfx.BindRenderTarget(m_depthStencilView);
+		m_renderTargetHorizontal.BindTexture(gfx, 0);
+		fullscreenfilter.Bind(gfx);
+		fullscreenfilter.Draw(gfx);
+	}
 }
 
 void RenderQueue::AddRenderJob(const RenderJob& job, PASS_TYPE passType)

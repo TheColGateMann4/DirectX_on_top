@@ -161,7 +161,7 @@ void Application::DoFrame()
 	}
 
 	int blurStrength = 0;
-	std::string fullscreenFilerName = window.Graphics.camera.SpawnControlWindow(blurStrength);
+	std::string fullscreenFilerName = window.Graphics.camera.SpawnControlWindow(window.Graphics, blurStrength, renderQueue.fullscreenfilter.GetGuassBlurFilter());
 
 	if (!fullscreenFilerName.empty())
 		renderQueue.ChangeScreenFilter(window.Graphics, fullscreenFilerName);

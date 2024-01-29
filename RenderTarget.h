@@ -15,7 +15,7 @@ public:
 	void BindRenderTarget(GFX& gfx, class DepthStencilView& depthStencilView) const noexcept;
 	
 public:
-	void ClearBuffer(GFX& gfx, DirectX::XMFLOAT4 color) const noexcept;
+	void ClearBuffer(GFX& gfx, DirectX::XMFLOAT4 color = DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 0.0f}) const noexcept;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;

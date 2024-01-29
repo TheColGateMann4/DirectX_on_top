@@ -48,7 +48,23 @@ size_t DynamicConstantBuffer::BufferLayout::GetOffsetOfElement(const char* eleme
 		if(element.first == elementName)
 			return result;
 
-		result += GetElementSize(element.second->GetType());
+		result += GetElementSize(element.first.c_str());
+	}
+
+	assert(false && "could not have found element in buffer layout");
+	return 0;
+}
+
+size_t DynamicConstantBuffer::BufferLayout::GetIndexOfElement(const char* elementName) const
+{
+	size_t result = 0;
+
+	for (const auto& element : m_elements)
+	{
+		if (element.first == elementName)
+			return result;
+
+		result++;
 	}
 
 	assert(false && "could not have found element in buffer layout");
@@ -73,7 +89,7 @@ const DynamicConstantBuffer::BufferLayout& DynamicConstantBuffer::BufferLayout::
 			continue;
 		}
 
-		size_t elementSize = GetElementSize(m_elements.at(i).second->GetType());
+		size_t elementSize = GetElementSize(m_elements.at(i).first.c_str());
 
 		if (accumulatedSize + elementSize > 16 && accumulatedSize != 0)
 		{
@@ -146,23 +162,28 @@ size_t DynamicConstantBuffer::BufferLayout::GetLayoutSize(const DynamicConstantB
 			continue;
 
 
-		if (elementType == DynamicConstantBuffer::Struct)
-		{
-			const auto& structData = static_cast<DynamicConstantBuffer::AdditionalElements::StructData&>(*element.second->m_additionalData);
-			for (const auto& structElement : structData.data)
-				result += GetElementSize(structElement.second->GetType());
-		}
-		else if (elementType == DynamicConstantBuffer::Array)
-		{
-			const auto& arrayData = static_cast<DynamicConstantBuffer::AdditionalElements::ArrayData&>(*element.second->m_additionalData);
-			result += GetElementSize(arrayData.type) * arrayData.size;
-		}
-		else
-		{
-			result += GetElementSize(elementType);
-		}
+		result += layout.GetElementSize(element.first.c_str());
 	}
 	return result;
+}
+
+
+void DynamicConstantBuffer::BufferLayout::SetArrayAttributes(const char* arrayName, DynamicConstantBuffer::DataType type, size_t size)
+{
+	assert((type != Array && type != Empty && type != Struct) && "invalid array type tried to be set");
+
+	size_t elementIndex = GetIndexOfElement(arrayName);
+
+	LayoutElement* arrayElement = m_elements.at(elementIndex).second.get();
+
+	assert(arrayElement->GetType() == Array && "used SetArrayType() funtion on non array element");
+
+	 AdditionalElements::AdditionalDataBase* dataBase = arrayElement->m_additionalData.get();
+
+	AdditionalElements::ArrayData* arrayData = static_cast<AdditionalElements::ArrayData*>(dataBase);
+
+	arrayData->type = type;
+	arrayData->size = size;
 }
 
 
@@ -323,6 +344,29 @@ const DynamicConstantBuffer::LayoutElement* DynamicConstantBuffer::BufferLayout:
 }
 
 
+size_t DynamicConstantBuffer::BufferLayout::GetElementSize(const char* elementName) const
+{
+	LayoutElement* layoutElement = m_elements.at(GetIndexOfElement(elementName)).second.get();
+	DynamicConstantBuffer::DataType dataType = layoutElement->GetType();
+
+	if (dataType == DynamicConstantBuffer::DataType::Struct)
+	{
+		const auto& structData = static_cast<DynamicConstantBuffer::AdditionalElements::StructData&>(*layoutElement->m_additionalData);
+
+		size_t result = 0;
+		for (const auto& structElement : structData.data)
+			result += GetElementSize(structElement.second->GetType());
+		return result;
+	}
+	else if (dataType == DynamicConstantBuffer::DataType::Array)
+	{
+		const auto& arrayData = static_cast<DynamicConstantBuffer::AdditionalElements::ArrayData&>(*layoutElement->m_additionalData);
+		return GetElementSize(arrayData.type) * arrayData.size;
+	}
+	
+	return GetElementSize(dataType);
+}
+
 size_t DynamicConstantBuffer::BufferLayout::GetElementSize(DynamicConstantBuffer::DataType type)
 {
 #define STATEMENT(macro_element)	\
@@ -356,7 +400,7 @@ const char* DynamicConstantBuffer::BufferLayout::GetElementCode(DynamicConstantB
 	}
 #undef STATEMENT
 
-	static_assert("GetElementSize() could not match DataType with any known one");
+	static_assert("GetElementCode() could not match DataType with any known one");
 	return NULL;
 }
 
@@ -565,12 +609,7 @@ void DynamicConstantBuffer::BufferData::MakeFinished()
 	}
 }
 
-DynamicConstantBuffer::BufferLayout& DynamicConstantBuffer::BufferData::GetMutableLayout()
-{
-	return m_layout;
-}
-
-const DynamicConstantBuffer::BufferLayout& DynamicConstantBuffer::BufferData::GetConstLayout() const
+const DynamicConstantBuffer::BufferLayout& DynamicConstantBuffer::BufferData::GetLayout() const
 {
 	return m_layout;
 }
@@ -586,13 +625,13 @@ void DynamicConstantBuffer::BufferData::Update(const DynamicConstantBuffer::Buff
 #ifdef _DEBUG
 void DynamicConstantBuffer::BufferData::DebugLayout() const
 {
-	const auto& constLayout = GetConstLayout();
+	const auto& constLayout = GetLayout();
 	const auto& layoutVector = constLayout.GetVector();
 
 	for (const auto& layoutElement : layoutVector)
 	{
 		size_t elementOffset = constLayout.GetOffsetOfElement(layoutElement.first.c_str());
-		std::cout << "name: " << layoutElement.first << " offsets: " << elementOffset << " size: " << DynamicConstantBuffer::BufferLayout::GetElementSize(layoutElement.second->GetType()) << '\n';
+		std::cout << "name: " << layoutElement.first << " offsets: " << elementOffset << " size: " << m_layout.GetElementSize(layoutElement.first.c_str()) << '\n';
 	}
 }
 #else

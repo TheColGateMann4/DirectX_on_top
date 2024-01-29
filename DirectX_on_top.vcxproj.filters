@@ -243,6 +243,9 @@
     <ClInclude Include="FullscreenFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GaussBlurFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -392,6 +395,9 @@
     <ClCompile Include="FullscreenFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GaussBlurFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -473,7 +479,7 @@
     <FxCompile Include="VS_Outline.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Fullscreen_Blur.hlsl">
+    <FxCompile Include="PS_Fullscreen_GaussBlur.hlsl">
       <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_NegativeColors.hlsl">
@@ -486,6 +492,9 @@
       <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_Outline.hlsl">
+      <Filter>Shader\FullscreenFilters</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Fullscreen_Blur.hlsl">
       <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
   </ItemGroup>

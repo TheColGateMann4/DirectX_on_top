@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <random>
 #include <DirectXMath.h>
-
+#include "GaussBlurFilter.h"
 
 CameraView::CameraView()
 	:
@@ -66,7 +66,7 @@ void CameraView::Reset()
 	m_position = { 0.0f, 3.0f, -12.0f };
 	m_view = {};
 }
-std::string CameraView::SpawnControlWindow(int &blurStrength)
+std::string CameraView::SpawnControlWindow(class GFX& gfx, int& blurStrength, GaussBlurFilter* gaussFilter)
 {
 	bool changedFilter = false;
 
@@ -113,7 +113,12 @@ std::string CameraView::SpawnControlWindow(int &blurStrength)
 			if (currentStrength != temp)
 				blurStrength = currentStrength;
 		}
+		if (currentFilter == "GaussBlur")
+		{
+			gaussFilter->MakeImGuiPropeties(gfx);
+		}
 	}
+
 	ImGui::End();
 
 

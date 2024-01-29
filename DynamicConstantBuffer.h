@@ -147,6 +147,7 @@ namespace DynamicConstantBuffer
 
 	class LayoutElement
 	{
+		friend class BufferData;
 		friend class BufferLayout;
 	public:
 
@@ -198,6 +199,7 @@ namespace DynamicConstantBuffer
 
 	class BufferLayout
 	{
+		friend class BufferData;
 	public:
 		BufferLayout(const char* bufferIdentificator);
 
@@ -220,9 +222,13 @@ namespace DynamicConstantBuffer
 
 		size_t GetOffsetOfElement(const char* elementName) const;
 
+		size_t GetIndexOfElement(const char* elementName) const;
+
 		const BufferLayout& GetFinished(size_t* newSize = nullptr, std::vector<size_t>* addedSpacesOffsets = nullptr);
 
 		static size_t GetLayoutSize(const BufferLayout& layout);
+
+		void SetArrayAttributes(const char* arrayName, DataType type, size_t size);
 
 	public:
 		const auto& GetVector() const
@@ -242,6 +248,7 @@ namespace DynamicConstantBuffer
 		const LayoutElement* operator[] (const char* elementName) const noexcept;
 
 	public:
+		size_t GetElementSize(const char* elementName) const;
 		static size_t GetElementSize(DataType type);
 		static const char* GetElementCode(DataType type);
 
@@ -319,12 +326,28 @@ namespace DynamicConstantBuffer
 			return static_cast<DynamicConstantBuffer::DataTypeMap<type>::type*>(static_cast<void*>(static_cast<char*>(m_pDataBuffer) + m_layout.GetOffsetOfElement(elementName)));
 		}
 
+		template<DataType type>
+		void* GetArrayDataPointerValue(const char* arrayName, size_t arrayIndex)
+		{
+			size_t arrayIndexInLayout = m_layout.GetIndexOfElement(arrayName);
+			LayoutElement* layoutElement = m_layout.m_elements.at(arrayIndexInLayout).second.get();
+			DynamicConstantBuffer::AdditionalElements::ArrayData* arrayData = static_cast<DynamicConstantBuffer::AdditionalElements::ArrayData*>(layoutElement->m_additionalData.get());
+
+			assert(arrayIndex < arrayData->size && "tried to access item out of range");
+
+			size_t bytesOffsetOfElement = m_layout.GetOffsetOfElement(arrayName);
+			bytesOffsetOfElement += DynamicConstantBuffer::BufferLayout::GetElementSize(arrayData->type) * arrayIndex;
+
+			assert(bytesOffsetOfElement <= m_size);
+
+			return static_cast<void*>(static_cast<char*>(m_pDataBuffer) + bytesOffsetOfElement);
+		}
+
 	public:
 		void MakeFinished();
 
 	public:
-		BufferLayout& GetMutableLayout();
-		const BufferLayout& GetConstLayout() const;
+		const BufferLayout& GetLayout() const;
 
 	public:
 		template<DataType type>

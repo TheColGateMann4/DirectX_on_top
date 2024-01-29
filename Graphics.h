@@ -18,8 +18,8 @@ public:
 	void ClearBuffer(DirectX::XMFLOAT4 color);
 
 public:
-	void BindSwapBuffer() const noexcept;
-	void BindSwapBuffer(const class DepthStencilView& depthStencilView) const noexcept;
+	void BindRenderTarget() const noexcept;
+	void BindRenderTarget(const class DepthStencilView& depthStencilView) const noexcept;
 
 public:
 	void ShowImGUI(bool show);

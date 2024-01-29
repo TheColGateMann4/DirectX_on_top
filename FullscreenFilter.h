@@ -2,20 +2,28 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "GaussBlurFilter.h"
 
 class FullscreenFilter
 {
+	friend class RenderQueue;
 public:
 	FullscreenFilter(class GFX& gfx);
 
 	void ChangePixelShader(class GFX& gfx, std::string ShaderName);
-	void ChangeBlurStrength(GFX& gfx, int strength);
+	void ChangeBlurStrength(class GFX& gfx, int strength);
 
-	void Render(class GFX& gfx) const noexcept;
+	void Bind(class GFX& gfx) const noexcept;
+	void Draw(class GFX& gfx) const noexcept;
+
+	void BindGaussBlur(class GFX& gfx);
+
+	GaussBlurFilter* GetGuassBlurFilter();
 
 private:
 	std::string currentShaderName = "normal";
 	std::vector<std::shared_ptr<class Bindable>> m_bindables;
 	class IndexBuffer* pIndexBuffer = nullptr;
+	GaussBlurFilter m_gaussFilter;
 };
 

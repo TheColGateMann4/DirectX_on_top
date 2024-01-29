@@ -140,12 +140,12 @@ void GFX::ClearBuffer(DirectX::XMFLOAT4 color)
 	pDeviceContext->ClearRenderTargetView(pTargetView.Get(), &color.x);
 }
 
-void GFX::BindSwapBuffer() const noexcept
+void GFX::BindRenderTarget() const noexcept
 {
 	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), nullptr);
 }
 
-void GFX::BindSwapBuffer(const class DepthStencilView& depthStencilView) const noexcept
+void GFX::BindRenderTarget(const class DepthStencilView& depthStencilView) const noexcept
 {
 	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), depthStencilView.pDepthStencilView.Get());
 }

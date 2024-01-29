@@ -170,7 +170,7 @@ public:
 private:
 	static std::string GenerateUID(const DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
 	{
-		return bufferData.GetConstLayout().GetIdentificator() + '@' + std::to_string(slot) + '@' + (char)('0' + isPixelShader);
+		return bufferData.GetLayout().GetIdentificator() + '@' + std::to_string(slot) + '@' + (char)('0' + isPixelShader);
 	}
 
 public:
