@@ -29,7 +29,7 @@ private:
 
 private:
 	int currentStrength = 3;
-	std::vector<std::string> filterOptions = { "Normal", "NegativeColors", "Blur", "Outline", "GaussBlur"};
+	std::vector<std::string> filterOptions = { "Normal", "Blur", "Outline", "GaussBlur"};
 	std::string currentFilter;
 	DirectX::XMFLOAT3 m_position = { -37.5f, 7.0f, 1.0f };
 	DirectX::XMFLOAT3 m_view = { 0.5f * _Pi, 0.0f, 0.0f};

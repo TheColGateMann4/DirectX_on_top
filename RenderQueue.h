@@ -24,8 +24,9 @@ public:
 private:
 	std::vector<RenderPass> m_passes = {};
 	DepthStencilView m_depthStencilView;
-	RenderTarget m_renderTargetHorizontal;
-	RenderTarget m_renderTargetVertical;
+	RenderTarget m_renderTargetFirst;
+	RenderTarget m_renderTargetSecond;
+	bool m_passes_initialized = false;
 
 public:
 	FullscreenFilter fullscreenfilter;

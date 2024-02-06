@@ -49,25 +49,24 @@ void GaussBlurFilter::SetCooficients(class GFX& gfx, int range, float sigma) noe
 	float sum = 0.0f;
 	for (int i = 0; i <= *numberUsed; i++)
 	{
-		const float x = float((i + 1) + (range + 1));
-		const auto gaussDensity = CalculateGaussDensity(x, sigma);
+		const size_t cooficientIndex = std::abs(i - range);
+		const float gaussDensity = CalculateGaussDensity(i - range, sigma);
 
-		if (i > 0)
+		if (cooficientIndex > 0)
 			sum += gaussDensity * 2;
 		else
 			sum += gaussDensity;
 
-		float* cooficientValue = static_cast<float*>(bufferData.GetArrayDataPointerValue<DynamicConstantBuffer::DataType::Float4>("cooficients", i));
+		float* cooficientValue = static_cast<float*>(bufferData.GetArrayDataPointerValue<DynamicConstantBuffer::DataType::Float4>("cooficients", cooficientIndex));
 		*cooficientValue = gaussDensity;
 	}
+
 	for (int i = 0; i <= *numberUsed; i++)
 	{
 		float* cooficientValue = static_cast<float*>(bufferData.GetArrayDataPointerValue<DynamicConstantBuffer::DataType::Float4>("cooficients", i));
 
 		*cooficientValue /= sum;
 	}
-
-	float sumsum = 0.0f;
 
 	m_cooficients->Update(gfx, bufferData);
 }
@@ -81,8 +80,8 @@ void GaussBlurFilter::SetHorizontal(GFX& gfx, bool horizontal)
 
 float GaussBlurFilter::CalculateGaussDensity(const float x, const float sigma) const noexcept
 {
-	const float sigmaSquared = sigma * sigma;
-	return (1.0f / std::sqrt(2.0f * _Pi * sigmaSquared) * std::exp(-(x * x) / (2.0f * sigmaSquared)));
+	const auto sigmaSquared = sigma * sigma;
+	return (1.0f / std::sqrt(2.0f * _Pi * sigmaSquared)) * std::exp(-(x * x) / (2.0f * sigmaSquared));
 }
 
 void GaussBlurFilter::MakeImGuiPropeties(GFX& gfx)

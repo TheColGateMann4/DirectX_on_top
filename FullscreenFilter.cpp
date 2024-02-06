@@ -27,6 +27,16 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 		m_bindables.push_back(IndexBuffer::GetBindable(gfx, "FullScreen", indices));
 	}
 
+	{
+		DynamicConstantBuffer::BufferLayout constBufferLayout;
+		constBufferLayout.Add<DynamicConstantBuffer::DataType::Int>("strength");
+
+		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
+		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 3;
+
+		m_constBuffer = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true);
+	}
+
 	pIndexBuffer = dynamic_cast<IndexBuffer*>(m_bindables.back().get());
 
 	m_bindables.push_back(VertexShader::GetBindable(gfx, "VS_FullScreen.cso"));
@@ -36,7 +46,6 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 	m_bindables.push_back(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
 	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader->GetByteCode()));
 	m_bindables.push_back(SamplerState::GetBindable(gfx, false, true));
-	m_bindables.push_back(BlendState::GetBindable(gfx, true));
 }
 
 void FullscreenFilter::ChangePixelShader(GFX& gfx, std::string ShaderName)
@@ -55,14 +64,10 @@ void FullscreenFilter::ChangeBlurStrength(GFX& gfx, int strength)
 	if (currentShaderName != "Blur" && currentShaderName != "Outline")
 		return;
 
-	for (size_t i = 0; i < m_bindables.size(); i++)
-		if (CachedBuffer* pCachedBuffer = dynamic_cast<CachedBuffer*>(m_bindables.at(i).get()))
-		{
-			DynamicConstantBuffer::BufferData bufferData = pCachedBuffer->constBufferData;
-			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = strength;
+	DynamicConstantBuffer::BufferData bufferData = m_constBuffer->constBufferData;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = strength;
 
-			pCachedBuffer->Update(gfx, bufferData);
-		}
+	m_constBuffer->Update(gfx, bufferData);
 }
 
 void FullscreenFilter::Bind(GFX& gfx) const noexcept
@@ -71,7 +76,7 @@ void FullscreenFilter::Bind(GFX& gfx) const noexcept
 		bindable->Bind(gfx);
 }
 
-void FullscreenFilter::Draw(GFX& gfx) const noexcept
+void FullscreenFilter::Draw(GFX& gfx) const
 {
 	gfx.DrawIndexed(pIndexBuffer->GetCount());
 }
