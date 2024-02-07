@@ -3,15 +3,16 @@
 #include "Graphics.h"
 #include "ErrorMacros.h"
 
-RenderTarget::RenderTarget(GFX& gfx)
+RenderTarget::RenderTarget(GFX& gfx, UINT width, UINT height)
+	:
+	m_width(width),
+	m_height(height)
 {
 	HRESULT hr;
 
-
-
 	D3D11_TEXTURE2D_DESC textureDesc = {};
-	textureDesc.Width = gfx.GetWidth();
-	textureDesc.Height = gfx.GetHeight();
+	textureDesc.Width = m_width;
+	textureDesc.Height = m_height;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -67,13 +68,30 @@ void RenderTarget::BindTexture(GFX& gfx, UINT32 slot) const noexcept
 	GetDeviceContext(gfx)->PSSetShaderResources(slot, 1, pTextureView.GetAddressOf());
 }
 
+void RenderTarget::MakeAndSetLocalViewport(GFX& gfx) const noexcept
+{
+	D3D11_VIEWPORT viewport = {};
+	viewport.Width = m_width;
+	viewport.Height = m_height;
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+
+	GetDeviceContext(gfx)->RSSetViewports(1, &viewport);
+}
+
 void RenderTarget::BindRenderTarget(GFX& gfx) const noexcept
 {
+	MakeAndSetLocalViewport(gfx);
+
 	GetDeviceContext(gfx)->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
 }
 
 void RenderTarget::BindRenderTarget(GFX& gfx, DepthStencilView& depthStencilView) const noexcept
 {
+	MakeAndSetLocalViewport(gfx);
+
 	GetDeviceContext(gfx)->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), depthStencilView.pDepthStencilView.Get());
 }
 

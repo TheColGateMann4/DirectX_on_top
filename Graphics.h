@@ -32,6 +32,9 @@ public:
 	UINT32 GetWidth() const { return m_width; };
 	UINT32 GetHeight() const { return m_height; };
 
+private:
+	void MakeAndSetLocalViewport() const noexcept;
+
 public:
 	CameraView camera;
 

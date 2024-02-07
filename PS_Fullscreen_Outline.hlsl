@@ -11,6 +11,9 @@ float4 main(float2 texturePos : TEXCOORD, float4 position : SV_POSITION) : SV_TA
 	int textureWidth, textureHeight;
 	t_texture.GetDimensions(textureWidth, textureHeight);
 
+	textureWidth = textureWidth / 2;
+	textureHeight = textureHeight / 2;
+
 	const float heightDifference = 1.0f / textureHeight;
 	const float widthDifference = 1.0f / textureWidth;
 

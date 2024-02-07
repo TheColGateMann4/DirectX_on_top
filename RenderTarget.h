@@ -5,7 +5,7 @@
 class RenderTarget : public GraphicResource
 {
 public:
-	RenderTarget(GFX& gfx);
+	RenderTarget(GFX& gfx, UINT width, UINT height);
 
 public:
 	void BindTexture(GFX& gfx, UINT32 slot) const noexcept;
@@ -13,11 +13,16 @@ public:
 	void BindRenderTarget(GFX& gfx) const noexcept;
 
 	void BindRenderTarget(GFX& gfx, class DepthStencilView& depthStencilView) const noexcept;
-	
+
 public:
 	void ClearBuffer(GFX& gfx, DirectX::XMFLOAT4 color = DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 0.0f}) const noexcept;
 
 private:
+	void MakeAndSetLocalViewport(GFX& gfx) const noexcept;
+
+private:
+	UINT m_width;
+	UINT m_height;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureView;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderTargetView;

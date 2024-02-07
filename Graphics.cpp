@@ -72,18 +72,6 @@ void GFX::Initialize(HWND hWnd)
 			&pTargetView
 		));
 
-
-
-	D3D11_VIEWPORT viewPort = {};
-	viewPort.Width = this->m_width;
-	viewPort.Height = this->m_height;
-	viewPort.MinDepth = 0;
-	viewPort.MaxDepth = 1;
-	viewPort.TopLeftX = 0;
-	viewPort.TopLeftY = 0;
-
-	pDeviceContext->RSSetViewports(1, &viewPort);
-
 	ImGui_ImplDX11_Init(pDevice.Get(), pDeviceContext.Get());
 }
 
@@ -140,13 +128,30 @@ void GFX::ClearBuffer(DirectX::XMFLOAT4 color)
 	pDeviceContext->ClearRenderTargetView(pTargetView.Get(), &color.x);
 }
 
+void GFX::MakeAndSetLocalViewport() const noexcept
+{
+	D3D11_VIEWPORT viewport = {};
+	viewport.Width = m_width;
+	viewport.Height = m_height;
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+
+	pDeviceContext->RSSetViewports(1, &viewport);
+}
+
 void GFX::BindRenderTarget() const noexcept
 {
+	MakeAndSetLocalViewport();
+
 	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), nullptr);
 }
 
 void GFX::BindRenderTarget(const class DepthStencilView& depthStencilView) const noexcept
 {
+	MakeAndSetLocalViewport();
+
 	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), depthStencilView.pDepthStencilView.Get());
 }
 
