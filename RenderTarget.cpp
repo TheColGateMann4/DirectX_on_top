@@ -3,16 +3,20 @@
 #include "Graphics.h"
 #include "ErrorMacros.h"
 
-RenderTarget::RenderTarget(GFX& gfx, UINT width, UINT height)
+RenderTarget::RenderTarget(GFX& gfx, int scale)
 	:
-	m_width(width),
-	m_height(height)
+	m_scale(scale)
+{
+	UpdateRenderTarget(gfx);
+}
+
+void RenderTarget::UpdateRenderTarget(GFX& gfx)
 {
 	HRESULT hr;
 
 	D3D11_TEXTURE2D_DESC textureDesc = {};
-	textureDesc.Width = m_width;
-	textureDesc.Height = m_height;
+	textureDesc.Width = gfx.GetWidth() / m_scale;
+	textureDesc.Height = gfx.GetHeight() / m_scale;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -47,12 +51,12 @@ RenderTarget::RenderTarget(GFX& gfx, UINT width, UINT height)
 		)
 	);
 
-	
+
 
 	D3D11_RENDER_TARGET_VIEW_DESC targetViewDesc = {};
 	targetViewDesc.Format = textureDesc.Format;
 	targetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	targetViewDesc.Texture2D = D3D11_TEX2D_RTV{0};
+	targetViewDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
 
 	THROW_GFX_IF_FAILED(
 		GetDevice(gfx)->CreateRenderTargetView(
@@ -68,27 +72,29 @@ void RenderTarget::BindTexture(GFX& gfx, UINT32 slot) const noexcept
 	GetDeviceContext(gfx)->PSSetShaderResources(slot, 1, pTextureView.GetAddressOf());
 }
 
-void RenderTarget::MakeAndSetLocalViewport(GFX& gfx) const noexcept
+void RenderTarget::MakeAndSetLocalViewport(GFX& gfx) noexcept
 {
 	D3D11_VIEWPORT viewport = {};
-	viewport.Width = m_width;
-	viewport.Height = m_height;
+	viewport.Width = gfx.GetWidth() / m_scale;
+	viewport.Height = gfx.GetHeight() / m_scale;
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
 	GetDeviceContext(gfx)->RSSetViewports(1, &viewport);
+
+	UpdateRenderTarget(gfx);
 }
 
-void RenderTarget::BindRenderTarget(GFX& gfx) const noexcept
+void RenderTarget::BindRenderTarget(GFX& gfx) noexcept
 {
 	MakeAndSetLocalViewport(gfx);
 
 	GetDeviceContext(gfx)->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
 }
 
-void RenderTarget::BindRenderTarget(GFX& gfx, DepthStencilView& depthStencilView) const noexcept
+void RenderTarget::BindRenderTarget(GFX& gfx, DepthStencilView& depthStencilView) noexcept
 {
 	MakeAndSetLocalViewport(gfx);
 
@@ -98,4 +104,9 @@ void RenderTarget::BindRenderTarget(GFX& gfx, DepthStencilView& depthStencilView
 void RenderTarget::ClearBuffer(GFX& gfx, DirectX::XMFLOAT4 color) const noexcept
 {
 	GetDeviceContext(gfx)->ClearRenderTargetView(pRenderTargetView.Get(), &color.x);
+}
+
+void RenderTarget::ChangeDownscalingRatio(int scale) noexcept
+{
+	m_scale = scale;
 }

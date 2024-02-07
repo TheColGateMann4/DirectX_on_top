@@ -15,11 +15,15 @@ public:
 	float CalculateGaussDensity(const float range, const float sigma) const noexcept;
 
 public:
+	int GetDownscalingRatio() const noexcept;
+
+public:
 	void MakeImGuiPropeties(GFX& gfx);
 
 private:
 	int m_range;
 	float m_sigma;
+	int m_downscalling = 1;
 
 	std::shared_ptr<class CachedBuffer> m_cooficients = nullptr;
 	std::shared_ptr<class CachedBuffer> m_blurSettings = nullptr;

@@ -84,6 +84,11 @@ float GaussBlurFilter::CalculateGaussDensity(const float x, const float sigma) c
 	return (1.0f / std::sqrt(2.0f * _Pi * sigmaSquared)) * std::exp(-(x * x) / (2.0f * sigmaSquared));
 }
 
+int GaussBlurFilter::GetDownscalingRatio() const noexcept
+{
+	return m_downscalling;
+}
+
 void GaussBlurFilter::MakeImGuiPropeties(GFX& gfx)
 {
 	bool changed = false;
@@ -95,6 +100,7 @@ void GaussBlurFilter::MakeImGuiPropeties(GFX& gfx)
 
 	checkChanged(ImGui::SliderInt("range", &m_range, 1, 14));
 	checkChanged(ImGui::SliderFloat("sigma", &m_sigma, 1.0f, 20.0f));
+	checkChanged(ImGui::SliderInt("downscalling ratio 1/", &m_downscalling, 1, 8));
 
 	if (changed)
 		SetCooficients(gfx, m_range, m_sigma);

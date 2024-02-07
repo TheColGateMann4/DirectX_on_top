@@ -5,8 +5,8 @@
 RenderQueue::RenderQueue(GFX& gfx)
 	:
 	m_depthStencilView(gfx),
-	m_renderTargetFirst(gfx, gfx.GetWidth() / 2, gfx.GetHeight() / 2),
-	m_renderTargetSecond(gfx, gfx.GetWidth() / 2, gfx.GetHeight() / 2),
+	m_renderTargetFirst(gfx, 1),
+	m_renderTargetSecond(gfx, 1),
 	fullscreenfilter(gfx)
 {}
 
@@ -27,6 +27,7 @@ void RenderQueue::Render(GFX& gfx)
 	m_renderTargetFirst.ClearBuffer(gfx);
 	m_renderTargetSecond.ClearBuffer(gfx);
 	m_depthStencilView.Clear(gfx);
+
 	gfx.BindRenderTarget(m_depthStencilView);
 
 	BlendState::GetBindable(gfx, false)->Bind(gfx);
@@ -38,7 +39,15 @@ void RenderQueue::Render(GFX& gfx)
 	NullPixelShader::GetBindable(gfx)->Bind(gfx);
 	DepthStencilState::GetBindable(gfx, DepthStencilState::Write)->Bind(gfx);
 	m_passes.at(PASS_WRITE).Execute(gfx);
-	
+
+	if (isGaussFilter)
+	{
+		m_renderTargetFirst.ChangeDownscalingRatio(fullscreenfilter.GetGuassBlurFilter()->GetDownscalingRatio());
+		m_renderTargetSecond.ChangeDownscalingRatio(fullscreenfilter.GetGuassBlurFilter()->GetDownscalingRatio());
+	}
+	else
+		m_renderTargetFirst.ChangeDownscalingRatio(1);
+
 	m_renderTargetFirst.BindRenderTarget(gfx);
 	
 	DepthStencilState::GetBindable(gfx, DepthStencilState::Off)->Bind(gfx);
@@ -70,21 +79,12 @@ void RenderQueue::Render(GFX& gfx)
 
 	if (isGaussFilter)
 	{
-		// decided to make both gauss steps on different frames, it might take a bit more time and gpu power,
-		// but its more clear now and the project is made for learning :)
-		m_renderTargetFirst.ClearBuffer(gfx);
-		m_renderTargetFirst.BindRenderTarget(gfx);
+		gfx.BindRenderTarget(m_depthStencilView);
 		m_renderTargetSecond.BindTexture(gfx, 0);
 		fullscreenfilter.GetGuassBlurFilter()->SetHorizontal(gfx, false);
-
-		fullscreenfilter.Draw(gfx);
-
-
-		gfx.BindRenderTarget(m_depthStencilView);
-		m_renderTargetFirst.BindTexture(gfx, 0);
-		DepthStencilState::GetBindable(gfx, DepthStencilState::Mask)->Bind(gfx);
-		SamplerState::GetBindable(gfx, true, false)->Bind(gfx);
+		SamplerState::GetBindable(gfx, true, true)->Bind(gfx);
 		BlendState::GetBindable(gfx, true)->Bind(gfx);
+		DepthStencilState::GetBindable(gfx, DepthStencilState::Mask)->Bind(gfx);
 
 		fullscreenfilter.Draw(gfx);
 	}
