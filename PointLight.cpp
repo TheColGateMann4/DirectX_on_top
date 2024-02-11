@@ -108,13 +108,16 @@ void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 		lastDeltaTime = deltaTime;
 	}
 
-	DirectX::XMFLOAT3 modelColor = m_model.GetColor();
-
-	if (lightColor->x != modelColor.x ||
-		lightColor->y != modelColor.y ||
-		lightColor->z != modelColor.z)
+	if(GetPressedState() || enableChroma)
 	{
-		m_model.UpdateLightColorBuffer(gfx, *lightColor);
+		DirectX::XMFLOAT3 modelColor = m_model.GetColor();
+
+		if (lightColor->x != modelColor.x ||
+			lightColor->y != modelColor.y ||
+			lightColor->z != modelColor.z)
+		{
+			m_model.UpdateLightColorBuffer(gfx, *lightColor);
+		}
 	}
 }
 
