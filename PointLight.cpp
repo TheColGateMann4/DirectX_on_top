@@ -41,40 +41,35 @@ void PointLight::MakeTransformPropeties(GFX& gfx)
 
 void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 {
-	// we need to leave pointlight out of dynamic imgui menu maker,
-	// since we have stuff like "Chroma Light" checkbox which changes local value,
-	// also Texts which commment sections would need to be added there as well.
-	// Making this stuff into DynamicConstantBuffer would be pointless or weird
-
-	if (!GetPressedState())
-		return;
-
 	DynamicConstantBuffer::BufferData& bufferData = constBufferData;
 
 	DirectX::XMFLOAT3* lightColor = bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor");
 
-	ImGui::Text("Color");
-	ImGui::ColorEdit3("Light Color", reinterpret_cast<float*>(lightColor), ImGuiColorEditFlags_NoAlpha);
-
-	ImGui::Checkbox("Chroma Light", &enableChroma);
-
-	if (enableChroma)
+	if (GetPressedState())
 	{
-		ImGui::SliderFloat("Chroma Delta Time", &chromaDeltaTime, 0.001f, 200.0f);
-	}
+		ImGui::Text("Color");
+		ImGui::ColorEdit3("Light Color", reinterpret_cast<float*>(lightColor), ImGuiColorEditFlags_NoAlpha);
 
-	ImGui::SliderFloat("Diffuse Intensity", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("diffuseIntensity"), 0.01f, 2.0f, "%.2f");
-	ImGui::ColorEdit3("Ambient", reinterpret_cast<float*>(bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("ambient")), ImGuiColorEditFlags_NoAlpha);
+		ImGui::Checkbox("Chroma Light", &enableChroma);
 
-	ImGui::Text("Falloff");
+		if (enableChroma)
+		{
+			ImGui::SliderFloat("Chroma Delta Time", &chromaDeltaTime, 0.001f, 200.0f);
+		}
 
-	ImGui::SliderFloat("Attenuation Const", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationConst"), 0.05f, 10.0f, "%.2f");
-	ImGui::SliderFloat("Attenuation Linear", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationLinear"), 0.0001f, 4.0f, "%.4f");
-	ImGui::SliderFloat("Attenuation Quadratic", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic"), 0.00001f, 1.0f);
+		ImGui::SliderFloat("Diffuse Intensity", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("diffuseIntensity"), 0.01f, 2.0f, "%.2f");
+		ImGui::ColorEdit3("Ambient", reinterpret_cast<float*>(bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("ambient")), ImGuiColorEditFlags_NoAlpha);
 
-	if (ImGui::Button("Reset"))
-	{
-		Reset();
+		ImGui::Text("Falloff");
+
+		ImGui::SliderFloat("Attenuation Const", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationConst"), 0.05f, 10.0f, "%.2f");
+		ImGui::SliderFloat("Attenuation Linear", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationLinear"), 0.0001f, 4.0f, "%.4f");
+		ImGui::SliderFloat("Attenuation Quadratic", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic"), 0.00001f, 1.0f);
+
+		if (ImGui::Button("Reset"))
+		{
+			Reset();
+		}
 	}
 
 	if (enableChroma && deltaTime - lastDeltaTime >= chromaDeltaTime)
@@ -112,7 +107,6 @@ void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 		justSwitched = false;
 		lastDeltaTime = deltaTime;
 	}
-
 
 	DirectX::XMFLOAT3 modelColor = m_model.GetColor();
 

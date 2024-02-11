@@ -6,21 +6,23 @@ BlendState::BlendState(GFX& gfx, bool blend)
 	HRESULT hr;
 
 	D3D11_BLEND_DESC blendDesc = {};
-	blendDesc.RenderTarget[0].BlendEnable = blend;
+	auto& renderTargetBlendDesc = blendDesc.RenderTarget[0];
 
-	if (blend)
+	renderTargetBlendDesc.BlendEnable = m_blend;
+
+	if (m_blend)
 	{
-		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
-		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		renderTargetBlendDesc.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		renderTargetBlendDesc.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		renderTargetBlendDesc.BlendOp = D3D11_BLEND_OP_ADD;
+		renderTargetBlendDesc.SrcBlendAlpha = D3D11_BLEND_ZERO;
+		renderTargetBlendDesc.DestBlendAlpha = D3D11_BLEND_ZERO;
+		renderTargetBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		renderTargetBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	}
 	else
 	{
-		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		renderTargetBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	}
 
 

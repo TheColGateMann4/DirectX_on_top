@@ -60,6 +60,7 @@ void RenderQueue::Render(GFX& gfx)
 
 
 	fullscreenfilter.Bind(gfx);
+	SamplerState::GetBindable(gfx, true, true)->Bind(gfx);
 
 	if (isGaussFilter)
 	{
@@ -82,7 +83,6 @@ void RenderQueue::Render(GFX& gfx)
 		gfx.BindRenderTarget(m_depthStencilView);
 		m_renderTargetSecond.BindTexture(gfx, 0);
 		fullscreenfilter.GetGuassBlurFilter()->SetHorizontal(gfx, false);
-		SamplerState::GetBindable(gfx, true, true)->Bind(gfx);
 		BlendState::GetBindable(gfx, true)->Bind(gfx);
 		DepthStencilState::GetBindable(gfx, DepthStencilState::Mask)->Bind(gfx);
 
