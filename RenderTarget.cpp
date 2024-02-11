@@ -101,7 +101,7 @@ void RenderTarget::BindRenderTarget(GFX& gfx, DepthStencilView& depthStencilView
 	GetDeviceContext(gfx)->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), depthStencilView.pDepthStencilView.Get());
 }
 
-void RenderTarget::ClearBuffer(GFX& gfx, DirectX::XMFLOAT4 color) const noexcept
+void RenderTarget::ClearBuffer(GFX& gfx, const DirectX::XMFLOAT4& color) const noexcept
 {
 	GetDeviceContext(gfx)->ClearRenderTargetView(pRenderTargetView.Get(), &color.x);
 }

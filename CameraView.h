@@ -14,8 +14,8 @@ public:
 	DirectX::XMMATRIX GetProjection() const;
 
 public:
-	void Move(DirectX::XMFLOAT3 moveoffset);
-	void Look(DirectX::XMFLOAT3 lookoffset);
+	void Move(const DirectX::XMFLOAT3& moveoffset);
+	void Look(const DirectX::XMFLOAT3 lookoffset);
 
 private:
 	DirectX::XMMATRIX m_projection = {};

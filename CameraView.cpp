@@ -34,7 +34,7 @@ DirectX::XMMATRIX CameraView::GetProjection() const
 	return m_projection;
 }
 
-void CameraView::Move(DirectX::XMFLOAT3 moveoffset)
+void CameraView::Move(const DirectX::XMFLOAT3& moveoffset)
 {
 	DirectX::XMFLOAT3 movedOffsetRelativeToRotation = {};
 
@@ -52,7 +52,7 @@ void CameraView::Move(DirectX::XMFLOAT3 moveoffset)
 	m_position.z += movedOffsetRelativeToRotation.z;
 }
 
-void CameraView::Look(DirectX::XMFLOAT3 lookoffset)
+void CameraView::Look(const DirectX::XMFLOAT3 lookoffset)
 {
 	float halfRotation = 0.995f * (_Pi / 2);
 

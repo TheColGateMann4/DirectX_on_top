@@ -49,12 +49,12 @@ DirectX::XMMATRIX PointLightModel::GetTranformMatrix() const noexcept
 	return DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
 }
 
-VOID PointLightModel::SetPosition(DirectX::XMFLOAT3 position)
+VOID PointLightModel::SetPosition(const DirectX::XMFLOAT3& position)
 {
 	this->m_position = position;
 }
 
-void PointLightModel::UpdateLightColorBuffer(GFX& gfx, DirectX::XMFLOAT3& color)
+void PointLightModel::UpdateLightColorBuffer(GFX& gfx, const DirectX::XMFLOAT3& color)
 {
 	*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = color; // should be named color, but since we make layout by identificator string we don't have normal name
  	CachedBuffer* pPixelConstBuffer = GetBindable<CachedBuffer>( 0, 0, 1 );

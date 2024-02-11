@@ -18,7 +18,7 @@ public:
 	void BindRenderTarget(GFX& gfx, class DepthStencilView& depthStencilView) noexcept;
 
 public:
-	void ClearBuffer(GFX& gfx, DirectX::XMFLOAT4 color = DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 0.0f}) const noexcept;
+	void ClearBuffer(GFX& gfx, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 0.0f}) const noexcept;
 
 	void ChangeDownscalingRatio(int scale) noexcept;
 
