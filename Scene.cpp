@@ -1,7 +1,13 @@
 #include "Scene.h"
 #include "PointLight.h"
 
-void Scene::DrawModels(RenderQueue& renderQueue, GFX& gfx, DirectX::XMMATRIX CameraView_)
+void Scene::LinkModelsToPipeline(class RenderGraph& renderGraph)
+{
+	for (auto& model : models)
+		model->LinkSceneObjectToPipeline(renderGraph);
+}
+
+void Scene::DrawModels(GFX& gfx, DirectX::XMMATRIX CameraView_)
 {
 	for (const auto& model : models)
 		if(const PointLight* pointLight = dynamic_cast<PointLight*>(model.get()))
@@ -9,10 +15,10 @@ void Scene::DrawModels(RenderQueue& renderQueue, GFX& gfx, DirectX::XMMATRIX Cam
 			// its fine only when PointLight is first in hierarchy, otherwise objects might not get light buffer with position and light settings.
 			// If it wouldn't be first, we would need to first loop searching for light to bind it
 			pointLight->Bind(gfx, CameraView_);
-			pointLight->RenderOnScene(renderQueue);
+			pointLight->RenderOnScene();
 		}
 		else
-			model->RenderOnScene(renderQueue);
+			model->RenderOnScene();
 }
 
 void Scene::DrawModelHierarchy(float deltaTime)

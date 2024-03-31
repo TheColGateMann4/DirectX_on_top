@@ -1,6 +1,7 @@
 #pragma once
 #include "Bindable.h"
 #include "Vertex.h"
+#include "ErrorMacros.h"
 #include "BindableList.h"
 #include "DynamicConstantBuffer.h"
 
@@ -141,6 +142,11 @@ public:
 	{}
 
 public:
+	DynamicConstantBuffer::BufferData GetBufferData()
+	{
+		return constBufferData;
+	}
+
 	void Update(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData)
 	{
 		bufferData.MakeFinished();

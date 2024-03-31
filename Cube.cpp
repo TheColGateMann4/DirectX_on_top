@@ -5,7 +5,7 @@
 
 #include "RenderTechnique.h"
 #include "RenderPass.h"
-#include "RenderSteps.h"
+#include "RenderStep.h"
 
 Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture)
 {
@@ -23,7 +23,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 		RenderTechnique normalTechnique("normal");
 
 		{
-			RenderSteps normalStep(PASS_NORMAL, "normal");
+			RenderStep normalStep("normalPass");
 
 			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
 			ID3DBlob* pBlob = pVertexShader->GetByteCode();
@@ -71,13 +71,13 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 		RenderTechnique outlineTechnique("outline");
 
 		{
-			RenderSteps maskStep(PASS_WRITE, "write");
+			RenderStep maskStep("outlineWriteMaskPass");
 
 			outlineTechnique.AddRenderStep(maskStep);
 		}
 
 		{
-			RenderSteps maskStep(PASS_MASK, "mask");
+			RenderStep maskStep("outlineMaskPass");
 
 
 			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
@@ -103,79 +103,6 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 		AddRenderTechnique(outlineTechnique);
 	}
 }
-
-// void Cube::MakePropeties(GFX & gfx)
-// {
-// 	if (!GetPressedState())
-// 		return;
-// 
-// 	ImGui::Text("Position");
-// 	ImGui::SliderFloat("pX", &m_position.x, -30.0f, 30.0f);
-// 	ImGui::SliderFloat("pY", &m_position.y, -30.0f, 30.0f);
-// 	ImGui::SliderFloat("pZ", &m_position.z, -30.0f, 30.0f);
-// 
-// 	ImGui::Text("Rotation");
-// 	ImGui::SliderFloat("rX", &m_rotation.x, -_Pi, _Pi);
-// 	ImGui::SliderFloat("rY", &m_rotation.y, -_Pi, _Pi);
-// 	ImGui::SliderFloat("rZ", &m_rotation.z, -_Pi, _Pi);
-// 
-// 	ImGui::Text("Scale");
-// 	ImGui::SliderFloat("sX", &m_scale.x, 0.01f, 100.0f);
-// 	ImGui::SliderFloat("sY", &m_scale.y, 0.01f, 100.0f);
-// 	ImGui::SliderFloat("sZ", &m_scale.z, 0.01f, 100.0f);
-// 
-// 	if (ImGui::Button("Reset"))
-// 		ResetLocalTransform();
-// 
-// 	CachedBuffer* cachedBuffer = GetBindable<CachedBuffer>(0,0,1);
-// 
-// 	if (!m_materialsDefined)
-// 		shaderMaterial = cachedBuffer->constBufferData;
-// 
-// 	ImGui::Text("Mesh Settings");
-// 
-// 	if (ImGui::Checkbox("EnableMesh", &m_objectMeshEnabled))
-// 	{
-// 		this->SetTechniqueActive(0, 0, m_objectMeshEnabled);
-// 	}
-// 
-// 	ImGui::SliderFloat("specularPower", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower"), 0.001f, 150.0f);
-// 	ImGui::SliderFloat("specularIntensity", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity"), 0.001f, 150.0f);
-// 	ImGui::Checkbox("normalMapEnabled", (bool*)shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled"));
-// 	ImGui::SliderFloat("normalMapWeight", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("normalMapWeight"), 0.1f, 5.0f, "%.2f");
-// 
-// 
-// 	if (shaderMaterial.MakeImguiMenu())
-// 		cachedBuffer->Update(gfx, shaderMaterial);
-// 
-// 	m_materialsDefined = true;
-// 
-// 	ImGui::Text("Glow Settings");
-// 
-// 	if (ImGui::Checkbox("EnableGlow", &m_objectGlowEnabled))
-// 	{
-// 		this->SetTechniqueActive(1, 1, m_objectGlowEnabled);
-// 	}
-// 
-// 	if (m_objectGlowEnabled)
-// 	{
-// 		// first turn is for pixel shader with `color`, second is for vertex shader buffer with `scaleFactor`
-// 		for (size_t i = 0; i < 2; i++)
-// 		{
-// 			bool colorBuffer = true;
-// 
-// 			if (i == 1)
-// 				colorBuffer = false;
-// 
-// 			CachedBuffer* cachedOutlineBuffer = GetBindable<CachedBuffer>(1, 1, 1, colorBuffer);
-// 
-// 			DynamicConstantBuffer::BufferData bufferData = cachedOutlineBuffer->constBufferData;
-// 
-// 			if (bufferData.MakeImguiMenu())
-// 				cachedOutlineBuffer->Update(gfx, bufferData);
-// 		}
-// 	}
-// }
 
 SimpleMesh Cube::GetNormalMesh(float scale)
 {

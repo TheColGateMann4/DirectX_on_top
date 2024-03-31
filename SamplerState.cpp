@@ -1,5 +1,6 @@
 #pragma once
 #include "SamplerState.h"
+#include "ErrorMacros.h"
 
 SamplerState::SamplerState(GFX& gfx, bool anisotropicFiltering, bool mirror)
 	: m_anisotropicFiltering(anisotropicFiltering),

@@ -216,8 +216,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 	std::string bufferUID = modelPath + mesh.mName.C_Str();
 
-	std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, vertexShaderName);
-	ID3DBlob* pBlob = pVertexShader->GetByteCode();
+	std::shared_ptr<VertexShader> pNormalVertexShader = VertexShader::GetBindable(gfx, vertexShaderName);
+	ID3DBlob* pNormalBlob = pNormalVertexShader->GetByteCode();
 
 
 	std::unique_ptr<Mesh> resultMesh = std::make_unique<Mesh>();
@@ -231,10 +231,10 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		RenderTechnique normalTechnique("normal");
 
 		{
-			RenderSteps normalStep(PASS_NORMAL, "normal");
+			RenderStep normalStep("normalPass");
 
 
-			normalStep.AddBindable(std::move(pVertexShader));
+			normalStep.AddBindable(std::move(pNormalVertexShader));
 
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, pixelShaderName));
 
@@ -242,7 +242,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 			normalStep.AddBindable(RasterizerState::GetBindable(gfx, diffuseMapHasAlpha));
 
-			normalStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pBlob));
+			normalStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pNormalBlob));
 
 			//bindables added specially depending on what model uses
 			for (auto& bindable : normalMeshBindables)
@@ -255,22 +255,21 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		resultMesh->AddRenderTechnique(normalTechnique);
 	}
 
-
 	{
 		RenderTechnique outlineTechnique("outline", false);
 
 		{
-			RenderSteps maskStep(PASS_WRITE, "write");
+			RenderStep maskStep("outlineWriteMaskPass");
 
 			outlineTechnique.AddRenderStep(maskStep);
 		}
 
 		{
-			RenderSteps maskStep(PASS_MASK, "mask");
+			RenderStep maskStep("outlineMaskPass");
 
 
-			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
-			ID3DBlob* pBlob = pVertexShader->GetByteCode();
+			std::shared_ptr pMaskVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
+			ID3DBlob* pMaskBlob = pMaskVertexShader->GetByteCode();
 
 			DynamicConstantBuffer::BufferLayout PixelbufferLayout;
 			PixelbufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
@@ -278,13 +277,13 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			DynamicConstantBuffer::BufferData pixelBufferData(std::move(PixelbufferLayout));
 			*pixelBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = { 0.0f, 1.0f, 1.0f, 1.0f };
 
-			maskStep.AddBindable(pVertexShader);
+			maskStep.AddBindable(pMaskVertexShader);
 
 			maskStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
 			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, true));
 
-			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
+			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pMaskBlob));
 
 			outlineTechnique.AddRenderStep(maskStep);
 		}
@@ -317,6 +316,12 @@ std::unique_ptr<Node> Model::ParseNode(const aiNode& node) noexcept
 	}
 
 	return pNode;
+}
+
+void Model::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
+{
+	for (auto& mesh : m_pMeshes)
+		m_pStartingNode->LinkToPipeline(renderGraph);
 }
 
 void Model::MakeHierarchy(GFX&)

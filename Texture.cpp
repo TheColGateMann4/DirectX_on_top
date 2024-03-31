@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "ErrorMacros.h"
 #include <DirectXTex.h>
 
 Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube)

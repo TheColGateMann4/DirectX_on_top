@@ -1,17 +1,18 @@
 #pragma once
 #include "GraphicResource.h"
+#include "GraphicBuffer.h"
 #include <wrl.h>
 
-class DepthStencilView : public GraphicResource
+class DepthStencilView :public GraphicResource, public GraphicBuffer
 {
 	friend class RenderTarget;
 	friend class GFX;
 public:
 	DepthStencilView(GFX& gfx);
 
-	void Bind(GFX& gfx) const noexcept;
+	virtual void BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer = nullptr) override;
 
-	void Clear(GFX& gfx);
+	virtual void Clear(GFX& gfx) const override;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView;

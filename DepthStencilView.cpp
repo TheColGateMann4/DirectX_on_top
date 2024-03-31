@@ -1,4 +1,5 @@
 #include "DepthStencilView.h"
+#include "RenderTarget.h"
 #include "Graphics.h"
 #include "Includes.h"
 #include "ErrorMacros.h"
@@ -32,12 +33,30 @@ DepthStencilView::DepthStencilView(GFX& gfx)
 	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateDepthStencilView(pDepthStencil.Get(), &depthStencilViewDecs, &pDepthStencilView));
 }
 
-void DepthStencilView::Bind(GFX& gfx) const noexcept
+void DepthStencilView::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 {
-	GetDeviceContext(gfx)->OMSetRenderTargets(0, nullptr, pDepthStencilView.Get());
+	if (graphicBuffer == nullptr)
+	{
+		THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->OMSetRenderTargets(0, nullptr, pDepthStencilView.Get()));
+	}
+	else if(RenderTarget* renderTarget = dynamic_cast<RenderTarget*>(graphicBuffer))
+	{
+		renderTarget->BindRenderTarget(gfx, this);
+	}
+	else
+	{
+		std::string errorString = "DepthStencilView object got wrong object passed to function BindRenderTarget(),\n local object class name: \"";
+		errorString += typeid(*this).name();
+		errorString += "\". Passed object class name: \"";
+		errorString += typeid(*graphicBuffer).name();
+		errorString += "\".";
+
+		THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
+	}
+
 }
 
-void DepthStencilView::Clear(GFX& gfx)
+void DepthStencilView::Clear(GFX& gfx) const
 {
-	GetDeviceContext(gfx)->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	GetDeviceContext(gfx)->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

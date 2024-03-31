@@ -8,6 +8,7 @@
 #include "Model.h"
 #include "Cube.h"
 #include "Scene.h"
+#include "NormalOutlineRenderGraph.h"
 
 class Application
 {
@@ -18,7 +19,7 @@ public:
 public:
 	ImguiManager imguiManager;
 	Window window;
-	RenderQueue renderQueue{window.Graphics};
+	NormalOutlineRenderGraph renderGraph;
 	Time timer;
 
 private:

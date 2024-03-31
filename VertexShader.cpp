@@ -1,4 +1,5 @@
 #include "VertexShader.h"
+#include "ErrorMacros.h"
 #include "StringConverting.h"
 #include <d3dcompiler.h>
 

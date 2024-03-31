@@ -1,34 +1,48 @@
 #pragma once
 #include "GraphicResource.h"
+#include "GraphicBuffer.h"
+#include "Bindable.h"
 #include <wrl.h>
 
-class RenderTarget : public GraphicResource
+class RenderTarget : public Bindable, public GraphicBuffer
 {
+	friend class RenderTargetWithTexture;
 public:
-	RenderTarget(GFX& gfx, int scale);
-
-public:
-	void UpdateRenderTarget(GFX& gfx);
-
-public:
-	void BindTexture(GFX& gfx, UINT32 slot) const noexcept;
-
-	void BindRenderTarget(GFX& gfx) noexcept;
-
-	void BindRenderTarget(GFX& gfx, class DepthStencilView& depthStencilView) noexcept;
+	RenderTarget(GFX& gfx, const int width, const int height, bool shouldUpdate = true);
+	RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTexture);
+	RenderTarget(const RenderTarget& renderTarget);
 
 public:
-	void ClearBuffer(GFX& gfx, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4{0.0f, 0.0f, 0.0f, 0.0f}) const noexcept;
+	void Update(GFX& gfx);
 
-	void ChangeDownscalingRatio(int scale) noexcept;
+	virtual void Bind(GFX& gfx) noexcept override;
+	virtual void BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer = nullptr) override;
+
+public:
+	virtual void Clear(GFX& gfx) const override;
+
+	void ChangeResolution(GFX& gfx, const int width, const int height) noexcept;
 
 private:
-	void MakeAndSetLocalViewport(GFX& gfx) noexcept;
+	void MakeAndSetLocalViewport(GFX& gfx);
 
-private:
-	int m_scale;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureView;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderTargetView;
+protected:
+	int m_width;
+	int m_height;
+	bool m_shouldUpdate;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 };
 
+class RenderTargetWithTexture : public RenderTarget
+{
+public:
+	RenderTargetWithTexture(const RenderTargetWithTexture& renderTarget);
+	RenderTargetWithTexture(GFX& gfx, const int width, const int height, int slot);
+
+public:
+	virtual void Bind(GFX& gfx) noexcept override;
+
+private:
+	int m_slot;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
+};

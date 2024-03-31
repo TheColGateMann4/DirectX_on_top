@@ -1,4 +1,5 @@
 #include "IndexBuffer.h"
+#include "ErrorMacros.h"
 
 IndexBuffer::IndexBuffer(GFX& gfx, const std::string bufferUID, const std::vector<UINT32>& indices)
 	: m_count( (UINT32)indices.size()),

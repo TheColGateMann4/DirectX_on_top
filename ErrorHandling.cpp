@@ -392,3 +392,9 @@ const char* ErrorHandler::InfoException::what()
 }
 
 #endif
+
+
+std::string ErrorHandler::RenderGraphException::GetErrorType()
+{
+	return "RENDER_GRAPH_EXCEPTION";
+}

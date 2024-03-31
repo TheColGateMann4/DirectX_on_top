@@ -11,7 +11,10 @@ public:
 		: m_window(window)	{}
 
 public:
-	void DrawModels(RenderQueue& renderQueue, GFX& gfx, DirectX::XMMATRIX CameraView_);
+	void LinkModelsToPipeline(class RenderGraph& renderGraph);
+
+public:
+	void DrawModels(GFX& gfx, DirectX::XMMATRIX CameraView_);
 	void DrawModelHierarchy(float deltaTime);
 
 private:

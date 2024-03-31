@@ -13,9 +13,14 @@ public:
 	Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture);
 
 public:
-	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) override
+	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override
 	{
-		this->Render(renderQueue);
+		Shape::LinkToPipeline(renderGraph);
+	}
+
+	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override
+	{
+		this->Render();
 	}
 
 	virtual DirectX::XMMATRIX GetTranformMatrix() const noexcept override

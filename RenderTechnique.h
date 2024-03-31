@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Graphics.h"
-#include "RenderSteps.h"
+#include "RenderStep.h"
 
 class RenderQueue;
 
@@ -23,7 +23,8 @@ public:
 	{}
 
 public:
-	void Execute(RenderQueue& renderQueue, const Shape* shape) const noexcept;
+	void Render(const Shape* shape) const noexcept;
+	void LinkToPipeline(class RenderGraph& renderGraph);
 
 public:
 	template<class T>
@@ -40,7 +41,7 @@ public:
 	}
 
 public:
-	void AddRenderStep(RenderSteps& renderStep)
+	void AddRenderStep(RenderStep& renderStep)
 	{
 		renderStep.m_active = m_active;
 		m_steps.push_back(renderStep);
@@ -67,7 +68,7 @@ public:
 	}
 
 private:
-	std::vector<RenderSteps> m_steps = {};
+	std::vector<RenderStep> m_steps = {};
 	const char* m_name;
 	bool m_active = true;
 };

@@ -11,12 +11,13 @@ public:
 	PointLight(GFX& gfx, float radius = 0.5f);
 
 public:
+	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
 	virtual void MakeTransformPropeties(GFX& gfx) override;
 	virtual void MakeAdditionalPropeties(GFX& gfx, float deltaTime) override;
 	void Reset() noexcept;
 
 public:
-	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) override;
+	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override;
 	void Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
 
 public:

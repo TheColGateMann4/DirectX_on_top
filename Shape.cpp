@@ -1,13 +1,18 @@
 #include "Shape.h"
 #include "BindableClassesMacro.h"
-#include "RenderQueue.h"
 #include "RenderJob.h"
 
 
-void Shape::Render(RenderQueue& renderQueue) const noexcept(!IS_DEBUG)
+void Shape::Render() const noexcept(!IS_DEBUG)
 {
 	for (const auto& technique : m_techniques)
-		technique.Execute(renderQueue, this);
+		technique.Render(this);
+}
+
+void Shape::LinkToPipeline(class RenderGraph& renderGraph)
+{
+	for (auto& technique : m_techniques)
+		technique.LinkToPipeline(renderGraph);
 }
 
 void Shape::Bind(GFX& gfx) const noexcept

@@ -3,20 +3,21 @@
 #include "Graphics.h"
 #include "ErrorMacros.h"
 
-RenderTarget::RenderTarget(GFX& gfx, int scale)
+RenderTarget::RenderTarget(GFX& gfx, const int width, const int height, bool shouldUpdate)
 	:
-	m_scale(scale)
+	m_width(width), m_height(height), m_shouldUpdate(shouldUpdate)
 {
-	UpdateRenderTarget(gfx);
+	Update(gfx);
 }
 
-void RenderTarget::UpdateRenderTarget(GFX& gfx)
+void RenderTarget::Update(GFX& gfx)
 {
 	HRESULT hr;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture = nullptr;
 
 	D3D11_TEXTURE2D_DESC textureDesc = {};
-	textureDesc.Width = gfx.GetWidth() / m_scale;
-	textureDesc.Height = gfx.GetHeight() / m_scale;
+	textureDesc.Width = m_width;
+	textureDesc.Height = m_height;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -27,6 +28,7 @@ void RenderTarget::UpdateRenderTarget(GFX& gfx)
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
+
 	THROW_GFX_IF_FAILED(
 		GetDevice(gfx)->CreateTexture2D(
 			&textureDesc,
@@ -34,24 +36,6 @@ void RenderTarget::UpdateRenderTarget(GFX& gfx)
 			&pTexture
 		)
 	);
-
-
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC textureViewDesc = {};
-	textureViewDesc.Format = textureDesc.Format;
-	textureViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	textureViewDesc.Texture2D.MostDetailedMip = 0;
-	textureViewDesc.Texture2D.MipLevels = 1;
-
-	THROW_GFX_IF_FAILED(
-		GetDevice(gfx)->CreateShaderResourceView(
-			pTexture.Get(),
-			&textureViewDesc,
-			&pTextureView
-		)
-	);
-
-
 
 	D3D11_RENDER_TARGET_VIEW_DESC targetViewDesc = {};
 	targetViewDesc.Format = textureDesc.Format;
@@ -62,51 +46,144 @@ void RenderTarget::UpdateRenderTarget(GFX& gfx)
 		GetDevice(gfx)->CreateRenderTargetView(
 			pTexture.Get(),
 			&targetViewDesc,
-			&pRenderTargetView
+			&m_pRenderTargetView
 		)
 	);
 }
 
-void RenderTarget::BindTexture(GFX& gfx, UINT32 slot) const noexcept
+RenderTarget::RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTexture)
+	:
+	m_shouldUpdate(false)
 {
-	GetDeviceContext(gfx)->PSSetShaderResources(slot, 1, pTextureView.GetAddressOf());
+	HRESULT hr;
+
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	static_cast<ID3D11Texture2D*>(pTexture.Get())->GetDesc(&textureDesc);
+	m_height = textureDesc.Height;
+	m_width = textureDesc.Width;
+
+	D3D11_RENDER_TARGET_VIEW_DESC targetViewDesc = {};
+	targetViewDesc.Format = textureDesc.Format;
+	targetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	targetViewDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
+
+	THROW_GFX_IF_FAILED(
+		GetDevice(gfx)->CreateRenderTargetView(
+			pTexture.Get(),
+			&targetViewDesc,
+			&m_pRenderTargetView
+		)
+	);
 }
 
-void RenderTarget::MakeAndSetLocalViewport(GFX& gfx) noexcept
+RenderTarget::RenderTarget(const RenderTarget& renderTarget)
+{
+	this->m_width = renderTarget.m_width;
+	this->m_height = renderTarget.m_height;
+	this->m_shouldUpdate = renderTarget.m_shouldUpdate;
+	this->m_pRenderTargetView = renderTarget.m_pRenderTargetView;
+}
+
+void RenderTarget::MakeAndSetLocalViewport(GFX& gfx)
 {
 	D3D11_VIEWPORT viewport = {};
-	viewport.Width = gfx.GetWidth() / m_scale;
-	viewport.Height = gfx.GetHeight() / m_scale;
+	viewport.Width = m_width;
+	viewport.Height = m_height;
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
-	GetDeviceContext(gfx)->RSSetViewports(1, &viewport);
+	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->RSSetViewports(1, &viewport));
 
-	UpdateRenderTarget(gfx);
+	if(m_shouldUpdate)
+		Update(gfx);
 }
 
-void RenderTarget::BindRenderTarget(GFX& gfx) noexcept
+void RenderTarget::Bind(GFX& gfx) noexcept
+{
+
+}
+
+void RenderTarget::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 {
 	MakeAndSetLocalViewport(gfx);
+	
+	ID3D11DepthStencilView* usedDepthStencilView = nullptr;
 
-	GetDeviceContext(gfx)->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
+	if(graphicBuffer != nullptr)
+	{
+		if (DepthStencilView* depthStencilView = dynamic_cast<DepthStencilView*>(graphicBuffer))
+		{
+			usedDepthStencilView = depthStencilView->pDepthStencilView.Get();
+		}
+		else
+		{
+			std::string errorString = "RenderTarget object got wrong object passed to function BindRenderTarget(),\n local object class name: \"";
+			errorString += typeid(*this).name();
+			errorString += "\". Passed object class name: \"";
+			errorString += typeid(*graphicBuffer).name();
+			errorString += "\".";
+
+			THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
+		}
+	}
+
+	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), usedDepthStencilView));
 }
 
-void RenderTarget::BindRenderTarget(GFX& gfx, DepthStencilView& depthStencilView) noexcept
+void RenderTarget::Clear(GFX& gfx) const
 {
-	MakeAndSetLocalViewport(gfx);
-
-	GetDeviceContext(gfx)->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), depthStencilView.pDepthStencilView.Get());
+	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.0f };
+	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->ClearRenderTargetView(m_pRenderTargetView.Get(), &color.x));
 }
 
-void RenderTarget::ClearBuffer(GFX& gfx, const DirectX::XMFLOAT4& color) const noexcept
+void RenderTarget::ChangeResolution(GFX& gfx, const int width, const int height) noexcept
 {
-	GetDeviceContext(gfx)->ClearRenderTargetView(pRenderTargetView.Get(), &color.x);
+	m_width = width;
+	m_height = height;
+
+	Update(gfx);
 }
 
-void RenderTarget::ChangeDownscalingRatio(int scale) noexcept
+
+RenderTargetWithTexture::RenderTargetWithTexture(const RenderTargetWithTexture& renderTarget)
+	: 
+	RenderTarget(renderTarget)
 {
-	m_scale = scale;
+	this->m_slot = renderTarget.m_slot;
+	this->m_pTextureView = renderTarget.m_pTextureView;
+}
+
+RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, const int height, int slot)
+	: 
+	RenderTarget(gfx, width, height, false),
+	m_slot(slot)
+{
+	HRESULT hr;
+	Microsoft::WRL::ComPtr<ID3D11Resource> pTexture = nullptr;
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc = {};
+
+	m_pRenderTargetView->GetResource(pTexture.GetAddressOf());
+
+	m_pRenderTargetView->GetDesc(&renderTargetViewDesc);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC textureViewDesc = {};
+	textureViewDesc.Format = renderTargetViewDesc.Format;
+	textureViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	textureViewDesc.Texture2D.MostDetailedMip = 0;
+	textureViewDesc.Texture2D.MipLevels = 1;
+
+	THROW_GFX_IF_FAILED(
+		GetDevice(gfx)->CreateShaderResourceView(
+			pTexture.Get(),
+			&textureViewDesc,
+			&m_pTextureView
+		)
+	);
+}
+
+void RenderTargetWithTexture::Bind(GFX& gfx) noexcept
+{
+	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf()));
 }

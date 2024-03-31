@@ -1,7 +1,5 @@
 #pragma once
-#include "ErrorMacros.h"
-#include "includes.h"
-#include "Graphics.h"
+#include "GraphicResource.h"
 
 class Bindable : public GraphicResource
 {

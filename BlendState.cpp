@@ -1,4 +1,5 @@
 #include "BlendState.h"
+#include "ErrorMacros.h"
 
 BlendState::BlendState(GFX& gfx, bool blend)
 {
@@ -6,6 +7,7 @@ BlendState::BlendState(GFX& gfx, bool blend)
 	HRESULT hr;
 
 	D3D11_BLEND_DESC blendDesc = {};
+
 	auto& renderTargetBlendDesc = blendDesc.RenderTarget[0];
 
 	renderTargetBlendDesc.BlendEnable = m_blend;

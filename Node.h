@@ -18,7 +18,7 @@ public:
 	}
 
 public:
-	void Render(RenderQueue& renderQueue, DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
+	void Render(DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
 	{
 		const auto finalTransform =
 			(
@@ -30,13 +30,26 @@ public:
 
 		for (const auto& pMesh : m_pMeshes)
 		{
-			pMesh->Render(renderQueue, finalTransform);
+			pMesh->Render(finalTransform);
 		}
 
 		//passing accumulated transform to objects lower in hierarchy
-		for (const auto& pChild : m_pChildrens)
+		for (const auto& pChild : m_pChildren)
 		{
-			pChild->Render(renderQueue, finalTransform);
+			pChild->Render(finalTransform);
+		}
+	}
+
+	void LinkToPipeline(class RenderGraph& renderGraph)
+	{
+		for (const auto& pMesh : m_pMeshes)
+		{
+			pMesh->LinkToPipeline(renderGraph);
+		}
+
+		for (const auto& pChild : m_pChildren)
+		{
+			pChild->LinkToPipeline(renderGraph);
 		}
 	}
 
@@ -51,7 +64,7 @@ public:
 	{
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
 
-		if (m_pChildrens.empty())
+		if (m_pChildren.empty())
 			flags |= ImGuiTreeNodeFlags_Leaf;
 		if(pressedNode == this)
 			flags |= ImGuiTreeNodeFlags_Selected;
@@ -66,7 +79,7 @@ public:
 
 		if (nodeExpanded)
 		{
-			for (const auto& child : m_pChildrens)
+			for (const auto& child : m_pChildren)
 				child->GenerateTree(pressedNode);
 
 			ImGui::TreePop();
@@ -77,11 +90,11 @@ private:
 	void AddChild(std::unique_ptr<Node> pChild) noexcept(!IS_DEBUG)
 	{
 		assert(pChild);
-		m_pChildrens.push_back(std::move(pChild));
+		m_pChildren.push_back(std::move(pChild));
 	}
 
 private:
-	std::vector<std::unique_ptr<Node>> m_pChildrens;
+	std::vector<std::unique_ptr<Node>> m_pChildren;
 	std::vector<Mesh*> m_pMeshes;
 	DirectX::XMFLOAT4X4 m_baseTransform;
 	std::string m_nodeName;

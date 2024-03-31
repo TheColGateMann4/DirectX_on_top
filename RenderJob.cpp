@@ -1,9 +1,9 @@
 #include "RenderJob.h"
-#include "RenderSteps.h"
+#include "RenderStep.h"
 #include "Shape.h"
 
-RenderJob::RenderJob(const Shape* shape, const RenderSteps* technique)
-	: m_shape(shape), m_step(technique)
+RenderJob::RenderJob(const Shape* shape, const RenderStep* step)
+	: m_shape(shape), m_step(step)
 {
 
 }

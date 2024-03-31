@@ -35,6 +35,7 @@ class ErrorHandler
 		const char* file;
 		HRESULT m_hr;
 	};
+
 	class InternalException : public StandardException
 	{
 	public:
@@ -48,6 +49,7 @@ class ErrorHandler
 	private:
 		std::string m_errorString;
 	};
+
 	class GFXException : public StandardException
 	{
 	 public:
@@ -62,6 +64,7 @@ class ErrorHandler
 		std::string GetErrorDescription();
 
 	};
+
 	 class NoGFXException : public StandardException
 	 {
 	 public:
@@ -70,6 +73,7 @@ class ErrorHandler
 		 std::string GetErrorType() override;
 		 HRESULT GetErrorCode() override;
 	 };
+
 	 class ModelException : public InternalException
 	 {
 	 public:
@@ -78,6 +82,7 @@ class ErrorHandler
 	 public:
 		 std::string GetErrorType() override;
 	 };
+
 #ifdef _DEBUG
 	class DXGIException : public GFXException
 	{
@@ -108,10 +113,12 @@ class ErrorHandler
 
 		};
 	};
+
 	class DeviceRemovedException : public GFXException
 	{
 		std::string GetErrorType() override;
 	};
+
 	class InfoException : public GFXException
 	{
 	public:
@@ -128,6 +135,15 @@ class ErrorHandler
 	};
 #endif
 	
+	class RenderGraphException : public InternalException
+	{
+	public:
+		RenderGraphException(UINT32 line_, const char* file_, std::string errorString_) : InternalException(line_, file_, errorString_) {};
+
+	public:
+		std::string GetErrorType() override;
+	};
+
 public:
 	static VOID ThrowMessage(const char* title, const char* text) noexcept;
 };

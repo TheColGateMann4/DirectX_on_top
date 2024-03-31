@@ -1,4 +1,5 @@
 #include "InputLayout.h"
+#include "ErrorMacros.h"
 
 InputLayout::InputLayout(GFX& gfx, const DynamicVertex::VertexLayout& layout, ID3DBlob* pVertexShaderByteCode)
 	: m_layout(layout)

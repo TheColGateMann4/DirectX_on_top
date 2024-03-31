@@ -11,6 +11,8 @@
 
 #define THROW_MODEL_EXCEPTION(errorString) throw ErrorHandler::ModelException{(UINT32)__LINE__ , __FILE__ , errorString};
 
+#define THROW_RENDER_GRAPH_EXCEPTION(errorString) throw ErrorHandler::RenderGraphException{(UINT32)__LINE__, __FILE__, errorString};
+
 #ifdef _DEBUG
 	#define THROW_GFX_IF_FAILED(checkfailed) DXGImanager.Set(); if( FAILED( hr = (checkfailed) ) ){throw ErrorHandler::DXGIException{ (UINT32)__LINE__, __FILE__, hr, DXGImanager.GetMessages()}; }
 	#define THROW_GFX_DEVICE_REMOVED(hr) throw ErrorHandler::DXGIException{(UINT32)__LINE__, __FILE__, hr, DXGImanager.GetMessages() };

@@ -4,7 +4,7 @@
 #include <random>
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
-	: m_width(width), m_height(height), m_name(name), window(width, height, name)
+	: m_width(width), m_height(height), m_name(name), window(width, height, name), renderGraph(window.Graphics)
 {
 	float aspectRatioX, AspectRatioY;
 	if (width > height)
@@ -29,7 +29,9 @@ BOOL Application::Initiate()
 	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
 	modelHierarchy.models.push_back(std::make_unique<PointLight>(window.Graphics));
 	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
-	modelHierarchy.models.push_back(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));
+	modelHierarchy.models.push_back(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));;
+
+	modelHierarchy.LinkModelsToPipeline(renderGraph);
 
 	while (true)
 	{
@@ -143,11 +145,11 @@ void Application::DoFrame()
 		if (lookOffset.x != 0 || lookOffset.y != 0)
 			window.Graphics.camera.Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f });
 
-	window.Graphics.BeginFrame({ 0,0,0,1 });
+	window.Graphics.BeginFrame();
 
-	modelHierarchy.DrawModels(renderQueue, window.Graphics, window.Graphics.camera.GetCamera());
+	modelHierarchy.DrawModels(window.Graphics, window.Graphics.camera.GetCamera());
 
-	renderQueue.Render(window.Graphics);
+	renderGraph.Render(window.Graphics);
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
 		window.Graphics.ShowImGUI(!window.Graphics.isImGUIVisible());
@@ -160,16 +162,18 @@ void Application::DoFrame()
 		window.ShowCursor(cursorShowing);
 	}
 
-	int blurStrength = 0;
-	std::string fullscreenFilerName = window.Graphics.camera.SpawnControlWindow(window.Graphics, blurStrength, renderQueue.fullscreenfilter.GetGuassBlurFilter());
-
-	if (!fullscreenFilerName.empty())
-		renderQueue.ChangeScreenFilter(window.Graphics, fullscreenFilerName);
-
-	if (blurStrength != 0)
-		renderQueue.ChangeBlurStrength(window.Graphics, blurStrength);
+// 	int blurStrength = 0;
+// 	std::string fullscreenFilerName = window.Graphics.camera.SpawnControlWindow(window.Graphics, blurStrength, renderQueue.fullscreenfilter.GetGuassBlurFilter());
+// 
+// 	if (!fullscreenFilerName.empty())
+// 		renderQueue.ChangeScreenFilter(window.Graphics, fullscreenFilerName);
+// 
+// 	if (blurStrength != 0)
+// 		renderQueue.ChangeBlurStrength(window.Graphics, blurStrength);
 
 	modelHierarchy.DrawModelHierarchy(timer.Get());
 
 	window.Graphics.FinishFrame();
+
+	renderGraph.Reset();
 }

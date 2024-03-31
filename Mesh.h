@@ -8,10 +8,10 @@
 class Mesh : public Shape
 {
 public:
-	void Render(RenderQueue& renderQueue, DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
+	void Render(DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
 	{
 		DirectX::XMStoreFloat4x4(&m_transform, transform);
-		Shape::Render(renderQueue);
+		Shape::Render();
 	}
 
 public:

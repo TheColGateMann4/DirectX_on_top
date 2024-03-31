@@ -1,4 +1,5 @@
 #include "RasterizerState.h"
+#include "ErrorMacros.h"
 
 RasterizerState::RasterizerState(GFX& gfx, bool disableBackfaceCulling)
 {

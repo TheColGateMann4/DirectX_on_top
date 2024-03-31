@@ -49,6 +49,30 @@
     <Filter Include="Shader\FullscreenFilters">
       <UniqueIdentifier>{2c5090a9-7d68-4f8d-9b61-336069c11054}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Render\RenderGraph">
+      <UniqueIdentifier>{cd9e6501-99dd-49cc-937f-ff01da130f22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render\RenderGraph">
+      <UniqueIdentifier>{08f4281c-899f-4058-a865-3549f5c5080a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\RenderGraph\Passes">
+      <UniqueIdentifier>{962dd346-785f-4242-9024-38946477766a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\RenderGraph\Passes\Pre-Made Passes">
+      <UniqueIdentifier>{82eda3b1-1e7d-4d27-984f-d057431bc0e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render\RenderGraph\Passes">
+      <UniqueIdentifier>{ccb59584-7c2e-407f-908d-4541a5bd30c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render\RenderGraph\Passes\Pre-Made Passes">
+      <UniqueIdentifier>{79e7ab98-6486-4cd0-8b53-c746112e1d96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\RenderGraph\RenderGraphType">
+      <UniqueIdentifier>{c1b29850-d4bd-4bbf-bc1b-94e0ed0a018c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render\RenderGraph\RenderGraphType">
+      <UniqueIdentifier>{6846b4e9-7569-4869-a35c-b7fa4964137f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes.h">
@@ -210,9 +234,6 @@
     <ClInclude Include="SceneObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderQueue.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
     <ClInclude Include="RenderPass.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
@@ -220,9 +241,6 @@
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="RenderTechnique.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSteps.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="NullPixelShader.h">
@@ -245,6 +263,57 @@
     </ClInclude>
     <ClInclude Include="GaussBlurFilter.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderBindablePass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPassInput.h">
+      <Filter>Header Files\Render\RenderGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPassOutput.h">
+      <Filter>Header Files\Render\RenderGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJobPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderStep.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="BlurOutlineRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlineRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlineMaskingRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="HorizontalGaussBlurRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="VerticalGaussBlurRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="FullscreenFilterRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferClearRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderGraph.h">
+      <Filter>Header Files\Render\RenderGraph\RenderGraphType</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalOutlineRenderGraph.h">
+      <Filter>Header Files\Render\RenderGraph\RenderGraphType</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxBlurRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -356,9 +425,6 @@
     <ClCompile Include="DynamicConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderQueue.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="RenderPass.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
@@ -370,9 +436,6 @@
     </ClCompile>
     <ClCompile Include="Shape.cpp">
       <Filter>Source Files\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSteps.cpp">
-      <Filter>Source Files\Render</Filter>
     </ClCompile>
     <ClCompile Include="NullPixelShader.cpp">
       <Filter>Source Files\Bindable</Filter>
@@ -397,6 +460,51 @@
     </ClCompile>
     <ClCompile Include="GaussBlurFilter.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderBindablePass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPassOutput.cpp">
+      <Filter>Source Files\Render\RenderGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJobPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderStep.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="BlurOutlineRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlineRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlineMaskingRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="HorizontalGaussBlurRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="VerticalGaussBlurRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="FullscreenFilterRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferClearRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderGraph.cpp">
+      <Filter>Source Files\Render\RenderGraph\RenderGraphType</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalOutlineRenderGraph.cpp">
+      <Filter>Source Files\Render\RenderGraph\RenderGraphType</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxBlurRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -494,7 +602,7 @@
     <FxCompile Include="PS_Fullscreen_Outline.hlsl">
       <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Fullscreen_Blur.hlsl">
+    <FxCompile Include="PS_Fullscreen_BoxBlur.hlsl">
       <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
   </ItemGroup>

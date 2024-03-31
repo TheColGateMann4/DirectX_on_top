@@ -1,31 +1,38 @@
 #pragma once
-#include <vector>
-#include "RenderJob.h"
-
-enum PASS_TYPE
-{
-	PASS_NORMAL,
-	PASS_WRITE,
-	PASS_MASK
-};
+#include "Includes.h"
+#include "RenderPassInput.h"
+#include "RenderPassOutput.h"
 
 class RenderPass
 {
+	friend class RenderGraph;
 public:
-	void Execute(GFX& gfx)
-	{
-		for (const auto& job : m_jobs)
-			job.Bind(gfx);
-		m_jobs.clear();
-	}
+	RenderPass(const char* name);
+	virtual ~RenderPass() = default;
 
 public:
-	void AddRenderJob(const RenderJob& job)
-	{
-		m_jobs.push_back(job);
-	}
+	const char* GetName() const;
+
+	RenderPassInput* GetInput(const char* inputName);
+	RenderPassOutput* GetOutput(const char* outputName);
+
+	std::vector<std::unique_ptr<RenderPassOutput>>& GetOutputs();
+
+public:
+	void RegisterInput(std::unique_ptr<RenderPassInput> renderInput);
+	void RegisterOutput(std::unique_ptr<RenderPassOutput> renderOutput);
+
+	void LinkOutput(const char* outputName, const std::string& linkedResource);
+
+public:
+	virtual void Render(class GFX& gfx) const noexcept(!_DEBUG) = 0;
+	virtual void CheckPassIntegrity() const;
+
+	virtual void Reset() {};
 
 private:
-	std::vector<RenderJob> m_jobs = {};
+	std::vector<std::unique_ptr<RenderPassInput>> m_inputs;
+	std::vector<std::unique_ptr<RenderPassOutput>> m_outputs;
+	const char* m_name;
 };
 

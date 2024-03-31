@@ -24,12 +24,14 @@ private:
 
 public:
 
-	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) override
+	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override
 	{
-		m_pStartingNode->Render(renderQueue, DirectX::XMMatrixIdentity());
+		m_pStartingNode->Render(DirectX::XMMatrixIdentity());
 	}
 
 public:
+	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
+
 	void MakeHierarchy(GFX& gfx) override;
 	virtual void MakeTransformPropeties(GFX& gfx) override;
 

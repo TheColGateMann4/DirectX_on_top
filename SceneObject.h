@@ -8,7 +8,10 @@ public:
 	virtual ~SceneObject() = default;
 
 public:
-	virtual void RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG) = 0;
+	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) = 0;
+
+public:
+	virtual void RenderOnScene() const noexcept(!IS_DEBUG) = 0;
 
 	virtual void MakeHierarchy(GFX& gfx)
 	{

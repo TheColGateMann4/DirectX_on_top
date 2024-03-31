@@ -18,10 +18,10 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 	m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2);
 
 	{
-		RenderTechnique normalTechnique;
+		RenderTechnique normalTechnique("normal");
 
 		{
-			RenderSteps normalStep(PASS_NORMAL);
+			RenderStep normalStep("normalPass");
 
 			std::shared_ptr<VertexShader> vertexShader = VertexShader::GetBindable(gfx, "VS.cso");
 			ID3DBlob* pBlob = vertexShader->GetByteCode();

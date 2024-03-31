@@ -1,4 +1,6 @@
 #include "PixelShader.h"
+#include "Graphics.h"
+#include "ErrorMacros.h"
 #include <d3dcompiler.h>
 
 PixelShader::PixelShader(GFX& gfx, std::string path)

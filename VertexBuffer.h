@@ -2,6 +2,7 @@
 #include "Includes.h"
 #include "Bindable.h"
 #include "BindableList.h"
+#include "ErrorMacros.h"
 #include "Vertex.h"
 
 class VertexBuffer : public Bindable

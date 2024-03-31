@@ -11,7 +11,8 @@ public:
 	Shape(const Shape&) = delete;
 
 public:
-	virtual void Render(class RenderQueue& renderQueue) const noexcept(!IS_DEBUG);
+	virtual void Render() const noexcept(!IS_DEBUG);
+	void LinkToPipeline(class RenderGraph& renderGraph);
 
 public:
 	void Bind(GFX& gfx) const noexcept;
@@ -36,7 +37,6 @@ public:
 	}
 
 public:
-
 	void SetTechniqueActive(size_t techniqueNum, bool active)
 	{
 		assert((m_techniques.size() - 1 >= techniqueNum) && "tried to get technique out of buffer");

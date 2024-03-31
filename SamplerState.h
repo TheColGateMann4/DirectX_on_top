@@ -1,6 +1,7 @@
 #pragma once
 #include "Bindable.h"
 #include "BindableList.h"
+#include <wrl.h>
 
 class SamplerState : public Bindable
 {

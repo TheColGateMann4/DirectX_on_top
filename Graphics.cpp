@@ -8,9 +8,9 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
-#include "imgui/imgui.h";
-#include "imgui/backend/imgui_impl_dx11.h";
-#include "imgui/backend/imgui_impl_win32.h";
+#include "imgui/imgui.h"
+#include "imgui/backend/imgui_impl_dx11.h"
+#include "imgui/backend/imgui_impl_win32.h"
 
 
 void GFX::Initialize(HWND hWnd)
@@ -55,8 +55,6 @@ void GFX::Initialize(HWND hWnd)
 
 	));
 
-
-
 	Microsoft::WRL::ComPtr<ID3D11Resource> pBackBuffer;
 
 	THROW_GFX_IF_FAILED(pSwapChain->GetBuffer(
@@ -65,12 +63,8 @@ void GFX::Initialize(HWND hWnd)
 		&pBackBuffer
 	));
 
-	THROW_GFX_IF_FAILED(
-		pDevice->CreateRenderTargetView(
-			pBackBuffer.Get(),
-			NULL,
-			&pTargetView
-		));
+	m_backBuffer = std::make_shared<RenderTarget>(*this, pBackBuffer);
+	m_depthStencil = std::make_shared<DepthStencilView>(*this);
 
 	ImGui_ImplDX11_Init(pDevice.Get(), pDeviceContext.Get());
 }
@@ -81,7 +75,7 @@ void GFX::SetResolution(UINT32 width, UINT32 height)
 	this->m_height = height;
 }
 
-void GFX::BeginFrame(DirectX::XMFLOAT4 color)
+void GFX::BeginFrame()
 {
 	//imgui
 	if (this->m_imgui_enabled)
@@ -90,9 +84,6 @@ void GFX::BeginFrame(DirectX::XMFLOAT4 color)
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 	}
-
-	//DirectX
-	this->ClearBuffer(color);
 }
 
 void GFX::FinishFrame()
@@ -123,36 +114,14 @@ void GFX::FinishFrame()
 	}
 }
 
-void GFX::ClearBuffer(DirectX::XMFLOAT4 color)
+std::shared_ptr<RenderTarget>* GFX::GetRenderTarget()
 {
-	pDeviceContext->ClearRenderTargetView(pTargetView.Get(), &color.x);
+	return &m_backBuffer;
 }
 
-void GFX::MakeAndSetLocalViewport() const noexcept
+std::shared_ptr<DepthStencilView>* GFX::GetDepthStencil()
 {
-	D3D11_VIEWPORT viewport = {};
-	viewport.Width = m_width;
-	viewport.Height = m_height;
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	pDeviceContext->RSSetViewports(1, &viewport);
-}
-
-void GFX::BindRenderTarget() const noexcept
-{
-	MakeAndSetLocalViewport();
-
-	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), nullptr);
-}
-
-void GFX::BindRenderTarget(const class DepthStencilView& depthStencilView) const noexcept
-{
-	MakeAndSetLocalViewport();
-
-	pDeviceContext->OMSetRenderTargets(1, pTargetView.GetAddressOf(), depthStencilView.pDepthStencilView.Get());
+	return &m_depthStencil;
 }
 
 void GFX::ShowImGUI(bool show)

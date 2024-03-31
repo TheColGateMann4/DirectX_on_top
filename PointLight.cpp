@@ -26,6 +26,11 @@ PointLight::PointLight(GFX& gfx, float radius)
 
 
 
+void PointLight::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
+{
+	m_model.LinkToPipeline(renderGraph);
+}
+
 void PointLight::MakeTransformPropeties(GFX& gfx)
 {
 	if (!GetPressedState())
@@ -121,10 +126,10 @@ void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 	}
 }
 
-void PointLight::RenderOnScene(RenderQueue& renderQueue) const noexcept(!IS_DEBUG)
+void PointLight::RenderOnScene() const noexcept(!IS_DEBUG)
 {
 	m_model.SetPosition(*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"));
-	m_model.Render(renderQueue);
+	m_model.Render();
 }
 
 void PointLight::Reset() noexcept
