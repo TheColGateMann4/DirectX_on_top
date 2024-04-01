@@ -43,7 +43,7 @@ public:
 		for (auto& bindable : m_bindables)
 		{
 			if (T* bindableOfDesiredType = dynamic_cast<T*>(bindable.get()))
-				if (std::is_base_of_v<ConstantBuffer, T> || typeid(T) == typeid(ConstantBuffer))
+				if (std::is_base_of_v<ConstantBuffer, T>)
 				{
 					if ((bindableOfDesiredType->GetSlot() == slotNumber) && (bindableOfDesiredType->isPixelShaderType() == isPixelShader))
 						return bindableOfDesiredType;

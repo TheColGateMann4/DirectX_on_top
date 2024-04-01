@@ -17,8 +17,8 @@ int WINAPI WinMain
 
 	try
 	{
-		UINT32 screenWidth = std::round(float(GetSystemMetrics(SM_CXSCREEN)) * 0.625f);
-		UINT32 screenHeight = std::round(float(GetSystemMetrics(SM_CYSCREEN)) * 0.83333333333f);
+		UINT32 screenWidth = UINT32(std::round(float(GetSystemMetrics(SM_CXSCREEN)) * 0.625f));
+		UINT32 screenHeight = UINT32(std::round(float(GetSystemMetrics(SM_CYSCREEN)) * 0.83333333333f));
 
 		Application App(screenWidth, screenHeight, "DirectX Dominating");
 

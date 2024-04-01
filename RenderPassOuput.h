@@ -61,7 +61,7 @@ private:
 template<class T>
 class RenderPassBindableNewOuput : public RenderPassOutput
 {
-	static_assert(std::is_base_of_v<Bindable, T> || typeid(Bindable) == typeid(T));
+	static_assert(std::is_base_of_v<Bindable, T>);
 
 public:
 	RenderPassBindableNewOuput(const char* name, std::shared_ptr<T>* bindable)

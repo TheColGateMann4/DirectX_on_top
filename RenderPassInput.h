@@ -41,7 +41,7 @@ private:
 template<class T>
 class RenderPassBindableInput : public RenderPassInput
 {
-	static_assert(std::is_base_of_v<Bindable, T> || typeid(Bindable) == typeid(T));
+	static_assert(std::is_base_of_v<Bindable, T>);
 
 public:
 	RenderPassBindableInput(const char* name, T* bindable)
@@ -155,7 +155,7 @@ private:
 template<class T>
 class RenderPassBufferInput : public RenderPassInput
 {
-	static_assert(std::is_base_of_v<GraphicBuffer, T> || typeid(GraphicBuffer) == typeid(T));
+	static_assert(std::is_base_of_v<GraphicBuffer, T>);
 
 public:
 	RenderPassBufferInput(const char* name, std::shared_ptr<T>* buffer)

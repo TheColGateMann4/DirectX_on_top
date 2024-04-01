@@ -17,7 +17,7 @@ public:
 	template<class T>
 	void AddBindableInput(const char* inputName)
 	{
-		static_assert(std::is_base_of_v<Bindable, T> || typeid(Bindable) == typeid(T));
+		static_assert(std::is_base_of_v<Bindable, T>);
 
 		m_bindables.push_back(std::shared_ptr<T>());
 		RegisterInput(RenderPassEmptyBindableInput::GetUnique(inputName, &m_bindables, m_bindables.size() - 1));
