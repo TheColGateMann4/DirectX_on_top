@@ -6,7 +6,7 @@ BlurOutlineRenderPass::BlurOutlineRenderPass(class GFX& gfx, const char* name, f
 {
 	m_renderTarget = std::make_shared<RenderTargetWithTexture>(gfx, resolutionX / 2, resolutionY / 2, 0);
 
-	RegisterInput(RenderPassBufferInput<RenderTarget>::GetUnique("renderTargetWithTexture", &m_renderTarget));
+	RegisterOutput(RenderPassBufferNewOutput<RenderTarget>::GetUnique("renderTargetWithTexture", &m_renderTarget));
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 	AddBindable(VertexShader::GetBindable(gfx, "VS.cso"));

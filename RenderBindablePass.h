@@ -15,12 +15,12 @@ public:
 	virtual void CheckPassIntegrity() const override;
 
 	template<class T>
-	void AddBindableOutput(const char* outputName)
+	void AddBindableInput(const char* inputName)
 	{
 		static_assert(std::is_base_of_v<Bindable, T> || typeid(Bindable) == typeid(T));
 
 		m_bindables.push_back(std::shared_ptr<T>());
-		RegisterOutput(RenderPassEmptyBindableOutput::GetUnique(outputName, &m_bindables, m_bindables.size() - 1));
+		RegisterInput(RenderPassEmptyBindableInput::GetUnique(inputName, &m_bindables, m_bindables.size() - 1));
 	}
 
 	void AddBindable(std::shared_ptr<Bindable> bindable) noexcept;

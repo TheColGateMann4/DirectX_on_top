@@ -15,11 +15,11 @@ BoxBlurRenderPass::BoxBlurRenderPass(class GFX& gfx, const char* name)
 		blurData = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true);
 	}
 
-	RegisterInput(RenderPassBufferInput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
+	RegisterOutput(RenderPassBufferNewOutput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
 
-	AddBindableOutput<RenderTargetWithTexture>("pixelShaderTexture");
-	RegisterOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
-	RegisterOutput(RenderPassBufferOutput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
+	AddBindableInput<RenderTargetWithTexture>("pixelShaderTexture");
+	RegisterInput(RenderPassBufferInput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
+	RegisterInput(RenderPassBufferInput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Fullscreen_BoxBlur.cso"));
 	AddBindable(SamplerState::GetBindable(gfx, true, true));

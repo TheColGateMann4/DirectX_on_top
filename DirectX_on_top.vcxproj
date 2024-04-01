@@ -216,8 +216,8 @@
     <ClInclude Include="RenderJob.h" />
     <ClInclude Include="RenderJobPass.h" />
     <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="RenderPassOuput.h" />
     <ClInclude Include="RenderPassInput.h" />
-    <ClInclude Include="RenderPassOutput.h" />
     <ClInclude Include="RenderStep.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="RenderTechnique.h" />
@@ -288,7 +288,7 @@
     <ClCompile Include="RenderJob.cpp" />
     <ClCompile Include="RenderJobPass.cpp" />
     <ClCompile Include="RenderPass.cpp" />
-    <ClCompile Include="RenderPassOutput.cpp" />
+    <ClCompile Include="RenderPassInput.cpp" />
     <ClCompile Include="RenderStep.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="RenderTechnique.cpp" />

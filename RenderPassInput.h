@@ -1,46 +1,30 @@
 #pragma once
 #include "Includes.h"
-#include "Bindable.h"
-#include "ErrorMacros.h"
-#include "RenderTarget.h"
+#include "RenderPassOuput.h"
 
-class GraphicBuffer;
+class Bindable;
+class RenderPassOutput;
 
 class RenderPassInput
 {
-public:
-	RenderPassInput(const char* name)
-		: m_name(name)
-	{
-
-	}
-
-	static std::unique_ptr<RenderPassInput> GetUnique(const char* name)
-	{
-		return std::move(std::make_unique<RenderPassInput>(name));
-	}
+	friend class RenderPass;
+protected:
+	RenderPassInput(const char* name);
 
 public:
 	virtual ~RenderPassInput() = default;
 
 public:
-	virtual std::shared_ptr<Bindable> GetBindable()
-	{
-		std::string errorString = "This object cannot be used to get bindable. Pass name is: \"";
-		errorString += m_name;
-		errorString += "\".";
+	void Link(std::string& objectName, std::string& passName);
 
-		THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
-	}
+	virtual void Bind(RenderPassOutput& renderPassOutput);
 
-	virtual std::shared_ptr<GraphicBuffer> GetBuffer()
-	{
-		std::string errorString = "This object cannot be used to get bindable. Pass name is: \"";
-		errorString += m_name;
-		errorString += "\".";
+public:
+	const char* GetInputName() const;
+	std::string GetLinkObjectName() const;
+	std::string GetLinkObjectOwnerName() const;
 
-		THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
-	}
+	std::string GetLocalInfo() const;
 
 public:
 	virtual void CheckInputIntegrity() const
@@ -48,14 +32,10 @@ public:
 
 	}
 
-public:
-	const char* GetName() const
-	{
-		return m_name;
-	}
-
 private:
 	const char* m_name;
+	std::string m_linkObjectName;
+	std::string m_linkPassName;
 };
 
 template<class T>
@@ -64,23 +44,36 @@ class RenderPassBindableInput : public RenderPassInput
 	static_assert(std::is_base_of_v<Bindable, T> || typeid(Bindable) == typeid(T));
 
 public:
-	RenderPassBindableInput(const char* name, std::shared_ptr<T>* bindable)
+	RenderPassBindableInput(const char* name, T* bindable)
 		: RenderPassInput(name), m_bindable(bindable), m_linked(false)
 	{
 
 	}
 
-	static std::unique_ptr<RenderPassBindableInput> GetUnique(const char* name, std::shared_ptr<T>* bindable)
+	static std::unique_ptr<RenderPassBindableInput<Bindable>> GetUnique(const char* name, T* bindable)
 	{
-		return std::move(std::make_unique<RenderPassBindableInput<T>>(name, bindable));
+		return std::move(std::make_unique<RenderPassBindableInput<Bindable>>(name, bindable));
 	}
 
 public:
-	virtual std::shared_ptr<Bindable> GetBindable() noexcept override
+	virtual void Bind(RenderPassOutput& renderPassInput) override
 	{
-		m_linked = true;
+		std::shared_ptr<Bindable> pRenderPassInputBindables = renderPassInput.GetBindable();
 
-		return m_bindable;
+		if (pRenderPassInputBindables == nullptr)
+		{
+			std::string errorString = "Buffer of bindables passed to output object: \"";
+			errorString += this->GetInputName();
+			errorString += "\". From input object with name: \"";
+			errorString += renderPassInput.GetName();
+			errorString += "\". was null";
+
+			THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
+		}
+
+		*m_bindable = *dynamic_cast<T*>(pRenderPassInputBindables.get());
+		
+		m_linked = true;
 	}
 
 public:
@@ -88,8 +81,8 @@ public:
 	{
 		if (!m_linked)
 		{
-			std::string errorString = "This output was not bound. Object name is: \"";
-			errorString += this->GetName();
+			std::string errorString = "This input was not bound. Object name is: \"";
+			errorString += this->GetInputName();
 			errorString += "\".";
 
 			THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
@@ -97,18 +90,78 @@ public:
 	}
 
 private:
+	T* m_bindable;
 	bool m_linked;
-	std::shared_ptr<Bindable>* m_bindable;
 };
+
+// When we are pushing bindable input to an array, regular RenderPassBindableInput wouldn't work.
+// Since it takes pointer to bindable, which in that case would take nullptr
+
+class RenderPassEmptyBindableInput : public RenderPassInput
+{
+public:
+	RenderPassEmptyBindableInput(const char* name, std::vector<std::shared_ptr<Bindable>>* bindables, size_t bindableIndex)
+		: RenderPassInput(name), m_bindables(bindables), m_bindableIndex(bindableIndex), m_linked(false)
+	{
+
+	}
+
+	static std::unique_ptr<RenderPassEmptyBindableInput> GetUnique(const char* name, std::vector<std::shared_ptr<Bindable>>* bindables, size_t bindableIndex)
+	{
+		return std::move(std::make_unique<RenderPassEmptyBindableInput>(name, bindables, bindableIndex));
+	}
+
+public:
+	virtual void Bind(RenderPassOutput& renderPassOutput) override
+	{
+		std::shared_ptr<Bindable> pRenderPassOutputBindables = renderPassOutput.GetBindable();
+
+		if (pRenderPassOutputBindables == nullptr)
+		{
+			std::string errorString = "Buffer of bindables passed to input object: \"";
+			errorString += this->GetInputName();
+			errorString += "\". From output object with name: \"";
+			errorString += renderPassOutput.GetName();
+			errorString += "\". was null";
+
+			THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
+		}
+
+		m_bindables->at(m_bindableIndex) = pRenderPassOutputBindables;
+		
+		m_linked = true;
+	}
+
+public:
+	virtual void CheckInputIntegrity() const override
+	{
+		if (!m_linked)
+		{
+			std::string errorString = "This input was not bound. Object name is: \"";
+			errorString += this->GetInputName();
+			errorString += "\".";
+
+			THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
+		}
+	}
+
+private:
+	std::vector<std::shared_ptr<Bindable>>* m_bindables;
+	size_t m_bindableIndex;
+	bool m_linked;
+};
+
 
 template<class T>
 class RenderPassBufferInput : public RenderPassInput
 {
+	static_assert(std::is_base_of_v<GraphicBuffer, T> || typeid(GraphicBuffer) == typeid(T));
+
 public:
 	RenderPassBufferInput(const char* name, std::shared_ptr<T>* buffer)
-		: RenderPassInput(name),m_buffer(buffer), m_linked(false)
+		: RenderPassInput(name), m_buffer(buffer), m_linked(false)
 	{
-
+		
 	}
 
 	static std::unique_ptr<RenderPassBufferInput> GetUnique(const char* name, std::shared_ptr<T>* buffer)
@@ -117,26 +170,20 @@ public:
 	}
 
 public:
-	virtual std::shared_ptr<GraphicBuffer> GetBuffer() override
+	virtual void Bind(RenderPassOutput& renderPassInput) override
 	{
-		if (m_linked)
+		std::shared_ptr<T> pBuffer = std::dynamic_pointer_cast<T>(renderPassInput.GetBuffer());
+
+		if (pBuffer == nullptr)
 		{
-			std::string errorString = "Buffer from this object was already bound. Object name is: \"";
-			errorString += this->GetName();
-			errorString += "\".";
+			std::string errorString = "Buffer wasn't passed to input.";
+			errorString += GetLocalInfo();
 
 			THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
 		}
 
 		m_linked = true;
-
-		return std::dynamic_pointer_cast<GraphicBuffer>(*m_buffer);
-	}
-	virtual std::shared_ptr<Bindable> GetBindable() noexcept override
-	{
-		m_linked = true;
-
-		return std::dynamic_pointer_cast<RenderTargetWithTexture>(*m_buffer);
+		*m_buffer = pBuffer;
 	}
 
 public:
@@ -144,9 +191,8 @@ public:
 	{
 		if (!m_linked)
 		{
-			std::string errorString = "This intput was not bound. Object name is: \"";
-			errorString += this->GetName();
-			errorString += "\".";
+			std::string errorString = "This input was not bound.";
+			errorString += GetLocalInfo();
 
 			THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
 		}

@@ -1,14 +1,14 @@
-#include "RenderPassOutput.h"
 #include "RenderPassInput.h"
+#include "RenderPassOuput.h"
 #include "ErrorMacros.h"
 
-RenderPassOutput::RenderPassOutput(const char* name)
+RenderPassInput::RenderPassInput(const char* name)
 	: m_name(name)
 {
 
 }
 
-void RenderPassOutput::Link(std::string& objectName, std::string& passName)
+void RenderPassInput::Link(std::string& objectName, std::string& passName)
 {
 	{
 		if (passName.empty())
@@ -18,7 +18,7 @@ void RenderPassOutput::Link(std::string& objectName, std::string& passName)
 		{
 			if (!isalpha(character) && character != '$')
 			{
-				std::string errorString = "Invalid Pass name was passed to output. Pass name was: \"";
+				std::string errorString = "Invalid Pass name was passed to input. Pass name was: \"";
 				errorString += passName;
 				errorString += "\".";
 
@@ -37,7 +37,7 @@ void RenderPassOutput::Link(std::string& objectName, std::string& passName)
 		{
 			if (!isalpha(character))
 			{
-				std::string errorString = "Invalid Object name was passed to output. Object name was: \"";
+				std::string errorString = "Invalid Object name was passed to input. Object name was: \"";
 				errorString += objectName;
 				errorString += "\".";
 
@@ -49,33 +49,33 @@ void RenderPassOutput::Link(std::string& objectName, std::string& passName)
 	m_linkObjectName = objectName;
 }
 
-void RenderPassOutput::Bind(RenderPassInput& renderPassInput)
+void RenderPassInput::Bind(RenderPassOutput& renderPassOutput)
 {
-	std::string errorMessage = "Tried to bind invalid RenderPassOutput.";
+	std::string errorMessage = "Tried to bind invalid RenderPassInput.";
 	errorMessage += GetLocalInfo();
 
 	THROW_RENDER_GRAPH_EXCEPTION(errorMessage.c_str());
 }
 
-const char* RenderPassOutput::GetOutputName() const
+const char* RenderPassInput::GetInputName() const
 {
 	return m_name;
 }
 
-std::string RenderPassOutput::GetLinkObjectName() const
+std::string RenderPassInput::GetLinkObjectName() const
 {
 	return m_linkObjectName;
 }
 
-std::string RenderPassOutput::GetLinkObjectOwnerName() const
+std::string RenderPassInput::GetLinkObjectOwnerName() const
 {
 	return m_linkPassName;
 }
 
-std::string RenderPassOutput::GetLocalInfo() const
+std::string RenderPassInput::GetLocalInfo() const
 {
-	std::string result = " Ouput name was: \"";
-	result += GetOutputName();
+	std::string result = " Input name was: \"";
+	result += GetInputName();
 	result += "\"\nLinked object owner name was: \"";
 	result += GetLinkObjectOwnerName();
 	result += "\"\nLinked object name was: ";

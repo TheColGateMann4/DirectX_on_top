@@ -2,8 +2,8 @@
 #include "Includes.h"
 #include "RenderPass.h"
 #include "RenderJobPass.h"
+#include "RenderPassOuput.h"
 #include "RenderPassInput.h"
-#include "RenderPassOutput.h"
 #include "RenderTarget.h"
 #include "DepthStencilView.h"
 
@@ -19,12 +19,12 @@ public:
 	void Reset();
 
 public:
-	void SetTarget(const char* outputName, const std::string& linkedResource);
+	void SetTarget(const char* inputName, const std::string& linkedResource);
 
 	void AddPass(std::unique_ptr<RenderPass> pass);
 
-	void AddGlobalInput(std::unique_ptr<RenderPassInput> input);
 	void AddGlobalOutput(std::unique_ptr<RenderPassOutput> output);
+	void AddGlobalInput(std::unique_ptr<RenderPassInput> input);
 
 	void CheckGraphIntegrity();
 
@@ -46,13 +46,13 @@ public:
 	}
 
 private:
-	void LinkOutputs(RenderPass* pass);
-	void LinkGlobalOutputs();
+	void LinkInputs(RenderPass* pass);
+	void LinkGlobalInputs();
 
 private:
 	std::vector<std::unique_ptr<RenderPass>> m_passes;
-	std::vector<std::unique_ptr<RenderPassInput>> m_globalInputs;
 	std::vector<std::unique_ptr<RenderPassOutput>> m_globalOutputs;
+	std::vector<std::unique_ptr<RenderPassInput>> m_globalInputs;
 
 	std::shared_ptr<RenderTarget>* m_backBuffer;
 	std::shared_ptr<DepthStencilView>* m_depthStencilView;

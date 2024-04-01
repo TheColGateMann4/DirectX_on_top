@@ -12,16 +12,16 @@ const char* RenderPass::GetName() const
 	return m_name;
 }
 
-RenderPassInput* RenderPass::GetInput(const char* inputName)
+RenderPassOutput* RenderPass::GetOutput(const char* outputName)
 {
-	for (const auto& input : m_inputs)
+	for (const auto& input : m_outputs)
 	{
-		if (strcmp(input->GetName(), inputName) == 0)
+		if (strcmp(input->GetName(), outputName) == 0)
 			return input.get();
 	}
 
-	std::string errorString = "RenderPassIntput could not be found in RenderPass. intput name was: \"";
-	errorString += inputName;
+	std::string errorString = "RenderPassOutput could not be found in RenderPass. output name was: \"";
+	errorString += outputName;
 	errorString += "\". RenderPass name was: \"";
 	errorString += this->m_name;
 	errorString += "\".";
@@ -29,16 +29,16 @@ RenderPassInput* RenderPass::GetInput(const char* inputName)
 	return nullptr;
 }
 
-RenderPassOutput* RenderPass::GetOutput(const char* outputName)
+RenderPassInput* RenderPass::GetInput(const char* inputName)
 {
-	for (const auto& output : m_outputs)
+	for (const auto& input : m_inputs)
 	{
-		if (strcmp(output->GetOutputName(), outputName) == 0)
-			return output.get();
+		if (strcmp(input->GetInputName(), inputName) == 0)
+			return input.get();
 	}
 
-	std::string errorString = "RenderPassOutput could not be found in RenderPass. output name was: \"";
-	errorString += outputName;
+	std::string errorString = "RenderPassInput could not be found in RenderPass. input name was: \"";
+	errorString += inputName;
 	errorString += "\". RenderPass name was: \"";
 	errorString += this->m_name;
 	errorString += "\".";
@@ -48,14 +48,9 @@ RenderPassOutput* RenderPass::GetOutput(const char* outputName)
 	return nullptr;
 }
 
-std::vector<std::unique_ptr<RenderPassOutput>>& RenderPass::GetOutputs()
+std::vector<std::unique_ptr<RenderPassInput>>& RenderPass::GetInputs()
 {
-	return m_outputs;
-}
-
-void RenderPass::RegisterInput(std::unique_ptr<RenderPassInput> renderInput)
-{
-	m_inputs.push_back(std::move(renderInput));
+	return m_inputs;
 }
 
 void RenderPass::RegisterOutput(std::unique_ptr<RenderPassOutput> renderOutput)
@@ -63,9 +58,14 @@ void RenderPass::RegisterOutput(std::unique_ptr<RenderPassOutput> renderOutput)
 	m_outputs.push_back(std::move(renderOutput));
 }
 
-void RenderPass::LinkOutput(const char* outputName, const std::string& linkedResource)
+void RenderPass::RegisterInput(std::unique_ptr<RenderPassInput> renderInput)
 {
-	RenderPassOutput* output = GetOutput(outputName);
+	m_inputs.push_back(std::move(renderInput));
+}
+
+void RenderPass::LinkInput(const char* inputName, const std::string& linkedResource)
+{
+	RenderPassInput* input = GetInput(inputName);
 
 	size_t positionOfDotThatSeparates = linkedResource.find('.');
 
@@ -90,14 +90,14 @@ void RenderPass::LinkOutput(const char* outputName, const std::string& linkedRes
 	std::string passName = std::string(linkedResource.begin(), linkedResource.begin() + positionOfDotThatSeparates);
 	std::string objectName = linkedResource.c_str() + positionOfDotThatSeparates + 1;
 
-	output->Link(objectName, passName);
+	input->Link(objectName, passName);
 }
 
 void RenderPass::CheckPassIntegrity() const
 {
+	for (const auto& output : m_outputs)
+		output->CheckInputIntegrity();
+	
 	for (const auto& input : m_inputs)
 		input->CheckInputIntegrity();
-	
-	for (const auto& output : m_outputs)
-		output->CheckOutputIntegrity();
 }

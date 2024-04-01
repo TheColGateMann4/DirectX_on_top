@@ -1,7 +1,7 @@
 #pragma once
 #include "Includes.h"
+#include "RenderPassOuput.h"
 #include "RenderPassInput.h"
-#include "RenderPassOutput.h"
 
 class RenderPass
 {
@@ -13,16 +13,16 @@ public:
 public:
 	const char* GetName() const;
 
-	RenderPassInput* GetInput(const char* inputName);
 	RenderPassOutput* GetOutput(const char* outputName);
+	RenderPassInput* GetInput(const char* inputName);
 
-	std::vector<std::unique_ptr<RenderPassOutput>>& GetOutputs();
+	std::vector<std::unique_ptr<RenderPassInput>>& GetInputs();
 
 public:
-	void RegisterInput(std::unique_ptr<RenderPassInput> renderInput);
 	void RegisterOutput(std::unique_ptr<RenderPassOutput> renderOutput);
+	void RegisterInput(std::unique_ptr<RenderPassInput> renderInput);
 
-	void LinkOutput(const char* outputName, const std::string& linkedResource);
+	void LinkInput(const char* inputName, const std::string& linkedResource);
 
 public:
 	virtual void Render(class GFX& gfx) const noexcept(!_DEBUG) = 0;
@@ -31,8 +31,8 @@ public:
 	virtual void Reset() {};
 
 private:
-	std::vector<std::unique_ptr<RenderPassInput>> m_inputs;
 	std::vector<std::unique_ptr<RenderPassOutput>> m_outputs;
+	std::vector<std::unique_ptr<RenderPassInput>> m_inputs;
 	const char* m_name;
 };
 

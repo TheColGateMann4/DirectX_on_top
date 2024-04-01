@@ -14,26 +14,26 @@ NormalOutlineRenderGraph::NormalOutlineRenderGraph(GFX& gfx)
 		//cleaning up buffers after previous frame
 		{
 			auto renderPass = std::make_unique<BufferClearRenderPass>(gfx, "clearBackBuffer");
-			renderPass->LinkOutput("buffer", "$.backBuffer");
+			renderPass->LinkInput("buffer", "$.backBuffer");
 			AddPass(std::move(renderPass));
 		}
 		{
 			auto renderPass = std::make_unique<BufferClearRenderPass>(gfx, "clearDepthStencilView");
-			renderPass->LinkOutput("buffer", "$.depthStencilView");
+			renderPass->LinkInput("buffer", "$.depthStencilView");
 			AddPass(std::move(renderPass));
 		}
 
 		//drawing our regular meshes
 		{
 			auto renderPass = std::make_unique<NormalRenderPass>(gfx, "normalPass");
-			renderPass->LinkOutput("depthStencilView", "clearDepthStencilView.buffer");
-			renderPass->LinkOutput("renderTarget", "clearBackBuffer.buffer");
+			renderPass->LinkInput("depthStencilView", "clearDepthStencilView.buffer");
+			renderPass->LinkInput("renderTarget", "clearBackBuffer.buffer");
 			AddPass(std::move(renderPass));
 		}
 
 		{
 			auto renderPass = std::make_unique<OutlineMaskingRenderPass>(gfx, "outlineWriteMaskPass");
-			renderPass->LinkOutput("depthStencilView", "normalPass.depthStencilView");
+			renderPass->LinkInput("depthStencilView", "normalPass.depthStencilView");
 			AddPass(std::move(renderPass));
 		}
 
@@ -44,9 +44,9 @@ NormalOutlineRenderGraph::NormalOutlineRenderGraph(GFX& gfx)
 
 		{
 			auto renderPass = std::make_unique<BoxBlurRenderPass>(gfx, "boxBlurPass");
-			renderPass->LinkOutput("pixelShaderTexture", "outlineMaskPass.pixelShaderTexture");
-			renderPass->LinkOutput("depthStencilView", "outlineWriteMaskPass.depthStencilView");
-			renderPass->LinkOutput("renderTarget", "normalPass.renderTarget");
+			renderPass->LinkInput("pixelShaderTexture", "outlineMaskPass.pixelShaderTexture");
+			renderPass->LinkInput("depthStencilView", "outlineWriteMaskPass.depthStencilView");
+			renderPass->LinkInput("renderTarget", "normalPass.renderTarget");
 			AddPass(std::move(renderPass));
 		}
 	}
