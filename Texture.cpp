@@ -3,8 +3,9 @@
 #include <DirectXTex.h>
 
 Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube)
-	: 
+	:
 	m_slot(slot),
+	m_isCube(isCube),
 	m_imagePath(imagePath)
 {
 	HRESULT hr;
@@ -51,7 +52,7 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-	if (isCube)
+	if (m_isCube)
 		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
