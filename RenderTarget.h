@@ -8,7 +8,7 @@ class RenderTarget : public Bindable, public GraphicBuffer
 {
 	friend class RenderTargetWithTexture;
 public:
-	RenderTarget(GFX& gfx, const int width, const int height, bool shouldUpdate = true);
+	RenderTarget(GFX& gfx, const int width, const int height, bool isTextureRenderTarget = false);
 	RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTexture);
 	RenderTarget(const RenderTarget& renderTarget);
 
@@ -29,7 +29,8 @@ private:
 protected:
 	int m_width;
 	int m_height;
-	bool m_shouldUpdate;
+	bool m_isBackBuffer;
+	bool m_isTextureRenderTarget;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 };
 

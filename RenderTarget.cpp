@@ -3,9 +3,9 @@
 #include "Graphics.h"
 #include "ErrorMacros.h"
 
-RenderTarget::RenderTarget(GFX& gfx, const int width, const int height, bool shouldUpdate)
+RenderTarget::RenderTarget(GFX& gfx, const int width, const int height, bool isTextureRenderTarget)
 	:
-	m_width(width), m_height(height), m_shouldUpdate(shouldUpdate)
+	m_width(width), m_height(height), m_isBackBuffer(false), m_isTextureRenderTarget(isTextureRenderTarget)
 {
 	Update(gfx);
 }
@@ -24,10 +24,11 @@ void RenderTarget::Update(GFX& gfx)
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
+	if (m_isTextureRenderTarget) textureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
 	THROW_GFX_IF_FAILED(
 		GetDevice(gfx)->CreateTexture2D(
@@ -53,7 +54,8 @@ void RenderTarget::Update(GFX& gfx)
 
 RenderTarget::RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTexture)
 	:
-	m_shouldUpdate(false)
+	m_isBackBuffer(true), // setting it this way since we only use it for backBuffer for now
+	m_isTextureRenderTarget(false) // m_isTextureRenderTarget means that it binds texture, not that it uses one to create RenderTargetView
 {
 	HRESULT hr;
 
@@ -80,7 +82,8 @@ RenderTarget::RenderTarget(const RenderTarget& renderTarget)
 {
 	this->m_width = renderTarget.m_width;
 	this->m_height = renderTarget.m_height;
-	this->m_shouldUpdate = renderTarget.m_shouldUpdate;
+	this->m_isBackBuffer = renderTarget.m_isBackBuffer;
+	this->m_isTextureRenderTarget = renderTarget.m_isTextureRenderTarget;
 	this->m_pRenderTargetView = renderTarget.m_pRenderTargetView;
 }
 
@@ -96,7 +99,7 @@ void RenderTarget::MakeAndSetLocalViewport(GFX& gfx)
 
 	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->RSSetViewports(1, &viewport));
 
-	if(m_shouldUpdate)
+	if(!m_isTextureRenderTarget && !m_isBackBuffer)
 		Update(gfx);
 }
 
@@ -157,7 +160,7 @@ RenderTargetWithTexture::RenderTargetWithTexture(const RenderTargetWithTexture& 
 
 RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, const int height, int slot)
 	: 
-	RenderTarget(gfx, width, height, false),
+	RenderTarget(gfx, width, height, true),
 	m_slot(slot)
 {
 	HRESULT hr;
