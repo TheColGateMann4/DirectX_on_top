@@ -9,11 +9,11 @@ VerticalGaussBlurRenderPass::VerticalGaussBlurRenderPass(class GFX& gfx, const c
 	AddBindable(SamplerState::GetBindable(gfx, true, true));
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Mask));
 
-	RegisterOutput(RenderPassBufferNewOutput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
-	RegisterOutput(RenderPassBufferNewOutput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
+	RegisterOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
 
 	AddBindableInput<CachedBuffer>("gaussCooficientSettings");
-	RegisterInput(RenderPassBindableInput<CachedBuffer>::GetUnique("gaussDirectionSettings", gaussBlurDirectionData.get()));
+	RegisterInput(RenderPassBindableInput<CachedBuffer>::GetUnique("gaussDirectionSettings", &gaussBlurDirectionData));
+	AddBindableInput<RenderTargetWithTexture>("pixelShaderTexture");
 	RegisterInput(RenderPassBufferInput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
 	RegisterInput(RenderPassBufferInput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
 }

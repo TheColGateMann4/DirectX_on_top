@@ -6,15 +6,14 @@ HorizontalGaussBlurRenderPass::HorizontalGaussBlurRenderPass(class GFX& gfx, con
 {
 	m_renderTarget = std::make_shared<RenderTargetWithTexture>(gfx, width / 2, height / 2, 0);
 
-	RegisterOutput(RenderPassBufferNewOutput<RenderTarget>::GetUnique("pixelShaderTexture", &m_renderTarget));
+	RegisterOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("pixelShaderTexture", &m_renderTarget));
 	
 	AddBindableInput<CachedBuffer>("gaussCooficientSettings");
-	RegisterInput(RenderPassBindableInput<CachedBuffer>::GetUnique("gaussDirectionSettings", gaussBlurDirectionData.get()));
-	RegisterInput(RenderPassBufferInput<RenderTarget>::GetUnique("pixelShaderTexture", &m_renderTarget));
-	RegisterInput(RenderPassBufferInput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
+	AddBindableInput<RenderTargetWithTexture>("pixelShaderTexture");
+	RegisterInput(RenderPassBindableInput<CachedBuffer>::GetUnique("gaussDirectionSettings", &gaussBlurDirectionData));
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Fullscreen_GaussBlur.cso"));
-	AddBindable(BlendState::GetBindable(gfx, true));
+	AddBindable(BlendState::GetBindable(gfx, false));
 	AddBindable(SamplerState::GetBindable(gfx, true, true));
 }
 

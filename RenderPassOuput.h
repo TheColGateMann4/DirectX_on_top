@@ -59,20 +59,20 @@ private:
 };
 
 template<class T>
-class RenderPassBindableNewOuput : public RenderPassOutput
+class RenderPassBindableOutput : public RenderPassOutput
 {
 	static_assert(std::is_base_of_v<Bindable, T>);
 
 public:
-	RenderPassBindableNewOuput(const char* name, std::shared_ptr<T>* bindable)
+	RenderPassBindableOutput(const char* name, std::shared_ptr<T>* bindable)
 		: RenderPassOutput(name), m_bindable(bindable), m_linked(false)
 	{
 
 	}
 
-	static std::unique_ptr<RenderPassBindableNewOuput> GetUnique(const char* name, std::shared_ptr<T>* bindable)
+	static std::unique_ptr<RenderPassBindableOutput> GetUnique(const char* name, std::shared_ptr<T>* bindable)
 	{
-		return std::move(std::make_unique<RenderPassBindableNewOuput<T>>(name, bindable));
+		return std::move(std::make_unique<RenderPassBindableOutput<T>>(name, bindable));
 	}
 
 public:
@@ -80,7 +80,7 @@ public:
 	{
 		m_linked = true;
 
-		return m_bindable;
+		return *m_bindable;
 	}
 
 public:
@@ -98,22 +98,22 @@ public:
 
 private:
 	bool m_linked;
-	std::shared_ptr<Bindable>* m_bindable;
+	std::shared_ptr<T>* m_bindable;
 };
 
 template<class T>
-class RenderPassBufferNewOutput : public RenderPassOutput
+class RenderPassBufferOutput : public RenderPassOutput
 {
 public:
-	RenderPassBufferNewOutput(const char* name, std::shared_ptr<T>* buffer)
+	RenderPassBufferOutput(const char* name, std::shared_ptr<T>* buffer)
 		: RenderPassOutput(name),m_buffer(buffer), m_linked(false)
 	{
 
 	}
 
-	static std::unique_ptr<RenderPassBufferNewOutput> GetUnique(const char* name, std::shared_ptr<T>* buffer)
+	static std::unique_ptr<RenderPassBufferOutput> GetUnique(const char* name, std::shared_ptr<T>* buffer)
 	{
-		return std::move(std::make_unique<RenderPassBufferNewOutput<T>>(name, buffer));
+		return std::move(std::make_unique<RenderPassBufferOutput<T>>(name, buffer));
 	}
 
 public:

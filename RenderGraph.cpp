@@ -9,8 +9,8 @@
 RenderGraph::RenderGraph(GFX& gfx)
 	: m_backBuffer(gfx.GetRenderTarget()), m_depthStencilView(gfx.GetDepthStencil())
 {
-	AddGlobalOutput(RenderPassBufferNewOutput<RenderTarget>::GetUnique("backBuffer", m_backBuffer));
-	AddGlobalOutput(RenderPassBufferNewOutput<DepthStencilView>::GetUnique("depthStencilView", m_depthStencilView));
+	AddGlobalOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("backBuffer", m_backBuffer));
+	AddGlobalOutput(RenderPassBufferOutput<DepthStencilView>::GetUnique("depthStencilView", m_depthStencilView));
 
 	AddGlobalInput(RenderPassBufferInput<RenderTarget>::GetUnique("backBuffer", m_backBuffer));
 }
@@ -102,6 +102,36 @@ void RenderGraph::AddGlobalOutput(std::unique_ptr<RenderPassOutput> output)
 void RenderGraph::AddGlobalInput(std::unique_ptr<RenderPassInput> input)
 {
 	m_globalInputs.push_back(std::move(input));
+}
+
+std::unique_ptr<RenderPassOutput>* RenderGraph::GetGlobalOutput(const char* name)
+{
+	for (auto& output : m_globalOutputs)
+		if (strcmp(output->GetName(), name) == 0)
+			return &output;
+
+	std::string errorMessage = "Global output could not be found. Searched name: ";
+	errorMessage += name;
+	errorMessage += "\".";
+
+	THROW_RENDER_GRAPH_EXCEPTION(errorMessage.c_str());
+
+	return nullptr;
+}
+
+std::unique_ptr<RenderPassInput>* RenderGraph::GetGlobalInput(const char* name)
+{
+	for (auto& input : m_globalInputs)
+		if (strcmp(input->GetInputName(), name) == 0)
+			return &input;
+
+	std::string errorMessage = "Global input could not be found. Searched name: ";
+	errorMessage += name;
+	errorMessage += "\".";
+
+	THROW_RENDER_GRAPH_EXCEPTION(errorMessage.c_str());
+
+	return nullptr;
 }
 
 void RenderGraph::CheckGraphIntegrity()

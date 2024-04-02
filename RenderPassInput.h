@@ -44,15 +44,15 @@ class RenderPassBindableInput : public RenderPassInput
 	static_assert(std::is_base_of_v<Bindable, T>);
 
 public:
-	RenderPassBindableInput(const char* name, T* bindable)
+	RenderPassBindableInput(const char* name, std::shared_ptr<T>* bindable)
 		: RenderPassInput(name), m_bindable(bindable), m_linked(false)
 	{
 
 	}
 
-	static std::unique_ptr<RenderPassBindableInput<Bindable>> GetUnique(const char* name, T* bindable)
+	static std::unique_ptr<RenderPassBindableInput<T>> GetUnique(const char* name, std::shared_ptr<T>* bindable)
 	{
-		return std::move(std::make_unique<RenderPassBindableInput<Bindable>>(name, bindable));
+		return std::move(std::make_unique<RenderPassBindableInput<T>>(name, bindable));
 	}
 
 public:
@@ -71,7 +71,7 @@ public:
 			THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
 		}
 
-		*m_bindable = *dynamic_cast<T*>(pRenderPassInputBindables.get());
+		*m_bindable = std::dynamic_pointer_cast<T>(pRenderPassInputBindables);
 		
 		m_linked = true;
 	}
@@ -90,7 +90,7 @@ public:
 	}
 
 private:
-	T* m_bindable;
+	std::shared_ptr<T>* m_bindable;
 	bool m_linked;
 };
 

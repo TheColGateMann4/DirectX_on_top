@@ -15,7 +15,7 @@ BoxBlurRenderPass::BoxBlurRenderPass(class GFX& gfx, const char* name)
 		blurData = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true);
 	}
 
-	RegisterOutput(RenderPassBufferNewOutput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
+	RegisterOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));
 
 	AddBindableInput<RenderTargetWithTexture>("pixelShaderTexture");
 	RegisterInput(RenderPassBufferInput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));

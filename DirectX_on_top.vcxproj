@@ -186,6 +186,7 @@
     <ClInclude Include="FullscreenFilter.h" />
     <ClInclude Include="FullscreenFilterRenderPass.h" />
     <ClInclude Include="GaussBlurFilter.h" />
+    <ClInclude Include="GaussBlurRenderGraph.h" />
     <ClInclude Include="GraphicBuffer.h" />
     <ClInclude Include="GraphicResource.h" />
     <ClInclude Include="Graphics.h" />
@@ -263,6 +264,7 @@
     <ClCompile Include="FullscreenFilter.cpp" />
     <ClCompile Include="FullscreenFilterRenderPass.cpp" />
     <ClCompile Include="GaussBlurFilter.cpp" />
+    <ClCompile Include="GaussBlurRenderGraph.cpp" />
     <ClCompile Include="GraphicResource.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="HorizontalGaussBlurRenderPass.cpp" />

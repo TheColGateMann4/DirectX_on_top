@@ -315,6 +315,9 @@
     <ClInclude Include="BoxBlurRenderPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
+    <ClInclude Include="GaussBlurRenderGraph.h">
+      <Filter>Header Files\Render\RenderGraph\RenderGraphType</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -505,6 +508,9 @@
     </ClCompile>
     <ClCompile Include="BoxBlurRenderPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="GaussBlurRenderGraph.cpp">
+      <Filter>Source Files\Render\RenderGraph\RenderGraphType</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

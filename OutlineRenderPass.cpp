@@ -6,7 +6,7 @@ OutlineRenderPass::OutlineRenderPass(class GFX& gfx, const char* name, const int
 {
 	m_renderTarget = std::make_shared<RenderTargetWithTexture>(gfx, width / 2, height / 2, 0);
 
-	RegisterOutput(RenderPassBufferNewOutput<RenderTarget>::GetUnique("pixelShaderTexture", &m_renderTarget));
+	RegisterOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("pixelShaderTexture", &m_renderTarget));
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS.cso"));
 	AddBindable(VertexShader::GetBindable(gfx, "VS.cso"));

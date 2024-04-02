@@ -5,7 +5,7 @@ OutlineMaskingRenderPass::OutlineMaskingRenderPass(class GFX& gfx, const char* n
 	:	
 	RenderJobPass(name)
 {
-	RegisterOutput(RenderPassBufferNewOutput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
+	RegisterOutput(RenderPassBufferOutput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
 
 	RegisterInput(RenderPassBufferInput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
 

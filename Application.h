@@ -8,7 +8,7 @@
 #include "Model.h"
 #include "Cube.h"
 #include "Scene.h"
-#include "NormalOutlineRenderGraph.h"
+#include "GaussBlurRenderGraph.h"
 
 class Application
 {
@@ -19,7 +19,7 @@ public:
 public:
 	ImguiManager imguiManager;
 	Window window;
-	NormalOutlineRenderGraph renderGraph;
+	GaussBlurRenderGraph renderGraph;
 	Time timer;
 
 private:

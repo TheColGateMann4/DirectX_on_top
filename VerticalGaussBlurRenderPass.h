@@ -13,6 +13,5 @@ public:
 
 private:
 	std::shared_ptr<CachedBuffer> gaussBlurDirectionData;
-	std::shared_ptr<CachedBuffer> gaussBlurCooficientsData;
 };
 

@@ -26,6 +26,9 @@ public:
 	void AddGlobalOutput(std::unique_ptr<RenderPassOutput> output);
 	void AddGlobalInput(std::unique_ptr<RenderPassInput> input);
 
+	std::unique_ptr<RenderPassOutput>* GetGlobalOutput(const char* name);
+	std::unique_ptr<RenderPassInput>* GetGlobalInput(const char* name);
+
 	void CheckGraphIntegrity();
 
 public:
