@@ -217,8 +217,6 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	std::string bufferUID = modelPath + mesh.mName.C_Str();
 
 	std::shared_ptr<VertexShader> pNormalVertexShader = VertexShader::GetBindable(gfx, vertexShaderName);
-	ID3DBlob* pNormalBlob = pNormalVertexShader->GetByteCode();
-
 
 	std::unique_ptr<Mesh> resultMesh = std::make_unique<Mesh>();
 
@@ -234,15 +232,15 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			RenderStep normalStep("normalPass");
 
 
-			normalStep.AddBindable(std::move(pNormalVertexShader));
-
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, pixelShaderName));
 
 			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, constBufferData, 1, true));
 
 			normalStep.AddBindable(RasterizerState::GetBindable(gfx, diffuseMapHasAlpha));
 
-			normalStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pNormalBlob));
+			normalStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pNormalVertexShader.get()));
+
+			normalStep.AddBindable(std::move(pNormalVertexShader));
 
 			//bindables added specially depending on what model uses
 			for (auto& bindable : normalMeshBindables)
@@ -268,8 +266,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			RenderStep maskStep("outlineMaskPass");
 
 
-			std::shared_ptr pMaskVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
-			ID3DBlob* pMaskBlob = pMaskVertexShader->GetByteCode();
+			std::shared_ptr<VertexShader> pMaskVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
 
 			DynamicConstantBuffer::BufferLayout PixelbufferLayout;
 			PixelbufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
@@ -283,7 +280,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, true));
 
-			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pMaskBlob));
+			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pMaskVertexShader.get()));
 
 			outlineTechnique.AddRenderStep(maskStep);
 		}

@@ -26,7 +26,6 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 			RenderStep normalStep("normalPass");
 
 			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
-			ID3DBlob* pBlob = pVertexShader->GetByteCode();
 
 			DynamicConstantBuffer::BufferLayout layout;
 
@@ -49,7 +48,6 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = (size_t)1;
 			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("normalMapWeight") = 1.0f;
 
-			normalStep.AddBindable(std::move(pVertexShader));
 
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
 
@@ -59,7 +57,9 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 			normalStep.AddBindable(Texture::GetBindable(gfx, normalTexture, 1, true));
 
-			normalStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pBlob));
+			normalStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pVertexShader.get()));
+
+			normalStep.AddBindable(std::move(pVertexShader));
 
 			normalTechnique.AddRenderStep(normalStep);
 		}
@@ -81,7 +81,6 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 
 			std::shared_ptr pVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
-			ID3DBlob* pBlob = pVertexShader->GetByteCode();
 
 			DynamicConstantBuffer::BufferLayout PixelbufferLayout;
 			PixelbufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
@@ -95,7 +94,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, true));
 
-			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pBlob));
+			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pVertexShader.get()));
 
 			outlineTechnique.AddRenderStep(maskStep);
 		}

@@ -24,18 +24,17 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 			RenderStep normalStep("normalPass");
 
 			std::shared_ptr<VertexShader> vertexShader = VertexShader::GetBindable(gfx, "VS.cso");
-			ID3DBlob* pBlob = vertexShader->GetByteCode();
 
 			*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = { 1.0f, 1.0f, 1.0f };
 
-
-			normalStep.AddBindable(std::move(vertexShader));
 
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
 			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 1, true));
 
-			normalStep.AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), pBlob));
+			normalStep.AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), vertexShader.get()));
+
+			normalStep.AddBindable(std::move(vertexShader));
 
 			normalTechnique.AddRenderStep(normalStep);
 		}

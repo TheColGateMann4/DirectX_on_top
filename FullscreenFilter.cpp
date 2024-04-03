@@ -44,7 +44,7 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 	VertexShader* pVertexShader = dynamic_cast<VertexShader*>(m_bindables.back().get());
 
 	m_bindables.push_back(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
-	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader->GetByteCode()));
+	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader));
 	m_bindables.push_back(SamplerState::GetBindable(gfx, false, true));
 }
 

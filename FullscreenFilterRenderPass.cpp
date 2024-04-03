@@ -27,7 +27,7 @@ FullscreenFilterRenderPass::FullscreenFilterRenderPass(class GFX& gfx, const cha
 	std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_FullScreen.cso");
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
-	AddBindable(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader->GetByteCode()));
+	AddBindable(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader.get()));
 	AddBindable(SamplerState::GetBindable(gfx, false, true));
 	AddBindable(pVertexShader);
 }
