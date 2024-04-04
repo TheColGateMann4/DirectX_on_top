@@ -8,20 +8,10 @@
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name), window(width, height, name), renderGraph(window.Graphics)
 {
-	float aspectRatioX, AspectRatioY;
-	if (width > height)
-	{	
-		aspectRatioX = (float)width / (float)height;
-		AspectRatioY = 1.0f;	
-	}
-	else 
-	{	
-		AspectRatioY = (float)height / (float)width;
-		aspectRatioX = 1.0f;
-	}
+	float aspectRatio = (float)width / (float)height;
 
 	std::unique_ptr<Camera> defaultCamera = std::make_unique<Camera>();
-	defaultCamera->SetProjection(DirectX::XMMatrixPerspectiveLH(aspectRatioX, AspectRatioY, 0.5f, 400.0f));
+	defaultCamera->SetProjection(DirectX::XMMatrixPerspectiveFovLH(_Pi / 2, aspectRatio, 0.5f, 400.0f));
 	scene.AddCameraObject(std::move(defaultCamera));
 }
 
