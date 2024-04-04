@@ -9,7 +9,7 @@ void SceneObject::MakeHierarchy(GFX& gfx)
 	if (GetPressedState())
 		flags |= ImGuiTreeNodeFlags_Selected;
 
-	ImGui::TreeNodeEx(GetOriginalName().c_str(), flags);
+	ImGui::TreeNodeEx(GetOriginalName(true).c_str(), flags);
 
 	if (ImGui::IsItemClicked())
 		SetPressedState(!GetPressedState());
@@ -103,14 +103,15 @@ const char* SceneObject::GetNameSpecialStatus() const
 	return "";
 }
 
-std::string SceneObject::GetOriginalName() const
+std::string SceneObject::GetOriginalName(bool withStatus) const
 {
 	std::string result = GetName();
 
 	if (m_sceneIndex > 0)
 		result += "_" + std::to_string(m_sceneIndex);
 
-	result.append(GetNameSpecialStatus());
+	if(withStatus)
+		result.append(GetNameSpecialStatus());
 
 	return result;
 }

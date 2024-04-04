@@ -96,7 +96,7 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 	{
 		const auto& sceneModel = m_models.at(i);
 
-		if (sceneModel->GetName() == modelName) [[unlikely]]
+		if (sceneModel->GetOriginalName(false) == modelName) [[unlikely]]
 		{
 			currentIndex++;
 
@@ -106,12 +106,12 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 			}
 			else
 			{
-				modelName.replace(modelName.begin() + (startingLength - 1), modelName.end(), std::string('_' + std::to_string(currentIndex)));
+				modelName.replace(modelName.begin() + startingLength, modelName.end(), std::string('_' + std::to_string(currentIndex)));
 			}
 
 			//go to the start of the loop
 			i = 0;
-			break;
+			continue;
 		}
 		else [[likely]]
 		{
