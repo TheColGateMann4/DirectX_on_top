@@ -56,7 +56,7 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 		constBufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
 
 		DynamicConstantBuffer::BufferData constBufferData(std::move(constBufferLayout));
-		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("color") = DirectX::XMFLOAT4(1.0f, 0.5f, 0.0f, 1.0f);
 
 
 		std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS.cso");

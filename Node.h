@@ -22,7 +22,7 @@ public:
 	{
 		const auto finalTransform =
 			(
-				DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *		//added rotation
+				DirectX::XMMatrixRotationRollPitchYaw(rotation.y, rotation.x, rotation.z) *		//added rotation
 				DirectX::XMMatrixTranslation(position.x, position.y, position.z)				//added position
 				)
 			* DirectX::XMLoadFloat4x4(&m_baseTransform)											// original transform in node

@@ -22,6 +22,9 @@ BOOL Application::Initiate()
 	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics));
 	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
 	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
+	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
+	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
+	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
 	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));
 	scene.LinkModelsToPipeline(renderGraph);

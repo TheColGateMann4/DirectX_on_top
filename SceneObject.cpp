@@ -94,7 +94,7 @@ void SceneObject::ResetLocalTransform() noexcept
 
 DirectX::XMMATRIX SceneObject::GetSceneTranformMatrix() const noexcept
 {
-	return DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
+	return DirectX::XMMatrixRotationRollPitchYaw(m_rotation.y, m_rotation.x, m_rotation.z) *
 		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
 }
 
