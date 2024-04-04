@@ -113,10 +113,8 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 			i = 0;
 			continue;
 		}
-		else [[likely]]
-		{
-			i++;
-		}
+
+		i++;
 	}
 
 	model->SetSceneIndex(currentIndex);

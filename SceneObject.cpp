@@ -28,9 +28,9 @@ void SceneObject::MakeTransformPropeties(GFX& gfx)
 	ImGui::SliderFloat("pZ", &m_position.z, -30.0f, 30.0f);
 
 	ImGui::Text("Rotation");
-	ImGui::SliderAngle("rX", &m_rotation.x, -_Pi, _Pi);
-	ImGui::SliderAngle("rY", &m_rotation.y, -_Pi, _Pi);
-	ImGui::SliderAngle("rZ", &m_rotation.z, -_Pi, _Pi);
+	ImGui::SliderAngle("rX", &m_rotation.x, -180.0f, 180.0f);
+	ImGui::SliderAngle("rY", &m_rotation.y, -180.0f, 180.0f);
+	ImGui::SliderAngle("rZ", &m_rotation.z, -180.0f, 180.0f);
 
 	if (ImGui::Button("Reset"))
 		ResetLocalTransform();
