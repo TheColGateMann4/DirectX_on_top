@@ -15,10 +15,10 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 		{ -0.3f, -0.3f, 0.0f },
 		{ -0.3f, 0.3f, 0.0f },
 
-		{ 1.0f, 1.0f, 1.0f },
-		{ 1.0f, -1.0f, 1.0f },
-		{ -1.0f, -1.0f, 1.0f },
-		{ -1.0f, 1.0f, 1.0f }
+		{ 1.0f, 0.8f, 1.0f },
+		{ 1.0f, -0.8f, 1.0f },
+		{ -1.0f, -0.8f, 1.0f },
+		{ -1.0f, 0.8f, 1.0f }
 	};
 
 	DynamicVertex::VertexLayout vertexLayout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
