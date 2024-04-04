@@ -90,7 +90,6 @@ void GFX::FinishFrame()
 {
 	if (this->m_imgui_enabled)
 	{
-		//ImGui::ShowDemoWindow(&this->m_imgui_enabled);
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	}

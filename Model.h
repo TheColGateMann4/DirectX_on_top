@@ -36,9 +36,9 @@ public:
 	virtual void MakeTransformPropeties(GFX& gfx) override;
 
 public:
-	std::string GetName() const override
+	const char* GetName() const override
 	{
-		return m_fileName;
+		return m_fileName.c_str();
 	}
 
 private:

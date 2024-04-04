@@ -26,7 +26,7 @@ public:
 	}
 
 public:
-	std::string GetName() const override
+	const char* GetName() const override
 	{
 		return "Cube";
 	}

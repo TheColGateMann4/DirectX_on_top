@@ -6,10 +6,13 @@
 #include "GaussBlurFilter.h"
 #include "ErrorMacros.h"
 #include "Graphics.h"
+#include "CameraManager.h"
 
-Camera::Camera(GFX& gfx)
+Camera::Camera(GFX& gfx, CameraManager* cameraManager)
+	:
+	m_cameraManager(cameraManager)
 {
-	m_AspectRatio = gfx.GetWidth() / gfx.GetHeight();
+	m_AspectRatio = (float)gfx.GetWidth() / (float)gfx.GetHeight();
 
 	UpdateProjectionMatrix();
 }
@@ -57,7 +60,7 @@ void Camera::Move(const DirectX::XMFLOAT3& moveoffset)
 
 void Camera::Look(const DirectX::XMFLOAT3 lookoffset)
 {
-	float halfRotation = 0.995f * (_Pi / 2);
+	float halfRotation = 0.999f * (_Pi / 2);
 
 	m_rotation.x = WrapAngle(m_rotation.x + lookoffset.x * m_sensivity, _Pi);							//pitch
 	m_rotation.y = std::clamp(m_rotation.y + lookoffset.y * m_sensivity, -halfRotation, halfRotation);	//yaw
@@ -80,6 +83,13 @@ void Camera::MakeTransformPropeties(GFX& gfx)
 {
 	if (!GetPressedState())
 		return;
+
+	if (!m_active)
+	{
+		m_active = true;
+		m_cameraManager->SetActiveCameraByPtr(this);
+	}
+
 
 	ImGui::Text("Positione");
 	ImGui::SliderFloat("camera X", &m_position.x, -80.0, 80.0f, "%.1f");

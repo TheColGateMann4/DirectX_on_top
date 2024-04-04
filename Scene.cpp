@@ -83,11 +83,44 @@ void Scene::AddCameraObject(std::unique_ptr<Camera>&& model)
 	
 	m_cameraManager.AddCamera(model.get(), !activeCameraIsBound);
 
-	m_models.push_back(std::move(model));
+	AddSceneObject(std::move(model));
 }
 
 void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 {
+	size_t currentIndex = 0;
+	std::string modelName = model->GetName();
+	size_t startingLength = modelName.length(); // for optimization to avoid lots of looping
+
+	for (size_t i = 0; i < m_models.size();)
+	{
+		const auto& sceneModel = m_models.at(i);
+
+		if (sceneModel->GetName() == modelName) [[unlikely]]
+		{
+			currentIndex++;
+
+			if (currentIndex == 1)
+			{
+				modelName.append(std::string('_' + std::to_string(currentIndex)));
+			}
+			else
+			{
+				modelName.replace(modelName.begin() + (startingLength - 1), modelName.end(), std::string('_' + std::to_string(currentIndex)));
+			}
+
+			//go to the start of the loop
+			i = 0;
+			break;
+		}
+		else [[likely]]
+		{
+			i++;
+		}
+	}
+
+	model->SetSceneIndex(currentIndex);
+
 	m_models.push_back(std::move(model));
 }
 

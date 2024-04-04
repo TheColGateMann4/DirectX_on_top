@@ -21,7 +21,7 @@ public:
 	void Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
 
 public:
-	std::string GetName() const override
+	const char* GetName() const override
 	{
 		return "PointLight";
 	}

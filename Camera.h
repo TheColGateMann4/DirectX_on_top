@@ -3,11 +3,14 @@
 #include "SceneObject.h"
 
 class GFX;
+class CameraManager;
 
 class Camera : public SceneObject
 {
+	friend class CameraManager;
+
 public:
-	Camera(GFX& gfx);
+	Camera(GFX& gfx, CameraManager* cameraManager);
 
 public:
 	DirectX::XMMATRIX GetCameraView() const;
@@ -33,9 +36,16 @@ private:
 
 	float WrapAngle(float angle, float value);
 
-	virtual std::string GetName() const override
+	virtual const char* GetName() const override
 	{
 		return "Camera";
+	}
+
+	virtual const char* GetNameSpecialStatus() const
+	{
+		if (m_active)
+			return " (Active)";
+		return "";
 	}
 
 private:
@@ -46,6 +56,11 @@ private:
 	float m_AspectRatio;
 	float m_NearZ = 0.5f;
 	float m_FarZ = 400.0f;
+
+	bool m_active;
+	size_t m_cameraIndex;
+
+	CameraManager* m_cameraManager;
 
 	DirectX::XMMATRIX m_projection = {};
 };

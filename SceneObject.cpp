@@ -9,7 +9,7 @@ void SceneObject::MakeHierarchy(GFX& gfx)
 	if (GetPressedState())
 		flags |= ImGuiTreeNodeFlags_Selected;
 
-	ImGui::TreeNodeEx(GetName().c_str(), flags);
+	ImGui::TreeNodeEx(GetOriginalName().c_str(), flags);
 
 	if (ImGui::IsItemClicked())
 		SetPressedState(!GetPressedState());
@@ -96,4 +96,26 @@ DirectX::XMMATRIX SceneObject::GetSceneTranformMatrix() const noexcept
 {
 	return DirectX::XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z) *
 		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
+}
+
+const char* SceneObject::GetNameSpecialStatus() const
+{
+	return "";
+}
+
+std::string SceneObject::GetOriginalName() const
+{
+	std::string result = GetName();
+
+	if (m_sceneIndex > 0)
+		result += "_" + std::to_string(m_sceneIndex);
+
+	result.append(GetNameSpecialStatus());
+
+	return result;
+}
+
+void SceneObject::SetSceneIndex(size_t index)
+{
+	m_sceneIndex = index;
 }

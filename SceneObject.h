@@ -29,7 +29,13 @@ public:
 	DirectX::XMMATRIX GetSceneTranformMatrix() const noexcept;
 
 public:
-	virtual std::string GetName() const = 0;
+	virtual const char* GetName() const = 0;
+
+	virtual const char* GetNameSpecialStatus() const;
+
+	virtual std::string GetOriginalName() const;
+
+	virtual void SetSceneIndex(size_t index);
 
 
 public:
@@ -54,6 +60,7 @@ public:
 
 private:
 	bool currentlyPressed = false;
+	size_t m_sceneIndex = 0;
 
 private:
 	ImGuiTreeNodeFlags_ nodeFlags = ImGuiTreeNodeFlags_Leaf;
