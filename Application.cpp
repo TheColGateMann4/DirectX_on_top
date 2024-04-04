@@ -2,6 +2,8 @@
 #include "KeyMacros.h"
 #include "imgui/imgui.h"
 #include <random>
+#include "CameraManager.h"
+#include "Camera.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name), window(width, height, name), renderGraph(window.Graphics)
@@ -17,21 +19,24 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 		AspectRatioY = (float)height / (float)width;
 		aspectRatioX = 1.0f;
 	}
- 	window.Graphics.camera.SetProjection(DirectX::XMMatrixPerspectiveLH(aspectRatioX, AspectRatioY, 0.5f, 400.0f));
+
+	std::unique_ptr<Camera> defaultCamera = std::make_unique<Camera>();
+	defaultCamera->SetProjection(DirectX::XMMatrixPerspectiveLH(aspectRatioX, AspectRatioY, 0.5f, 400.0f));
+	scene.AddCameraObject(std::move(defaultCamera));
 }
 
 BOOL Application::Initiate()
 {
  	window.Input.Key.allowRepeating(TRUE);
 
-	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
-	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
-	//modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
-	modelHierarchy.models.push_back(std::make_unique<PointLight>(window.Graphics));
-	modelHierarchy.models.push_back(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
-	modelHierarchy.models.push_back(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));;
+	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
+	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
+	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
+	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics));
+	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
+	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));;
 
-	modelHierarchy.LinkModelsToPipeline(renderGraph);
+	scene.LinkModelsToPipeline(renderGraph);
 
 	while (true)
 	{
@@ -137,17 +142,17 @@ void Application::DoFrame()
 		movingDir.y -= DeltaTime;
 
 	if (movingDir.x != 0 || movingDir.y != 0 || movingDir.z != 0)
-		window.Graphics.camera.Move(movingDir);
+		scene.GetCameraManager()->GetActiveCamera()->Move(movingDir);
 
 	DirectX::XMINT2 lookOffset = window.Input.Mouse.GetRawInputPos();
 
 	if(cursorLocked && !cursorShowing)
 		if (lookOffset.x != 0 || lookOffset.y != 0)
-			window.Graphics.camera.Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f });
+			scene.GetCameraManager()->GetActiveCamera()->Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f });
 
 	window.Graphics.BeginFrame();
 
-	modelHierarchy.DrawModels(window.Graphics, window.Graphics.camera.GetCamera());
+	scene.DrawModels(window.Graphics);
 
 	renderGraph.Render(window.Graphics);
 
@@ -171,7 +176,7 @@ void Application::DoFrame()
 // 	if (blurStrength != 0)
 // 		renderQueue.ChangeBlurStrength(window.Graphics, blurStrength);
 
-	modelHierarchy.DrawModelHierarchy(timer.Get());
+	scene.DrawModelHierarchy(timer.Get());
 
 	window.Graphics.FinishFrame();
 

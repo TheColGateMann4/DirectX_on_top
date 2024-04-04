@@ -249,7 +249,7 @@
     <ClInclude Include="DepthStencilView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CameraView.h">
+    <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GraphicResource.h">
@@ -317,6 +317,12 @@
     </ClInclude>
     <ClInclude Include="GaussBlurRenderGraph.h">
       <Filter>Header Files\Render\RenderGraph\RenderGraphType</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wrl_no_warnings.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -404,7 +410,7 @@
     <ClCompile Include="ImguiManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CameraView.cpp">
+    <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PointLight.cpp">
@@ -511,6 +517,12 @@
     </ClCompile>
     <ClCompile Include="GaussBlurRenderGraph.cpp">
       <Filter>Source Files\Render\RenderGraph\RenderGraphType</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneObject.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

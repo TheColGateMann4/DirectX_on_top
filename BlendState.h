@@ -1,8 +1,10 @@
 #pragma once
 #include "Includes.h"
-#include "Graphics.h"
 #include "Bindable.h"
 #include "BindableList.h"
+#include "wrl_no_warnings.h"
+
+class GFX;
 
 class BlendState : public Bindable
 {

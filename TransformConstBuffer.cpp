@@ -1,4 +1,5 @@
 #include "TransformConstBuffer.h"
+#include "Camera.h"
 
 TransformConstBuffer::TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot)
 	:
@@ -23,8 +24,8 @@ void TransformConstBuffer::UpdateAndBindConstBuffer(GFX& gfx, const DynamicConst
 
 void TransformConstBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept
 {
-	const auto ModelTransformView = m_parent.GetTranformMatrix() * gfx.camera.GetCamera();
+	const auto ModelTransformView = m_parent.GetTranformMatrix() * gfx.GetActiveCamera()->GetCameraView();
 
 	bufferData += DirectX::XMMatrixTranspose(ModelTransformView);
-	bufferData += DirectX::XMMatrixTranspose(ModelTransformView * gfx.camera.GetProjection());
+	bufferData += DirectX::XMMatrixTranspose(ModelTransformView * gfx.GetActiveCamera()->GetProjection());
 }

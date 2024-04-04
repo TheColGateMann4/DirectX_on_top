@@ -174,7 +174,8 @@
     <ClInclude Include="BlurOutlineRenderPass.h" />
     <ClInclude Include="BoxBlurRenderPass.h" />
     <ClInclude Include="BufferClearRenderPass.h" />
-    <ClInclude Include="CameraView.h" />
+    <ClInclude Include="CameraManager.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffers.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="DepthStencilState.h" />
@@ -247,6 +248,7 @@
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="VerticalGaussBlurRenderPass.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="wrl_no_warnings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
@@ -254,7 +256,8 @@
     <ClCompile Include="BlurOutlineRenderPass.cpp" />
     <ClCompile Include="BoxBlurRenderPass.cpp" />
     <ClCompile Include="BufferClearRenderPass.cpp" />
-    <ClCompile Include="CameraView.cpp" />
+    <ClCompile Include="CameraManager.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="DXError.cpp" />
@@ -301,6 +304,7 @@
     <ClCompile Include="Pyramid.cpp" />
     <ClCompile Include="RasterizerState.cpp" />
     <ClCompile Include="SamplerState.cpp" />
+    <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sheet.cpp" />
     <ClCompile Include="Sphere.cpp" />

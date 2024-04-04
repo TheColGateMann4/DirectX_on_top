@@ -1,7 +1,7 @@
 #pragma once
 #include "GraphicResource.h"
 #include "GraphicBuffer.h"
-#include <wrl.h>
+#include "wrl_no_warnings.h"
 
 class DepthStencilView :public GraphicResource, public GraphicBuffer
 {

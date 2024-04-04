@@ -3,7 +3,6 @@
 #include "Graphics.h"
 #include "Includes.h"
 #include "ErrorMacros.h"
-#include <wrl.h>
 
 DepthStencilView::DepthStencilView(GFX& gfx)
 {

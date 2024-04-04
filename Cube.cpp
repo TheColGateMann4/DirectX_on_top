@@ -1,6 +1,7 @@
 #include "Cube.h"
 #include "BindableClassesMacro.h"
 #include "Vertex.h"
+#include "DynamicConstantBuffer.h"
 #include "imgui/imgui.h"
 
 #include "RenderTechnique.h"

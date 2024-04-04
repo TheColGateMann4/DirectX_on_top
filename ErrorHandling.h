@@ -4,7 +4,7 @@
 #include "ErrorMacros.h"
 
 #ifdef _DEBUG
-#include <wrl.h>
+#include "wrl_no_warnings.h"
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 #endif

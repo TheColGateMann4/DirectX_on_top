@@ -2,7 +2,7 @@
 #include "GraphicResource.h"
 #include "GraphicBuffer.h"
 #include "Bindable.h"
-#include <wrl.h>
+#include "wrl_no_warnings.h"
 
 class RenderTarget : public Bindable, public GraphicBuffer
 {

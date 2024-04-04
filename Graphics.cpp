@@ -146,3 +146,13 @@ void GFX::DrawIndexed(UINT32 count)
 		)
 	);
 }
+
+Camera* GFX::GetActiveCamera() const
+{
+	return *m_ppActiveCamera;
+}
+
+void GFX::SetActiveCameraLinkage(Camera** ppActiveCamera)
+{
+	m_ppActiveCamera = ppActiveCamera;
+}

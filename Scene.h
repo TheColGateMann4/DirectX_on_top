@@ -1,30 +1,36 @@
 #pragma once
 #include "Includes.h"
-#include "Model.h"
-#include "Graphics.h"
-#include "Window.h"
+#include "CameraManager.h"
+
+class Window;
+class SceneObject;
 
 class Scene
 {
 public:
-	Scene(Window* window)
-		: m_window(window)	{}
+	Scene(Window* window);
 
 public:
 	void LinkModelsToPipeline(class RenderGraph& renderGraph);
 
 public:
-	void DrawModels(GFX& gfx, DirectX::XMMATRIX CameraView_);
+	void DrawModels(class GFX& gfx);
 	void DrawModelHierarchy(float deltaTime);
+
+	CameraManager* GetCameraManager();
+
+	void AddCameraObject(std::unique_ptr<Camera>&& model);
+
+	void AddSceneObject(std::unique_ptr<SceneObject>&& model);
 
 private:
 	void CleanupPressedNodes();
 
-public:
-	std::vector<std::unique_ptr<SceneObject>> models;
-
 private:
-	Window* m_window = nullptr;
+	std::vector<std::unique_ptr<SceneObject>> m_models;
+
+	Window* m_window;
 	SceneObject* m_pressedNode = nullptr;
+	CameraManager m_cameraManager;
 };
 

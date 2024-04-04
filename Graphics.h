@@ -1,9 +1,10 @@
 #pragma  once
 #include "Includes.h"
-#include "CameraView.h"
 #include "RenderTarget.h"
 #include "DepthStencilView.h"
-#include <wrl.h>
+#include "wrl_no_warnings.h"
+
+class Camera;
 
 class GFX
 {
@@ -28,11 +29,13 @@ public:
 	void DrawIndexed(UINT32 count);
 
 public:
-	UINT32 GetWidth() const { return m_width; };
-	UINT32 GetHeight() const { return m_height; };
+	Camera* GetActiveCamera() const;
+
+	void SetActiveCameraLinkage(Camera** ppActiveCamera);
 
 public:
-	CameraView camera;
+	UINT32 GetWidth() const { return m_width; };
+	UINT32 GetHeight() const { return m_height; };
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
@@ -45,4 +48,5 @@ private:
 	UINT32 m_width = 0;
 	UINT32 m_height = 0;
 	bool m_imgui_enabled = true;
+	Camera** m_ppActiveCamera = nullptr;
 };

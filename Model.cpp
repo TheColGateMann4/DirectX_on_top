@@ -29,7 +29,7 @@ Model::Model(GFX& gfx, std::string fileName, float scale)
 				m_filePath = std::string(fileName.begin(), fileName.end() - (fileName.length() - (foundCharacter + 1)));
 			}
 			else
-				THROW_INTERNAL_ERROR("FAILED TO PROCESS MODEL PATH", "Model path couldn't be processed for assimp");
+				THROW_INTERNAL_ERROR("Model path couldn't be processed for assimp", true);
 
 	}
 

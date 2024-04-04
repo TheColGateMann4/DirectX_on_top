@@ -34,6 +34,6 @@ private:
 	bool cursorShowing = true;
 
 private:
-	Scene modelHierarchy{ &window };
+	Scene scene{ &window };
 };
 

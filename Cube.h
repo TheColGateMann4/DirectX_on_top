@@ -1,16 +1,13 @@
 #pragma once
 #include "Shape.h"
-#include "Graphics.h"
 #include "SimpleMesh.h"
-#include "DynamicConstantBuffer.h"
 #include "SceneObject.h"
-#include "Mesh.h"
 #include <random>
 
 class Cube : public SceneObject, public Shape
 {
 public:
-	Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture);
+	Cube(class GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture);
 
 public:
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override

@@ -1,20 +1,30 @@
 #include "Scene.h"
 #include "PointLight.h"
+#include "Window.h"
+#include "Model.h"
+#include "Camera.h"
+#include "Window.h"
+
+Scene::Scene(Window* window)
+	: m_window(window), m_cameraManager(m_window->Graphics)
+{
+
+}
 
 void Scene::LinkModelsToPipeline(class RenderGraph& renderGraph)
 {
-	for (auto& model : models)
+	for (auto& model : m_models)
 		model->LinkSceneObjectToPipeline(renderGraph);
 }
 
-void Scene::DrawModels(GFX& gfx, DirectX::XMMATRIX CameraView_)
+void Scene::DrawModels(GFX& gfx)
 {
-	for (const auto& model : models)
+	for (const auto& model : m_models)
 		if(const PointLight* pointLight = dynamic_cast<PointLight*>(model.get()))
 		{
 			// its fine only when PointLight is first in hierarchy, otherwise objects might not get light buffer with position and light settings.
 			// If it wouldn't be first, we would need to first loop searching for light to bind it
-			pointLight->Bind(gfx, CameraView_);
+			pointLight->Bind(gfx, m_cameraManager.GetActiveCamera()->GetCameraView());
 			pointLight->RenderOnScene();
 		}
 		else
@@ -36,21 +46,21 @@ void Scene::DrawModelHierarchy(float deltaTime)
 				if (m_window->MultiselectToFilePaths(&filePathsMultiSelect, &filePaths) != 0)
 					for (auto& filePath : filePaths)
 					{
-						models.push_back(std::make_unique<Model>(m_window->Graphics, filePath, 1.0f));
+						m_models.push_back(std::make_unique<Model>(m_window->Graphics, filePath, 1.0f));
 					}
 			}
 		}
 
 		// could remake this hierarchy stuff, but instead faster way is to check pressed nodes in here
 
-		for (auto& model : models)
+		for (auto& model : m_models)
 			model->MakeHierarchy(m_window->Graphics);
 
 		CleanupPressedNodes(); // doing this between hierarchy and propeties lets us smoothly change pressed nodes without any flicking propeties(two are showing at once for 1 frame)
 
 		ImGui::NextColumn();
 
-		for (auto& model : models)
+		for (auto& model : m_models)
 		{
 			model->MakeTransformPropeties(m_window->Graphics);
 			model->MakePropeties(m_window->Graphics);
@@ -61,11 +71,31 @@ void Scene::DrawModelHierarchy(float deltaTime)
 	}
 }
 
+CameraManager* Scene::GetCameraManager()
+{
+	return &m_cameraManager;
+}
+
+void Scene::AddCameraObject(std::unique_ptr<Camera>&& model)
+{
+	// we want to set active only first camera that will appear on scene
+	bool activeCameraIsBound = m_cameraManager.GetActiveCamera() != nullptr;
+	
+	m_cameraManager.AddCamera(model.get(), !activeCameraIsBound);
+
+	m_models.push_back(std::move(model));
+}
+
+void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
+{
+	m_models.push_back(std::move(model));
+}
+
 void Scene::CleanupPressedNodes()
 {
 	SceneObject* previousObject = nullptr;
 
-	for (auto& model : models)
+	for (auto& model : m_models)
 	{
 		if (!model->GetPressedState())
 			continue;
