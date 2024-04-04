@@ -1,6 +1,7 @@
 #pragma once
 #include "Includes.h"
 #include "SceneObject.h"
+#include "CameraIndicator.h"
 
 class GFX;
 class CameraManager;
@@ -59,6 +60,8 @@ private:
 
 	bool m_active;
 	size_t m_cameraIndex;
+
+	CameraIndicator m_indicator;
 
 	CameraManager* m_cameraManager;
 

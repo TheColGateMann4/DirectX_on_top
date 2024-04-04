@@ -324,6 +324,9 @@
     <ClInclude Include="wrl_no_warnings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CameraIndicator.h">
+      <Filter>Header Files\Shapes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -524,6 +527,9 @@
     <ClCompile Include="SceneObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CameraIndicator.cpp">
+      <Filter>Source Files\Shapes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -622,6 +628,9 @@
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_BoxBlur.hlsl">
       <Filter>Shader\FullscreenFilters</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_CameraIndicator.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

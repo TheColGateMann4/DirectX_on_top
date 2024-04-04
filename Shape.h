@@ -66,7 +66,7 @@ public:
 	std::shared_ptr<class IndexBuffer> m_pIndexBuffer = nullptr;
 	std::shared_ptr<class VertexBuffer> m_pVertexBuffer = nullptr;
 	std::shared_ptr<class Topology> m_pTopology = nullptr;
-	std::shared_ptr<class TransformConstBufferWithPixelShader> m_pTransformConstBuffer = nullptr;
+	std::shared_ptr<class TransformConstBuffer> m_pTransformConstBuffer = nullptr;
 
 private:
 	std::vector<RenderTechnique> m_techniques = {};

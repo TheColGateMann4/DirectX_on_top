@@ -10,6 +10,7 @@
 
 Camera::Camera(GFX& gfx, CameraManager* cameraManager)
 	:
+	m_indicator(gfx, this),
 	m_cameraManager(cameraManager)
 {
 	m_AspectRatio = (float)gfx.GetWidth() / (float)gfx.GetHeight();
@@ -134,12 +135,13 @@ void Camera::MakePropeties(GFX& gfx)
 
 void Camera::LinkSceneObjectToPipeline(RenderGraph& renderGraph)
 {
-
+	m_indicator.LinkToPipeline(renderGraph);
 }
 
 void Camera::RenderOnScene() const noexcept(!IS_DEBUG)
 {
-
+	if(!m_active)
+		m_indicator.Render();
 }
 
 void Camera::UpdateProjectionMatrix()
