@@ -17,10 +17,13 @@ Camera::Camera(GFX& gfx)
 DirectX::XMMATRIX Camera::GetCameraView() const
 {
 	const DirectX::XMVECTOR forwardVector = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	const DirectX::XMVECTOR upwardsVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR upwardsVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	if (m_rotation.z != 0.0f)
+		upwardsVector = DirectX::XMVector3Rotate(upwardsVector, DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), m_rotation.z));
 
 	const DirectX::XMVECTOR lookVector = DirectX::XMVector3Transform(forwardVector,
-		DirectX::XMMatrixRotationRollPitchYaw(m_rotation.y, m_rotation.x, m_rotation.z)
+		DirectX::XMMatrixRotationRollPitchYaw(m_rotation.y, m_rotation.x, 0.0f)
 	);
 
 	const DirectX::XMVECTOR cameraPosition = DirectX::XMLoadFloat3(&m_position);
