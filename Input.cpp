@@ -17,7 +17,7 @@ BOOL InputSystem::m_keyStateList[255];
 
 VOID InputSystem::KeyInput::clearList(BOOL* list)
 {
-	memset(list, FALSE, 255);
+	memset(list, FALSE, 255 * sizeof(BOOL));
 
 	return;
 }
@@ -27,7 +27,7 @@ BOOL InputSystem::KeyInput::GetKeyDown(UINT32 key)
 	if (key > 254)
 		return FALSE;
 
-	return InputSystem::m_pressedKeysList[key];
+	return m_pressedKeysList[key];
 }
 
 BOOL InputSystem::KeyInput::GetKeyUp(UINT32 key)
@@ -35,7 +35,7 @@ BOOL InputSystem::KeyInput::GetKeyUp(UINT32 key)
 	if (key > 254)
 		return FALSE;
 
-	return InputSystem::m_releasedKeysList[key];
+	return m_releasedKeysList[key];
 }
 
 BOOL InputSystem::KeyInput::GetKeyState(UINT32 key)
@@ -43,14 +43,14 @@ BOOL InputSystem::KeyInput::GetKeyState(UINT32 key)
 	if (key > 254)
 		return FALSE;
 
-	return InputSystem::m_keyStateList[key];
+	return m_keyStateList[key];
 }
 
 BOOL InputSystem::KeyInput::anyKeyPressed()
 {
 	for (UINT8 i = 0; i < 255; i++)
 	{
-		if (InputSystem::m_keyStateList[i] == TRUE)
+		if (m_keyStateList[i] == TRUE)
 			return TRUE;
 	}
 
@@ -66,13 +66,13 @@ VOID InputSystem::KeyInput::allowRepeating(BOOL repeat)
 
 UINT32 InputSystem::KeyInput::GetText(std::string* textout)
 {
-	UINT32 textLen = (UINT32)InputSystem::KeyInput::m_charBuffer.length();
+	UINT32 textLen = (UINT32)m_charBuffer.length();
 
 	if (textout != NULL)
 	{
-		*textout = InputSystem::KeyInput::m_charBuffer;
+		*textout = m_charBuffer;
 
-		InputSystem::KeyInput::m_charBuffer.clear();
+		m_charBuffer.clear();
 	}
 
 	return textLen;
@@ -80,7 +80,7 @@ UINT32 InputSystem::KeyInput::GetText(std::string* textout)
 
 BOOL InputSystem::KeyInput::GetFinishedText(std::string* textout)
 {
-	UINT32 crPosition = (UINT32)InputSystem::KeyInput::m_charBuffer.find('\n');
+	UINT32 crPosition = (UINT32)m_charBuffer.find('\n');
 
 	if (crPosition == std::string::npos)
 		return FALSE;
@@ -92,7 +92,7 @@ BOOL InputSystem::KeyInput::GetFinishedText(std::string* textout)
 		textout->assign(std::string(m_charBuffer.begin(), m_charBuffer.begin() + crPosition));
 		//memcpy(&textout, &(InputSystem::KeyInput::m_charBuffer), crPosition + 1);
 
-		InputSystem::KeyInput::m_charBuffer.clear();
+		m_charBuffer.clear();
 
 	}
 
@@ -101,7 +101,7 @@ BOOL InputSystem::KeyInput::GetFinishedText(std::string* textout)
 
 VOID InputSystem::KeyInput::busyWritingText(BOOL busy)
 {
-	InputSystem::KeyInput::isWritingText = busy;
+	isWritingText = busy;
 
 	return;
 }
@@ -119,7 +119,7 @@ VOID InputSystem::KeyInput::busyWritingText(BOOL busy)
 
 DirectX::XMUINT2 InputSystem::MouseInput::GetMousePos()
 {
-	return InputSystem::MouseInput::m_position;
+	return m_position;
 }
 
 BOOL InputSystem::MouseInput::GetMouseButtonDown(UINT8 button, DirectX::XMUINT2* position)
@@ -128,9 +128,9 @@ BOOL InputSystem::MouseInput::GetMouseButtonDown(UINT8 button, DirectX::XMUINT2*
 		return FALSE;
 
 
-	*position = InputSystem::MouseInput::m_pressedKeysList[button];
+	*position = m_pressedMouseKeysList[button];
 
-	return InputSystem::m_pressedKeysList[button];
+	return m_pressedKeysList[button];
 }
 
 BOOL InputSystem::MouseInput::GetMouseButtonUp(UINT8 button, DirectX::XMUINT2* position)
@@ -139,14 +139,14 @@ BOOL InputSystem::MouseInput::GetMouseButtonUp(UINT8 button, DirectX::XMUINT2* p
 		return FALSE;
 
 
-	*position = InputSystem::MouseInput::m_releasedKeysList[button];
+	*position = m_releasedMouseKeysList[button];
 
-	return InputSystem::m_releasedKeysList[button];
+	return m_releasedKeysList[button];
 }
 
 INT8 InputSystem::MouseInput::GetMouseWheel()
 {
-	return InputSystem::MouseInput::m_mouseWheelOffset;
+	return m_mouseWheelOffset;
 }
 
 DirectX::XMINT2 InputSystem::MouseInput::GetRawInputPos()
@@ -163,19 +163,19 @@ VOID InputSystem::MouseInput::m_MouseButtonChanged(UINT8 button, BOOL pressed, L
 {
 	if (pressed)
 	{
-		InputSystem::m_pressedKeysList[button] = TRUE;
-		InputSystem::m_keyStateList[button] = TRUE;
+		m_pressedKeysList[button] = TRUE;
+		m_keyStateList[button] = TRUE;
 
-		InputSystem::MouseInput::m_pressedKeysList[button].x = ((UINT32)(short)LOWORD(lParam));
-		InputSystem::MouseInput::m_pressedKeysList[button].y = ((UINT32)(short)HIWORD(lParam));
+		m_pressedMouseKeysList[button].x = ((UINT32)(short)LOWORD(lParam));
+		m_pressedMouseKeysList[button].y = ((UINT32)(short)HIWORD(lParam));
 	}
 	else
 	{
-		InputSystem::m_releasedKeysList[button] = TRUE;
-		InputSystem::m_keyStateList[button] = FALSE;
+		m_releasedKeysList[button] = TRUE;
+		m_keyStateList[button] = FALSE;
 
-		InputSystem::MouseInput::m_releasedKeysList[button].x = ((UINT32)(short)LOWORD(lParam));
-		InputSystem::MouseInput::m_releasedKeysList[button].y = ((UINT32)(short)HIWORD(lParam));
+		m_releasedMouseKeysList[button].x = ((UINT32)(short)LOWORD(lParam));
+		m_releasedMouseKeysList[button].y = ((UINT32)(short)HIWORD(lParam));
 	}
 
 	return;

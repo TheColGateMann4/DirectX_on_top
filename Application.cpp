@@ -157,19 +157,10 @@ void Application::DoFrame()
 	}
 
 	if(window.Input.Key.GetKeyDown(VK_OEM_3)) // tilde key
-	{
 		imguiDemoWindow = !imguiDemoWindow;
-		ImGui::ShowDemoWindow(&imguiDemoWindow);
-	}
 
-// 	int blurStrength = 0;
-// 	std::string fullscreenFilerName = window.Graphics.camera.SpawnControlWindow(window.Graphics, blurStrength, renderQueue.fullscreenfilter.GetGuassBlurFilter());
-// 
-// 	if (!fullscreenFilerName.empty())
-// 		renderQueue.ChangeScreenFilter(window.Graphics, fullscreenFilerName);
-// 
-// 	if (blurStrength != 0)
-// 		renderQueue.ChangeBlurStrength(window.Graphics, blurStrength);
+	if(imguiDemoWindow)
+		ImGui::ShowDemoWindow(&imguiDemoWindow);
 
 	scene.DrawModelHierarchy(timer.Get());
 

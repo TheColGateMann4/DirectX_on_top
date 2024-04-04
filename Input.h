@@ -59,8 +59,8 @@ class InputSystem
 		void HandleRawInput(INT32 x, INT32 y);
 
 	 private:
-		DirectX::XMUINT2 m_pressedKeysList[32] = {};
-		DirectX::XMUINT2 m_releasedKeysList[32] = {};
+		DirectX::XMUINT2 m_pressedMouseKeysList[32] = {};
+		DirectX::XMUINT2 m_releasedMouseKeysList[32] = {};
 		DirectX::XMUINT2 m_position = {};
 		DirectX::XMINT2 m_rawInputPosition = {};
 		INT8 m_mouseWheelOffset;

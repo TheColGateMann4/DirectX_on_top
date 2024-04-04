@@ -63,7 +63,7 @@ UINT32 Window::GetHeight() const
 
 BOOL Window::ProcessMessage()
 {
-	this->Input.Key.clearList(this->Input.m_releasedKeysList); //i know its weird, but i really want to use those and have it work only once
+	this->Input.Key.clearList(this->Input.m_releasedKeysList);
 	this->Input.Key.clearList(this->Input.m_pressedKeysList);
 	this->Input.Mouse.HandleRawInput(NULL, NULL);
 
@@ -308,9 +308,6 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYUP:
 	case WM_KEYUP:
 		{
-			if (imguiio.WantCaptureKeyboard)
-				break;
-
 			this->Input.m_keyStateList[wParam] = FALSE;
 			this->Input.m_releasedKeysList[wParam] = TRUE;
 
@@ -348,8 +345,8 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	case WM_MOUSEWHEEL:
 		{
-			this->Input.Mouse.m_pressedKeysList[KEY_SCROLLWHEEL].x = ((UINT32)(short)LOWORD(lParam));
-			this->Input.Mouse.m_pressedKeysList[KEY_SCROLLWHEEL].x = ((UINT32)(short)HIWORD(lParam));
+			this->Input.Mouse.m_pressedMouseKeysList[KEY_SCROLLWHEEL].x = ((UINT32)(short)LOWORD(lParam));
+			this->Input.Mouse.m_pressedMouseKeysList[KEY_SCROLLWHEEL].x = ((UINT32)(short)HIWORD(lParam));
 
 			this->Input.Mouse.m_mouseWheelOffset = (UINT8)GET_WHEEL_DELTA_WPARAM(wParam);
 			
