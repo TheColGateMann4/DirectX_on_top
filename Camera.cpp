@@ -4,15 +4,14 @@
 #include <algorithm>
 #include <random>
 #include "GaussBlurFilter.h"
+#include "ErrorMacros.h"
+#include "Graphics.h"
 
-Camera::Camera()
+Camera::Camera(GFX& gfx)
 {
-	Reset();
-}
+	m_AspectRatio = gfx.GetWidth() / gfx.GetHeight();
 
-void Camera::SetProjection(DirectX::XMMATRIX projection)
-{
-	m_projection = projection;
+	UpdateProjectionMatrix();
 }
 
 DirectX::XMMATRIX Camera::GetCameraView() const
@@ -81,6 +80,8 @@ void Camera::MakeTransformPropeties(GFX& gfx)
 		ResetLocalTransform();
 }
 
+
+
 void Camera::LinkSceneObjectToPipeline(RenderGraph& renderGraph)
 {
 
@@ -91,10 +92,13 @@ void Camera::RenderOnScene() const noexcept(!IS_DEBUG)
 
 }
 
-void Camera::Reset()
+void Camera::UpdateProjectionMatrix()
 {
-	m_position = { 0.0f, 3.0f, -12.0f };
-	m_rotation = {};
+	bool setWrongEntriesProjectionMatrix = (m_Fov == 0.0f || m_AspectRatio == 0.0f || m_NearZ == 0.0f || m_FarZ == 0.0f);
+
+	THROW_INTERNAL_ERROR("Wrong entries were set for camera projection matrix", setWrongEntriesProjectionMatrix);
+
+	m_projection = DirectX::XMMatrixPerspectiveFovLH(m_Fov, m_AspectRatio, m_NearZ, m_FarZ);
 }
 
 float Camera::WrapAngle(float angle, float value)

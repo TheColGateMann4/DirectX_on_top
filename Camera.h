@@ -2,13 +2,12 @@
 #include "Includes.h"
 #include "SceneObject.h"
 
+class GFX;
+
 class Camera : public SceneObject
 {
 public:
-	Camera();
-
-public:
-	void SetProjection(DirectX::XMMATRIX projection);
+	Camera(GFX& gfx);
 
 public:
 	DirectX::XMMATRIX GetCameraView() const;
@@ -18,9 +17,6 @@ public:
 	void Move(const DirectX::XMFLOAT3& moveoffset);
 	void Look(const DirectX::XMFLOAT3 lookoffset);
 
-private:
-	DirectX::XMMATRIX m_projection = {};
-
 public:
 	virtual void MakeTransformPropeties(GFX& gfx) override;
 
@@ -28,10 +24,9 @@ public:
 
 	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override;
 
-	void Reset();
-	void SpawnControlWindow(class GFX& gfx);
-
 private:
+	void UpdateProjectionMatrix();
+
 	float WrapAngle(float angle, float value);
 
 	virtual std::string GetName() const override
@@ -42,5 +37,12 @@ private:
 private:
 	static constexpr float m_movespeed = 12.0f;
 	static constexpr float m_sensivity = 0.008f;
+
+	float m_Fov = _Pi / 2;
+	float m_AspectRatio;
+	float m_NearZ = 0.5f;
+	float m_FarZ = 400.0f;
+
+	DirectX::XMMATRIX m_projection = {};
 };
 

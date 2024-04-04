@@ -8,11 +8,7 @@
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name), window(width, height, name), renderGraph(window.Graphics)
 {
-	float aspectRatio = (float)width / (float)height;
 
-	std::unique_ptr<Camera> defaultCamera = std::make_unique<Camera>();
-	defaultCamera->SetProjection(DirectX::XMMatrixPerspectiveFovLH(_Pi / 2, aspectRatio, 0.5f, 400.0f));
-	scene.AddCameraObject(std::move(defaultCamera));
 }
 
 BOOL Application::Initiate()
@@ -22,6 +18,8 @@ BOOL Application::Initiate()
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
+
+	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics));
 	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics));
 	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));;
