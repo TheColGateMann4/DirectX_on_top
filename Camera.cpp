@@ -61,6 +61,18 @@ void Camera::Look(const DirectX::XMFLOAT3 lookoffset)
 	m_rotation.z = WrapAngle(m_rotation.z + lookoffset.z * m_sensivity, _Pi);							//roll
 }
 
+void Camera::Reset()
+{
+	m_movespeed = 12.0f;
+	m_sensivity = 0.008f;
+
+	m_Fov = _Pi / 2;
+	m_NearZ = 0.5f;
+	m_FarZ = 400.0f;
+
+	UpdateProjectionMatrix();
+}
+
 void Camera::MakeTransformPropeties(GFX& gfx)
 {
 	if (!GetPressedState())
@@ -76,11 +88,36 @@ void Camera::MakeTransformPropeties(GFX& gfx)
 	ImGui::SliderAngle("camera Pitch", &m_rotation.y, 0.999f * -90.0f, 0.999f * 90.0f, "%.1f");
 	ImGui::SliderAngle("camera Roll", &m_rotation.z, -180.0f, 180.0f, "%.1f");
 
-	if (ImGui::Button("Reset"))
+	if (ImGui::Button("Reset Transform"))
 		ResetLocalTransform();
 }
 
+void Camera::MakePropeties(GFX& gfx)
+{
+	if (!GetPressedState())
+		return;
 
+	//we check if something changed to determine if we should update our projection matrix
+	bool changed = false;
+
+	auto checkChanged = [&changed](bool returnFromStatement) mutable
+		{
+			changed = changed || returnFromStatement;
+		};
+
+	ImGui::SliderFloat("moving speed", &m_movespeed, 1.0f, 100.0f, "%.1f");
+	ImGui::SliderFloat("sensivity", &m_sensivity, 0.001f, 0.1f, "%.3f");
+
+	checkChanged(ImGui::SliderAngle("fov", &m_Fov, 30.0f, 170.0f, "%.1f"));
+	checkChanged(ImGui::SliderFloat("nearZ", &m_NearZ, 0.1f, 10.0f, "%.1f"));
+	checkChanged(ImGui::SliderFloat("farZ", &m_FarZ, m_NearZ + 10.0f, 1000.0f, "%.1f"));
+
+	if (changed)
+		UpdateProjectionMatrix();
+
+	if (ImGui::Button("Reset Camera Settings"))
+		Reset();
+}
 
 void Camera::LinkSceneObjectToPipeline(RenderGraph& renderGraph)
 {

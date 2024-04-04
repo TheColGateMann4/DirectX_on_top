@@ -18,7 +18,11 @@ public:
 	void Look(const DirectX::XMFLOAT3 lookoffset);
 
 public:
+	void Reset();
+
 	virtual void MakeTransformPropeties(GFX& gfx) override;
+
+	virtual void MakePropeties(GFX& gfx) override;
 
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
 
@@ -35,8 +39,8 @@ private:
 	}
 
 private:
-	static constexpr float m_movespeed = 12.0f;
-	static constexpr float m_sensivity = 0.008f;
+	float m_movespeed = 12.0f;
+	float m_sensivity = 0.008f;
 
 	float m_Fov = _Pi / 2;
 	float m_AspectRatio;
