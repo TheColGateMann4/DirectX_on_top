@@ -148,10 +148,12 @@ void Camera::LinkSceneObjectToPipeline(RenderGraph& renderGraph)
 void Camera::RenderOnScene() const noexcept(!IS_DEBUG)
 {
 	if (!m_active) 
+	{
 		m_indicator.Render();
 
-	if(m_selected)
-		m_viewIndicator.Render();
+		if (m_selected)
+			m_viewIndicator.Render();	
+	}
 }
 
 void Camera::UpdateProjectionMatrix(GFX& gfx)
