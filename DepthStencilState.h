@@ -11,7 +11,8 @@ public:
 	{
 		Off, 
 		Write,
-		Mask
+		Mask,
+		IgnoreZBuffer
 	};
 
 public:
@@ -39,6 +40,11 @@ public:
 			depthStencilDesc.StencilReadMask = 0xFF;
 			depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
 			depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		}
+		else if (mode == StencilMode::IgnoreZBuffer)
+		{
+			depthStencilDesc.DepthEnable = FALSE;
+			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		}
 
 		GetDevice(gfx)->CreateDepthStencilState(&depthStencilDesc, &pDepthStencil);

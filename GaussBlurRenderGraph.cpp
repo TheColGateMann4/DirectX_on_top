@@ -7,6 +7,7 @@
 #include "OutlineRenderPass.h"
 #include "HorizontalGaussBlurRenderPass.h"
 #include "VerticalGaussBlurRenderPass.h"
+#include "IgnoreZBufferRenderPass.h"
 
 GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx)
 	: RenderGraph(gfx)
@@ -91,9 +92,15 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx)
 			renderPass->LinkInput("depthStencilView", "outlineWriteMaskPass.depthStencilView");
 			AddPass(std::move(renderPass));
 		}
+
+		{
+			auto renderPass = std::make_unique<IgnoreZBufferRenderPass>(gfx, "ignoreZBufferPass");
+			renderPass->LinkInput("renderTarget", "verticalGaussBlurPass.renderTarget");
+			AddPass(std::move(renderPass));
+		}
 	}
 
-	SetTarget("backBuffer", "verticalGaussBlurPass.renderTarget");
+	SetTarget("backBuffer", "ignoreZBufferPass.renderTarget");
 	Finish();
 }
 

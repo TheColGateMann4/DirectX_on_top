@@ -7,7 +7,7 @@
 
 PointLightModel::PointLightModel(GFX& gfx, float radius)
 	:
-	m_colorBuffer(DynamicConstantBuffer::BufferLayout("F3"))
+	m_colorBuffer(DynamicConstantBuffer::BufferLayout("F4"))
 {
 	SimpleMesh model = Sphere::GetMesh(35, 35);
 	model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
@@ -25,7 +25,7 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 
 			std::shared_ptr<VertexShader> vertexShader = VertexShader::GetBindable(gfx, "VS.cso");
 
-			*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("element0") = { 1.0f, 1.0f, 1.0f };
+			*m_colorBuffer.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("element0") = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));

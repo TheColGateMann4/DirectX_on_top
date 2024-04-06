@@ -6,7 +6,6 @@
 
 class FullscreenFilter
 {
-	friend class RenderQueue;
 public:
 	FullscreenFilter(class GFX& gfx);
 

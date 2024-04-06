@@ -6,7 +6,7 @@
 #include "Camera.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
-	: m_width(width), m_height(height), m_name(name), window(width, height, name), renderGraph(window.Graphics)
+	: m_width(width), m_height(height), m_name(name), window(width, height, name), renderGraph(window.Graphics), scene(&window)
 {
 
 }
@@ -19,9 +19,6 @@ BOOL Application::Initiate()
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
 
-	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
-	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
-	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
 	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
 	scene.AddCameraObject(std::make_unique<Camera>(window.Graphics, scene.GetCameraManager()));
 	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics));

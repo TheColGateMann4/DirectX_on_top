@@ -171,12 +171,12 @@
     <ClInclude Include="BindableClassesMacro.h" />
     <ClInclude Include="BindableList.h" />
     <ClInclude Include="BlendState.h" />
-    <ClInclude Include="BlurOutlineRenderPass.h" />
     <ClInclude Include="BoxBlurRenderPass.h" />
     <ClInclude Include="BufferClearRenderPass.h" />
     <ClInclude Include="CameraIndicator.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraViewAreaIndicator.h" />
     <ClInclude Include="ConstantBuffers.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="DepthStencilState.h" />
@@ -193,6 +193,7 @@
     <ClInclude Include="GraphicResource.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="HorizontalGaussBlurRenderPass.h" />
+    <ClInclude Include="IgnoreZBufferRenderPass.h" />
     <ClInclude Include="ImguiManager.h" />
     <ClInclude Include="imgui\backend\imgui_impl_dx11.h" />
     <ClInclude Include="imgui\backend\imgui_impl_win32.h" />
@@ -254,12 +255,12 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BlendState.cpp" />
-    <ClCompile Include="BlurOutlineRenderPass.cpp" />
     <ClCompile Include="BoxBlurRenderPass.cpp" />
     <ClCompile Include="BufferClearRenderPass.cpp" />
     <ClCompile Include="CameraIndicator.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraViewAreaIndicator.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="DXError.cpp" />
@@ -273,6 +274,7 @@
     <ClCompile Include="GraphicResource.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="HorizontalGaussBlurRenderPass.cpp" />
+    <ClCompile Include="IgnoreZBufferRenderPass.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
     <ClCompile Include="imgui\backend\imgui_impl_dx11.cpp" />
     <ClCompile Include="imgui\backend\imgui_impl_win32.cpp" />
@@ -327,13 +329,6 @@
     <Image Include="icons8-video-card-96.ico" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PS_CameraIndicator.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
     <FxCompile Include="PS_FaceColors.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

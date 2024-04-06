@@ -3,8 +3,6 @@
 #include "Graphics.h"
 #include "RenderStep.h"
 
-class RenderQueue;
-
 class RenderTechnique
 {
 	friend class Shape;

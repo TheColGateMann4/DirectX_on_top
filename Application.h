@@ -35,6 +35,6 @@ private:
 	bool imguiDemoWindow = false;
 
 private:
-	Scene scene{ &window };
+	Scene scene;
 };
 

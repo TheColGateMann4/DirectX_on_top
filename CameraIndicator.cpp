@@ -8,21 +8,24 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 	:
 	m_parent(parent)
 {
+	float aspectRatio = parent->m_AspectRatio;
+
 	std::vector<DirectX::XMFLOAT3> vertices
 	{
-		{ 0.3f, 0.3f, 0.0f },
-		{ 0.3f, -0.3f, 0.0f },
-		{ -0.3f, -0.3f, 0.0f },
-		{ -0.3f, 0.3f, 0.0f },
+		{ 0.2f * aspectRatio, 0.3f, -1.0f },
+		{ 0.2f * aspectRatio, -0.3f, -1.0f },
+		{ -0.2f * aspectRatio, -0.3f, -1.0f },
+		{ -0.2f * aspectRatio, 0.3f, -1.0f },
 
-		{ 1.0f, 0.8f, 1.0f },
-		{ 1.0f, -0.8f, 1.0f },
-		{ -1.0f, -0.8f, 1.0f },
-		{ -1.0f, 0.8f, 1.0f }
+		{ 0.7f * aspectRatio, 0.8f, 0.0f },
+		{ 0.7f * aspectRatio, -0.8f, 0.0f },
+		{ -0.7f * aspectRatio, -0.8f, 0.0f },
+		{ -0.7f * aspectRatio, 0.8f, 0.0f }
 	};
 
 	DynamicVertex::VertexLayout vertexLayout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
 	DynamicVertex::VertexBuffer vertexBuffer(std::move(vertexLayout));
+
 	for (const auto& position : vertices)
 		vertexBuffer.Emplace_Back(position);
 
@@ -63,7 +66,7 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 
 		step.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout().GetDirectXLayout(), pVertexShader.get()));
 		step.AddBindable(pVertexShader);
-		step.AddBindable(PixelShader::GetBindable(gfx, "PS_CameraIndicator.cso"));
+		step.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 		step.AddBindable(std::make_shared<CachedBuffer>(gfx, constBufferData, 1, true));
 
 		technique.AddRenderStep(step);

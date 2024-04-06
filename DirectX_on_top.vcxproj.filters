@@ -285,9 +285,6 @@
     <ClInclude Include="NormalRenderPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
-    <ClInclude Include="BlurOutlineRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
     <ClInclude Include="OutlineRenderPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
@@ -326,6 +323,12 @@
     </ClInclude>
     <ClInclude Include="CameraIndicator.h">
       <Filter>Header Files\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraViewAreaIndicator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IgnoreZBufferRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -488,9 +491,6 @@
     <ClCompile Include="NormalRenderPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
-    <ClCompile Include="BlurOutlineRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
     <ClCompile Include="OutlineRenderPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
@@ -529,6 +529,12 @@
     </ClCompile>
     <ClCompile Include="CameraIndicator.cpp">
       <Filter>Source Files\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraViewAreaIndicator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IgnoreZBufferRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -628,9 +634,6 @@
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_BoxBlur.hlsl">
       <Filter>Shader\FullscreenFilters</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_CameraIndicator.hlsl">
-      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

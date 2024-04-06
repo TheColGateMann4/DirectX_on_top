@@ -2,6 +2,7 @@
 #include "Includes.h"
 #include "SceneObject.h"
 #include "CameraIndicator.h"
+#include "CameraViewAreaIndicator.h"
 
 class GFX;
 class CameraManager;
@@ -9,6 +10,8 @@ class CameraManager;
 class Camera : public SceneObject
 {
 	friend class CameraManager;
+	friend class CameraIndicator;
+	friend class CameraViewAreaIndicator;
 
 public:
 	Camera(GFX& gfx, CameraManager* cameraManager);
@@ -22,7 +25,7 @@ public:
 	void Look(const DirectX::XMFLOAT3 lookoffset);
 
 public:
-	void Reset();
+	void Reset(GFX& gfx);
 
 	virtual void MakeTransformPropeties(GFX& gfx) override;
 
@@ -33,7 +36,7 @@ public:
 	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override;
 
 private:
-	void UpdateProjectionMatrix();
+	void UpdateProjectionMatrix(GFX& gfx);
 
 	float WrapAngle(float angle, float value);
 
@@ -59,11 +62,13 @@ private:
 	float m_FarZ = 400.0f;
 
 	bool m_active;
+	bool m_selected = false;
 	size_t m_cameraIndex;
 
-	CameraIndicator m_indicator;
-
 	CameraManager* m_cameraManager;
+
+	CameraIndicator m_indicator;
+	CameraViewAreaIndicator m_viewIndicator;
 
 	DirectX::XMMATRIX m_projection = {};
 };

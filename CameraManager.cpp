@@ -26,7 +26,7 @@ void CameraManager::AddCamera(Camera* camera, bool asActive)
 
 void CameraManager::SetActiveCameraByPtr(Camera* newActiveCamera)
 {
-	if (m_activeCamera != nullptr)
+	if (m_activeCamera != nullptr && newActiveCamera != m_activeCamera)
 		m_activeCamera->m_active = false;
 
 	m_activeCamera = newActiveCamera;
