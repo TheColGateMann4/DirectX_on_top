@@ -1,4 +1,5 @@
 #include "Topology.h"
+#include "Graphics.h"
 
 Topology::Topology(GFX& gfx, D3D11_PRIMITIVE_TOPOLOGY topologyType)
 	: m_topologyType(topologyType)
@@ -8,5 +9,5 @@ Topology::Topology(GFX& gfx, D3D11_PRIMITIVE_TOPOLOGY topologyType)
 
 VOID Topology::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->IASetPrimitiveTopology(m_topologyType);
+	GFX::GetDeviceContext(gfx)->IASetPrimitiveTopology(m_topologyType);
 }

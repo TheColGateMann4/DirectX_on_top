@@ -14,7 +14,7 @@ public:
 	void Initialize(HWND hWnd);
 	void SetResolution(UINT32 width, UINT32 height);
 
-	void BeginFrame();
+	void BeginFrame() const;
 	void FinishFrame();
 
 public:
@@ -36,6 +36,10 @@ public:
 public:
 	UINT32 GetWidth() const { return m_width; };
 	UINT32 GetHeight() const { return m_height; };
+
+public:
+	static ID3D11DeviceContext* GetDeviceContext(GFX& gfx) noexcept;
+	static ID3D11Device* GetDevice(GFX& gfx) noexcept;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;

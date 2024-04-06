@@ -21,7 +21,7 @@ PixelShader::PixelShader(GFX& gfx, std::string path)
 
 	THROW_GFX_IF_FAILED
 	(
-		GetDevice(gfx)->CreatePixelShader
+		GFX::GetDevice(gfx)->CreatePixelShader
 		(
 			pBlob->GetBufferPointer(),
 			pBlob->GetBufferSize(),
@@ -33,5 +33,5 @@ PixelShader::PixelShader(GFX& gfx, std::string path)
 
 VOID PixelShader::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->PSSetShader(pPixelShader.Get(), NULL, NULL);
+	GFX::GetDeviceContext(gfx)->PSSetShader(pPixelShader.Get(), NULL, NULL);
 }

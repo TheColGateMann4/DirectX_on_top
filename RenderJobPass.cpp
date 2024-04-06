@@ -8,6 +8,17 @@ void RenderJobPass::Render(GFX& gfx) const noexcept(!_DEBUG)
 
 	for (const auto& job : m_jobs)
 		job.Bind(gfx);
+
+	if(m_captureFrame)
+	{
+		if (m_renderTarget)
+			m_renderTarget->SaveToFile(gfx);
+
+		if (m_depthStencilView)
+			m_depthStencilView->SaveToFile(gfx);
+
+		m_captureFrame = false;
+	}
 }
 
 void RenderJobPass::AddRenderJob(const RenderJob& job)
@@ -18,4 +29,9 @@ void RenderJobPass::AddRenderJob(const RenderJob& job)
 void RenderJobPass::Reset()
 {
 	m_jobs.clear();
+}
+
+void RenderJobPass::CaptureNextFrame()
+{
+	m_captureFrame = true;
 }

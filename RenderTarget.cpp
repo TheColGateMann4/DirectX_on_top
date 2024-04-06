@@ -31,7 +31,7 @@ void RenderTarget::Update(GFX& gfx)
 	if (m_isTextureRenderTarget) textureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
 	THROW_GFX_IF_FAILED(
-		GetDevice(gfx)->CreateTexture2D(
+		GFX::GetDevice(gfx)->CreateTexture2D(
 			&textureDesc,
 			nullptr,
 			&pTexture
@@ -44,7 +44,7 @@ void RenderTarget::Update(GFX& gfx)
 	targetViewDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
 
 	THROW_GFX_IF_FAILED(
-		GetDevice(gfx)->CreateRenderTargetView(
+		GFX::GetDevice(gfx)->CreateRenderTargetView(
 			pTexture.Get(),
 			&targetViewDesc,
 			&m_pRenderTargetView
@@ -70,7 +70,7 @@ RenderTarget::RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTe
 	targetViewDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
 
 	THROW_GFX_IF_FAILED(
-		GetDevice(gfx)->CreateRenderTargetView(
+		GFX::GetDevice(gfx)->CreateRenderTargetView(
 			pTexture.Get(),
 			&targetViewDesc,
 			&m_pRenderTargetView
@@ -97,10 +97,15 @@ void RenderTarget::MakeAndSetLocalViewport(GFX& gfx)
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
-	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->RSSetViewports(1, &viewport));
+	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->RSSetViewports(1, &viewport));
 
 	if(!m_isTextureRenderTarget && !m_isBackBuffer)
 		Update(gfx);
+}
+
+void RenderTarget::GetBuffer(ID3D11Resource** resource)
+{
+	m_pRenderTargetView->GetResource(resource);
 }
 
 void RenderTarget::Bind(GFX& gfx) noexcept
@@ -132,13 +137,13 @@ void RenderTarget::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 		}
 	}
 
-	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), usedDepthStencilView));
+	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), usedDepthStencilView));
 }
 
 void RenderTarget::Clear(GFX& gfx) const
 {
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.0f };
-	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->ClearRenderTargetView(m_pRenderTargetView.Get(), &color.x));
+	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->ClearRenderTargetView(m_pRenderTargetView.Get(), &color.x));
 }
 
 void RenderTarget::ChangeResolution(GFX& gfx, const int width, const int height) noexcept
@@ -178,7 +183,7 @@ RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, cons
 	textureViewDesc.Texture2D.MipLevels = 1;
 
 	THROW_GFX_IF_FAILED(
-		GetDevice(gfx)->CreateShaderResourceView(
+		GFX::GetDevice(gfx)->CreateShaderResourceView(
 			pTexture.Get(),
 			&textureViewDesc,
 			&m_pTextureView
@@ -188,5 +193,5 @@ RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, cons
 
 void RenderTargetWithTexture::Bind(GFX& gfx) noexcept
 {
-	THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf()));
+	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf()));
 }

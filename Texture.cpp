@@ -57,9 +57,9 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
 
-	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateTexture2D(&textureDesc, nullptr, &pTexture));
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&textureDesc, nullptr, &pTexture));
 
-	GetDeviceContext(gfx)->UpdateSubresource(pTexture.Get(), 0, nullptr, textures->GetImages()->pixels, textures->GetImages()->rowPitch, 0);
+	GFX::GetDeviceContext(gfx)->UpdateSubresource(pTexture.Get(), 0, nullptr, textures->GetImages()->pixels, textures->GetImages()->rowPitch, 0);
 
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
@@ -68,12 +68,12 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 	shaderResourceViewDesc.Texture2D.MipLevels = -1;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 
-	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateShaderResourceView(pTexture.Get(), &shaderResourceViewDesc, &pShaderResourceView));
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pTexture.Get(), &shaderResourceViewDesc, &pShaderResourceView));
 
-	GetDeviceContext(gfx)->GenerateMips(pShaderResourceView.Get());
+	GFX::GetDeviceContext(gfx)->GenerateMips(pShaderResourceView.Get());
 }
 
 void Texture::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
+	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
 }

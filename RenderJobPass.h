@@ -9,7 +9,8 @@ public:
 	RenderJobPass(const char* name)
 		:
 		RenderBindablePass(name),
-		m_jobs()
+		m_jobs(),
+		m_captureFrame(false)
 	{}
 
 public:
@@ -20,7 +21,11 @@ public:
 
 	virtual void Reset() override;
 
+	void CaptureNextFrame();
+
 private:
 	std::vector<RenderJob> m_jobs;
+
+	mutable bool m_captureFrame;
 };
 

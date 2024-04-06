@@ -22,21 +22,21 @@ DepthStencilView::DepthStencilView(GFX& gfx)
 	depthDecs.Usage = D3D11_USAGE_DEFAULT;
 	depthDecs.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateTexture2D(&depthDecs, NULL, &pDepthStencil));
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&depthDecs, NULL, &pDepthStencil));
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDecs = {};
 	depthStencilViewDecs.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilViewDecs.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDecs.Texture2D.MipSlice = 0;
 
-	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateDepthStencilView(pDepthStencil.Get(), &depthStencilViewDecs, &pDepthStencilView));
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateDepthStencilView(pDepthStencil.Get(), &depthStencilViewDecs, &pDepthStencilView));
 }
 
 void DepthStencilView::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 {
 	if (graphicBuffer == nullptr)
 	{
-		THROW_INFO_EXCEPTION(GetDeviceContext(gfx)->OMSetRenderTargets(0, nullptr, pDepthStencilView.Get()));
+		THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->OMSetRenderTargets(0, nullptr, pDepthStencilView.Get()));
 	}
 	else if(RenderTarget* renderTarget = dynamic_cast<RenderTarget*>(graphicBuffer))
 	{
@@ -55,7 +55,12 @@ void DepthStencilView::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 
 }
 
+void DepthStencilView::GetBuffer(class ID3D11Resource** resource)
+{
+	pDepthStencilView->GetResource(resource);
+}
+
 void DepthStencilView::Clear(GFX& gfx) const
 {
-	GetDeviceContext(gfx)->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	GFX::GetDeviceContext(gfx)->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

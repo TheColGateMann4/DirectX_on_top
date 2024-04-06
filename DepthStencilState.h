@@ -47,13 +47,13 @@ public:
 			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		}
 
-		GetDevice(gfx)->CreateDepthStencilState(&depthStencilDesc, &pDepthStencil);
+		GFX::GetDevice(gfx)->CreateDepthStencilState(&depthStencilDesc, &pDepthStencil);
 	}
 
 public:
 	void Bind(GFX& gfx) noexcept override
 	{
-		GetDeviceContext(gfx)->OMSetDepthStencilState(pDepthStencil.Get(), 0xFF);
+		GFX::GetDeviceContext(gfx)->OMSetDepthStencilState(pDepthStencil.Get(), 0xFF);
 	}
 
 public:

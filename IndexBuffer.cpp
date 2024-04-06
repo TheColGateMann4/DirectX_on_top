@@ -1,5 +1,6 @@
 #include "IndexBuffer.h"
 #include "ErrorMacros.h"
+#include "Graphics.h"
 
 IndexBuffer::IndexBuffer(GFX& gfx, const std::string bufferUID, const std::vector<UINT32>& indices)
 	: m_count( (UINT32)indices.size()),
@@ -18,12 +19,12 @@ IndexBuffer::IndexBuffer(GFX& gfx, const std::string bufferUID, const std::vecto
 	D3D11_SUBRESOURCE_DATA isd = {};
 	isd.pSysMem = indices.data();
 
-	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&ibd, &isd, &pIndexBuffer));
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&ibd, &isd, &pIndexBuffer));
 }
 
 VOID IndexBuffer::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
+	GFX::GetDeviceContext(gfx)->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 }
 
 UINT32 IndexBuffer::GetCount() const noexcept

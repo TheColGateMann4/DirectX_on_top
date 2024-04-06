@@ -18,6 +18,9 @@ public:
 	void ShowCursor(bool show);
 	void LockCursor(bool lock);
 
+	void RegisterPrntScrHotKey();
+	void UnRegisterPrntScrHotKey();
+
 public:
 	BOOL OpenFileExplorer(std::string* filename);
 	BOOL MultiselectToFilePaths(std::string* multiSelectStr, std::vector<std::string>* filePaths);

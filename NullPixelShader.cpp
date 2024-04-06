@@ -1,6 +1,7 @@
 #include "NullPixelShader.h"
+#include "Graphics.h"
 
 VOID NullPixelShader::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->PSSetShader(nullptr, nullptr, NULL);
+	GFX::GetDeviceContext(gfx)->PSSetShader(nullptr, nullptr, NULL);
 }

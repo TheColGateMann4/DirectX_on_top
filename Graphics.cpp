@@ -75,7 +75,7 @@ void GFX::SetResolution(UINT32 width, UINT32 height)
 	this->m_height = height;
 }
 
-void GFX::BeginFrame()
+void GFX::BeginFrame() const
 {
 	//imgui
 	if (this->m_imgui_enabled)
@@ -154,4 +154,14 @@ Camera* GFX::GetActiveCamera() const
 void GFX::SetActiveCameraLinkage(Camera** ppActiveCamera)
 {
 	m_ppActiveCamera = ppActiveCamera;
+}
+
+ID3D11DeviceContext* GFX::GetDeviceContext(GFX& gfx) noexcept
+{
+	return gfx.pDeviceContext.Get();
+}
+
+ID3D11Device* GFX::GetDevice(GFX& gfx) noexcept
+{
+	return gfx.pDevice.Get();
 }

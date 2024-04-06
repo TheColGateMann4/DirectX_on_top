@@ -1,5 +1,4 @@
 #pragma once
-#include "GraphicResource.h"
 #include "GraphicBuffer.h"
 #include "Bindable.h"
 #include "wrl_no_warnings.h"
@@ -25,6 +24,8 @@ public:
 
 private:
 	void MakeAndSetLocalViewport(GFX& gfx);
+
+	virtual void GetBuffer(struct ID3D11Resource** resource) override;
 
 protected:
 	int m_width;

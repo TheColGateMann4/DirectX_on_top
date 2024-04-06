@@ -1,6 +1,7 @@
 #pragma once
 #include "SamplerState.h"
 #include "ErrorMacros.h"
+#include "Graphics.h"
 
 SamplerState::SamplerState(GFX& gfx, bool anisotropicFiltering, bool mirror)
 	: m_anisotropicFiltering(anisotropicFiltering),
@@ -14,10 +15,10 @@ SamplerState::SamplerState(GFX& gfx, bool anisotropicFiltering, bool mirror)
 	samplerDesc.AddressV = m_mirror ? D3D11_TEXTURE_ADDRESS_MIRROR : D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
 
-	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateSamplerState(&samplerDesc, &pSamplerState))
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateSamplerState(&samplerDesc, &pSamplerState))
 }
 
 void SamplerState::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->PSSetSamplers(0, 1, pSamplerState.GetAddressOf());
+	GFX::GetDeviceContext(gfx)->PSSetSamplers(0, 1, pSamplerState.GetAddressOf());
 }

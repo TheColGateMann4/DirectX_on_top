@@ -4,7 +4,6 @@
 RenderBindablePass::RenderBindablePass(const char* name)
 	: RenderPass(name)
 {
-
 }
 
 void RenderBindablePass::CheckPassIntegrity() const

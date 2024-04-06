@@ -19,6 +19,8 @@ public:
 	void Reset();
 
 public:
+	void CaptureNextFrame();
+
 	void SetTarget(const char* inputName, const std::string& linkedResource);
 
 	void AddPass(std::unique_ptr<RenderPass> pass);

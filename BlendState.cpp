@@ -1,5 +1,6 @@
 #include "BlendState.h"
 #include "ErrorMacros.h"
+#include "Graphics.h"
 
 BlendState::BlendState(GFX& gfx, bool blend)
 {
@@ -28,10 +29,10 @@ BlendState::BlendState(GFX& gfx, bool blend)
 	}
 
 
-	THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBlendState(&blendDesc, &pBlendState));
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBlendState(&blendDesc, &pBlendState));
 }
 
 void BlendState::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->OMSetBlendState(pBlendState.Get(), NULL, UINT32_MAX);
+	GFX::GetDeviceContext(gfx)->OMSetBlendState(pBlendState.Get(), NULL, UINT32_MAX);
 }

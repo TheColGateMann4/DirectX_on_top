@@ -155,6 +155,9 @@ void Application::DoFrame()
 		window.ShowCursor(cursorShowing);
 	}
 
+	if (window.Input.Key.GetKeyDown(VK_SNAPSHOT)) // print screen key
+		renderGraph.CaptureNextFrame();
+
 	if(window.Input.Key.GetKeyDown(VK_OEM_3)) // tilde key
 		imguiDemoWindow = !imguiDemoWindow;
 

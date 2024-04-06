@@ -34,7 +34,7 @@ public:
 		D3D11_SUBRESOURCE_DATA constBufferResourceData = {};
 		constBufferResourceData.pSysMem = bufferData.GetBytes();
 
-		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &pConstantBuffer));
+		THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &pConstantBuffer));
 	}
 
 	ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferLayout& layout,UINT32 slot, bool isPixelShader)
@@ -53,7 +53,7 @@ public:
 		constBufferDesc.ByteWidth = DynamicConstantBuffer::BufferLayout::GetLayoutSize(layout);
 		constBufferDesc.StructureByteStride = 0;
 
-		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &pConstantBuffer));
+		THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &pConstantBuffer));
 	}
 
 
@@ -67,7 +67,7 @@ public:
 		D3D11_MAPPED_SUBRESOURCE subresourceData;
 
 		THROW_GFX_IF_FAILED(
-			GetDeviceContext(gfx)->Map(
+			GFX::GetDeviceContext(gfx)->Map(
 				this->pConstantBuffer.Get(),
 				0,
 				D3D11_MAP_WRITE_DISCARD,
@@ -76,7 +76,7 @@ public:
 		);
 		memcpy(subresourceData.pData, bufferData.GetBytes(), bufferData.GetSize());
 
-		GetDeviceContext(gfx)->Unmap(this->pConstantBuffer.Get(), NULL);
+		GFX::GetDeviceContext(gfx)->Unmap(this->pConstantBuffer.Get(), NULL);
 	}
 
 	void Bind(GFX& gfx) noexcept override
@@ -84,9 +84,9 @@ public:
 		assert(pConstantBuffer != nullptr);
 
 		if (m_isPixelShader)
-			GetDeviceContext(gfx)->PSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
+			GFX::GetDeviceContext(gfx)->PSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 		else
-			GetDeviceContext(gfx)->VSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
+			GFX::GetDeviceContext(gfx)->VSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 	}
 
 public:

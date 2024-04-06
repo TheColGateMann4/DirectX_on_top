@@ -12,7 +12,7 @@ InputLayout::InputLayout(GFX& gfx, const DynamicVertex::VertexLayout& layout, Ve
 	ID3DBlob* pVertexShaderByteCode = pVertexShader->GetByteCode();
 
 	THROW_GFX_IF_FAILED(
-		GetDevice(gfx)->CreateInputLayout(
+		GFX::GetDevice(gfx)->CreateInputLayout(
 			directXLayout.data(),
 			(UINT32)directXLayout.size(),
 			pVertexShaderByteCode->GetBufferPointer(),
@@ -27,7 +27,7 @@ InputLayout::InputLayout(GFX& gfx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& 
 	ID3DBlob* pVertexShaderByteCode = pVertexShader->GetByteCode();
 
 	THROW_GFX_IF_FAILED(
-		GetDevice(gfx)->CreateInputLayout(
+		GFX::GetDevice(gfx)->CreateInputLayout(
 			layout.data(),
 			(UINT32)layout.size(),
 			pVertexShaderByteCode->GetBufferPointer(),
@@ -38,5 +38,5 @@ InputLayout::InputLayout(GFX& gfx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& 
 
 VOID InputLayout::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->IASetInputLayout(pInputLayout.Get());
+	GFX::GetDeviceContext(gfx)->IASetInputLayout(pInputLayout.Get());
 }

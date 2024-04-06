@@ -41,6 +41,13 @@ void RenderGraph::Reset()
  	m_finished = false;
 }
 
+void RenderGraph::CaptureNextFrame()
+{
+	for (auto& pass : m_passes)
+		if (RenderJobPass* jobPass = dynamic_cast<RenderJobPass*>(pass.get()))
+			jobPass->CaptureNextFrame();
+}
+
 void RenderGraph::SetTarget(const char* inputName, const std::string& linkedResource)
 {
 	RenderPassInput* foundInput = nullptr;

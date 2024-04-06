@@ -252,9 +252,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RenderTarget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -458,9 +455,6 @@
     <ClCompile Include="DepthStencilView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicResource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RenderTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -535,6 +529,9 @@
     </ClCompile>
     <ClCompile Include="IgnoreZBufferRenderPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicBuffer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

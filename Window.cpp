@@ -113,6 +113,15 @@ void Window::LockCursor(bool lock)
 	}
 }
 
+void Window::RegisterPrntScrHotKey()
+{
+	RegisterHotKey(m_hWnd, IDHOT_SNAPDESKTOP, 0, VK_SNAPSHOT);
+}
+
+void Window::UnRegisterPrntScrHotKey()
+{
+	UnregisterHotKey(m_hWnd, IDHOT_SNAPDESKTOP);
+}
 
 BOOL Window::OpenFileExplorer(std::string* filename)
 {
@@ -215,12 +224,15 @@ Window::Window(UINT32 width, UINT32 height, const char* name)
 	rawInputDevice.dwFlags = 0;
 	rawInputDevice.hwndTarget = m_hWnd;
 
+	RegisterPrntScrHotKey();
+
 	if (!RegisterRawInputDevices(&rawInputDevice, 1, sizeof(rawInputDevice)))
 		THROW_LAST_ERROR;
 }
 
 Window::~Window()
 {
+	UnRegisterPrntScrHotKey();
 	ImGui_ImplWin32_Shutdown();
 	DestroyWindow(m_hWnd);
 }
@@ -265,42 +277,51 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 	case WM_KILLFOCUS:
-	{
-		//clearing keyboard pressed keys to avoid weird behaviors
+		{
+			//clearing keyboard pressed keys to avoid weird behaviors
 		
-		this->Input.Key.clearList(this->Input.m_pressedKeysList);
-		this->Input.Key.clearList(this->Input.m_releasedKeysList);
-		this->Input.Key.clearList(this->Input.m_keyStateList);
+			UnRegisterPrntScrHotKey();
 
-		break;
-	}
+			this->Input.Key.clearList(this->Input.m_pressedKeysList);
+			this->Input.Key.clearList(this->Input.m_releasedKeysList);
+			this->Input.Key.clearList(this->Input.m_keyStateList);
+
+			break;
+		}
+
+	case WM_SETFOCUS:
+		{
+			RegisterPrntScrHotKey();
+
+			break;
+		}
 
 	///*          Keyboard stuff          *///
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		{
-		if (imguiio.WantCaptureKeyboard)
-			break;
-		if (!this->Input.Key.isWritingText)
-			if (lParam & 0x40000000) //was pressed before
-				if (this->Input.Key.m_allowRepeating)
+			if (imguiio.WantCaptureKeyboard)
+				break;
+			if (!this->Input.Key.isWritingText)
+				if (lParam & 0x40000000) //was pressed before
+					if (this->Input.Key.m_allowRepeating)
+					{
+						this->Input.m_pressedKeysList[wParam] = TRUE;
+						this->Input.m_keyStateList[wParam] = TRUE;
+					}
+					else
+					{
+						this->Input.m_pressedKeysList[wParam] = FALSE;
+						this->Input.m_keyStateList[wParam] = FALSE;
+					}
+				else
 				{
 					this->Input.m_pressedKeysList[wParam] = TRUE;
 					this->Input.m_keyStateList[wParam] = TRUE;
 				}
-				else
-				{
-					this->Input.m_pressedKeysList[wParam] = FALSE;
-					this->Input.m_keyStateList[wParam] = FALSE;
-				}
-			else
-			{
-				this->Input.m_pressedKeysList[wParam] = TRUE;
-				this->Input.m_keyStateList[wParam] = TRUE;
-			}
-			else 
-				if (wParam == VK_RETURN)
-					this->Input.Key.m_charBuffer += '\n'; //because WM_CHAR doesn't have '\n' in it, I used it for more convenient use of text
+				else 
+					if (wParam == VK_RETURN)
+						this->Input.Key.m_charBuffer += '\n'; //because WM_CHAR doesn't have '\n' in it, I used it for more convenient use of text
 
 			break;
 		}
@@ -321,6 +342,7 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 
 			this->Input.Key.m_charBuffer += static_cast<char>(wParam);
+
 			break;
 		}
 
@@ -423,6 +445,14 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				this->Input.Mouse.HandleRawInput(rawInput.data.mouse.lLastX, rawInput.data.mouse.lLastY);
 			}
+			
+			break;
+		}
+	case WM_HOTKEY:
+		{
+			this->Input.m_pressedKeysList[VK_SNAPSHOT] = TRUE;
+
+			break;
 		}
 	}
 

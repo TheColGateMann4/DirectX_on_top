@@ -31,7 +31,7 @@ public:
 		D3D11_SUBRESOURCE_DATA vertexBufferResourceData = {};
 		vertexBufferResourceData.pSysMem = vertexBuffer.GetConstData();
 
-		THROW_GFX_IF_FAILED(GetDevice(gfx)->CreateBuffer(&vertexBufferDesc, &vertexBufferResourceData, &pVertexBuffer));
+		THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&vertexBufferDesc, &vertexBufferResourceData, &pVertexBuffer));
 	}
 
 	void Bind(GFX& gfx) noexcept override;

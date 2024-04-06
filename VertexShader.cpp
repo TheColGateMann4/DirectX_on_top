@@ -1,6 +1,7 @@
 #include "VertexShader.h"
 #include "ErrorMacros.h"
 #include "StringConverting.h"
+#include "Graphics.h"
 #include <d3dcompiler.h>
 
 VertexShader::VertexShader(GFX& gfx, std::string path)
@@ -22,7 +23,7 @@ VertexShader::VertexShader(GFX& gfx, std::string path)
 
 	THROW_GFX_IF_FAILED
 	(
-		GetDevice(gfx)->CreateVertexShader
+		GFX::GetDevice(gfx)->CreateVertexShader
 		(
 			pBlob->GetBufferPointer(),
 			pBlob->GetBufferSize(),
@@ -34,7 +35,7 @@ VertexShader::VertexShader(GFX& gfx, std::string path)
 
 void VertexShader::Bind(GFX& gfx) noexcept
 {
-	GetDeviceContext(gfx)->VSSetShader(pVertexShader.Get(), NULL, NULL);
+	GFX::GetDeviceContext(gfx)->VSSetShader(pVertexShader.Get(), NULL, NULL);
 }
 
 ID3DBlob* VertexShader::GetByteCode() const noexcept
