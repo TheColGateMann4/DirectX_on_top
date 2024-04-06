@@ -12,7 +12,7 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 	using namespace DirectX;
 
 	TexMetadata texMetaData = {};
-	ScratchImage* textures = new ScratchImage();
+	ScratchImage textures;
 	std::wstring wImagePath = std::wstring(imagePath.begin(), imagePath.end());
 
 	THROW_GFX_IF_FAILED(GetMetadataFromWICFile(
@@ -25,10 +25,10 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 		wImagePath.c_str(),
 		WIC_FLAGS_NONE,
 		&texMetaData,
-		*textures
+		textures
 	));
 
-	m_hasAlpha = !textures->IsAlphaAllOpaque();
+	m_hasAlpha = !textures.IsAlphaAllOpaque();
 			
 // 	THROW_GFX_IF_FAILED(CreateShaderResourceView(
 // 		GetDevice(gfx),
@@ -59,10 +59,9 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 
 	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&textureDesc, nullptr, &pTexture));
 
-	GFX::GetDeviceContext(gfx)->UpdateSubresource(pTexture.Get(), 0, nullptr, textures->GetImages()->pixels, textures->GetImages()->rowPitch, 0);
+	GFX::GetDeviceContext(gfx)->UpdateSubresource(pTexture.Get(), 0, nullptr, textures.GetImages()->pixels, textures.GetImages()->rowPitch, 0);
 
-	textures->Release();
-	delete textures;
+	textures.Release();
 
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
