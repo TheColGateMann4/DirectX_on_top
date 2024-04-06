@@ -61,6 +61,9 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 
 	GFX::GetDeviceContext(gfx)->UpdateSubresource(pTexture.Get(), 0, nullptr, textures->GetImages()->pixels, textures->GetImages()->rowPitch, 0);
 
+	textures->Release();
+	delete textures;
+
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
 	shaderResourceViewDesc.Format = textureDesc.Format;
