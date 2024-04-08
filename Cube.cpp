@@ -21,6 +21,26 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 	m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2);
 
 	{
+		RenderTechnique shadowTechnique("shadow");
+
+		{
+			RenderStep shadowStep("shadowMappingPass");
+
+			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
+
+			shadowStep.AddBindable(PixelShader::GetBindable(gfx, "PS.cso"));
+
+			shadowStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pVertexShader.get()));
+
+			shadowStep.AddBindable(std::move(pVertexShader));
+
+			shadowTechnique.AddRenderStep(shadowStep);
+		}
+
+		AddRenderTechnique(shadowTechnique);
+	}
+
+	{
 		RenderTechnique normalTechnique("normal");
 
 		{

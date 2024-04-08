@@ -2,7 +2,8 @@
 #include "imgui/imgui.h"
 
 PointLight::PointLight(GFX& gfx, float radius)
-	: m_model(gfx, radius)
+	: m_model(gfx, this, radius),
+	m_camera(gfx)
 {
 	DynamicConstantBuffer::BufferLayout layout;
 
@@ -28,27 +29,20 @@ PointLight::PointLight(GFX& gfx, float radius)
 
 void PointLight::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 {
+	m_camera.LinkSceneObjectToPipeline(renderGraph);
 	m_model.LinkToPipeline(renderGraph);
-}
-
-void PointLight::MakeTransformPropeties(GFX& gfx)
-{
-	if (!GetPressedState())
-		return;
-
-	DirectX::XMFLOAT3& position = *constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position");
-
-	ImGui::Text("Position");
-	ImGui::SliderFloat("X", &position.x, -60.0f, 60.0f);
-	ImGui::SliderFloat("Y", &position.y, -60.0f, 60.0f);
-	ImGui::SliderFloat("Z", &position.z, -60.0f, 60.0f);
 }
 
 void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 {
+	memcpy_s(&m_camera.m_position, sizeof(DirectX::XMFLOAT3), &m_position, sizeof(DirectX::XMFLOAT3));
+	memcpy_s(&m_camera.m_rotation, sizeof(DirectX::XMFLOAT3), &m_rotation, sizeof(DirectX::XMFLOAT3));
+
 	DynamicConstantBuffer::BufferData& bufferData = constBufferData;
 
 	DirectX::XMFLOAT3* lightColor = bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor");
+
+	m_camera.m_pressed = m_pressed;
 
 	if (GetPressedState())
 	{
@@ -128,7 +122,7 @@ void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 
 void PointLight::RenderOnScene() const noexcept(!IS_DEBUG)
 {
-	m_model.SetPosition(*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"));
+	m_camera.RenderOnScene();
 	m_model.Render();
 }
 

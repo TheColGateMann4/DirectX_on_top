@@ -6,7 +6,7 @@
 #include "Window.h"
 
 Scene::Scene(Window* window)
-	: m_window(window), m_cameraManager(m_window->Graphics)
+	: m_window(window)
 {
 
 }

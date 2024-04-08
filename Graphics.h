@@ -5,6 +5,7 @@
 #include "wrl_no_warnings.h"
 
 class Camera;
+class CameraManager;
 
 class GFX
 {
@@ -31,7 +32,9 @@ public:
 public:
 	Camera* GetActiveCamera() const;
 
-	void SetActiveCameraLinkage(Camera** ppActiveCamera);
+	void SetActiveCamera(Camera* pActiveCamera);
+
+	void LinkCameraManager(CameraManager* pCameraManager);
 
 public:
 	UINT32 GetWidth() const { return m_width; };
@@ -52,5 +55,5 @@ private:
 	UINT32 m_width = 0;
 	UINT32 m_height = 0;
 	bool m_imgui_enabled = true;
-	Camera** m_ppActiveCamera = nullptr;
+	CameraManager* m_cameraManager = nullptr;
 };

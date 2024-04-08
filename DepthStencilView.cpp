@@ -4,32 +4,38 @@
 #include "Includes.h"
 #include "ErrorMacros.h"
 
-DepthStencilView::DepthStencilView(GFX& gfx)
+DepthStencilView::DepthStencilView(GFX& gfx, Mode depthStencilViewMode)
 {
 	HRESULT hr;
 
-
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
 
-	D3D11_TEXTURE2D_DESC depthDecs = {};
-	depthDecs.Width = gfx.GetWidth();
-	depthDecs.Height = gfx.GetHeight();
-	depthDecs.MipLevels = 1;
-	depthDecs.ArraySize = 1;
-	depthDecs.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthDecs.SampleDesc.Count = 1;
-	depthDecs.SampleDesc.Quality = 0;
-	depthDecs.Usage = D3D11_USAGE_DEFAULT;
-	depthDecs.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	{
+		D3D11_TEXTURE2D_DESC depthDecs = {};
+		depthDecs.Width = gfx.GetWidth();
+		depthDecs.Height = gfx.GetHeight();
+		depthDecs.MipLevels = 1;
+		depthDecs.ArraySize = 1;
+		depthDecs.Format = GetTypelessFormat(depthStencilViewMode);
+		depthDecs.SampleDesc.Count = 1;
+		depthDecs.SampleDesc.Quality = 0;
+		depthDecs.Usage = D3D11_USAGE_DEFAULT;
+		depthDecs.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&depthDecs, NULL, &pDepthStencil));
+		if (depthStencilViewMode == DepthOnly)
+			depthDecs.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDecs = {};
-	depthStencilViewDecs.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDecs.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDecs.Texture2D.MipSlice = 0;
+		THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&depthDecs, NULL, &pDepthStencil));
+	}
 
-	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateDepthStencilView(pDepthStencil.Get(), &depthStencilViewDecs, &pDepthStencilView));
+	{
+		D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDecs = {};
+		depthStencilViewDecs.Format = GetTypedFormat(depthStencilViewMode);
+		depthStencilViewDecs.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		depthStencilViewDecs.Texture2D.MipSlice = 0;
+
+		THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateDepthStencilView(pDepthStencil.Get(), &depthStencilViewDecs, &pDepthStencilView));
+	}
 }
 
 void DepthStencilView::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
@@ -55,7 +61,12 @@ void DepthStencilView::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 
 }
 
-void DepthStencilView::GetBuffer(class ID3D11Resource** resource)
+void DepthStencilView::Bind(GFX& gfx) noexcept
+{
+
+}
+
+void DepthStencilView::GetBuffer(ID3D11Resource** resource)
 {
 	pDepthStencilView->GetResource(resource);
 }
@@ -63,4 +74,77 @@ void DepthStencilView::GetBuffer(class ID3D11Resource** resource)
 void DepthStencilView::Clear(GFX& gfx) const
 {
 	GFX::GetDeviceContext(gfx)->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
+DXGI_FORMAT DepthStencilView::GetTypelessFormat(DepthStencilView::Mode depthStencilViewMode)
+{
+	if (depthStencilViewMode == StencilAndDepth)
+		return DXGI_FORMAT_R24G8_TYPELESS;
+	if (depthStencilViewMode == DepthOnly)
+		return DXGI_FORMAT_R32_TYPELESS;
+
+	std::string errorString = "Used unhandled depthStencilViewMode. Mode was: \"";
+	errorString += std::to_string(depthStencilViewMode);
+	errorString += "\".";
+
+	THROW_INTERNAL_ERROR(errorString.c_str(), true);
+}
+
+DXGI_FORMAT DepthStencilView::GetTypedFormat(DepthStencilView::Mode depthStencilViewMode)
+{
+	if (depthStencilViewMode == StencilAndDepth)
+		return DXGI_FORMAT_D24_UNORM_S8_UINT;
+	if (depthStencilViewMode == DepthOnly)
+		return DXGI_FORMAT_D32_FLOAT;
+
+	std::string errorString = "Used unhandled depthStencilViewMode. Mode was: \"";
+	errorString += std::to_string(depthStencilViewMode);
+	errorString += "\".";
+
+	THROW_INTERNAL_ERROR(errorString.c_str(), true);
+}
+
+DXGI_FORMAT DepthStencilView::GetColorTypeFormat(DepthStencilView::Mode depthStencilViewMode)
+{
+	if (depthStencilViewMode == StencilAndDepth)
+		return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	if (depthStencilViewMode == DepthOnly)
+		return DXGI_FORMAT_R32_FLOAT;
+
+	std::string errorString = "Used unhandled depthStencilViewMode. Mode was: \"";
+	errorString += std::to_string(depthStencilViewMode);
+	errorString += "\".";
+
+	THROW_INTERNAL_ERROR(errorString.c_str(), true);
+}
+
+
+
+DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, Mode depthStencilViewMode)
+	: 
+	DepthStencilView(gfx, depthStencilViewMode)
+{
+	HRESULT hr;
+	Microsoft::WRL::ComPtr<ID3D11Resource> pDepthStencilTexture;
+
+	pDepthStencilView->GetResource(&pDepthStencilTexture);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC textureViewDesc = {};
+	textureViewDesc.Format = GetColorTypeFormat(depthStencilViewMode);
+	textureViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	textureViewDesc.Texture2D.MostDetailedMip = 0;
+	textureViewDesc.Texture2D.MipLevels = 1;
+
+	THROW_GFX_IF_FAILED(
+		GFX::GetDevice(gfx)->CreateShaderResourceView(
+			pDepthStencilTexture.Get(),
+			&textureViewDesc,
+			&m_pTextureView
+		)
+	);
+}
+
+void DepthStencilViewWithTexture::Bind(GFX& gfx) noexcept
+{
+	GFX::GetDeviceContext(gfx)->PSSetShaderResources(0, 1, m_pTextureView.GetAddressOf());
 }

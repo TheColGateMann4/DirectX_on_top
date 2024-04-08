@@ -41,12 +41,12 @@ public:
 public:
 	bool GetPressedState() const
 	{
-		return currentlyPressed;
+		return m_pressed;
 	}
 
 	void SetPressedState(bool newState)
 	{
-		currentlyPressed = newState;
+		m_pressed = newState;
 	}
 	
 	void SetShape(Shape* shape) noexcept
@@ -58,8 +58,8 @@ public:
 	DirectX::XMFLOAT3 m_position = { 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 m_rotation = { 0.0f, 0.0f, 0.0f };
 
-private:
-	bool currentlyPressed = false;
+public:
+	bool m_pressed = false;
 	size_t m_sceneIndex = 0;
 
 private:

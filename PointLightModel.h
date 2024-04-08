@@ -4,10 +4,12 @@
 #include "DynamicConstantBuffer.h"
 #include "mesh.h"
 
+class PointLight;
+
 class PointLightModel : public Shape
 {
 public:
-	PointLightModel(GFX& gfx, float radius);
+	PointLightModel(GFX& gfx, PointLight* parent, float radius);
 
 public:
 	void UpdateLightColorBuffer(GFX& gfx, const DirectX::XMFLOAT3& color);
@@ -15,13 +17,10 @@ public:
 
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept;
 
-public:
-	void SetPosition(const DirectX::XMFLOAT3& position);
-
 private:
 	DynamicConstantBuffer::BufferData m_colorBuffer;
 
-	DirectX::XMFLOAT3 m_position = {};
+	PointLight* m_parent;
 
 	DirectX::XMFLOAT3 m_scale = {1.0f, 1.0f, 1.0f};
 };

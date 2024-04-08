@@ -327,6 +327,9 @@
     <ClInclude Include="IgnoreZBufferRenderPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowMappingRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -532,6 +535,9 @@
     </ClCompile>
     <ClCompile Include="GraphicBuffer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMappingRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,12 +2,14 @@
 #include "BindableClassesMacro.h"
 #include "SimpleMesh.h"
 #include "Sphere.h"
+#include "PointLight.h"
 
 
 
-PointLightModel::PointLightModel(GFX& gfx, float radius)
+PointLightModel::PointLightModel(GFX& gfx, PointLight* parent, float radius)
 	:
-	m_colorBuffer(DynamicConstantBuffer::BufferLayout("F4"))
+	m_colorBuffer(DynamicConstantBuffer::BufferLayout("F4")),
+	m_parent(parent)
 {
 	SimpleMesh model = Sphere::GetMesh(35, 35);
 	model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
@@ -45,12 +47,7 @@ PointLightModel::PointLightModel(GFX& gfx, float radius)
 
 DirectX::XMMATRIX PointLightModel::GetTranformMatrix() const noexcept
 {
-	return DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
-}
-
-VOID PointLightModel::SetPosition(const DirectX::XMFLOAT3& position)
-{
-	this->m_position = position;
+	return m_parent->GetSceneTranformMatrix();
 }
 
 void PointLightModel::UpdateLightColorBuffer(GFX& gfx, const DirectX::XMFLOAT3& color)

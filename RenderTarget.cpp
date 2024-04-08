@@ -193,5 +193,5 @@ RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, cons
 
 void RenderTargetWithTexture::Bind(GFX& gfx) noexcept
 {
-	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf()));
+	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf());
 }

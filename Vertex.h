@@ -275,7 +275,7 @@ namespace DynamicVertex
 		auto& Attribute() noexcept(!IS_DEBUG)
 		{
 			auto pAttrib = m_pData + m_layout.Resolve<type>().GetOffset();
-			return *reinterpret_cast<class VertexLayout::Map<type>::Systype*>(pAttrib);
+			return *reinterpret_cast<struct VertexLayout::Map<type>::Systype*>(pAttrib);
 		}
 
 		template<VertexLayout::VertexComponent DestLayoutType, class SrcType>

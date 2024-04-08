@@ -317,8 +317,7 @@ std::unique_ptr<Node> Model::ParseNode(const aiNode& node) noexcept
 
 void Model::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 {
-	for (auto& mesh : m_pMeshes)
-		m_pStartingNode->LinkToPipeline(renderGraph);
+	m_pStartingNode->LinkToPipeline(renderGraph);
 }
 
 void Model::MakeHierarchy(GFX&)

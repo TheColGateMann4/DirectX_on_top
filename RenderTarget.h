@@ -5,7 +5,6 @@
 
 class RenderTarget : public Bindable, public GraphicBuffer
 {
-	friend class RenderTargetWithTexture;
 public:
 	RenderTarget(GFX& gfx, const int width, const int height, bool isTextureRenderTarget = false);
 	RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTexture);

@@ -6,9 +6,6 @@ class Camera;
 class CameraManager
 {
 public:
-	CameraManager(class GFX& gfx);
-
-public:
 	Camera* GetActiveCamera() const;
 
 public:

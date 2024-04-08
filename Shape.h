@@ -9,6 +9,7 @@ class Shape
 public:
 	Shape() = default;
 	Shape(const Shape&) = delete;
+	virtual ~Shape() = default;
 
 public:
 	virtual void Render() const noexcept(!IS_DEBUG);

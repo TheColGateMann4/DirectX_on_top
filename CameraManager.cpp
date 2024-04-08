@@ -3,11 +3,6 @@
 #include "Graphics.h"
 #include "Camera.h"
 
-CameraManager::CameraManager(GFX& gfx)
-{
-	gfx.SetActiveCameraLinkage(&m_activeCamera);
-}
-
 Camera* CameraManager::GetActiveCamera() const
 {
 	return m_activeCamera;
@@ -19,7 +14,7 @@ void CameraManager::AddCamera(Camera* camera, bool asActive)
 
 	if (asActive)
 	{
-		camera->m_active = true;
+		camera->SetActive(true);
 		m_activeCamera = camera;
 	}
 }
@@ -27,7 +22,7 @@ void CameraManager::AddCamera(Camera* camera, bool asActive)
 void CameraManager::SetActiveCameraByPtr(Camera* newActiveCamera)
 {
 	if (m_activeCamera != nullptr && newActiveCamera != m_activeCamera)
-		m_activeCamera->m_active = false;
+		m_activeCamera->SetActive(false);
 
 	m_activeCamera = newActiveCamera;
 }

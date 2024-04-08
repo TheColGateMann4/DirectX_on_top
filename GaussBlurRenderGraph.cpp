@@ -8,6 +8,7 @@
 #include "HorizontalGaussBlurRenderPass.h"
 #include "VerticalGaussBlurRenderPass.h"
 #include "IgnoreZBufferRenderPass.h"
+#include "ShadowMappingRenderPass.h"
 
 GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx)
 	: RenderGraph(gfx)
@@ -26,7 +27,13 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx)
 		}
 
 		{
+			auto renderPass = std::make_unique<ShadowMappingRenderPass>(gfx, "shadowMappingPass");
+			AddPass(std::move(renderPass));
+		}
+
+		{
 			auto renderPass = std::make_unique<NormalRenderPass>(gfx, "normalPass");
+			renderPass->LinkInput("shadowMap", "shadowMappingPass.shadowMap");
 			renderPass->LinkInput("depthStencilView", "clearDepthStencilView.buffer");
 			renderPass->LinkInput("renderTarget", "clearBackBuffer.buffer");
 			AddPass(std::move(renderPass));
@@ -53,11 +60,11 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx)
 				DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 
 
-				cooficientSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true);
+				m_cooficientSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true);
 
-				SetCooficients(gfx, 7, 2.6f, &cooficientSettings);
+				SetCooficients(gfx, 7, 2.6f, &m_cooficientSettings);
 
-				AddGlobalOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("gaussCooficientSettings", &cooficientSettings));
+				AddGlobalOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("gaussCooficientSettings", &m_cooficientSettings));
 			}
 
 			{
@@ -68,9 +75,9 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx)
 				*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("horizontal") = true;
 
 
-				directionSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 1, true);
+				m_directionSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 1, true);
 
-				AddGlobalOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("gaussDirectionSettings", &directionSettings));
+				AddGlobalOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("gaussDirectionSettings", &m_directionSettings));
 			}
 		}
 

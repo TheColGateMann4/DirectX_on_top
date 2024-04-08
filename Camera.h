@@ -9,12 +9,11 @@ class CameraManager;
 
 class Camera : public SceneObject
 {
-	friend class CameraManager;
 	friend class CameraIndicator;
 	friend class CameraViewAreaIndicator;
 
 public:
-	Camera(GFX& gfx, CameraManager* cameraManager);
+	Camera(GFX& gfx);
 
 public:
 	DirectX::XMMATRIX GetCameraView() const;
@@ -34,6 +33,8 @@ public:
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
 
 	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override;
+
+	void SetActive(bool active);
 
 private:
 	void UpdateProjectionMatrix(GFX& gfx);
@@ -62,10 +63,7 @@ private:
 	float m_FarZ = 400.0f;
 
 	bool m_active;
-	bool m_selected = false;
 	size_t m_cameraIndex;
-
-	CameraManager* m_cameraManager;
 
 	CameraIndicator m_indicator;
 	CameraViewAreaIndicator m_viewIndicator;

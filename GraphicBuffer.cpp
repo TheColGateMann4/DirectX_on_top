@@ -13,7 +13,7 @@ void GraphicBuffer::SaveToFile(GFX& gfx)
 	HRESULT hr;
 
 	//DepthStencilView will use D formats which are not supported by the library we use
-	bool wicCantProcess = typeid(*this) == typeid(DepthStencilView);
+	const bool wicCantProcess = (typeid(*this) == typeid(DepthStencilView)) || (typeid(*this) == typeid(DepthStencilViewWithTexture));
 
 	ID3D11DeviceContext* deviceContext = GFX::GetDeviceContext(gfx);
 	Microsoft::WRL::ComPtr<ID3D11Resource> resource;

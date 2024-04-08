@@ -3,6 +3,11 @@
 #include "Bindable.h"
 #include "ErrorMacros.h"
 #include "RenderTarget.h"
+#include "DepthStencilView.h"
+
+// in function RenderPassBufferOutput::GetBindable() constexpr ifs make compiler go crazy and say the code is unreachable,
+// and if we don't put return nullptr, it gives error for not retuning value
+#pragma warning(disable : 4702)
 
 class GraphicBuffer;
 
@@ -136,7 +141,12 @@ public:
 	{
 		m_linked = true;
 
-		return std::dynamic_pointer_cast<RenderTargetWithTexture>(*m_buffer);
+		if constexpr (typeid(T) == typeid(DepthStencilView))
+			return std::dynamic_pointer_cast<DepthStencilViewWithTexture>(*m_buffer);
+		if constexpr (typeid(T) == typeid(RenderTarget))
+			return std::dynamic_pointer_cast<RenderTargetWithTexture>(*m_buffer);
+
+		return nullptr;
 	}
 
 public:
@@ -156,3 +166,5 @@ private:
 	std::shared_ptr<T>* m_buffer;
 	bool m_linked;
 };
+
+#pragma warning(default : 4702)

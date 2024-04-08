@@ -129,6 +129,7 @@ namespace DynamicConstantBuffer
 	{
 		struct ImguiInfo
 		{
+			virtual ~ImguiInfo() = default;
 			virtual void aaa() {};
 		};
 		struct ImguiFloatInfo : public ImguiInfo

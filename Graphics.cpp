@@ -1,6 +1,7 @@
 #include "Graphics.h"
 #include "DepthStencilView.h"
 #include "ErrorMacros.h"
+#include "CameraManager.h"
 
 #include <d3dcompiler.h>
 #include <cmath>
@@ -148,12 +149,17 @@ void GFX::DrawIndexed(UINT32 count)
 
 Camera* GFX::GetActiveCamera() const
 {
-	return *m_ppActiveCamera;
+	return m_cameraManager->GetActiveCamera();
 }
 
-void GFX::SetActiveCameraLinkage(Camera** ppActiveCamera)
+void GFX::SetActiveCamera(Camera* pActiveCamera)
 {
-	m_ppActiveCamera = ppActiveCamera;
+	m_cameraManager->SetActiveCameraByPtr(pActiveCamera);
+}
+
+void GFX::LinkCameraManager(CameraManager* pCameraManager)
+{
+	m_cameraManager = pCameraManager;
 }
 
 ID3D11DeviceContext* GFX::GetDeviceContext(GFX& gfx) noexcept

@@ -12,6 +12,6 @@ private:
 	float CalculateGaussDensity(const float x, const float sigma) const noexcept;
 
 private:
-	std::shared_ptr<CachedBuffer> cooficientSettings;
-	std::shared_ptr<CachedBuffer> directionSettings;
+	std::shared_ptr<CachedBuffer> m_cooficientSettings;
+	std::shared_ptr<CachedBuffer> m_directionSettings;
 };

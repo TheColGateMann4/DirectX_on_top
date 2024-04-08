@@ -8,10 +8,9 @@
 #include "Graphics.h"
 #include "CameraManager.h"
 
-Camera::Camera(GFX& gfx, CameraManager* cameraManager)
+Camera::Camera(GFX& gfx)
 	:
 	m_AspectRatio((float)gfx.GetWidth() / (float)gfx.GetHeight()),
-	m_cameraManager(cameraManager),
 	m_indicator(gfx, this),
 	m_viewIndicator(gfx, this)
 {
@@ -84,19 +83,10 @@ void Camera::Reset(GFX& gfx)
 void Camera::MakeTransformPropeties(GFX& gfx)
 {
 	if (!GetPressedState())
-	{
-		m_selected = false;
 		return;
-	}
-
-	m_selected = true;
 	
 	if (ImGui::Button("Activate"))
-	{
-		m_active = true;
-		m_cameraManager->SetActiveCameraByPtr(this);
-	}
-
+		gfx.SetActiveCamera(this);
 
 	ImGui::Text("Positione");
 	ImGui::SliderFloat("camera X", &m_position.x, -80.0, 80.0f, "%.1f");
@@ -151,9 +141,14 @@ void Camera::RenderOnScene() const noexcept(!IS_DEBUG)
 	{
 		m_indicator.Render();
 
-		if (m_selected)
+		if (m_pressed)
 			m_viewIndicator.Render();	
 	}
+}
+
+void Camera::SetActive(bool active)
+{
+	m_active = active;
 }
 
 void Camera::UpdateProjectionMatrix(GFX& gfx)
