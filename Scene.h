@@ -29,6 +29,8 @@ public:
 
 	void AddSceneObject(std::unique_ptr<SceneObject>&& model);
 
+	std::vector<PointLight*>& GetLights();
+
 private:
 	void CleanupPressedNodes();
 

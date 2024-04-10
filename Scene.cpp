@@ -142,6 +142,11 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 	m_models.push_back(std::move(model));
 }
 
+std::vector<PointLight*>& Scene::GetLights()
+{
+	return m_lights;
+}
+
 void Scene::CleanupPressedNodes()
 {
 	SceneObject* previousObject = nullptr;
@@ -155,9 +160,12 @@ void Scene::CleanupPressedNodes()
 		{
 			if (previousObject != nullptr)
 			{
-				previousObject->m_pressedNode->SetPressedState(false);
+				if(previousObject->m_pressedNode != nullptr)
+				{
+					previousObject->m_pressedNode->SetPressedState(false);
 
-				previousObject->m_pressedNode = nullptr;
+					previousObject->m_pressedNode = nullptr;
+				}
 
 				previousObject->SetPressedState(false);
 			}

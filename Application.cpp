@@ -6,7 +6,7 @@
 #include "Camera.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
-	: m_width(width), m_height(height), m_name(name), window(width, height, name), renderGraph(window.Graphics), scene(&window)
+	: m_width(width), m_height(height), m_name(name), window(width, height, name), scene(&window), renderGraph(window.Graphics, scene)
 {
 	window.Graphics.LinkCameraManager(scene.GetCameraManager());
 }

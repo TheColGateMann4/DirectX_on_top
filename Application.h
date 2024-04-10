@@ -19,8 +19,6 @@ public:
 public:
 	ImguiManager imguiManager;
 	Window window;
-	GaussBlurRenderGraph renderGraph;
-	Time timer;
 
 private:
 	void DoFrame();
@@ -36,5 +34,7 @@ private:
 
 private:
 	Scene scene;
+	GaussBlurRenderGraph renderGraph;
+	Time timer;
 };
 

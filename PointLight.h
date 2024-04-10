@@ -5,12 +5,16 @@
 #include "DynamicConstantBuffer.h"
 #include "SceneObject.h"
 
+class Camera;
+
 class PointLight : public SceneObject
 {
 public:
 	PointLight(GFX& gfx, float radius = 0.5f);
 
 public:
+	Camera* GetShadowCamera();
+	
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
 
 	virtual void Update(float deltaTime) override;
@@ -33,7 +37,7 @@ private:
 	mutable PointLightModel m_model;
 	mutable NonCachedBuffer m_pcbuffer;
 	mutable DynamicConstantBuffer::BufferData constBufferData;
-	class Camera* m_cameraChild;
+	Camera* m_cameraChild;
 
 private:
 	bool enableChroma = false;

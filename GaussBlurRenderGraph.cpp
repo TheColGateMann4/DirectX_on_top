@@ -10,7 +10,7 @@
 #include "IgnoreZBufferRenderPass.h"
 #include "ShadowMappingRenderPass.h"
 
-GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx)
+GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 	: RenderGraph(gfx)
 {
 	{
@@ -27,7 +27,7 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx)
 		}
 
 		{
-			auto renderPass = std::make_unique<ShadowMappingRenderPass>(gfx, "shadowMappingPass");
+			auto renderPass = std::make_unique<ShadowMappingRenderPass>(gfx, "shadowMappingPass", scene);
 			AddPass(std::move(renderPass));
 		}
 

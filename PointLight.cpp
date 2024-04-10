@@ -16,7 +16,7 @@ PointLight::PointLight(GFX& gfx, float radius)
 	layout.Add<DynamicConstantBuffer::DataType::Float>("attenuationLinear");
 	layout.Add<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic");
 
-	layout.GetFinished();
+	(void)layout.GetFinished();
 
 	constBufferData = DynamicConstantBuffer::BufferData(layout);
 
@@ -31,6 +31,11 @@ PointLight::PointLight(GFX& gfx, float radius)
 }
 
 
+
+Camera* PointLight::GetShadowCamera()
+{
+	return m_cameraChild;
+}
 
 void PointLight::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 {
