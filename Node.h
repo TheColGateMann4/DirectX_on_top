@@ -1,106 +1,32 @@
 #pragma once
 #include "Includes.h"
-#include "Shape.h"
-#include "Mesh.h"
-#include "imgui/imgui.h"
-#include "Model.h"
-#include "DynamicConstantBuffer.h"
+#include "SceneObject.h"
 
-class Node
+class Mesh;
+
+class ModelNode : public SceneObject
 {
 	friend class Model;
 
 public:
-	Node(std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX &transform, const char* nodeName) noexcept(!IS_DEBUG)
+	ModelNode(std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX &transform, const char* nodeName) noexcept(!IS_DEBUG)
 		: m_pMeshes(std::move(pMeshes)), m_nodeName(nodeName)
 	{
 		DirectX::XMStoreFloat4x4(&m_baseTransform, transform);
 	}
 
 public:
-	void Render(DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
-	{
-		const auto finalTransform =
-			(
-				DirectX::XMMatrixRotationRollPitchYaw(rotation.y, rotation.x, rotation.z) *		//added rotation
-				DirectX::XMMatrixTranslation(position.x, position.y, position.z)				//added position
-				)
-			* DirectX::XMLoadFloat4x4(&m_baseTransform)											// original transform in node
-			* transform;																		// accumulated transform from upper nodes
+	virtual void CalculateSceneTranformMatrix(DirectX::XMMATRIX parentTransform = DirectX::XMMatrixIdentity()) noexcept override;
 
-		for (const auto& pMesh : m_pMeshes)
-		{
-			pMesh->Render(finalTransform);
-		}
+	virtual void RenderThisObjectOnScene() const noexcept(!IS_DEBUG) override;
 
-		//passing accumulated transform to objects lower in hierarchy
-		for (const auto& pChild : m_pChildren)
-		{
-			pChild->Render(finalTransform);
-		}
-	}
+	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
 
-	void LinkToPipeline(class RenderGraph& renderGraph)
-	{
-		for (const auto& pMesh : m_pMeshes)
-		{
-			pMesh->LinkToPipeline(renderGraph);
-		}
-
-		for (const auto& pChild : m_pChildren)
-		{
-			pChild->LinkToPipeline(renderGraph);
-		}
-	}
-
-	void ResetLocalTranform()
-	{
-		position = { 0.0f, 0.0f, 0.0f };
-		rotation = { 0.0f, 0.0f, 0.0f };
-	}
-
-public:
-	void GenerateTree(Node*& pressedNode)
-	{
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
-
-		if (m_pChildren.empty())
-			flags |= ImGuiTreeNodeFlags_Leaf;
-		if(pressedNode == this)
-			flags |= ImGuiTreeNodeFlags_Selected;
-
-		const bool nodeExpanded = ImGui::TreeNodeEx(m_nodeName.c_str(), flags);
-
-		if (ImGui::IsItemClicked())
-			if (pressedNode != this)
-				pressedNode = this;
-			else
-				pressedNode = nullptr;
-
-		if (nodeExpanded)
-		{
-			for (const auto& child : m_pChildren)
-				child->GenerateTree(pressedNode);
-
-			ImGui::TreePop();
-		}
-	}
+	virtual const char* GetName() const override;
 
 private:
-	void AddChild(std::unique_ptr<Node> pChild) noexcept(!IS_DEBUG)
-	{
-		assert(pChild);
-		m_pChildren.push_back(std::move(pChild));
-	}
-
-private:
-	std::vector<std::unique_ptr<Node>> m_pChildren;
 	std::vector<Mesh*> m_pMeshes;
 	DirectX::XMFLOAT4X4 m_baseTransform;
 	std::string m_nodeName;
-
-public:
-	DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
-	DirectX::XMFLOAT3 rotation = { 0.0f, 0.0f, 0.0f };
 };
 

@@ -72,8 +72,7 @@ CameraViewAreaIndicator::CameraViewAreaIndicator(GFX& gfx, Camera* parent)
 
 DirectX::XMMATRIX CameraViewAreaIndicator::GetTranformMatrix() const noexcept
 {
-	return DirectX::XMMatrixRotationRollPitchYaw(m_parent->m_rotation.y, m_parent->m_rotation.x, m_parent->m_rotation.z) *
-		DirectX::XMMatrixTranslation(m_parent->m_position.x, m_parent->m_position.y, m_parent->m_position.z);
+	return m_parent->GetSceneTranformMatrix();
 }
 
 std::shared_ptr<VertexBuffer> CameraViewAreaIndicator::GetVertexBuffer(GFX& gfx, float fov, float nearZ, float farZ, float startLength, float endLength, float aspectRatio, std::vector<D3D11_INPUT_ELEMENT_DESC>* layout)

@@ -539,6 +539,9 @@
     <ClCompile Include="ShadowMappingRenderPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">

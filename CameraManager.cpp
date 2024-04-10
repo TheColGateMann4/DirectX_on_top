@@ -25,6 +25,7 @@ void CameraManager::SetActiveCameraByPtr(Camera* newActiveCamera)
 		m_activeCamera->SetActive(false);
 
 	m_activeCamera = newActiveCamera;
+	m_activeCamera->SetActive(true);
 }
 
 void CameraManager::SetActiveCameraByIndex(size_t newActiveCamera)

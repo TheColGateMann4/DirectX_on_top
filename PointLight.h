@@ -4,7 +4,6 @@
 #include "PointLightModel.h"
 #include "DynamicConstantBuffer.h"
 #include "SceneObject.h"
-#include "Camera.h"
 
 class PointLight : public SceneObject
 {
@@ -13,11 +12,15 @@ public:
 
 public:
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
-	virtual void MakeAdditionalPropeties(GFX& gfx, float deltaTime) override;
+
+	virtual void Update(float deltaTime) override;
+
+	virtual void MakeAdditionalPropeties(GFX& gfx) override;
+
 	void Reset() noexcept;
 
 public:
-	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override;
+	virtual void RenderThisObjectOnScene() const noexcept(!IS_DEBUG) override;
 	void Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
 
 public:
@@ -30,8 +33,7 @@ private:
 	mutable PointLightModel m_model;
 	mutable NonCachedBuffer m_pcbuffer;
 	mutable DynamicConstantBuffer::BufferData constBufferData;
-
-	Camera m_camera;
+	class Camera* m_cameraChild;
 
 private:
 	bool enableChroma = false;

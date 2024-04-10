@@ -15,7 +15,7 @@ public:
 		Shape::LinkToPipeline(renderGraph);
 	}
 
-	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override
+	virtual void RenderThisObjectOnScene() const noexcept(!IS_DEBUG) override
 	{
 		this->Render();
 	}

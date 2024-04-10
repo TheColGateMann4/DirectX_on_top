@@ -32,7 +32,7 @@ public:
 
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
 
-	virtual void RenderOnScene() const noexcept(!IS_DEBUG) override;
+	virtual void RenderThisObjectOnScene() const noexcept(!IS_DEBUG) override;
 
 	void SetActive(bool active);
 

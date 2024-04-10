@@ -8,16 +8,14 @@
 class Mesh : public Shape
 {
 public:
-	void Render(DirectX::XMMATRIX transform) const noexcept(!IS_DEBUG)
-	{
-		DirectX::XMStoreFloat4x4(&m_transform, transform);
-		Shape::Render();
-	}
-
-public:
 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override
 	{
 		return DirectX::XMLoadFloat4x4(&m_transform);
+	}
+
+	void SetTranformMatrix(DirectX::XMMATRIX transform) noexcept
+	{
+		return DirectX::XMStoreFloat4x4(&m_transform, transform);
 	}
 
 private:

@@ -20,6 +20,8 @@ Camera::Camera(GFX& gfx)
 
 DirectX::XMMATRIX Camera::GetCameraView() const
 {
+	DirectX::XMFLOAT3 worldPosition = GetWorldPosition();
+
 	const DirectX::XMVECTOR forwardVector = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	DirectX::XMVECTOR upwardsVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -30,7 +32,7 @@ DirectX::XMMATRIX Camera::GetCameraView() const
 		DirectX::XMMatrixRotationRollPitchYaw(m_rotation.y, m_rotation.x, 0.0f)
 	);
 
-	const DirectX::XMVECTOR cameraPosition = DirectX::XMLoadFloat3(&m_position);
+	const DirectX::XMVECTOR cameraPosition = DirectX::XMLoadFloat3(&worldPosition);
 	const DirectX::XMVECTOR lookPosition = DirectX::XMVectorAdd(cameraPosition, lookVector);
 	return DirectX::XMMatrixLookAtLH(cameraPosition, lookPosition, upwardsVector);
 }
@@ -135,7 +137,7 @@ void Camera::LinkSceneObjectToPipeline(RenderGraph& renderGraph)
 	m_viewIndicator.LinkToPipeline(renderGraph);
 }
 
-void Camera::RenderOnScene() const noexcept(!IS_DEBUG)
+void Camera::RenderThisObjectOnScene() const noexcept(!IS_DEBUG)
 {
 	if (!m_active) 
 	{

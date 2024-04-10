@@ -14,24 +14,34 @@ Scene::Scene(Window* window)
 void Scene::LinkModelsToPipeline(class RenderGraph& renderGraph)
 {
 	for (auto& model : m_models)
+	{
 		model->LinkSceneObjectToPipeline(renderGraph);
+		model->LinkChildrenToPipeline(renderGraph);
+	}
+}
+
+void Scene::UpdateModels(float deltaTime)
+{
+	for (auto& model : m_models)
+		model->Update(deltaTime);
 }
 
 void Scene::DrawModels(GFX& gfx)
 {
+	for (const auto& light : m_lights)
+	{
+		light->Bind(gfx, m_cameraManager.GetActiveCamera()->GetCameraView());
+	}
+
 	for (const auto& model : m_models)
-		if(const PointLight* pointLight = dynamic_cast<PointLight*>(model.get()))
-		{
-			// its fine only when PointLight is first in hierarchy, otherwise objects might not get light buffer with position and light settings.
-			// If it wouldn't be first, we would need to first loop searching for light to bind it
-			pointLight->Bind(gfx, m_cameraManager.GetActiveCamera()->GetCameraView());
-			pointLight->RenderOnScene();
-		}
-		else
-			model->RenderOnScene();
+	{
+		model->CalculateSceneTranformMatrix();
+
+		model->RenderOnScene();
+	}
 }
 
-void Scene::DrawModelHierarchy(float deltaTime)
+void Scene::DrawModelHierarchy()
 {
 	if (ImGui::Begin("Object Controler"))
 	{
@@ -51,8 +61,6 @@ void Scene::DrawModelHierarchy(float deltaTime)
 			}
 		}
 
-		// could remake this hierarchy stuff, but instead faster way is to check pressed nodes in here
-
 		for (auto& model : m_models)
 			model->MakeHierarchy(m_window->Graphics);
 
@@ -60,11 +68,11 @@ void Scene::DrawModelHierarchy(float deltaTime)
 
 		ImGui::NextColumn();
 
-		for (auto& model : m_models)
+		if(m_pressedNode != nullptr)
 		{
-			model->MakeTransformPropeties(m_window->Graphics);
-			model->MakePropeties(m_window->Graphics);
-			model->MakeAdditionalPropeties(m_window->Graphics, deltaTime);
+			m_pressedNode->MakeTransformPropeties(m_window->Graphics);
+			m_pressedNode->MakePropeties(m_window->Graphics);
+			m_pressedNode->MakeAdditionalPropeties(m_window->Graphics);
 		}
 
 		ImGui::End();
@@ -76,14 +84,17 @@ CameraManager* Scene::GetCameraManager()
 	return &m_cameraManager;
 }
 
-void Scene::AddCameraObject(std::unique_ptr<Camera>&& model)
+void Scene::AddLightObject(PointLight* model)
+{
+	m_lights.push_back(model);
+}
+
+void Scene::AddCameraObject(Camera* model)
 {
 	// we want to set active only first camera that will appear on scene
 	bool activeCameraIsBound = m_cameraManager.GetActiveCamera() != nullptr;
 	
-	m_cameraManager.AddCamera(model.get(), !activeCameraIsBound);
-
-	AddSceneObject(std::move(model));
+	m_cameraManager.AddCamera(model, !activeCameraIsBound);
 }
 
 void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
@@ -119,6 +130,15 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 
 	model->SetSceneIndex(currentIndex);
 
+	if (auto* light = dynamic_cast<PointLight*>(model.get()))
+	{
+		AddLightObject(light);
+	}
+	else if (auto* camera = dynamic_cast<Camera*>(model.get()))
+	{
+		AddCameraObject(camera);
+	}
+
 	m_models.push_back(std::move(model));
 }
 
@@ -128,32 +148,32 @@ void Scene::CleanupPressedNodes()
 
 	for (auto& model : m_models)
 	{
-		if (!model->GetPressedState())
+		if (model->m_pressedNode == nullptr)
 			continue;
 
-		if (model.get() != this->m_pressedNode)
+		if (model->m_pressedNode != this->m_pressedNode)
 		{
 			if (previousObject != nullptr)
 			{
-				if (Model* mymodel = dynamic_cast<Model*>(previousObject))
-					mymodel->m_pressedNode = nullptr;
+				previousObject->m_pressedNode->SetPressedState(false);
+
+				previousObject->m_pressedNode = nullptr;
 
 				previousObject->SetPressedState(false);
 			}
 
-			previousObject = model.get();
+			previousObject = model->m_pressedNode;
 		}
 		else
 		{
 			if (previousObject != nullptr)
 			{
-				if(Model* mymodel = dynamic_cast<Model*>(model.get()))
-					mymodel->m_pressedNode = nullptr;
+				model->m_pressedNode->SetPressedState(false);
 
-				model->SetPressedState(false);
+				model->m_pressedNode = nullptr;
 			}
 			else
-				previousObject = model.get();
+				previousObject = model->m_pressedNode;
 		}
 	}
 

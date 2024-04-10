@@ -1,9 +1,9 @@
 #include "PointLight.h"
+#include "Camera.h"
 #include "imgui/imgui.h"
 
 PointLight::PointLight(GFX& gfx, float radius)
-	: m_model(gfx, this, radius),
-	m_camera(gfx)
+	: m_model(gfx, this, radius)
 {
 	DynamicConstantBuffer::BufferLayout layout;
 
@@ -23,53 +23,26 @@ PointLight::PointLight(GFX& gfx, float radius)
 	m_pcbuffer = NonCachedBuffer(gfx, layout, 0, true);
 
 	Reset(); // lazy setting values on startup
+
+	auto pCameraChild = std::make_unique<Camera>(gfx);
+	m_cameraChild = pCameraChild.get();
+
+	AddChild(std::move(pCameraChild));
 }
 
 
 
 void PointLight::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 {
-	m_camera.LinkSceneObjectToPipeline(renderGraph);
 	m_model.LinkToPipeline(renderGraph);
 }
 
-void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
+void PointLight::Update(float deltaTime)
 {
-	memcpy_s(&m_camera.m_position, sizeof(DirectX::XMFLOAT3), &m_position, sizeof(DirectX::XMFLOAT3));
-	memcpy_s(&m_camera.m_rotation, sizeof(DirectX::XMFLOAT3), &m_rotation, sizeof(DirectX::XMFLOAT3));
-
 	DynamicConstantBuffer::BufferData& bufferData = constBufferData;
 
 	DirectX::XMFLOAT3* lightColor = bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor");
 
-	m_camera.m_pressed = m_pressed;
-
-	if (GetPressedState())
-	{
-		ImGui::Text("Color");
-		ImGui::ColorEdit3("Light Color", reinterpret_cast<float*>(lightColor), ImGuiColorEditFlags_NoAlpha);
-
-		ImGui::Checkbox("Chroma Light", &enableChroma);
-
-		if (enableChroma)
-		{
-			ImGui::SliderFloat("Chroma Delta Time", &chromaDeltaTime, 0.001f, 200.0f);
-		}
-
-		ImGui::SliderFloat("Diffuse Intensity", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("diffuseIntensity"), 0.01f, 2.0f, "%.2f");
-		ImGui::ColorEdit3("Ambient", reinterpret_cast<float*>(bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("ambient")), ImGuiColorEditFlags_NoAlpha);
-
-		ImGui::Text("Falloff");
-
-		ImGui::SliderFloat("Attenuation Const", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationConst"), 0.05f, 10.0f, "%.2f");
-		ImGui::SliderFloat("Attenuation Linear", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationLinear"), 0.0001f, 4.0f, "%.4f");
-		ImGui::SliderFloat("Attenuation Quadratic", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic"), 0.00001f, 1.0f);
-
-		if (ImGui::Button("Reset"))
-		{
-			Reset();
-		}
-	}
 
 	if (enableChroma && deltaTime - lastDeltaTime >= chromaDeltaTime)
 	{
@@ -106,6 +79,40 @@ void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 		justSwitched = false;
 		lastDeltaTime = deltaTime;
 	}
+}
+
+void PointLight::MakeAdditionalPropeties(GFX& gfx)
+{
+	DynamicConstantBuffer::BufferData& bufferData = constBufferData;
+
+	DirectX::XMFLOAT3* lightColor = bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor");
+
+	if (GetPressedState())
+	{
+		ImGui::Text("Color");
+		ImGui::ColorEdit3("Light Color", reinterpret_cast<float*>(lightColor), ImGuiColorEditFlags_NoAlpha);
+
+		ImGui::Checkbox("Chroma Light", &enableChroma);
+
+		if (enableChroma)
+		{
+			ImGui::SliderFloat("Chroma Delta Time", &chromaDeltaTime, 0.001f, 200.0f);
+		}
+
+		ImGui::SliderFloat("Diffuse Intensity", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("diffuseIntensity"), 0.01f, 2.0f, "%.2f");
+		ImGui::ColorEdit3("Ambient", reinterpret_cast<float*>(bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("ambient")), ImGuiColorEditFlags_NoAlpha);
+
+		ImGui::Text("Falloff");
+
+		ImGui::SliderFloat("Attenuation Const", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationConst"), 0.05f, 10.0f, "%.2f");
+		ImGui::SliderFloat("Attenuation Linear", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationLinear"), 0.0001f, 4.0f, "%.4f");
+		ImGui::SliderFloat("Attenuation Quadratic", bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("attenuationQuadratic"), 0.00001f, 1.0f);
+
+		if (ImGui::Button("Reset"))
+		{
+			Reset();
+		}
+	}
 
 	if(GetPressedState() || enableChroma)
 	{
@@ -120,9 +127,8 @@ void PointLight::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
 	}
 }
 
-void PointLight::RenderOnScene() const noexcept(!IS_DEBUG)
+void PointLight::RenderThisObjectOnScene() const noexcept(!IS_DEBUG)
 {
-	m_camera.RenderOnScene();
 	m_model.Render();
 }
 
@@ -144,7 +150,7 @@ void PointLight::Reset() noexcept
 void PointLight::Bind(GFX& gfx, DirectX::XMMATRIX CameraView_) const noexcept
 {
 	DynamicConstantBuffer::BufferData temp = constBufferData;
-	const auto position = DirectX::XMLoadFloat3(constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"));
+	const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&m_position);
 	DirectX::XMStoreFloat3(temp.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("position"), DirectX::XMVector3Transform(position, CameraView_));
 	m_pcbuffer.Update(gfx, temp);
 	m_pcbuffer.Bind(gfx);

@@ -77,6 +77,5 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 
 DirectX::XMMATRIX CameraIndicator::GetTranformMatrix() const noexcept
 {
-	return DirectX::XMMatrixRotationRollPitchYaw(m_parent->m_rotation.y, m_parent->m_rotation.x, m_parent->m_rotation.z) *
-		DirectX::XMMatrixTranslation(m_parent->m_position.x, m_parent->m_position.y, m_parent->m_position.z);
+	return m_parent->GetSceneTranformMatrix();
 }

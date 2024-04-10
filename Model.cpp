@@ -1,5 +1,12 @@
 #include "Model.h"
+#include "BindableClassesMacro.h"
 #include "DynamicConstantBuffer.h"
+#include "Vertex.h"
+#include "Mesh.h"
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include "imgui/imgui.h"
 #include <Shlwapi.h> // PathIsDirectory
 
 
@@ -38,7 +45,8 @@ Model::Model(GFX& gfx, std::string fileName, float scale)
 		m_pMeshes.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials, m_filePath, m_fileName, scale));
 	}
 
-	m_pStartingNode = ParseNode(*pScene->mRootNode);
+	AddChild(ParseNode(*pScene->mRootNode));
+
 	m_scale = scale;
 }
 
@@ -291,7 +299,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	return resultMesh;
 }
 
-std::unique_ptr<Node> Model::ParseNode(const aiNode& node) noexcept
+std::unique_ptr<ModelNode> Model::ParseNode(const aiNode& node) noexcept
 {
 	const auto transform = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(
 		reinterpret_cast<const DirectX::XMFLOAT4X4*>(&node.mTransformation)
@@ -306,7 +314,7 @@ std::unique_ptr<Node> Model::ParseNode(const aiNode& node) noexcept
 		pMeshes.push_back(m_pMeshes.at(meshIndex).get());
 	}
 
-	auto pNode = std::make_unique<Node>(std::move(pMeshes), transform, node.mName.C_Str());
+	auto pNode = std::make_unique<ModelNode>(std::move(pMeshes), transform, node.mName.C_Str());
 	for (size_t i = 0; i < node.mNumChildren; i++)
 	{
 		pNode->AddChild(ParseNode(*node.mChildren[i]));
@@ -317,44 +325,25 @@ std::unique_ptr<Node> Model::ParseNode(const aiNode& node) noexcept
 
 void Model::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 {
-	m_pStartingNode->LinkToPipeline(renderGraph);
+
 }
 
 void Model::MakeHierarchy(GFX&)
 {
 	ImGui::Columns(2, nullptr, true);
 
-	Node* previous = m_pressedNode;
+	SceneObject* previous = m_pressedNode;
 
-	m_pStartingNode->GenerateTree(m_pressedNode);
+	m_children.front()->GenerateTree(m_pressedNode);
 
 	if (previous != m_pressedNode)
 	{
-		if(m_pressedNode != m_pStartingNode.get())
+		if(m_pressedNode != m_children.front().get())
 			if(m_pressedNode != nullptr)
-				SetShape(m_pressedNode->m_pMeshes.front());
+				SetShape(static_cast<ModelNode*>(m_pressedNode)->m_pMeshes.front());
 			else
 				SetShape(nullptr);
 
 		SetPressedState(m_pressedNode != nullptr);
 	}
-}
-
-void Model::MakeTransformPropeties(GFX& gfx)
-{
-	if (!GetPressedState())
-		return;
-
-	ImGui::Text("Position");
-	ImGui::SliderFloat("pX", &m_pressedNode->position.x, -30.0f, 30.0f);
-	ImGui::SliderFloat("pY", &m_pressedNode->position.y, -30.0f, 30.0f);
-	ImGui::SliderFloat("pZ", &m_pressedNode->position.z, -30.0f, 30.0f);
-
-	ImGui::Text("Rotation");
-	ImGui::SliderFloat("rX", &m_pressedNode->rotation.x, -_Pi, _Pi);
-	ImGui::SliderFloat("rY", &m_pressedNode->rotation.y, -_Pi, _Pi);
-	ImGui::SliderFloat("rZ", &m_pressedNode->rotation.z, -_Pi, _Pi);
-
-	if (ImGui::Button("Reset"))
-		m_pressedNode->ResetLocalTranform();
 }

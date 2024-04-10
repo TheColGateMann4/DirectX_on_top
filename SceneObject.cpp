@@ -1,20 +1,85 @@
 #include "SceneObject.h"
+#include "imgui/imgui.h"
 #include "Shape.h"
+
+void SceneObject::LinkChildrenToPipeline(RenderGraph& renderGraph)
+{
+	for (auto& child : m_children)
+	{
+		child->LinkSceneObjectToPipeline(renderGraph);
+		child->LinkChildrenToPipeline(renderGraph);
+	}
+}
+
+void SceneObject::Update(float deltatime)
+{
+
+}
+
+void SceneObject::AddChild(std::unique_ptr<SceneObject> child)
+{
+	child->m_parent = this;
+
+	m_children.push_back(std::move(child));
+}
+
+void SceneObject::RenderOnScene() const noexcept(!IS_DEBUG)
+{
+	this->RenderThisObjectOnScene();
+
+	this->RenderChildrenOnScene();
+}
+
+void SceneObject::RenderChildrenOnScene() const noexcept(!IS_DEBUG)
+{
+	for (const auto& child : m_children)
+		child->RenderOnScene();
+}
 
 void SceneObject::MakeHierarchy(GFX& gfx)
 {
 	ImGui::Columns(2, nullptr, true);
 
-	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf;
-	if (GetPressedState())
+	SceneObject* previous = m_pressedNode;
+
+	this->GenerateTree(previous);
+
+	m_pressedNode = previous;
+}
+
+void SceneObject::GenerateTree(SceneObject*& pressedNode)
+{
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
+
+	if (m_children.empty())
+		flags |= ImGuiTreeNodeFlags_Leaf;
+	if (m_pressed)
 		flags |= ImGuiTreeNodeFlags_Selected;
 
-	ImGui::TreeNodeEx(GetOriginalName(true).c_str(), flags);
+	const bool nodeExpanded = ImGui::TreeNodeEx(GetOriginalName(true).c_str(), flags);
 
 	if (ImGui::IsItemClicked())
-		SetPressedState(!GetPressedState());
+		if (pressedNode != this)
+		{
+			if (pressedNode != nullptr)
+				pressedNode->SetPressedState(false);
 
-	ImGui::TreePop();
+			m_pressed = true;
+			pressedNode = this;
+		}
+		else
+		{
+			m_pressed = false;
+			pressedNode = nullptr;
+		}
+
+	if (nodeExpanded)
+	{
+		for (const auto& child : m_children)
+			child->GenerateTree(pressedNode);
+
+		ImGui::TreePop();
+	}
 }
 
 void SceneObject::MakeTransformPropeties(GFX& gfx)
@@ -81,7 +146,7 @@ void SceneObject::MakePropeties(GFX& gfx)
 	}
 }
 
-void SceneObject::MakeAdditionalPropeties(GFX& gfx, float deltaTime)
+void SceneObject::MakeAdditionalPropeties(GFX& gfx)
 {
 
 }
@@ -94,8 +159,38 @@ void SceneObject::ResetLocalTransform() noexcept
 
 DirectX::XMMATRIX SceneObject::GetSceneTranformMatrix() const noexcept
 {
-	return DirectX::XMMatrixRotationRollPitchYaw(m_rotation.y, m_rotation.x, m_rotation.z) *
-		DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
+	return DirectX::XMLoadFloat4x4(&m_transform);
+}
+
+void SceneObject::CalculateSceneTranformMatrix(DirectX::XMMATRIX parentTransform) noexcept
+{
+	const auto finalTransform =
+		(
+			DirectX::XMMatrixRotationRollPitchYaw(m_rotation.y, m_rotation.x, m_rotation.z) *
+			DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z)
+			)
+		* parentTransform;
+
+	for (const auto& pChild : m_children)
+	{
+		pChild->CalculateSceneTranformMatrix(finalTransform);
+	}
+
+	DirectX::XMStoreFloat4x4(&m_transform , finalTransform);
+}
+
+DirectX::XMFLOAT3 SceneObject::GetWorldPosition() const
+{
+	DirectX::XMFLOAT3 result = m_position;
+
+	if (m_parent == nullptr)
+		return result;
+
+	const DirectX::XMVECTOR vecChildPos = XMLoadFloat3(&result);
+	const DirectX::XMVECTOR vecResult = XMVector3Transform(vecChildPos, m_parent->GetSceneTranformMatrix());
+	DirectX::XMStoreFloat3(&result, vecResult);
+
+	return result;
 }
 
 const char* SceneObject::GetNameSpecialStatus() const
