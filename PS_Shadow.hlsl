@@ -1,5 +1,5 @@
 #include "ShaderFunctions.hlsli"
-#include "FloatHLSLMacros.hlsli"
+#include "ShadowFunctions.hlsli"
 
 cbuffer lightBuffer : register(b0)
 {
@@ -29,6 +29,12 @@ cbuffer transformBuffer : register(b2)
     matrix b_modelViewProjection;
 };
 
+cbuffer shadowCameraBuffer : register(b3)
+{
+    float cameraNear;
+    float cameraFar;
+};
+
 Texture2D t_textureMap : register(t0);
 Texture2D t_depthMap : register(t2);
 SamplerState s_textureSampler : register(s0);
@@ -36,36 +42,16 @@ SamplerState s_depthSampler : register(s1);
 
 float4 main(float4 position : SV_POSITION, float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD) : SV_TARGET
 {
-    float4 result;
-
     depthMapCoords.xyz = depthMapCoords.xyz / depthMapCoords.w;
     
-    if(depthMapCoords.z < 0)
-        return float4(0.0f, 0.0f, 0.0f, 1.0f);
+    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthSampler, depthMapCoords, 2);
 
-    const float4 sample =  t_depthMap.Sample(s_depthSampler, depthMapCoords.xy);
-    const float depth = depthMapCoords.z;
+    const float3 textureSample = t_textureMap.Sample(s_textureSampler, textureCoords).rgb * shadowLevel;
     
-    bool wrongDepth = sample.r > depthMapCoords.z;
-    
-    if(!wrongDepth)
+    if(shadowLevel != 0.0f)
     {
-        const float valueDifference = abs(sample.r - depthMapCoords.z);
-        const float valueNormal = min(abs(sample.r + depthMapCoords.z), FLT_MAX);
-        const float epsilon = 128 * FLT_EPSILON;
-        
-        wrongDepth = valueDifference < max(FLT_MIN, epsilon * valueNormal);
+        return float4(t_textureMap.Sample(s_textureSampler, textureCoords).rgb * shadowLevel, 1.0f);
     }
 
-    if(wrongDepth)
-    {
-        result = float4(b_lightColor, 1.0f);
-    }
-    else
-    {
-        result = float4(0.0f, 0.0f, 0.0f, 1.0f);
-    }
-
-
-	return result;
+    return float4(0.0f, 0.0f, 0.0f, 1.0f);
 }
