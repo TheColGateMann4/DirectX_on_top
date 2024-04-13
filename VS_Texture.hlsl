@@ -1,6 +1,8 @@
 cbuffer constBuffer : register(b0)
 {
-	matrix transform;
+    matrix model;
+    matrix modelView;
+    matrix modelViewProjection;
 };
 
 struct VSOUT
@@ -12,7 +14,7 @@ struct VSOUT
 VSOUT main(float3 position : POSITION, float2 textureCoordinates : TEXCOORD)
 {
 	VSOUT vsout;
-	vsout.pos = mul(float4(position, 1.0f), transform);
+	vsout.pos = mul(float4(position, 1.0f), modelView);
     vsout.texturePos = textureCoordinates;
 	return vsout;
 }

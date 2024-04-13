@@ -20,7 +20,7 @@ protected:
 protected:
 	const Shape& m_parent;
 
-	DynamicConstantBuffer::BufferLayout TCBLayout{"MAMA"};
+	DynamicConstantBuffer::BufferLayout TCBLayout{"MAMAMA"};
 
 	NonCachedBuffer vcbuf;
 };

@@ -6,7 +6,7 @@ VerticalGaussBlurRenderPass::VerticalGaussBlurRenderPass(class GFX& gfx, const c
 {
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Fullscreen_GaussBlur.cso"));
 	AddBindable(BlendState::GetBindable(gfx, true));
-	AddBindable(SamplerState::GetBindable(gfx, true, true));
+	AddBindable(SamplerState::GetBindable(gfx, true, SamplerState::Mode::MIRROR));
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Mask));
 
 	RegisterOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));

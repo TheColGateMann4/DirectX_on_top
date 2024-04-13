@@ -14,7 +14,7 @@ HorizontalGaussBlurRenderPass::HorizontalGaussBlurRenderPass(class GFX& gfx, con
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Fullscreen_GaussBlur.cso"));
 	AddBindable(BlendState::GetBindable(gfx, false));
-	AddBindable(SamplerState::GetBindable(gfx, true, true));
+	AddBindable(SamplerState::GetBindable(gfx, true, SamplerState::Mode::MIRROR));
 }
 
 void HorizontalGaussBlurRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)

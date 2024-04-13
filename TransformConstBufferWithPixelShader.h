@@ -31,7 +31,7 @@ private:
 		pcbuf.Bind(gfx);
 	}
 protected:
-	DynamicConstantBuffer::BufferLayout TCBLayout{ "MAMA" };
+	DynamicConstantBuffer::BufferLayout TCBLayout{ "MAMAMA" };
 
 	NonCachedBuffer pcbuf;
 

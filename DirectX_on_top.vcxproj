@@ -212,6 +212,7 @@
     <ClInclude Include="NormalOutlineRenderGraph.h" />
     <ClInclude Include="NormalRenderPass.h" />
     <ClInclude Include="NullPixelShader.h" />
+    <ClInclude Include="NullTexture.h" />
     <ClInclude Include="OutlineMaskingRenderPass.h" />
     <ClInclude Include="OutlineRenderPass.h" />
     <ClInclude Include="RenderBindablePass.h" />
@@ -291,6 +292,7 @@
     <ClCompile Include="NormalOutlineRenderGraph.cpp" />
     <ClCompile Include="NormalRenderPass.cpp" />
     <ClCompile Include="NullPixelShader.cpp" />
+    <ClCompile Include="NullTexture.cpp" />
     <ClCompile Include="OutlineMaskingRenderPass.cpp" />
     <ClCompile Include="OutlineRenderPass.cpp" />
     <ClCompile Include="RenderBindablePass.cpp" />
@@ -470,6 +472,13 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="PS_Shadow.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="VS_Fullscreen.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -572,6 +581,13 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="VS_Shadow.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="VS_Texture.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -594,6 +610,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="FloatHLSLMacros.hlsli" />
     <None Include="PointLightConstBuffer.hlsli" />
     <None Include="ShaderFunctions.hlsli" />
   </ItemGroup>

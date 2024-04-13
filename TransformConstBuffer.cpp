@@ -24,8 +24,10 @@ void TransformConstBuffer::UpdateAndBindConstBuffer(GFX& gfx, const DynamicConst
 
 void TransformConstBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept
 {
-	const auto ModelTransformView = m_parent.GetTranformMatrix() * gfx.GetActiveCamera()->GetCameraView();
+	const auto ModelTransform = m_parent.GetTranformMatrix();
+	const auto ModelTransformView = ModelTransform * gfx.GetActiveCamera()->GetCameraView();
 
+	bufferData += DirectX::XMMatrixTranspose(ModelTransform);
 	bufferData += DirectX::XMMatrixTranspose(ModelTransformView);
 	bufferData += DirectX::XMMatrixTranspose(ModelTransformView * gfx.GetActiveCamera()->GetProjection());
 }

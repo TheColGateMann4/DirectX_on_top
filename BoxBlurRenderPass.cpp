@@ -22,7 +22,7 @@ BoxBlurRenderPass::BoxBlurRenderPass(class GFX& gfx, const char* name)
 	RegisterInput(RenderPassBufferInput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
 
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Fullscreen_BoxBlur.cso"));
-	AddBindable(SamplerState::GetBindable(gfx, true, true));
+	AddBindable(SamplerState::GetBindable(gfx, true, SamplerState::Mode::MIRROR));
 	AddBindable(BlendState::GetBindable(gfx, true));
 	AddBindable(blurData);
 }

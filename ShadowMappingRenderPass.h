@@ -12,5 +12,6 @@ public:
 	virtual void Render(GFX& gfx) const noexcept(!_DEBUG) override;
 
 private:
+	std::shared_ptr<CachedBuffer> shadowCameraTransformBuffer;
 	Scene* m_scene;
 };

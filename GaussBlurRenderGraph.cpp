@@ -34,6 +34,7 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 		{
 			auto renderPass = std::make_unique<NormalRenderPass>(gfx, "normalPass");
 			renderPass->LinkInput("shadowMap", "shadowMappingPass.shadowMap");
+			renderPass->LinkInput("shadowCameraTransformBuffer", "shadowMappingPass.shadowCameraTransformBuffer");
 			renderPass->LinkInput("depthStencilView", "clearDepthStencilView.buffer");
 			renderPass->LinkInput("renderTarget", "clearBackBuffer.buffer");
 			AddPass(std::move(renderPass));

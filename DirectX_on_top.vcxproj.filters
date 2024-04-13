@@ -330,6 +330,9 @@
     <ClInclude Include="ShadowMappingRenderPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
+    <ClInclude Include="NullTexture.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -542,6 +545,9 @@
     <ClCompile Include="Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NullTexture.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -641,12 +647,21 @@
     <FxCompile Include="PS_Fullscreen_BoxBlur.hlsl">
       <Filter>Shader\FullscreenFilters</Filter>
     </FxCompile>
+    <FxCompile Include="VS_Shadow.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Shadow.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="PointLightConstBuffer.hlsli">
       <Filter>Shader\Header Files</Filter>
     </None>
     <None Include="ShaderFunctions.hlsli">
+      <Filter>Shader\Header Files</Filter>
+    </None>
+    <None Include="FloatHLSLMacros.hlsli">
       <Filter>Shader\Header Files</Filter>
     </None>
   </ItemGroup>

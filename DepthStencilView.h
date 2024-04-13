@@ -40,13 +40,14 @@ protected:
 class DepthStencilViewWithTexture : public DepthStencilView
 {
 public:
-	DepthStencilViewWithTexture(GFX& gfx, Mode depthStencilViewMode = StencilAndDepth);
+	DepthStencilViewWithTexture(GFX& gfx, size_t slot, Mode depthStencilViewMode = StencilAndDepth);
 
 public:
 	virtual void Bind(GFX& gfx) noexcept override;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
+	size_t m_slot;
 };
 
 

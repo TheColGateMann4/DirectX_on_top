@@ -1,7 +1,8 @@
 cbuffer constBuffer : register(b0)
 {
     matrix model;
-    matrix modelViewProj;
+    matrix modelView;
+    matrix modelViewProjection;
 };
 
 cbuffer scaleConstBuffer : register(b1)
@@ -11,5 +12,5 @@ cbuffer scaleConstBuffer : register(b1)
 
 float4 main(float3 pos : POSITION) : SV_POSITION
 {
-    return mul(float4(pos * scaleFactor, 1.0f), modelViewProj);
+    return mul(float4(pos * scaleFactor, 1.0f), modelViewProjection);
 }

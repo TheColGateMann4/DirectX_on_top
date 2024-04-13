@@ -120,9 +120,10 @@ DXGI_FORMAT DepthStencilView::GetColorTypeFormat(DepthStencilView::Mode depthSte
 
 
 
-DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, Mode depthStencilViewMode)
+DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, size_t slot, Mode depthStencilViewMode)
 	: 
-	DepthStencilView(gfx, depthStencilViewMode)
+	DepthStencilView(gfx, depthStencilViewMode),
+	m_slot(slot)
 {
 	HRESULT hr;
 	Microsoft::WRL::ComPtr<ID3D11Resource> pDepthStencilTexture;
@@ -146,5 +147,5 @@ DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, Mode depthSte
 
 void DepthStencilViewWithTexture::Bind(GFX& gfx) noexcept
 {
-	GFX::GetDeviceContext(gfx)->PSSetShaderResources(0, 1, m_pTextureView.GetAddressOf());
+	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf());
 }
