@@ -17,8 +17,7 @@ float GetShadowLevel(Texture2D t_depthMap, sampler s_depthSampler, float4 depthM
             const float4 sample = t_depthMap.Sample(s_depthSampler, float2(depthMapCoords.x + x * pixelWidth, depthMapCoords.y + y * pixelHeight));
             const float depth = depthMapCoords.z;
         
-            //if out sample if higher than 1.0f it means that its out of light camera view, then we won't cast a shadow there anyways
-            bool occluded = (sample.r > 1.0f) ? false : (sample.r >= depth);
+            bool occluded = (sample.r > 1.0f || depth < 0.0f) ? false : (sample.r >= depth);
         
             if (!occluded)
             {
