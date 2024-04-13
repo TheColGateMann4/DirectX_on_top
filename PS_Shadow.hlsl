@@ -44,7 +44,7 @@ float4 main(float4 position : SV_POSITION, float3 positionRelativeToCamera : POS
 {
     depthMapCoords.xyz = depthMapCoords.xyz / depthMapCoords.w;
     
-    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthSampler, depthMapCoords, 4);
+    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthSampler, depthMapCoords, 2);
 
     const float3 textureSample = t_textureMap.Sample(s_textureSampler, textureCoords).rgb * shadowLevel;
     
