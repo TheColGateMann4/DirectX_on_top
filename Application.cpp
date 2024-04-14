@@ -4,6 +4,7 @@
 #include <random>
 #include "CameraManager.h"
 #include "Camera.h"
+#include "NormalRenderPass.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name), window(width, height, name), scene(&window), renderGraph(window.Graphics, scene)
@@ -166,6 +167,8 @@ void Application::DoFrame()
 
 	if(imguiDemoWindow)
 		ImGui::ShowDemoWindow(&imguiDemoWindow);
+
+	static_cast<NormalRenderPass*>(renderGraph.GetRenderJobPass("normalPass"))->ShowWindow(window.Graphics);
 
 	scene.DrawModelHierarchy();
 

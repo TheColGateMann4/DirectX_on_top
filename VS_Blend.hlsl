@@ -5,6 +5,11 @@ cbuffer constBuffer : register(b0)
     matrix modelViewProjection;
 };
 
+cbuffer shadowBuffer : register(b1)
+{
+    matrix shadowViewProjection;
+};
+
 struct VBSout
 {
 	float4 color : COLOR;

@@ -1,36 +1,50 @@
 #include "FloatHLSLMacros.hlsli"
 
-float GetShadowLevel(Texture2D t_depthMap, sampler s_depthSampler, float4 depthMapCoords : DEPTHTEXCOORD, int samples)
+float GetShadowLevelAtOffsetByHardware(Texture2D t_depthMap, SamplerComparisonState s_depthComparisonSampler, float2 depthMapCoords : DEPTHTEXCOORD, float depth, float bias, int2 offset)
 {
+    return t_depthMap.SampleCmpLevelZero(s_depthComparisonSampler, depthMapCoords, depth - bias, offset);
+}
+
+float GetShadowLevelAtOffset(Texture2D t_depthMap, SamplerState s_depthSampler, float2 depthMapCoords : DEPTHTEXCOORD, float depth, float bias, int2 offset)
+{
+    const float4 sample = t_depthMap.Sample(s_depthSampler, depthMapCoords + offset);
+    
+    return (sample.r >= depth - bias) ? 1.0f : 0.0f;
+}
+
+float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthComparisonSampler, SamplerState s_depthSampler, float4 depthMapCoords : DEPTHTEXCOORD, int samples, float bias, bool byHardware)
+{        
+    depthMapCoords.xyz = depthMapCoords.xyz / depthMapCoords.w;
+    
+    if (depthMapCoords.z < 0.0f || depthMapCoords.z > 1.0f)
+        return 0.0f;
+    
     float result = 0.0f;
     
-    float width, height;
+    float pixelWidth, pixelHeight;
     
-    t_depthMap.GetDimensions(width, height);
+    if (!byHardware)
+    {
+        float width, height;
+        t_depthMap.GetDimensions(width, height);
     
-    float pixelWidth = 0.5f / width;
-    float pixelHeight = 0.5f / height;
+        pixelWidth = 0.5f / width;
+        pixelHeight = 0.5f / height;
+    }
     
-    for (int x = -samples; x <= samples; x++)
-        for (int y = -samples; y <= samples; y++)
+    const float depth = depthMapCoords.z;
+    
+    [unroll]
+    for (int x = -4; x <= 4; x++)
+        [unroll]
+        for (int y = -4; y <= 4; y++)
         {
-            const float4 sample = t_depthMap.Sample(s_depthSampler, float2(depthMapCoords.x + x * pixelWidth, depthMapCoords.y + y * pixelHeight));
-            const float depth = depthMapCoords.z;
-        
-            bool occluded = (sample.r > 1.0f || depth < 0.0f) ? false : (sample.r >= depth);
-        
-            if (!occluded)
-            {
-                const float valueDifference = abs(sample.r - depth);
-                const float valueNormal = min(abs(sample.r + depth), FLT_MAX);
-                const float epsilon = 128 * FLT_EPSILON;
-            
-                occluded = valueDifference < max(FLT_MIN, epsilon * valueNormal);
-            }
-            
-            result += (occluded) ? (1.0f / ((samples * 2 + 1) * (samples * 2 + 1))) : (0.0f);
-
+            if (abs(x) <= samples && abs(y) <= samples)                
+                if (byHardware)
+                    result += GetShadowLevelAtOffsetByHardware(t_depthMap, s_depthComparisonSampler, depthMapCoords.xy, depth, bias, int2(x, y));
+                else
+                    result += GetShadowLevelAtOffset(t_depthMap, s_depthSampler, depthMapCoords.xy, depth, bias, float2(depthMapCoords.x + x * pixelWidth, depthMapCoords.y + y * pixelHeight));
         }
-
-    return result;
+    
+    return result / ((samples * 2 + 1) * (samples * 2 + 1));
 }

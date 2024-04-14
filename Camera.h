@@ -11,6 +11,7 @@ class Camera : public SceneObject
 {
 	friend class CameraIndicator;
 	friend class CameraViewAreaIndicator;
+	friend class ShadowMappingRenderPass;
 
 public:
 	Camera(GFX& gfx);

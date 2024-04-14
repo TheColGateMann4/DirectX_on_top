@@ -28,8 +28,6 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name, cla
 	RegisterOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("shadowCameraTransformBuffer", &shadowCameraTransformBuffer));
 
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::Off));
-	AddBindable(SamplerState::GetBindable(gfx, true, SamplerState::Mode::CLAMP));
-	AddBindable(SamplerState::GetBindable(gfx, true, SamplerState::Mode::BORDER, 1));
 }
 
 void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
@@ -39,8 +37,6 @@ void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
 
 	{
 		DynamicConstantBuffer::BufferData bufferData = shadowCameraTransformBuffer->GetBufferData();
-
-		Camera* shadowCamera = m_scene->GetLights().front()->GetShadowCamera();
 
 		DirectX::XMMATRIX shadowCameraView = shadowCamera->GetCameraView();
 		DirectX::XMMATRIX shadowCameraProjection = shadowCamera->GetProjection();

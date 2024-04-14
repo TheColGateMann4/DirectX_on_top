@@ -411,6 +411,15 @@ DynamicConstantBuffer::LayoutElement::LayoutElement(DynamicConstantBuffer::DataT
 
 	switch (elementType)
 	{
+		case Int:
+		{
+			if (ImguiAdditionalInfo::ImguiIntInfo* arrr = dynamic_cast<ImguiAdditionalInfo::ImguiIntInfo*>(imguiInfo))
+				m_imguiInfo = std::make_unique<ImguiAdditionalInfo::ImguiIntInfo>(*arrr);
+			else
+				m_imguiInfo = std::make_unique<ImguiAdditionalInfo::ImguiIntInfo>();
+
+			break;
+		}
 		case Float:
 		{
 			if (ImguiAdditionalInfo::ImguiFloatInfo* arrr = dynamic_cast<ImguiAdditionalInfo::ImguiFloatInfo*>(imguiInfo))
@@ -531,7 +540,8 @@ bool DynamicConstantBuffer::BufferData::MakeImguiMenu()
 		const char* elementName = element.first.c_str();
 		const ImguiAdditionalInfo::ImguiInfo* imguiInfo = element.second->GetImGuiInfo();
 
-		assert(imguiInfo != nullptr && "Imgui propeties weren't defined for given element");
+		if(elementType != Bool && elementType != Padding && elementType != Empty)
+			assert(imguiInfo != nullptr && "Imgui propeties weren't defined for given element");
 
 
 		switch (elementType)
@@ -540,6 +550,12 @@ bool DynamicConstantBuffer::BufferData::MakeImguiMenu()
 			case Padding:
 			{
 				continue;
+			}
+			case Int:
+			{
+				const ImguiAdditionalInfo::ImguiIntInfo* imguiIntInfo = static_cast<const ImguiAdditionalInfo::ImguiIntInfo*>(imguiInfo);
+				checkChanged(ImGui::SliderInt(elementName, this->GetElementPointerValue<DynamicConstantBuffer::DataType::Int>(elementName), imguiIntInfo->v_min, imguiIntInfo->v_max, imguiIntInfo->format.c_str(), imguiIntInfo->flags));
+				break;
 			}
 			case Float:
 			{

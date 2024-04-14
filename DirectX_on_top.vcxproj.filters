@@ -333,6 +333,9 @@
     <ClInclude Include="NullTexture.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowSamplerStateManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -548,6 +551,9 @@
     <ClCompile Include="NullTexture.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowSamplerStateManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -662,6 +668,9 @@
       <Filter>Shader\Header Files</Filter>
     </None>
     <None Include="FloatHLSLMacros.hlsli">
+      <Filter>Shader\Header Files</Filter>
+    </None>
+    <None Include="ShadowFunctions.hlsli">
       <Filter>Shader\Header Files</Filter>
     </None>
   </ItemGroup>

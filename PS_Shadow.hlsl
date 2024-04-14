@@ -29,29 +29,23 @@ cbuffer transformBuffer : register(b2)
     matrix b_modelViewProjection;
 };
 
-cbuffer shadowCameraBuffer : register(b3)
+cbuffer shadowSettingsBuffer : register(b4)
 {
-    float cameraNear;
-    float cameraFar;
+    int PCF_level;
+    float bias;
+    bool hardwarePCF;
+    bool bilinear;
 };
 
 Texture2D t_textureMap : register(t0);
 Texture2D t_depthMap : register(t2);
 SamplerState s_textureSampler : register(s0);
 SamplerState s_depthSampler : register(s1);
+SamplerComparisonState s_depthComparisonSampler : register(s2);
 
 float4 main(float4 position : SV_POSITION, float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD) : SV_TARGET
-{
-    depthMapCoords.xyz = depthMapCoords.xyz / depthMapCoords.w;
-    
-    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthSampler, depthMapCoords, 2);
+{    
+    float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, s_depthSampler, depthMapCoords, PCF_level, bias, hardwarePCF);       
 
-    const float3 textureSample = t_textureMap.Sample(s_textureSampler, textureCoords).rgb * shadowLevel;
-    
-    if(shadowLevel != 0.0f)
-    {
-        return float4(t_textureMap.Sample(s_textureSampler, textureCoords).rgb * shadowLevel, 1.0f);
-    }
-
-    return float4(0.0f, 0.0f, 0.0f, 1.0f);
+    return float4(t_textureMap.Sample(s_textureSampler, textureCoords).rgb * shadowLevel, 1.0f);
 }

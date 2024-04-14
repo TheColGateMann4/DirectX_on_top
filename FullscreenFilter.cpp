@@ -45,7 +45,7 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 
 	m_bindables.push_back(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
 	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader));
-	m_bindables.push_back(SamplerState::GetBindable(gfx, false, SamplerState::Mode::MIRROR));
+	m_bindables.push_back(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::POINT));
 }
 
 void FullscreenFilter::ChangePixelShader(GFX& gfx, std::string ShaderName)

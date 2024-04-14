@@ -14,5 +14,5 @@ OutlineMaskingRenderPass::OutlineMaskingRenderPass(class GFX& gfx, const char* n
 
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Write));
 	AddBindable(RasterizerState::GetBindable(gfx, false));
-	AddBindable(SamplerState::GetBindable(gfx, false, SamplerState::Mode::CLAMP));
+	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 0, SamplerState::NEVER, SamplerState::POINT));
 }

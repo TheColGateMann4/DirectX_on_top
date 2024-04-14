@@ -5,7 +5,12 @@ cbuffer constBuffer : register(b0)
     matrix modelViewProjection;
 };
 
-cbuffer scaleConstBuffer : register(b1)
+cbuffer shadowBuffer : register(b1)
+{
+    matrix shadowViewProjection;
+};
+
+cbuffer scaleConstBuffer : register(b2)
 {
     float scaleFactor;
 };
