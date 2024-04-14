@@ -20,11 +20,7 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Off));
 	AddBindable(BlendState::GetBindable(gfx, false));
-	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 0, SamplerState::NEVER, SamplerState::ANISOTROPIC));
-
-	//objects with normal mesh use only these two, so we can dirty override them
-	shadowRasterizerNoBackculling = RasterizerState::GetBindable(gfx, true);
-	shadowRasterizerWithculling = RasterizerState::GetBindable(gfx, false);
+	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::BILINEAR));
 
 	{
 
@@ -47,7 +43,7 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("PCF_level") = 0;
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("bias") = 0.0005f;
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("bias") = 0.0f;
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("hardwarePCF") = FALSE;
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("bilinear") = FALSE;
 
@@ -55,6 +51,14 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 	}
 
 	AddBindable(shadowSettings);
+
+
+	//objects with normal mesh use only these two, so we can dirty override them
+	shadowRasterizerNoBackculling = RasterizerState::GetBindable(gfx, true);
+	shadowRasterizerWithculling = RasterizerState::GetBindable(gfx, false);
+
+	shadowRasterizerNoBackculling->ChangeDepthValues(gfx, bias, biasClamp, slopeScaledDepthBias);
+	shadowRasterizerWithculling->ChangeDepthValues(gfx, bias, biasClamp, slopeScaledDepthBias);
 }
 
 void NormalRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
@@ -64,7 +68,7 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
 	RenderJobPass::Render(gfx);
 
 	//unbinding depthStencilView texture after we used it where we needed it
-	NullTexture::GetBindable(gfx, 2, true)->Bind(gfx);
+	NullTexture::GetBindable(gfx, 3, true)->Bind(gfx);
 }
 
 void NormalRenderPass::ShowWindow(GFX& gfx)

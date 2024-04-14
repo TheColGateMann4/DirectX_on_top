@@ -46,7 +46,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 		{
 			RenderStep normalStep("normalPass");
 
-			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Shadow.cso");
+			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
 
 			DynamicConstantBuffer::BufferLayout layout;
 
@@ -70,7 +70,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("normalMapWeight") = 1.0f;
 
 
-			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Shadow.cso"));
+			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
 
 			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
 

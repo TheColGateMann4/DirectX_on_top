@@ -1,3 +1,4 @@
+#include "ShaderFunctions.hlsli"
 #include "FloatHLSLMacros.hlsli"
 
 float GetShadowLevelAtOffsetByHardware(Texture2D t_depthMap, SamplerComparisonState s_depthComparisonSampler, float2 depthMapCoords : DEPTHTEXCOORD, float depth, float bias, int2 offset)
@@ -9,7 +10,7 @@ float GetShadowLevelAtOffset(Texture2D t_depthMap, SamplerState s_depthSampler, 
 {
     const float4 sample = t_depthMap.Sample(s_depthSampler, depthMapCoords + offset);
     
-    return (sample.r >= depth - bias) ? 1.0f : 0.0f;
+    return (sample.r <= depth - bias) ? 1.0f : 0.0f;
 }
 
 float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthComparisonSampler, SamplerState s_depthSampler, float4 depthMapCoords : DEPTHTEXCOORD, int samples, float bias, bool byHardware)
@@ -46,5 +47,15 @@ float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthCompari
                     result += GetShadowLevelAtOffset(t_depthMap, s_depthSampler, depthMapCoords.xy, depth, bias, float2(depthMapCoords.x + x * pixelWidth, depthMapCoords.y + y * pixelHeight));
         }
     
-    return result / ((samples * 2 + 1) * (samples * 2 + 1));
+    result /= ((samples * 2 + 1) * (samples * 2 + 1));
+    
+    return byHardware ? result : MirrorNumber(result, 0.5f);
+}
+
+float4 CalculateDepthTextureCoords(float3 position, matrix model, matrix shadowViewProjection)
+{
+    float4 modelPosition = mul(float4(position, 1.0f), model);
+    float4 positionRelativeToShadowCamera = mul(modelPosition, shadowViewProjection);
+
+    return (positionRelativeToShadowCamera * float4(0.5f, -0.5f, 1.0f, 1.0f)) + (float4(0.5f, 0.5f, 0.0f, 0.0f) * positionRelativeToShadowCamera.w);
 }

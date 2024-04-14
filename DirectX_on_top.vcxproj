@@ -618,6 +618,8 @@
     <None Include="PointLightConstBuffer.hlsli" />
     <None Include="ShaderFunctions.hlsli" />
     <None Include="ShadowFunctions.hlsli" />
+    <None Include="ShadowResources.hlsli" />
+    <None Include="TransformConstBuffer.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

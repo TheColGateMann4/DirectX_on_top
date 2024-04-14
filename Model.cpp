@@ -234,11 +234,28 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	resultMesh->m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *resultMesh, 0, 2);
 
 	{
+		RenderTechnique shadowTechnique("shadow");
+
+		{
+			RenderStep shadowStep("shadowMappingPass");
+
+			shadowStep.AddBindable(PixelShader::GetBindable(gfx, "PS.cso"));
+
+			shadowStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pNormalVertexShader.get()));
+
+			shadowStep.AddBindable(pNormalVertexShader);
+
+			shadowTechnique.AddRenderStep(shadowStep);
+		}
+
+		resultMesh->AddRenderTechnique(shadowTechnique);
+	}
+
+	{
 		RenderTechnique normalTechnique("normal");
 
 		{
 			RenderStep normalStep("normalPass");
-
 
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, pixelShaderName));
 

@@ -182,13 +182,40 @@ void SceneObject::CalculateSceneTranformMatrix(DirectX::XMMATRIX parentTransform
 DirectX::XMFLOAT3 SceneObject::GetWorldPosition() const
 {
 	DirectX::XMFLOAT3 result = m_position;
+	SceneObject* parent = m_parent;
 
-	if (m_parent == nullptr)
-		return result;
+	// using nasa loop conventions hehe, gotta keep in mind that 128 is parent->child connections
+	for(int i = 0; i < 128; i++)
+	{
+		if (parent == nullptr)
+			return result;
 
-	const DirectX::XMVECTOR vecChildPos = XMLoadFloat3(&result);
-	const DirectX::XMVECTOR vecResult = XMVector3Transform(vecChildPos, m_parent->GetSceneTranformMatrix());
-	DirectX::XMStoreFloat3(&result, vecResult);
+		const DirectX::XMVECTOR vecChildPos = XMLoadFloat3(&result);
+		const DirectX::XMVECTOR vecResult = XMVector3Transform(vecChildPos, parent->GetSceneTranformMatrix());
+		DirectX::XMStoreFloat3(&result, vecResult);
+
+		parent = parent->m_parent;
+	}
+
+	return result;
+}
+
+DirectX::XMFLOAT3 SceneObject::GetWorldRotation() const
+{
+	DirectX::XMFLOAT3 result = m_rotation;
+	SceneObject* parent = m_parent;
+
+	for (int i = 0; i < 128; i++)
+	{
+		if (parent == nullptr)
+			return result;
+
+		result.x += parent->m_rotation.x;
+		result.y += parent->m_rotation.y;
+		result.z += parent->m_rotation.z;
+
+		parent = parent->m_parent;
+	}
 
 	return result;
 }

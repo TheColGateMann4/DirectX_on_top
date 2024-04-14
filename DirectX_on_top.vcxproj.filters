@@ -673,5 +673,11 @@
     <None Include="ShadowFunctions.hlsli">
       <Filter>Shader\Header Files</Filter>
     </None>
+    <None Include="ShadowResources.hlsli">
+      <Filter>Shader\Header Files</Filter>
+    </None>
+    <None Include="TransformConstBuffer.hlsli">
+      <Filter>Shader\Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

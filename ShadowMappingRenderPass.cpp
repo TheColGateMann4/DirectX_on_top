@@ -11,7 +11,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name, cla
 	RenderJobPass(name),
 	m_scene(&scene)
 {
-	m_depthStencilView = std::make_shared<DepthStencilViewWithTexture>(gfx, 2,DepthStencilView::Mode::DepthOnly);
+	m_depthStencilView = std::make_shared<DepthStencilViewWithTexture>(gfx, 3,DepthStencilView::Mode::DepthOnly);
 	m_renderTarget = std::make_shared<RenderTarget>(gfx, gfx.GetWidth(), gfx.GetHeight());
 
 	{

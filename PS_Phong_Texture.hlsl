@@ -1,15 +1,7 @@
-cbuffer lightBuffer : register(b0)
-{
-    float3 b_lightPosition;
-    
-    float3 b_ambient;
-    float3 b_lightColor;
-    
-    float b_diffuseIntensity;
-    float b_attenuationConst;
-    float b_attenuationLinear;
-    float b_attenuationQuadratic;
-};
+#include "ShadowFunctions.hlsli"
+#include "PointLightConstBuffer.hlsli"
+#include "ShadowResources.hlsli"
+#include "TransformConstBuffer.hlsli"
 
 cbuffer objectBuffer : register(b1)
 {
@@ -20,25 +12,39 @@ cbuffer objectBuffer : register(b1)
 Texture2D t_diffuseTexture : register(t0);
 SamplerState s_sampler : register(s0);
 
-float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD) : SV_TARGET
+float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD) : SV_TARGET
 {
     float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
     clip(diffuseSample.a < 1.0f ? -1.0f : 1.0f);
     
-    normal = normalize(normal);
+    float3 diffuse, specular;
     
-    const float3 VectorLength = b_lightPosition - positionRelativeToCamera;
-    const float lengthOfVectorLength = length(VectorLength);
-    const float3 DirectionToLightSource = VectorLength / lengthOfVectorLength;
+    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, s_depthSampler, depthMapCoords, PCF_level, bias, hardwarePCF);
     
-    const float attenuation = 1.0f / (b_attenuationConst + b_attenuationLinear * lengthOfVectorLength + b_attenuationQuadratic * (lengthOfVectorLength * lengthOfVectorLength));
-	
-    const float3 diffuse = b_lightColor * b_diffuseIntensity * attenuation * max(0.0f, dot(DirectionToLightSource, normal));
+    if(shadowLevel != 0.0f)
+    {
+        normal = normalize(normal);
+        
+        const float3 VectorLength = b_viewLightPosition - positionRelativeToCamera;
+        const float lengthOfVectorLength = length(VectorLength);
+        const float3 DirectionToLightSource = VectorLength / lengthOfVectorLength;
+        
+        const float attenuation = 1.0f / (b_attenuationConst + b_attenuationLinear * lengthOfVectorLength + b_attenuationQuadratic * (lengthOfVectorLength * lengthOfVectorLength));
+    	
+        diffuse = b_lightColor * b_diffuseIntensity * attenuation * max(0.0f, dot(DirectionToLightSource, normal));
+        
+        const float3 w = normal * dot(VectorLength, normal);
+        const float3 r = w * 2.0f - VectorLength;
+        
+        specular = attenuation * (b_lightColor * b_diffuseIntensity) * b_specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), b_specularPower);
     
-    const float3 w = normal * dot(VectorLength, normal);
-    const float3 r = w * 2.0f - VectorLength;
-    
-    const float3 specular = attenuation * (b_lightColor * b_diffuseIntensity) * b_specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), b_specularPower);
-    
+        diffuse *= shadowLevel;
+        specular *= shadowLevel;
+    }
+    else
+    {
+        specular = diffuse = float3(0.0f, 0.0f, 0.0f);
+    }
+
     return float4(saturate((diffuse + b_ambient) * diffuseSample.rgb + specular), diffuseSample.a);
 }

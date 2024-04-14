@@ -20,9 +20,9 @@ private:
 
 	std::shared_ptr<CachedBuffer> shadowSettings;
 
-	INT bias = D3D11_DEFAULT_DEPTH_BIAS;
-	FLOAT biasClamp = D3D11_DEFAULT_DEPTH_BIAS_CLAMP;
-	FLOAT slopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+	INT bias = 40;
+	FLOAT biasClamp = 0.00427f;
+	FLOAT slopeScaledDepthBias = 0.58140f;
 
 	ShadowSamplerStateManager samplerStateManager;
 };

@@ -46,6 +46,8 @@ public:
 
 	DirectX::XMFLOAT3 GetWorldPosition() const;
 
+	DirectX::XMFLOAT3 GetWorldRotation() const;
+
 public:
 	virtual const char* GetName() const = 0;
 
@@ -75,6 +77,7 @@ public:
 public:
 	DirectX::XMFLOAT3 m_position = { 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 m_rotation = { 0.0f, 0.0f, 0.0f };
+	SceneObject* m_parent = nullptr;
 
 public:
 	bool m_pressed = false;
@@ -84,8 +87,6 @@ protected:
 	Shape* m_shape = nullptr;
 
 	SceneObject* m_pressedNode = nullptr;
-
-	SceneObject* m_parent = nullptr;
 
 	std::vector<std::unique_ptr<SceneObject>> m_children;
 	DirectX::XMFLOAT4X4 m_transform = {};

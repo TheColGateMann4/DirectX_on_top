@@ -69,3 +69,8 @@ float3x3 AngleAxis3x3(float angle, float3 axis)
         t * x * z - s * y, t * y * z + s * x, t * z * z + c
     );
 }
+
+float MirrorNumber(float numberToMirror, float halfOfMaxValue)
+{
+    return (numberToMirror - halfOfMaxValue) * -1 + halfOfMaxValue;
+}

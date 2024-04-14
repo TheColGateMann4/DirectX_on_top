@@ -1,3 +1,5 @@
+#include "ShadowFunctions.hlsli"
+
 cbuffer constBuffer : register(b0)
 {
     matrix model;
@@ -15,6 +17,7 @@ struct VSOUT
     float3 positionRelativeToCamera : POSITION;
     float3 normal : NORMAL;
     float2 textureCoords : TEXCOORD;
+    float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
 
@@ -25,6 +28,6 @@ VSOUT main(float3 position : POSITION, float3 normal : NORMAL, float2 textureCoo
     vsout.normal = normal;
     vsout.textureCoords = textureCoords;
     vsout.position = mul(float4(position, 1.0f), modelViewProjection);
-    
+    vsout.depthMapCoords = CalculateDepthTextureCoords(position, model, shadowViewProjection);
     return vsout;
 }
