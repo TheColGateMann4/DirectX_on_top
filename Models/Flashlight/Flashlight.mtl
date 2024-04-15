@@ -1,0 +1,8 @@
+newmtl None
+Ns 96.078431
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd FlashlightTexture.jpg
+map_Kn FlashlightTexture_NORMAL.jpg
+map_Ks FlashlightTexture_SPECULAR.jpg

@@ -24,7 +24,7 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     
     float3 diffuse, specular;
 
-    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, s_depthSampler, depthMapCoords, PCF_level, bias, hardwarePCF);    
+    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, s_depthSampler, depthMapCoords, PCF_level, bias, hardwarePCF, circleFilter, radius);    
     
     float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
 

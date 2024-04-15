@@ -13,12 +13,38 @@ float GetShadowLevelAtOffset(Texture2D t_depthMap, SamplerState s_depthSampler, 
     return (sample.r <= depth - bias) ? 1.0f : 0.0f;
 }
 
-float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthComparisonSampler, SamplerState s_depthSampler, float4 depthMapCoords : DEPTHTEXCOORD, int samples, float bias, bool byHardware)
+float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthComparisonSampler, SamplerState s_depthSampler, float4 depthMapCoords : DEPTHTEXCOORD, int samples, float bias, bool byHardware, bool circleFilter, float radius)
 {        
     depthMapCoords.xyz = depthMapCoords.xyz / depthMapCoords.w;
     
     if (depthMapCoords.z < 0.0f || depthMapCoords.z > 1.0f)
         return 0.0f;
+    
+    if (circleFilter)
+    {
+        float2 textureCoords = depthMapCoords.xy;
+        
+        {
+            float textureWidth, textureHeight;
+            t_depthMap.GetDimensions(textureWidth, textureHeight);
+        
+            float ratio = textureWidth / textureHeight;
+        
+            if (ratio > 1.0f)
+            {
+                textureCoords.x = abs(textureCoords.x * ratio - ratio * 0.5f) + 0.5f;
+            }
+            else if (ratio < 1.0f)
+            {
+                textureCoords.y = abs(textureCoords.y * ratio - ratio * 0.5f) + 0.5f;
+            }
+        }
+        
+        textureCoords.xy = abs(textureCoords.xy - 0.5f);
+        
+        if (sqrt(pow(textureCoords.x, 2) + pow(textureCoords.y, 2)) > radius / 2)
+            return 0.0f;
+    }
     
     float result = 0.0f;
     

@@ -155,6 +155,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(SpecularColor));
 
 		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float4>("specularColor");
+
 		constBufferData += SpecularColor;
 
 

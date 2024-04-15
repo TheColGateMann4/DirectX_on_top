@@ -26,26 +26,34 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 
 		DynamicConstantBuffer::BufferLayout layout;
 
-		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiIntInfo intInfo = {};
-		intInfo.v_min = 0;
-		intInfo.v_max = 4;
+		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiIntInfo pcfLevelInfo = {};
+		pcfLevelInfo.v_min = 0;
+		pcfLevelInfo.v_max = 4;
 
-		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
-		floatInfo.v_min = 0.0f;
-		floatInfo.v_max = 0.005f;
-		floatInfo.format = "%.6f";
+		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo biasInfo = {};
+		biasInfo.v_min = 0.0f;
+		biasInfo.v_max = 0.005f;
+		biasInfo.format = "%.6f";
 
-		layout.Add<DynamicConstantBuffer::DataType::Int>("PCF_level", &intInfo);
-		layout.Add<DynamicConstantBuffer::DataType::Float>("bias", &floatInfo);
+		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo radiusInfo = {};
+		radiusInfo.v_min = 0.01f;
+		radiusInfo.v_max = 1.0f;
+		radiusInfo.format = "%.2f";
+
+		layout.Add<DynamicConstantBuffer::DataType::Int>("PCF_level", &pcfLevelInfo);
+		layout.Add<DynamicConstantBuffer::DataType::Float>("bias", &biasInfo);
 		layout.Add<DynamicConstantBuffer::DataType::Bool>("hardwarePCF");
 		layout.Add<DynamicConstantBuffer::DataType::Bool>("bilinear");
+		layout.Add<DynamicConstantBuffer::DataType::Bool>("circleFilter");
+		layout.Add<DynamicConstantBuffer::DataType::Float>("radius", &radiusInfo);
 
 		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("PCF_level") = 0;
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("bias") = 0.0f;
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("hardwarePCF") = FALSE;
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("bilinear") = FALSE;
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("circleFilter") = FALSE;
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("radius") = 1.0f;
 
 		shadowSettings = std::make_shared<CachedBuffer>(gfx, bufferData, 4, true);
 	}

@@ -4,6 +4,8 @@ cbuffer shadowSettingsBuffer : register(b4)
     float bias;
     bool hardwarePCF;
     bool bilinear;
+    bool circleFilter;
+    float radius;
 };
 
 Texture2D t_depthMap : register(t3);
