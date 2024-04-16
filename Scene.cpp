@@ -160,7 +160,7 @@ void Scene::CleanupPressedNodes()
 		{
 			if (previousObject != nullptr)
 			{
-				if(previousObject->m_pressedNode != nullptr)
+				if (previousObject->m_pressedNode != nullptr)
 				{
 					previousObject->m_pressedNode->SetPressedState(false);
 
@@ -170,7 +170,7 @@ void Scene::CleanupPressedNodes()
 				previousObject->SetPressedState(false);
 			}
 
-			previousObject = model->m_pressedNode;
+			previousObject = model.get();
 		}
 		else
 		{
@@ -181,10 +181,10 @@ void Scene::CleanupPressedNodes()
 				model->m_pressedNode = nullptr;
 			}
 			else
-				previousObject = model->m_pressedNode;
+				previousObject = model.get();
 		}
 	}
 
 	if (previousObject != nullptr)
-		this->m_pressedNode = previousObject;
+		this->m_pressedNode = previousObject->m_pressedNode;
 }
