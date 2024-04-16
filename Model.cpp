@@ -11,8 +11,12 @@
 
 
 
-Model::Model(GFX& gfx, std::string fileName, float scale)
+Model::Model(GFX& gfx, std::string fileName, float scale, DirectX::XMFLOAT3 startingPosition)
+	:
+	SceneObject(startingPosition)
 {
+	m_scale = scale;
+
 	Assimp::Importer importer;
 	const auto pScene = importer.ReadFile(fileName.c_str(),
 		aiProcess_Triangulate |
@@ -46,8 +50,6 @@ Model::Model(GFX& gfx, std::string fileName, float scale)
 	}
 
 	AddChild(ParseNode(*pScene->mRootNode));
-
-	m_scale = scale;
 }
 
 std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials, std::string& modelPath, std::string& modelName, float scale)
@@ -343,7 +345,7 @@ std::unique_ptr<ModelNode> Model::ParseNode(const aiNode& node) noexcept
 
 void Model::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 {
-
+	
 }
 
 void Model::MakeHierarchy(GFX&)

@@ -2,6 +2,11 @@
 #include "imgui/imgui.h"
 #include "Shape.h"
 
+SceneObject::SceneObject(DirectX::XMFLOAT3 startingPosition)
+{
+	m_position = startingPosition;
+}
+
 void SceneObject::LinkChildrenToPipeline(RenderGraph& renderGraph)
 {
 	for (auto& child : m_children)

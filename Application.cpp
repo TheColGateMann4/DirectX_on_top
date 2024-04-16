@@ -20,13 +20,15 @@ BOOL Application::Initiate()
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
 
-	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics));
+	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{0.0f, 5.0f, -10.0f}));
 	//scene.AddSceneObject(std::make_unique<Camera>(window.Graphics));
-	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics));
+	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics, 0.5f, DirectX::XMFLOAT3{3.0f, 2.0f, 0.0f}));
 	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
-	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Flashlight\\Flashlight.obj", 1.0f));
-	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));
-	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg"));
+	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Flashlight\\Flashlight.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 2.0f, -1.0f }));
+	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 1.0f, DirectX::XMFLOAT3{ -5.0f, 2.0f, 0.0f }));
+	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Ghosts\\GroundCape1.obj", 1.0f, DirectX::XMFLOAT3{ 7.0f, 2.0f, 0.0f }));
+	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", DirectX::XMFLOAT3{ -3.0f, 2.0f, -3.0f }));
+	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", DirectX::XMFLOAT3{ -5.0f, 4.0f, -3.0f }));
 	scene.LinkModelsToPipeline(renderGraph);
 
 	while (true)

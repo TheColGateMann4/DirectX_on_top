@@ -7,7 +7,7 @@
 class Cube : public SceneObject, public Shape
 {
 public:
-	Cube(class GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture);
+	Cube(class GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
 
 public:
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override

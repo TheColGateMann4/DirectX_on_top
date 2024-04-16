@@ -8,8 +8,9 @@
 #include "Graphics.h"
 #include "CameraManager.h"
 
-Camera::Camera(GFX& gfx)
+Camera::Camera(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 	:
+	SceneObject(startingPosition),
 	m_AspectRatio((float)gfx.GetWidth() / (float)gfx.GetHeight()),
 	m_indicator(gfx, this),
 	m_viewIndicator(gfx, this)

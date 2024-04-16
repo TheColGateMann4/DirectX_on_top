@@ -10,6 +10,8 @@ class SceneObject
 	friend class Scene;
 
 public:
+	SceneObject(DirectX::XMFLOAT3 startingPosition = {0.0f, 0.0f, 0.0f});
+
 	virtual ~SceneObject() = default;
 
 public:

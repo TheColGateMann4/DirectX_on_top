@@ -6,7 +6,7 @@
 class Model : public SceneObject
 {
 public:
-	Model(GFX& gfx, std::string fileName, float scale = 1.0f);
+	Model(GFX& gfx, std::string fileName, float scale = 1.0f, DirectX::XMFLOAT3 startingPosition = {0.0f, 0.0f, 0.0f});
 
 private:
 	static std::unique_ptr<Mesh> ParseMesh(GFX& gfx, const struct aiMesh& mesh, const struct aiMaterial* const* pMaterials, std::string &modelPath, std::string &fileName, float scale);

@@ -8,7 +8,9 @@
 #include "RenderPass.h"
 #include "RenderStep.h"
 
-Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture)
+Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, DirectX::XMFLOAT3 startingPosition)
+	:
+	SceneObject(startingPosition)
 {
 	SetShape(this);
 

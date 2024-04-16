@@ -22,11 +22,9 @@ SamplerState s_sampler : register(s0);
 float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, float3 viewTangent : TANGENT, float3 viewBitangent : BITANGENT, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD ) : SV_TARGET
 {   
     float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
-    
+    normal = normalize(normal);
 #ifdef TEXTURE_WITH_MASK
     clip(diffuseSample.a < 0.1f ? -1.0f : 1.0f);
-    
-    normal = normalize(normal);
     
     if (dot(normal, positionRelativeToCamera) >= 0.0f)
     {
@@ -37,12 +35,12 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     float3 diffuse, specular, specularColor;
     
     const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, s_depthSampler, depthMapCoords, PCF_level, bias, hardwarePCF, circleFilter, radius);
-    
+
     if(shadowLevel != 0.0f)
     {
         if (b_normalMapEnabled)
         {
-            normal = GetNormalInViewSpace(normal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_uvmapTexture);
+           normal = GetNormalInViewSpace(normal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_uvmapTexture);
         }
     
         const float3 VectorLength = b_viewLightPosition - positionRelativeToCamera;

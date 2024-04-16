@@ -10,7 +10,7 @@ class Camera;
 class PointLight : public SceneObject
 {
 public:
-	PointLight(GFX& gfx, float radius = 0.5f);
+	PointLight(GFX& gfx, float radius = 0.5f, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
 
 public:
 	Camera* GetShadowCamera();

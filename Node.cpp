@@ -33,6 +33,11 @@ void ModelNode::RenderThisObjectOnScene() const noexcept(!IS_DEBUG)
 
 void ModelNode::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 {
+	if (m_pMeshes.empty())
+		return;
+
+	SetShape(m_pMeshes.front());
+
 	for (const auto& pMesh : m_pMeshes)
 	{
 		pMesh->LinkToPipeline(renderGraph);

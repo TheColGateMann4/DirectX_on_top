@@ -2,8 +2,10 @@
 #include "Camera.h"
 #include "imgui/imgui.h"
 
-PointLight::PointLight(GFX& gfx, float radius)
-	: m_model(gfx, this, radius)
+PointLight::PointLight(GFX& gfx, float radius, DirectX::XMFLOAT3 startingPosition)
+	:
+	SceneObject(startingPosition),
+	m_model(gfx, this, radius)
 {
 	DynamicConstantBuffer::BufferLayout layout;
 
