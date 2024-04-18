@@ -69,7 +69,7 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 	shadowRasterizerWithculling->ChangeDepthValues(gfx, bias, biasClamp, slopeScaledDepthBias);
 }
 
-void NormalRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
+void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	samplerStateManager.Bind(gfx);
 

@@ -2,7 +2,7 @@
 #include "RenderJob.h"
 #include "Graphics.h"
 
-void RenderJobPass::Render(GFX& gfx) const noexcept(!_DEBUG)
+void RenderJobPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	RenderBindablePass::Render(gfx);
 

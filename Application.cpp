@@ -16,7 +16,6 @@ BOOL Application::Initiate()
 {
  	window.Input.Key.allowRepeating(TRUE);
 
-	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\nano_textured\\nanosuit.obj", 0.3f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\brickwall\\brick_wall.obj", 6.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 3.0f));
 

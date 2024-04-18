@@ -25,7 +25,7 @@ void RenderBindablePass::AddBindable(std::shared_ptr<Bindable> bindable) noexcep
 	m_bindables.push_back(bindable);
 }
 
-void RenderBindablePass::Render(GFX& gfx) const noexcept(!_DEBUG)
+void RenderBindablePass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	Bind(gfx);
 
@@ -33,7 +33,7 @@ void RenderBindablePass::Render(GFX& gfx) const noexcept(!_DEBUG)
 		bindable->Bind(gfx);
 }
 
-void RenderBindablePass::Bind(GFX& gfx) const noexcept(!_DEBUG)
+void RenderBindablePass::Bind(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	if(m_renderTarget != nullptr)
 		m_renderTarget->BindRenderTarget(gfx, m_depthStencilView.get());

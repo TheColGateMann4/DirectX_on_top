@@ -25,10 +25,10 @@ public:
 
 	void AddBindable(std::shared_ptr<Bindable> bindable) noexcept;
 
-	virtual void Render(GFX& gfx) const noexcept(!_DEBUG) override;
+	virtual void Render(GFX& gfx) const noexcept(!IS_DEBUG) override;
 
 private:
-	void Bind(GFX& gfx) const noexcept(!_DEBUG);
+	void Bind(GFX& gfx) const noexcept(!IS_DEBUG);
 
 
 private:

@@ -13,10 +13,9 @@
 
 Model::Model(GFX& gfx, std::string fileName, float scale, DirectX::XMFLOAT3 startingPosition)
 	:
-	SceneObject(startingPosition)
+	SceneObject(startingPosition),
+	m_scale(scale)
 {
-	m_scale = scale;
-
 	Assimp::Importer importer;
 	const auto pScene = importer.ReadFile(fileName.c_str(),
 		aiProcess_Triangulate |
@@ -115,11 +114,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			constBufferData += (BOOL)false;
 			constBufferData += (BOOL)false;
 		}
-		/*
-		
-			checkChanged(ImGui::SliderFloat("specularPowerChanged", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower"), 0.0f, 1000.0f, "%.2f"));
-			checkChanged(ImGui::SliderFloat("specularMapWeight", shaderMaterial.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularMapWeight"), 0.0f, 2.0f));
-		*/
+
 		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Bool>("specularMap");
 		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Bool>("specularMapHasAlpha");
 
@@ -195,14 +190,12 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	vertexBufferLayout.Append(DynamicVertex::VertexLayout::Position3D);
 	vertexBufferLayout.Append(DynamicVertex::VertexLayout::Normal);
 
-	if (hasNormalMap || hasSpecularMap)
+	if (hasDiffuseMap || hasNormalMap || hasSpecularMap)
 	{
+		vertexBufferLayout.Append(DynamicVertex::VertexLayout::Texture2D);
 		vertexBufferLayout.Append(DynamicVertex::VertexLayout::Tangent);
 		vertexBufferLayout.Append(DynamicVertex::VertexLayout::Bitangent);
 	}
-
-	if (hasDiffuseMap || hasNormalMap || hasSpecularMap)
-		vertexBufferLayout.Append(DynamicVertex::VertexLayout::Texture2D);
 
 
 	DynamicVertex::VertexBuffer vertexBuffer(std::move(vertexBufferLayout));

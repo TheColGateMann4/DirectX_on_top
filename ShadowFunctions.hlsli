@@ -48,7 +48,7 @@ float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthCompari
     
     float result = 0.0f;
     
-    float pixelWidth, pixelHeight;
+    float pixelWidth = 0.0f, pixelHeight = 0.0f;
     
     if (!byHardware)
     {
@@ -63,15 +63,20 @@ float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthCompari
     
     [unroll]
     for (int x = -4; x <= 4; x++)
-        [unroll]
-        for (int y = -4; y <= 4; y++)
+    {
+        if (abs(x) <= samples)
         {
-            if (abs(x) <= samples && abs(y) <= samples)                
-                if (byHardware)
-                    result += GetShadowLevelAtOffsetByHardware(t_depthMap, s_depthComparisonSampler, depthMapCoords.xy, depth, bias, int2(x, y));
-                else
-                    result += GetShadowLevelAtOffset(t_depthMap, s_depthSampler, depthMapCoords.xy, depth, bias, float2(depthMapCoords.x + x * pixelWidth, depthMapCoords.y + y * pixelHeight));
+            [unroll]
+            for (int y = -4; y <= 4; y++)
+            {
+                if (abs(y) <= samples)
+                    if (byHardware)
+                        result += GetShadowLevelAtOffsetByHardware(t_depthMap, s_depthComparisonSampler, depthMapCoords.xy, depth, bias, int2(x, y));
+                    else
+                        result += GetShadowLevelAtOffset(t_depthMap, s_depthSampler, depthMapCoords.xy, depth, bias, float2(depthMapCoords.x + x * pixelWidth, depthMapCoords.y + y * pixelHeight));
+            }
         }
+    }
     
     result /= ((samples * 2 + 1) * (samples * 2 + 1));
     

@@ -23,6 +23,7 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
 {   
     float4 diffuseSample = t_diffuseTexture.Sample(s_sampler, textureCoords);
     normal = normalize(normal);
+
 #ifdef TEXTURE_WITH_MASK
     clip(diffuseSample.a < 0.1f ? -1.0f : 1.0f);
     
@@ -57,7 +58,7 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
         if (b_specularMapEnable)
         {
             const float4 specularSample = t_specularTexture.Sample(s_sampler, textureCoords);
-            const float3 specularColor = specularSample.rgb * b_specularMapWeight;
+            specularColor = specularSample.rgb * b_specularMapWeight;
         
             if (b_specularMapHasAlpha)
                 specularPower = pow(2.0f, specularSample.a * 13.0f);
@@ -74,5 +75,5 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     }
    
     
-    return float4(saturate((diffuse + b_ambient) * diffuseSample.rgb + specular * specularColor), diffuseSample.a);
+    return float4(saturate((diffuse + b_ambient) * diffuseSample.rgb + specular * specularColor), 1.0f);
 }

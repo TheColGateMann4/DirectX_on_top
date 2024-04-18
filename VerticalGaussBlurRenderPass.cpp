@@ -18,7 +18,7 @@ VerticalGaussBlurRenderPass::VerticalGaussBlurRenderPass(class GFX& gfx, const c
 	RegisterInput(RenderPassBufferInput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
 }
 
-void VerticalGaussBlurRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
+void VerticalGaussBlurRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	DynamicConstantBuffer::BufferData bufferData = gaussBlurDirectionData->GetBufferData();
 

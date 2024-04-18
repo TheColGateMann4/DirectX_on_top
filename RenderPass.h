@@ -25,7 +25,7 @@ public:
 	void LinkInput(const char* inputName, const std::string& linkedResource);
 
 public:
-	virtual void Render(class GFX& gfx) const noexcept(!_DEBUG) = 0;
+	virtual void Render(class GFX& gfx) const noexcept(!IS_DEBUG) = 0;
 	virtual void CheckPassIntegrity() const;
 
 	virtual void Reset() {};

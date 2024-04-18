@@ -13,7 +13,7 @@ public:
 	RenderGraph(class GFX& gfx);
 
 public:
-	void Render(class GFX& gfx) const noexcept(!_DEBUG);
+	void Render(class GFX& gfx) const noexcept(!IS_DEBUG);
 	void Finish();
 
 	void Reset();

@@ -30,7 +30,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name, cla
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::Off));
 }
 
-void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
+void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	Camera* previousCamera = m_scene->GetCameraManager()->GetActiveCamera();
 	Camera* shadowCamera = m_scene->GetLights().front()->GetShadowCamera();

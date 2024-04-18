@@ -32,7 +32,7 @@ FullscreenFilterRenderPass::FullscreenFilterRenderPass(class GFX& gfx, const cha
 	AddBindable(pVertexShader);
 }
 
-void FullscreenFilterRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
+void FullscreenFilterRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	RenderBindablePass::Render(gfx);
 	gfx.DrawIndexed(6);

@@ -25,7 +25,7 @@ float4 main(float2 texturePos : TEXCOORD, float4 position : SV_POSITION) : SV_TA
 			const float2 texturePosition = texturePos + offset;
 			const float4 textureSample = t_texture.Sample(s_sampler, texturePosition);
 	
-			if(textureSample.a > 0)
+			if(textureSample.a > 0.0f)
 				return textureSample;
 		}
 	}

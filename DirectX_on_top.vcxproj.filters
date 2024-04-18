@@ -336,6 +336,12 @@
     <ClInclude Include="ShadowSamplerStateManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CubeMapTexture.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlineScalingRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -554,6 +560,12 @@
     <ClCompile Include="ShadowSamplerStateManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CubeMapTexture.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlineScalingRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -593,7 +605,7 @@
     <FxCompile Include="PS_TextureAnimation.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Phong_Texture.hlsl">
+    <FxCompile Include="PS_Phong_Texture_Specular.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Phong.hlsl">

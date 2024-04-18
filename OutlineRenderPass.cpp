@@ -14,7 +14,7 @@ OutlineRenderPass::OutlineRenderPass(class GFX& gfx, const char* name, const int
 	AddBindable(BlendState::GetBindable(gfx, false));
 }
 
-void OutlineRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
+void OutlineRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	m_renderTarget->Clear(gfx);
 

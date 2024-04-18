@@ -17,7 +17,7 @@ HorizontalGaussBlurRenderPass::HorizontalGaussBlurRenderPass(class GFX& gfx, con
 	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::ANISOTROPIC));
 }
 
-void HorizontalGaussBlurRenderPass::Render(GFX& gfx) const noexcept(!_DEBUG)
+void HorizontalGaussBlurRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	DynamicConstantBuffer::BufferData bufferData = gaussBlurDirectionData->GetBufferData();
 

@@ -8,7 +8,7 @@ public:
 	BufferClearRenderPass(class GFX& gfx, const char* name);
 
 public:
-	virtual void Render(class GFX& gfx) const noexcept(!_DEBUG) override;
+	virtual void Render(class GFX& gfx) const noexcept(!IS_DEBUG) override;
 	
 private:
 	std::shared_ptr<GraphicBuffer> m_graphicBuffer;

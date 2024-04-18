@@ -29,14 +29,11 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
         const float lengthOfVectorLength = length(VectorLength);
         const float3 DirectionToLightSource = VectorLength / lengthOfVectorLength;
         
-        const float attenuation = 1.0f / (b_attenuationConst + b_attenuationLinear * lengthOfVectorLength + b_attenuationQuadratic * (lengthOfVectorLength * lengthOfVectorLength));
+        const float attenuation = GetAttenuation(lengthOfVectorLength, b_attenuationConst, b_attenuationLinear, b_attenuationQuadratic);
     	
-        diffuse = b_lightColor * b_diffuseIntensity * attenuation * max(0.0f, dot(DirectionToLightSource, normal));
+        diffuse = GetDiffuse(normal, attenuation, DirectionToLightSource, b_lightColor, b_diffuseIntensity);
         
-        const float3 w = normal * dot(VectorLength, normal);
-        const float3 r = w * 2.0f - VectorLength;
-        
-        specular = attenuation * (b_lightColor * b_diffuseIntensity) * b_specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(positionRelativeToCamera))), b_specularPower);
+        specular = GetSpecular(positionRelativeToCamera, normal, VectorLength, attenuation, b_specularPower, b_lightColor, b_diffuseIntensity);
     
         diffuse *= shadowLevel;
         specular *= shadowLevel;

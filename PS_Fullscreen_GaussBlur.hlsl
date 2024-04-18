@@ -32,8 +32,12 @@ float4 main(float2 texturePos : TEXCOORD, float4 position : SV_POSITION) : SV_TA
 	const int r = numberUsed;
 	float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
-	for(int i = -r; i <= r; i++)
+	[unroll]
+	for(int i = -7; i <= 7; i++)
 	{
+		if(abs(i) > r)
+			continue;
+
 		const float2 texturePosition = texturePos + textureSize * i;
 		const float4 textureSample = t_texture.Sample(s_sampler, texturePosition);
 		const int absoluteValue = abs(i);
