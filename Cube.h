@@ -33,6 +33,7 @@ public:
 
 private:
 	static SimpleMesh GetNormalMesh(float scale);
+	static SimpleMesh GetInsideDrawnMesh(float scale, bool withTextureCoords = false);
 	static SimpleMesh GetUnwrappedMesh(float scale, bool getExtendedStuff = false);
 
 private:

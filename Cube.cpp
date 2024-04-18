@@ -158,6 +158,107 @@ SimpleMesh Cube::GetNormalMesh(float scale)
 	return { std::move(vertexBuffer), std::move(indices) };
 }
 
+SimpleMesh Cube::GetInsideDrawnMesh(float scale, bool withTextureCoords)
+{
+	/* vertices */
+
+	const std::vector<DirectX::XMFLOAT3> vertexPositions = {
+
+		//front
+		{-1.0f, -1.0f, -1.0f},
+		{-1.0f, 1.0f, -1.0f},
+		{1.0f, -1.0f, -1.0f},
+		{1.0f, 1.0f, -1.0f},
+
+		//right
+		{1.0f, -1.0f, -1.0f},
+		{1.0f, 1.0f, -1.0f},
+		{1.0f, -1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f},
+
+		//left
+		{-1.0f, -1.0f, 1.0f},
+		{-1.0f, 1.0f, 1.0f},
+		{-1.0f, -1.0f, -1.0f},
+		{-1.0f, 1.0f, -1.0f},
+
+		//top
+		{-1.0f, 1.0f, -1.0f},
+		{-1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, -1.0f},
+		{1.0f, 1.0f, 1.0f},
+
+		//bottom
+		{1.0f, -1.0f, -1.0f},
+		{1.0f, -1.0f, 1.0f},
+		{-1.0f, -1.0f, -1.0f},
+		{-1.0f, -1.0f, 1.0f},
+
+		//back
+		{1.0f, -1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f},
+		{-1.0f, -1.0f, 1.0f},
+		{-1.0f, 1.0f, 1.0f}
+	};
+
+	const std::vector<DirectX::XMFLOAT2> vertexTexturePositions = {
+		{0.0f, 0.0f},
+		{0.0f, 1.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		{0.0f, 0.0f},
+		{0.0f, 1.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		{0.0f, 0.0f},
+		{0.0f, 1.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		{0.0f, 0.0f},
+		{0.0f, 1.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		{0.0f, 0.0f},
+		{0.0f, 1.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+
+		{0.0f, 0.0f},
+		{0.0f, 1.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+	};
+
+	DynamicVertex::VertexLayout layout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
+
+	if (withTextureCoords)
+		layout.Append(DynamicVertex::VertexLayout::Texture2D);
+
+	DynamicVertex::VertexBuffer vertexBuffer(std::move(layout));
+
+	for (size_t i = 0; i < vertexPositions.size(); i++)
+		if (withTextureCoords)
+			vertexBuffer.Emplace_Back(vertexPositions.at(i), vertexTexturePositions.at(i));
+		else
+			vertexBuffer.Emplace_Back(vertexPositions.at(i));
+
+	/* indices */
+
+	const std::vector<UINT32> cubeFaceIndices = { 1,0,2, 3,1,2 };
+	std::vector<UINT32> indices = {};
+
+	for (size_t i = 0; i < 6; i++)
+		for (const auto& indice : cubeFaceIndices)
+			indices.push_back(indice + i * 4);
+
+
+	return { std::move(vertexBuffer), std::move(indices) };
+}
+
 SimpleMesh Cube::GetUnwrappedMesh(float scale, bool getExtendedStuff)
 {
 	/* vertices */

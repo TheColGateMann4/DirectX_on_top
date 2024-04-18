@@ -186,6 +186,7 @@
     <ClInclude Include="DynamicConstantBuffer.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ErrorMacros.h" />
+    <ClInclude Include="FPSCounter.h" />
     <ClInclude Include="FullscreenFilter.h" />
     <ClInclude Include="FullscreenFilterRenderPass.h" />
     <ClInclude Include="GaussBlurFilter.h" />
@@ -272,6 +273,7 @@
     <ClCompile Include="DynamicConstantBuffer.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
     <ClCompile Include="ErrorHandling.cpp" />
+    <ClCompile Include="FPSCounter.cpp" />
     <ClCompile Include="FullscreenFilter.cpp" />
     <ClCompile Include="FullscreenFilterRenderPass.cpp" />
     <ClCompile Include="GaussBlurFilter.cpp" />

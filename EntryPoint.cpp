@@ -9,7 +9,7 @@ int WINAPI WinMain
 	_In_ int
 )
 {
-#ifdef IS_DEBUG
+#ifdef _DEBUG
 	AllocConsole();
 	FILE* pConsole;
 	freopen_s(&pConsole, "CONOUT$", "w", stdout);
@@ -37,7 +37,7 @@ int WINAPI WinMain
 		errorHandler.ThrowMessage("Unknown Error", "No Details Available");
 	}
 
-#ifdef IS_DEBUG
+#ifdef _DEBUG
 	fclose(pConsole);
 	FreeConsole();
 #endif

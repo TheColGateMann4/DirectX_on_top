@@ -7,7 +7,7 @@
 #include "NormalRenderPass.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
-	: m_width(width), m_height(height), m_name(name), window(width, height, name), scene(&window), renderGraph(window.Graphics, scene)
+	: m_width(width), m_height(height), m_name(name), window(width, height, name), scene(&window), renderGraph(window.Graphics, scene), fpsCounter(window.Graphics)
 {
 	window.Graphics.LinkCameraManager(scene.GetCameraManager());
 }
@@ -173,6 +173,8 @@ void Application::DoFrame()
 	static_cast<NormalRenderPass*>(renderGraph.GetRenderJobPass("normalPass"))->ShowWindow(window.Graphics);
 
 	scene.DrawModelHierarchy();
+
+	fpsCounter.Draw(DeltaTime);
 
 	window.Graphics.FinishFrame();
 

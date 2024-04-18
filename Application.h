@@ -9,6 +9,7 @@
 #include "Cube.h"
 #include "Scene.h"
 #include "GaussBlurRenderGraph.h"
+#include "FPSCounter.h"
 
 class Application
 {
@@ -36,5 +37,6 @@ private:
 	Scene scene;
 	GaussBlurRenderGraph renderGraph;
 	Time timer;
+	FPSCounter fpsCounter;
 };
 
