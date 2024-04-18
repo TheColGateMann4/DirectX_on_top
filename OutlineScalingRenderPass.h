@@ -6,7 +6,7 @@
 class OutlineScalingRenderPass : public FullscreenFilterRenderPass
 {
 public:
-	OutlineScalingRenderPass(class GFX& gfx, const char* name, const int width, const int height);
+	OutlineScalingRenderPass(class GFX& gfx, const char* name, const int width, const int height, bool horizontal);
 
 public:
 	virtual void Render(GFX& gfx) const noexcept(!IS_DEBUG) override;

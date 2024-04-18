@@ -193,7 +193,6 @@
     <ClInclude Include="GaussBlurRenderGraph.h" />
     <ClInclude Include="GraphicBuffer.h" />
     <ClInclude Include="Graphics.h" />
-    <ClInclude Include="HorizontalGaussBlurRenderPass.h" />
     <ClInclude Include="IgnoreZBufferRenderPass.h" />
     <ClInclude Include="ImguiManager.h" />
     <ClInclude Include="imgui\backend\imgui_impl_dx11.h" />
@@ -253,7 +252,7 @@
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexShader.h" />
-    <ClInclude Include="VerticalGaussBlurRenderPass.h" />
+    <ClInclude Include="GaussBlurRenderPass.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="wrl_no_warnings.h" />
   </ItemGroup>
@@ -280,7 +279,6 @@
     <ClCompile Include="GaussBlurRenderGraph.cpp" />
     <ClCompile Include="GraphicBuffer.cpp" />
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="HorizontalGaussBlurRenderPass.cpp" />
     <ClCompile Include="IgnoreZBufferRenderPass.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
     <ClCompile Include="imgui\backend\imgui_impl_dx11.cpp" />
@@ -331,7 +329,7 @@
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
-    <ClCompile Include="VerticalGaussBlurRenderPass.cpp" />
+    <ClCompile Include="GaussBlurRenderPass.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>

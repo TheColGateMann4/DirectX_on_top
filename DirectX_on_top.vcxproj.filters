@@ -288,10 +288,7 @@
     <ClInclude Include="OutlineMaskingRenderPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
-    <ClInclude Include="HorizontalGaussBlurRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="VerticalGaussBlurRenderPass.h">
+    <ClInclude Include="GaussBlurRenderPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
     <ClInclude Include="FullscreenFilterRenderPass.h">
@@ -509,10 +506,7 @@
     <ClCompile Include="OutlineMaskingRenderPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
-    <ClCompile Include="HorizontalGaussBlurRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="VerticalGaussBlurRenderPass.cpp">
+    <ClCompile Include="GaussBlurRenderPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
     <ClCompile Include="FullscreenFilterRenderPass.cpp">

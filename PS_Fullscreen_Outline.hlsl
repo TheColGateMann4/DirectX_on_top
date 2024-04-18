@@ -1,5 +1,6 @@
 cbuffer ScreenBuffer : register(b0)
 {
+	bool horizontal;
 	int strength;
 }
 
@@ -11,23 +12,25 @@ float4 main(float2 texturePos : TEXCOORD, float4 position : SV_POSITION) : SV_TA
 	int textureWidth, textureHeight;
 	t_texture.GetDimensions(textureWidth, textureHeight);
 
-	textureWidth = textureWidth / 2;
-	textureHeight = textureHeight / 2;
-
-	const float heightDifference = 1.0f / textureHeight;
-	const float widthDifference = 1.0f / textureWidth;
-
-	[loop] for(int x = -strength; x <= strength; x++)
-	{
-		[loop] for(int y = -strength; y <= strength; y++)
-		{
-			const float2 offset = float2(widthDifference * x, widthDifference * y);
-			const float2 texturePosition = texturePos + offset;
-			const float4 textureSample = t_texture.Sample(s_sampler, texturePosition);
+	float2 ratioSize;
 	
-			if(textureSample.a > 0.0f)
-				return textureSample;
-		}
+	if(horizontal)
+		ratioSize = float2(1.0f / (textureWidth / 2.0f), 0.0f);
+	else
+		ratioSize = float2(0.0f, 1.0f / (textureHeight / 2.0f));
+
+	[unroll]
+	for(int i = -3; i <= 3; i++)
+	{
+		if(abs(i) > strength)
+			continue;
+
+		const float2 offset = ratioSize * i;
+		const float2 texturePosition = texturePos + offset;
+		const float4 textureSample = t_texture.Sample(s_sampler, texturePosition);
+	
+		if(textureSample.a > 0.0f)
+			return textureSample;
 	}
 	
 	return float4(0.0f, 0.0f, 0.0f, 0.0f);

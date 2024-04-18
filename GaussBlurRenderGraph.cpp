@@ -5,8 +5,7 @@
 #include "NormalRenderPass.h"
 #include "OutlineMaskingRenderPass.h"
 #include "OutlineRenderPass.h"
-#include "HorizontalGaussBlurRenderPass.h"
-#include "VerticalGaussBlurRenderPass.h"
+#include "GaussBlurRenderPass.h"
 #include "IgnoreZBufferRenderPass.h"
 #include "ShadowMappingRenderPass.h"
 #include "OutlineScalingRenderPass.h"
@@ -84,8 +83,15 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 		}
 
 		{
-			auto renderPass = std::make_unique<OutlineScalingRenderPass>(gfx, "outlineScalingPass", gfx.GetWidth(), gfx.GetHeight());
+			auto renderPass = std::make_unique<OutlineScalingRenderPass>(gfx, "outlineHorizontalScalingPass", gfx.GetWidth(), gfx.GetHeight(), true);
 			renderPass->LinkInput("pixelShaderTexture", "outlineMaskPass.pixelShaderTexture");
+
+			AddPass(std::move(renderPass));
+		}
+
+		{
+			auto renderPass = std::make_unique<OutlineScalingRenderPass>(gfx, "outlineVerticalScalingPass", gfx.GetWidth(), gfx.GetHeight(), false);
+			renderPass->LinkInput("pixelShaderTexture", "outlineHorizontalScalingPass.pixelShaderTexture");
 
 			AddPass(std::move(renderPass));
 		}
@@ -94,7 +100,7 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 			auto renderPass = std::make_unique<HorizontalGaussBlurRenderPass>(gfx, "horizontalGaussBlurPass", gfx.GetWidth(), gfx.GetHeight());
 			renderPass->LinkInput("gaussCooficientSettings", "$.gaussCooficientSettings");
 			renderPass->LinkInput("gaussDirectionSettings", "$.gaussDirectionSettings");
-			renderPass->LinkInput("pixelShaderTexture", "outlineScalingPass.pixelShaderTexture");
+			renderPass->LinkInput("pixelShaderTexture", "outlineVerticalScalingPass.pixelShaderTexture");
 
 			AddPass(std::move(renderPass));
 		}

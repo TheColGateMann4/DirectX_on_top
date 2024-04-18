@@ -14,3 +14,18 @@ public:
 private:
 	std::shared_ptr<CachedBuffer> gaussBlurDirectionData;
 };
+
+
+
+class VerticalGaussBlurRenderPass : public FullscreenFilterRenderPass
+{
+public:
+	VerticalGaussBlurRenderPass(class GFX& gfx, const char* name);
+
+public:
+	virtual void Render(GFX& gfx) const noexcept(!IS_DEBUG) override;
+
+private:
+	std::shared_ptr<CachedBuffer> gaussBlurDirectionData;
+};
+

@@ -2,7 +2,7 @@
 #include "BindableClassesMacro.h"
 #include "RenderTarget.h"
 
-OutlineScalingRenderPass::OutlineScalingRenderPass(class GFX& gfx, const char* name, const int width, const int height)
+OutlineScalingRenderPass::OutlineScalingRenderPass(class GFX& gfx, const char* name, const int width, const int height, bool horizontal)
 	:
 	FullscreenFilterRenderPass(gfx, name)
 {
@@ -12,9 +12,11 @@ OutlineScalingRenderPass::OutlineScalingRenderPass(class GFX& gfx, const char* n
 
 	{
 		DynamicConstantBuffer::BufferLayout bufferLayout;
+		bufferLayout.Add<DynamicConstantBuffer::DataType::Bool>("horizontal");
 		bufferLayout.Add<DynamicConstantBuffer::DataType::Int>("strength");
 
 		DynamicConstantBuffer::BufferData bufferData(bufferLayout);
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("horizontal") = horizontal;
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 1;
 
 		outlineScalingBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, 0, true);
