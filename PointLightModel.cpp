@@ -11,7 +11,7 @@ PointLightModel::PointLightModel(GFX& gfx, PointLight* parent, float radius)
 	m_colorBuffer(DynamicConstantBuffer::BufferLayout("F4")),
 	m_parent(parent)
 {
-	SimpleMesh model = Sphere::GetMesh(35, 35);
+	SimpleMesh model = Sphere::GetMesh(1.0f, 35, 35);
 	model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
 
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, "3535SPHERE", model.m_indices);

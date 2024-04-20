@@ -6,20 +6,9 @@
 
 class Sphere //: public Shape
 {
-// public:
-// 	Sphere(GFX& gfx, std::mt19937& rng,
-// 		std::uniform_real_distribution<float>& adist,
-// 		std::uniform_real_distribution<float>& ddist,
-// 		std::uniform_real_distribution<float>& odist,
-// 		std::uniform_real_distribution<float>& rdist,
-// 		std::uniform_int_distribution<UINT32>& longdist,
-// 		std::uniform_int_distribution<UINT32>& latdist);
-// 
-// public:
-// 	DirectX::XMMATRIX GetTranformMatrix() const noexcept override;
 
 public:
-	static SimpleMesh GetMesh(UINT32 verticalDivisions = 12, UINT32 horizontalDivisions = 24)
+	static SimpleMesh GetMesh(float radius = 1.0f, UINT32 verticalDivisions = 12, UINT32 horizontalDivisions = 24)
 	{
 		assert(verticalDivisions >= 3);
 		assert(horizontalDivisions >= 3);
@@ -31,7 +20,6 @@ public:
 			return result;
 		};
 
-		constexpr float radius = 1.0f;
 		const auto base = DirectX::XMVectorSet(0.0f, 0.0f, radius, 0.0f);
 		const float verticalAngle = (float)_Pi / verticalDivisions;
 		const float horizontalAngle = 2.0f * (float)_Pi / horizontalDivisions;
