@@ -16,4 +16,5 @@ SkyboxRenderPass::SkyboxRenderPass(class GFX& gfx, const char* name)
 	AddBindable(BlendState::GetBindable(gfx, false));
 
 	RegisterOutput(std::make_unique<RenderPassBufferOutput<RenderTarget>>("renderTarget", &m_renderTarget));
+	RegisterOutput(std::make_unique<RenderPassBufferOutput<DepthStencilView>>("depthStencilView", &m_depthStencilView));
 }

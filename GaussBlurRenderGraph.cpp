@@ -42,8 +42,15 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 		}
 
 		{
-			auto renderPass = std::make_unique<OutlineMaskingRenderPass>(gfx, "outlineWriteMaskPass");
+			auto renderPass = std::make_unique<SkyboxRenderPass>(gfx, "skyboxPass");
+			renderPass->LinkInput("renderTarget", "normalPass.renderTarget");
 			renderPass->LinkInput("depthStencilView", "normalPass.depthStencilView");
+			AddPass(std::move(renderPass));
+		}
+
+		{
+			auto renderPass = std::make_unique<OutlineMaskingRenderPass>(gfx, "outlineWriteMaskPass");
+			renderPass->LinkInput("depthStencilView", "skyboxPass.depthStencilView");
 			AddPass(std::move(renderPass));
 		}
 
@@ -111,7 +118,7 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 			renderPass->LinkInput("gaussCooficientSettings", "$.gaussCooficientSettings");
 			renderPass->LinkInput("gaussDirectionSettings", "$.gaussDirectionSettings");
 			renderPass->LinkInput("pixelShaderTexture", "horizontalGaussBlurPass.pixelShaderTexture");
-			renderPass->LinkInput("renderTarget", "normalPass.renderTarget");
+			renderPass->LinkInput("renderTarget", "skyboxPass.renderTarget");
 			renderPass->LinkInput("depthStencilView", "outlineWriteMaskPass.depthStencilView");
 			AddPass(std::move(renderPass));
 		}
@@ -121,16 +128,9 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 			renderPass->LinkInput("renderTarget", "verticalGaussBlurPass.renderTarget");
 			AddPass(std::move(renderPass));
 		}
-
-		{
-			auto renderPass = std::make_unique<SkyboxRenderPass>(gfx, "skyboxPass");
-			renderPass->LinkInput("renderTarget", "ignoreZBufferPass.renderTarget");
-			renderPass->LinkInput("depthStencilView", "verticalGaussBlurPass.depthStencilView");
-			AddPass(std::move(renderPass));
-		}
 	}
 
-	SetTarget("backBuffer", "skyboxPass.renderTarget");
+	SetTarget("backBuffer", "ignoreZBufferPass.renderTarget");
 	Finish();
 }
 
