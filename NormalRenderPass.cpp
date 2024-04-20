@@ -79,8 +79,11 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 	NullTexture::GetBindable(gfx, 3, true)->Bind(gfx);
 }
 
-void NormalRenderPass::ShowWindow(GFX& gfx)
+void NormalRenderPass::ShowWindow(GFX& gfx, bool show)
 {
+	if (!show)
+		return;
+
 	if (ImGui::Begin("Shadow Settings"))
 	{
 		DynamicConstantBuffer::BufferData bufferData = shadowSettings->GetBufferData();

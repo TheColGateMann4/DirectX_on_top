@@ -12,7 +12,7 @@ public:
 public:
 	virtual void Render(GFX& gfx) const noexcept(!IS_DEBUG) override;
 
-	void ShowWindow(GFX& gfx);
+	void ShowWindow(GFX& gfx, bool show);
 
 private:
 	std::shared_ptr<RasterizerState> shadowRasterizerNoBackculling;

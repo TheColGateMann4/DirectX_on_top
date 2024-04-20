@@ -41,8 +41,11 @@ void Scene::DrawModels(GFX& gfx)
 	}
 }
 
-void Scene::DrawModelHierarchy()
+void Scene::DrawModelHierarchy(bool show)
 {
+	if (!show)
+		return;
+
 	if (ImGui::Begin("Object Controler"))
 	{
 		if (ImGui::Button("Import Model"))

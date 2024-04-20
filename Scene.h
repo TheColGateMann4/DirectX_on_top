@@ -19,7 +19,7 @@ public:
 
 	void DrawModels(class GFX& gfx);
 
-	void DrawModelHierarchy();
+	void DrawModelHierarchy(bool show);
 
 	CameraManager* GetCameraManager();
 

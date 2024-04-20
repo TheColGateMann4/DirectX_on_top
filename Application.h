@@ -32,6 +32,7 @@ private:
 	bool cursorLocked = false;
 	bool cursorShowing = true;
 	bool imguiDemoWindow = false;
+	bool showImguiWindows = false;
 
 private:
 	Scene scene;

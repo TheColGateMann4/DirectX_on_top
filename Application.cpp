@@ -155,7 +155,7 @@ void Application::Update()
 	renderGraph.Render(window.Graphics);
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
-		window.Graphics.ShowImGUI(!window.Graphics.isImGUIVisible());
+		showImguiWindows = !showImguiWindows;
 
 	if (window.Input.Key.GetKeyDown(VK_ESCAPE))
 	{
@@ -171,12 +171,12 @@ void Application::Update()
 	if(window.Input.Key.GetKeyDown(VK_OEM_3)) // tilde key
 		imguiDemoWindow = !imguiDemoWindow;
 
-	if(imguiDemoWindow)
-		ImGui::ShowDemoWindow(&imguiDemoWindow);
+	if(showImguiWindows && imguiDemoWindow)
+		ImGui::ShowDemoWindow();
 
-	static_cast<NormalRenderPass*>(renderGraph.GetRenderJobPass("normalPass"))->ShowWindow(window.Graphics);
+	static_cast<NormalRenderPass*>(renderGraph.GetRenderJobPass("normalPass"))->ShowWindow(window.Graphics, showImguiWindows);
 
-	scene.DrawModelHierarchy();
+	scene.DrawModelHierarchy(showImguiWindows);
 
 	fpsCounter.Draw(deltaTime);
 
