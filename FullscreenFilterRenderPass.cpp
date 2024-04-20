@@ -3,7 +3,7 @@
 #include "Graphics.h"
 
 FullscreenFilterRenderPass::FullscreenFilterRenderPass(class GFX& gfx, const char* name)
-	: RenderJobPass(name)
+	: RenderBindablePass(name)
 {
 	DynamicVertex::VertexLayout vertexLayout;
 	{

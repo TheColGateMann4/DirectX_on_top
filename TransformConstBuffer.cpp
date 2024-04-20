@@ -3,9 +3,17 @@
 
 TransformConstBuffer::TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot)
 	:
-	m_parent(parent),
-	vcbuf(gfx, TCBLayout, slot, false)
-{}
+	m_parent(parent)
+{
+	Initialize(gfx, slot);
+}
+
+void TransformConstBuffer::Initialize(GFX& gfx, UINT32 slot)
+{
+	TCBLayout = { "MAMAMA" };
+
+	vcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, slot, false);
+}
 
 void TransformConstBuffer::Bind(GFX& gfx) noexcept
 {
@@ -18,8 +26,8 @@ void TransformConstBuffer::Bind(GFX& gfx) noexcept
 
 void TransformConstBuffer::UpdateAndBindConstBuffer(GFX& gfx, const DynamicConstantBuffer::BufferData& constBuffer) noexcept
 {
-	vcbuf.Update(gfx, constBuffer);
-	vcbuf.Bind(gfx);
+	vcbuf->Update(gfx, constBuffer);
+	vcbuf->Bind(gfx);
 }
 
 void TransformConstBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept

@@ -165,40 +165,40 @@ SimpleMesh Cube::GetInsideDrawnMesh(float scale, bool withTextureCoords)
 	const std::vector<DirectX::XMFLOAT3> vertexPositions = {
 
 		//front
-		{-1.0f, -1.0f, -1.0f},
-		{-1.0f, 1.0f, -1.0f},
-		{1.0f, -1.0f, -1.0f},
-		{1.0f, 1.0f, -1.0f},
+		{-scale, -scale, -scale},
+		{-scale, scale, -scale},
+		{scale, -scale, -scale},
+		{scale, scale, -scale},
 
 		//right
-		{1.0f, -1.0f, -1.0f},
-		{1.0f, 1.0f, -1.0f},
-		{1.0f, -1.0f, 1.0f},
-		{1.0f, 1.0f, 1.0f},
+		{scale, -scale, -scale},
+		{scale, scale, -scale},
+		{scale, -scale, scale},
+		{scale, scale, scale},
 
 		//left
-		{-1.0f, -1.0f, 1.0f},
-		{-1.0f, 1.0f, 1.0f},
-		{-1.0f, -1.0f, -1.0f},
-		{-1.0f, 1.0f, -1.0f},
+		{-scale, -scale, scale},
+		{-scale, scale, scale},
+		{-scale, -scale, -scale},
+		{-scale, scale, -scale},
 
 		//top
-		{-1.0f, 1.0f, -1.0f},
-		{-1.0f, 1.0f, 1.0f},
-		{1.0f, 1.0f, -1.0f},
-		{1.0f, 1.0f, 1.0f},
+		{-scale, scale, -scale},
+		{-scale, scale, scale},
+		{scale, scale, -scale},
+		{scale, scale, scale},
 
 		//bottom
-		{1.0f, -1.0f, -1.0f},
-		{1.0f, -1.0f, 1.0f},
-		{-1.0f, -1.0f, -1.0f},
-		{-1.0f, -1.0f, 1.0f},
+		{scale, -scale, -scale},
+		{scale, -scale, scale},
+		{-scale, -scale, -scale},
+		{-scale, -scale, scale},
 
 		//back
-		{1.0f, -1.0f, 1.0f},
-		{1.0f, 1.0f, 1.0f},
-		{-1.0f, -1.0f, 1.0f},
-		{-1.0f, 1.0f, 1.0f}
+		{scale, -scale, scale},
+		{scale, scale, scale},
+		{-scale, -scale, scale},
+		{-scale, scale, scale}
 	};
 
 	const std::vector<DirectX::XMFLOAT2> vertexTexturePositions = {
@@ -266,40 +266,40 @@ SimpleMesh Cube::GetUnwrappedMesh(float scale, bool getExtendedStuff)
 	const std::vector<DirectX::XMFLOAT3> vertexPositions = {
 
 		//front
-		{-1.0f, -1.0f, -1.0f},
-		{-1.0f, 1.0f, -1.0f},
-		{1.0f, -1.0f, -1.0f},
-		{1.0f, 1.0f, -1.0f},
+		{-scale, -scale, -scale},
+		{-scale, scale, -scale},
+		{scale, -scale, -scale},
+		{scale, scale, -scale},
 
 		//right
-		{1.0f, -1.0f, -1.0f},
-		{1.0f, 1.0f, -1.0f},
-		{1.0f, -1.0f, 1.0f},
-		{1.0f, 1.0f, 1.0f},
+		{scale, -scale, -scale},
+		{scale, scale, -scale},
+		{scale, -scale, scale},
+		{scale, scale, scale},
 
 		//left
-		{-1.0f, -1.0f, 1.0f},
-		{-1.0f, 1.0f, 1.0f},
-		{-1.0f, -1.0f, -1.0f},
-		{-1.0f, 1.0f, -1.0f},
+		{-scale, -scale, scale},
+		{-scale, scale, scale},
+		{-scale, -scale, -scale},
+		{-scale, scale, -scale},
 
 		//top
-		{-1.0f, 1.0f, -1.0f},
-		{-1.0f, 1.0f, 1.0f},
-		{1.0f, 1.0f, -1.0f},
-		{1.0f, 1.0f, 1.0f},
+		{-scale, scale, -scale},
+		{-scale, scale, scale},
+		{scale, scale, -scale},
+		{scale, scale, scale},
 
 		//bottom
-		{1.0f, -1.0f, -1.0f},
-		{1.0f, -1.0f, 1.0f},
-		{-1.0f, -1.0f, -1.0f},
-		{-1.0f, -1.0f, 1.0f},
+		{scale, -scale, -scale},
+		{scale, -scale, scale},
+		{-scale, -scale, -scale},
+		{-scale, -scale, scale},
 
 		//back
-		{1.0f, -1.0f, 1.0f},
-		{1.0f, 1.0f, 1.0f},
-		{-1.0f, -1.0f, 1.0f},
-		{-1.0f, 1.0f, 1.0f}
+		{scale, -scale, scale},
+		{scale, scale, scale},
+		{-scale, -scale, scale},
+		{-scale, scale, scale}
 	};
 
 	const std::vector<DirectX::XMFLOAT3> vertexNormals = {

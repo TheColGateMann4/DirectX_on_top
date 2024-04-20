@@ -5,6 +5,7 @@
 #include "CameraManager.h"
 #include "Camera.h"
 #include "NormalRenderPass.h"
+#include "Skybox.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width), m_height(height), m_name(name), window(width, height, name), scene(&window), renderGraph(window.Graphics, scene), fpsCounter(window.Graphics)
@@ -28,7 +29,10 @@ BOOL Application::Initiate()
 	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Ghosts\\GroundCape1.obj", 1.0f, DirectX::XMFLOAT3{ 7.0f, 2.0f, 0.0f }));
 	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", DirectX::XMFLOAT3{ -3.0f, 2.0f, -3.0f }));
 	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", DirectX::XMFLOAT3{ -5.0f, 4.0f, -3.0f }));
+	scene.AddSceneObject(std::make_unique<Skybox>(window.Graphics, 20.0f, "Images\\SpaceSkybox\\Space.png"));
 	scene.LinkModelsToPipeline(renderGraph);
+
+	timer.SetTime();
 
 	while (true)
 	{
@@ -37,10 +41,10 @@ BOOL Application::Initiate()
 		if (result != TRUE)
 			return result;
 
- 		this->DoFrame();
+ 		this->Update();
  	}
 }
-void Application::DoFrame()
+void Application::Update()
 {
 		// KeyPressedDown / KeyPressedUp
 		/*
@@ -117,34 +121,34 @@ void Application::DoFrame()
 		}
 		*/
 
-	FLOAT DeltaTime = timer.Mark();
+	float deltaTime = timer.GetDeltaTime(true);
 
 	DirectX::XMFLOAT3 movingDir = {};
 	if (window.Input.Key.GetKeyState(KEY_W))
-		movingDir.z += DeltaTime;
+		movingDir.z += deltaTime;
 	if (window.Input.Key.GetKeyState(KEY_S))
-		movingDir.z -= DeltaTime;
+		movingDir.z -= deltaTime;
 	if (window.Input.Key.GetKeyState(KEY_E))
-		movingDir.x += DeltaTime;
+		movingDir.x += deltaTime;
 	if (window.Input.Key.GetKeyState(KEY_A))
-		movingDir.x -= DeltaTime;
+		movingDir.x -= deltaTime;
 	if (window.Input.Key.GetKeyState(VK_SPACE))
-		movingDir.y += DeltaTime;
+		movingDir.y += deltaTime;
 	if (window.Input.Key.GetKeyState(VK_CONTROL))
-		movingDir.y -= DeltaTime;
+		movingDir.y -= deltaTime;
 
 	if (movingDir.x != 0 || movingDir.y != 0 || movingDir.z != 0)
 		scene.GetCameraManager()->GetActiveCamera()->Move(movingDir);
 
 	DirectX::XMINT2 lookOffset = window.Input.Mouse.GetRawInputPos();
 
-	if(cursorLocked && !cursorShowing)
+	if (cursorLocked && !cursorShowing)
 		if (lookOffset.x != 0 || lookOffset.y != 0)
 			scene.GetCameraManager()->GetActiveCamera()->Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f });
 
 	window.Graphics.BeginFrame();
 
-	scene.UpdateModels(timer.Get());
+	scene.UpdateModels(deltaTime);
 
 	scene.DrawModels(window.Graphics);
 
@@ -174,7 +178,7 @@ void Application::DoFrame()
 
 	scene.DrawModelHierarchy();
 
-	fpsCounter.Draw(DeltaTime);
+	fpsCounter.Draw(deltaTime);
 
 	window.Graphics.FinishFrame();
 

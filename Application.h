@@ -22,7 +22,7 @@ public:
 	Window window;
 
 private:
-	void DoFrame();
+	void Update();
 
 private:
 	UINT32 m_width;

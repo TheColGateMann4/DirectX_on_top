@@ -122,7 +122,7 @@ void Camera::MakePropeties(GFX& gfx)
 	ImGui::SliderFloat("moving speed", &m_movespeed, 1.0f, 100.0f, "%.1f");
 	ImGui::SliderFloat("sensivity", &m_sensivity, 0.001f, 0.1f, "%.3f");
 
-	checkChanged(ImGui::SliderAngle("fov", &m_Fov, 30.0f, 170.0f, "%.1f"));
+	checkChanged(ImGui::SliderAngle("fov", &m_Fov, 30.0f, 180.0f, "%.1f"));
 	checkChanged(ImGui::SliderFloat("nearZ", &m_NearZ, 0.1f, (m_FarZ < 10.0f) ? m_FarZ - 1.0f : 10.0f, "%.1f"));
 	checkChanged(ImGui::SliderFloat("farZ", &m_FarZ, m_NearZ + 1.0f, 1000.0f, "%.1f"));
 

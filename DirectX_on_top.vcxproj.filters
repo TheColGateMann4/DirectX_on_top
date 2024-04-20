@@ -342,6 +342,15 @@
     <ClInclude Include="FPSCounter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SkyboxRenderPass.h">
+      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxTransformBuffer.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -473,9 +482,6 @@
     <ClCompile Include="RenderTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TransformConstBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Vertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -564,6 +570,21 @@
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClCompile>
     <ClCompile Include="FPSCounter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxRenderPass.cpp">
+      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxTransformBuffer.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformConstBuffer.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformConstBufferWithPixelShader.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -669,6 +690,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="PS_Shadow.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Skybox.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Skybox.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

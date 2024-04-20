@@ -22,6 +22,8 @@ InputLayout::InputLayout(GFX& gfx, const DynamicVertex::VertexLayout& layout, Ve
 }
 
 InputLayout::InputLayout(GFX& gfx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, VertexShader* pVertexShader)
+	:
+	m_vertexShaderName(pVertexShader->GetLocalUID())
 {
 	HRESULT hr;
 	ID3DBlob* pVertexShaderByteCode = pVertexShader->GetByteCode();

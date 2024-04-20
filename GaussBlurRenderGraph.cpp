@@ -9,6 +9,7 @@
 #include "IgnoreZBufferRenderPass.h"
 #include "ShadowMappingRenderPass.h"
 #include "OutlineScalingRenderPass.h"
+#include "SkyboxRenderPass.h"
 
 GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 	: RenderGraph(gfx)
@@ -120,9 +121,16 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 			renderPass->LinkInput("renderTarget", "verticalGaussBlurPass.renderTarget");
 			AddPass(std::move(renderPass));
 		}
+
+		{
+			auto renderPass = std::make_unique<SkyboxRenderPass>(gfx, "skyboxPass");
+			renderPass->LinkInput("renderTarget", "ignoreZBufferPass.renderTarget");
+			renderPass->LinkInput("depthStencilView", "verticalGaussBlurPass.depthStencilView");
+			AddPass(std::move(renderPass));
+		}
 	}
 
-	SetTarget("backBuffer", "ignoreZBufferPass.renderTarget");
+	SetTarget("backBuffer", "skyboxPass.renderTarget");
 	Finish();
 }
 

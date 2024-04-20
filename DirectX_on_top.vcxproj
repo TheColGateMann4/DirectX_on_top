@@ -138,7 +138,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(MSBuildStartupDirectory)\DirectXTK\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);$(MSBuildStartupDirectory)\DirectXTex\DirectXTex\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);$(MSBuildStartupDirectory)\assimp\lib\$(LibrariesArchitecture)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTK.lib;DirectXTex.lib;assimp-vc143-mt.lib;Shlwapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -242,6 +242,9 @@
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Sheet.h" />
     <ClInclude Include="SimpleMesh.h" />
+    <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SkyboxRenderPass.h" />
+    <ClInclude Include="SkyboxTransformBuffer.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="StringConverting.h" />
     <ClInclude Include="Texture.h" />
@@ -321,11 +324,15 @@
     <ClCompile Include="ShadowSamplerStateManager.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sheet.cpp" />
+    <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SkyboxRenderPass.cpp" />
+    <ClCompile Include="SkyboxTransformBuffer.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Topology.cpp" />
     <ClCompile Include="TransformConstBuffer.cpp" />
+    <ClCompile Include="TransformConstBufferWithPixelShader.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
@@ -367,6 +374,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_GaussBlur.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -376,6 +384,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_NegativeColors.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -383,6 +392,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_Normal.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -392,6 +402,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="PS_Fullscreen_Outline.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -402,6 +413,17 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="PS_Skybox.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="PS_Phong_Texture_Normals_Specular_Cube.hlsl">
@@ -507,6 +529,15 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="VS_Skybox.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="VS_Outline.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

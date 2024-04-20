@@ -17,7 +17,7 @@ CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slo
 
 	TexMetadata texMetaData;
 	ScratchImage partialImage[6];
-	
+
 	{
 		size_t startPositionOfExtension = wImagePath.rfind('.');
 
@@ -29,7 +29,7 @@ CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slo
 
 		constexpr const WCHAR* imageNames[] = { L"_Front", L"_Back", L"_Up", L"_Down", L"_Left", L"_Right" };
 
-		for (size_t i = 0; i <= 5; i++)
+		for (size_t i = 0; i < 6; i++)
 		{
 			TexMetadata localTexMetaData;
 			std::wstring currentTextureName = baseImagePath + std::wstring(imageNames[i]) + extension;
@@ -75,8 +75,8 @@ CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slo
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	textureDesc.Width = texMetaData.width;
 	textureDesc.Height = texMetaData.height;
-	textureDesc.MipLevels = 0;
-	textureDesc.ArraySize = 1;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 6;
 	textureDesc.Format = texMetaData.format;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
@@ -85,25 +85,20 @@ CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slo
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
-	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&textureDesc, nullptr, &pCubeTexture));
-
-	for (size_t i = 0; i <= 5; i++)
+	D3D11_SUBRESOURCE_DATA textureData[6] = {};
+	for (size_t i = 0; i < 6; i++)
 	{
-		THROW_INFO_EXCEPTION(
-			GFX::GetDeviceContext(gfx)->UpdateSubresource(
-				pCubeTexture.Get(),
-				D3D11CalcSubresource(0, i, textureDesc.MipLevels),
-				nullptr,
-				partialImage[i].GetImages()[0].pixels,
-				partialImage[i].GetImages()[0].rowPitch,
-				0)
-		);
+		textureData[i].pSysMem = partialImage[i].GetImages()[0].pixels;
+		textureData[i].SysMemPitch = partialImage[i].GetImages()[0].rowPitch;
+		textureData[i].SysMemSlicePitch = 0;
 	}
+
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&textureDesc, textureData, &pCubeTexture));
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
 	shaderResourceViewDesc.Format = texMetaData.format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-	shaderResourceViewDesc.TextureCube.MipLevels = -1;
+	shaderResourceViewDesc.TextureCube.MipLevels = 1;
 	shaderResourceViewDesc.TextureCube.MostDetailedMip = 0;
 
 	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pCubeTexture.Get(), &shaderResourceViewDesc, &pShaderResourceView));

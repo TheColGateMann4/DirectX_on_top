@@ -39,7 +39,7 @@ public:
 		for (const auto& pass : m_passes)
 			if (strcmp(pass->m_name, passName) == 0)
 				if(RenderJobPass* resultPass = dynamic_cast<RenderJobPass*>(pass.get()))
-				return resultPass;
+					return resultPass;
 
 		std::string errorString = "RenderPass could not be found. RenderPass name was: \"";
 		errorString += passName;

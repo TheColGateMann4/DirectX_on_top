@@ -9,10 +9,11 @@ class DepthStencilState : public Bindable
 public:
 	enum StencilMode
 	{
-		Off, 
+		Off,
 		Write,
 		Mask,
-		IgnoreZBuffer
+		IgnoreZBuffer,
+		RawDepth
 	};
 
 public:
@@ -21,7 +22,7 @@ public:
 	{
 		D3D11_DEPTH_STENCIL_DESC depthStencilDesc = CD3D11_DEPTH_STENCIL_DESC{ CD3D11_DEFAULT{} };
 
-		if (mode == StencilMode::Write)
+		if (mode == Write)
 		{
 			depthStencilDesc.DepthEnable = FALSE;
 			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -31,7 +32,7 @@ public:
 			depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 			depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
 		}
-		else if (mode == StencilMode::Mask)
+		else if (mode == Mask)
 		{
 			depthStencilDesc.DepthEnable = FALSE;
 			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -41,9 +42,15 @@ public:
 			depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_NOT_EQUAL;
 			depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		}
-		else if (mode == StencilMode::IgnoreZBuffer)
+		else if (mode == IgnoreZBuffer)
 		{
 			depthStencilDesc.DepthEnable = FALSE;
+			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		}
+		else if (mode == RawDepth)
+		{
+			depthStencilDesc.DepthEnable = TRUE;
+			depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		}
 

@@ -117,7 +117,7 @@ namespace DynamicConstantBuffer
 		struct ArrayData : public AdditionalDataBase
 		{
 			DataType type = DataType::Empty;
-			size_t size;
+			size_t size = 0;
 		};
 		struct StructData : public AdditionalDataBase
 		{

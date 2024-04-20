@@ -2,7 +2,6 @@
 #include "Shape.h"
 #include "SimpleMesh.h"
 #include "SceneObject.h"
-#include <random>
 
 class Cube : public SceneObject, public Shape
 {
@@ -31,7 +30,7 @@ public:
 		return "Cube";
 	}
 
-private:
+public:
 	static SimpleMesh GetNormalMesh(float scale);
 	static SimpleMesh GetInsideDrawnMesh(float scale, bool withTextureCoords = false);
 	static SimpleMesh GetUnwrappedMesh(float scale, bool getExtendedStuff = false);

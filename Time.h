@@ -6,8 +6,8 @@ class Time
 {
 public:
 	Time();
-	FLOAT Get();
-	FLOAT Mark();
+	void SetTime();
+	FLOAT GetDeltaTime(bool reset = false);
 
 private:
 	std::chrono::steady_clock::time_point m_lastTime;

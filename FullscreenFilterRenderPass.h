@@ -1,7 +1,7 @@
 #pragma once
-#include "RenderJobPass.h"
+#include "RenderBindablePass.h"
 
-class FullscreenFilterRenderPass : public RenderJobPass
+class FullscreenFilterRenderPass : public RenderBindablePass
 {
 public:
 	FullscreenFilterRenderPass(class GFX& gfx, const char* name);

@@ -10,17 +10,19 @@ public:
 	TransformConstBuffer(class GFX& gfx, const Shape& parent, UINT32 slot = 0);
 
 public:
-	void Bind(class GFX& gfx) noexcept override;
+	virtual void Initialize(GFX& gfx, UINT32 slot);
+
+	virtual void Bind(class GFX& gfx) noexcept override;
 
 protected:
 	void UpdateAndBindConstBuffer(class GFX& gfx, const DynamicConstantBuffer::BufferData& constBuffer) noexcept;
 
-	void GetBuffer(class GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept;
+	virtual void GetBuffer(class GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept;
 
 protected:
 	const Shape& m_parent;
 
-	DynamicConstantBuffer::BufferLayout TCBLayout{"MAMAMA"};
+	DynamicConstantBuffer::BufferLayout TCBLayout;
 
-	NonCachedBuffer vcbuf;
+	std::shared_ptr<NonCachedBuffer> vcbuf;
 };

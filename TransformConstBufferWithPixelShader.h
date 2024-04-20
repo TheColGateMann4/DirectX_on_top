@@ -1,39 +1,18 @@
 #pragma once
-#include "Shape.h"
 #include "TransformConstBuffer.h"
 #include "ConstantBuffers.h"
-#include "DynamicConstantBuffer.h"
 
 class TransformConstBufferWithPixelShader : public TransformConstBuffer
 {
 public:
-	TransformConstBufferWithPixelShader(GFX& gfx, const Shape& parent, UINT32 vertexBufferSlot, UINT32 pixelBufferSlot)
-		:
-		TransformConstBuffer(gfx, parent, vertexBufferSlot),
-		pcbuf(gfx, TCBLayout, pixelBufferSlot, true)
-	{}
+	TransformConstBufferWithPixelShader(GFX& gfx, const class Shape& parent, UINT32 vertexBufferSlot, UINT32 pixelBufferSlot);
 
 public:
-	void Bind(GFX& gfx) noexcept override
-	{
-		DynamicConstantBuffer::BufferData constBuffer(TCBLayout);
-
-		GetBuffer(gfx, constBuffer);
-
-		TransformConstBuffer::UpdateAndBindConstBuffer(gfx, constBuffer);
-		UpdateAndBindConstBuffer(gfx, constBuffer);
-	}
+	void Bind(GFX& gfx) noexcept override;
 
 private:
-	void UpdateAndBindConstBuffer(GFX& gfx, const DynamicConstantBuffer::BufferData& constBuffer) noexcept
-	{
-		pcbuf.Update(gfx, constBuffer);
-		pcbuf.Bind(gfx);
-	}
+	void UpdateAndBindConstBuffer(GFX& gfx, const class DynamicConstantBuffer::BufferData& constBuffer) noexcept;
 protected:
-	DynamicConstantBuffer::BufferLayout TCBLayout{ "MAMAMA" };
-
-	NonCachedBuffer pcbuf;
-
+	std::shared_ptr<NonCachedBuffer> pcbuf;
 };
 
