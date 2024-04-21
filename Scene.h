@@ -2,6 +2,7 @@
 #include "Includes.h"
 #include "CameraManager.h"
 
+class GFX;
 class Window;
 class SceneObject;
 class PointLight;
@@ -15,9 +16,9 @@ public:
 	void LinkModelsToPipeline(class RenderGraph& renderGraph);
 
 public:
-	void UpdateModels(float deltaTime);
+	void UpdateModels(GFX& gfx, float deltaTime);
 
-	void DrawModels(class GFX& gfx);
+	void DrawModels(GFX& gfx);
 
 	void DrawModelHierarchy(bool show);
 

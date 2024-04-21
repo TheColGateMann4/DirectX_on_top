@@ -17,7 +17,7 @@ void FPSCounter::Draw(const float deltaTime)
 {
 	timeCounter += deltaTime;
 
-	if (timeCounter >= 1.0f)
+	if (timeCounter >= 0.2f)
 	{
 		timeCounter = 0.0f;
 

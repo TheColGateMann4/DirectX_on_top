@@ -63,13 +63,15 @@ void Camera::Move(const DirectX::XMFLOAT3& moveoffset)
 	m_position.z += movedOffsetRelativeToRotation.z;
 }
 
-void Camera::Look(const DirectX::XMFLOAT3 lookoffset)
+void Camera::Look(const DirectX::XMFLOAT3 lookoffset, float multiplyBySensivity)
 {
 	float halfRotation = 0.999f * (_Pi / 2);
 
-	m_rotation.x = WrapAngle(m_rotation.x + lookoffset.x * m_sensivity, _Pi);							//pitch
-	m_rotation.y = std::clamp(m_rotation.y + lookoffset.y * m_sensivity, -halfRotation, halfRotation);	//yaw
-	m_rotation.z = WrapAngle(m_rotation.z + lookoffset.z * m_sensivity, _Pi);							//roll
+	float sensivityMultipler = (multiplyBySensivity) ? m_sensivity : 1.0f;
+
+	m_rotation.x = WrapAngle(m_rotation.x + lookoffset.x * sensivityMultipler, _Pi);							//pitch
+	m_rotation.y = std::clamp(m_rotation.y + lookoffset.y * sensivityMultipler, -halfRotation, halfRotation);	//yaw
+	m_rotation.z = WrapAngle(m_rotation.z + lookoffset.z * sensivityMultipler, _Pi);							//roll
 }
 
 void Camera::Reset(GFX& gfx)
@@ -126,6 +128,9 @@ void Camera::MakePropeties(GFX& gfx)
 	checkChanged(ImGui::SliderFloat("nearZ", &m_NearZ, 0.1f, (m_FarZ < 10.0f) ? m_FarZ - 1.0f : 10.0f, "%.1f"));
 	checkChanged(ImGui::SliderFloat("farZ", &m_FarZ, m_NearZ + 1.0f, 1000.0f, "%.1f"));
 
+	ImGui::Checkbox("Indicator", &drawIndicator);
+	ImGui::Checkbox("View Indicator", &drawFrustum);
+
 	if (changed)
 		UpdateProjectionMatrix(gfx);
 
@@ -143,10 +148,12 @@ void Camera::RenderThisObjectOnScene() const noexcept(!IS_DEBUG)
 {
 	if (!m_active) 
 	{
-		m_indicator.Render();
+		if(drawIndicator)
+			m_indicator.Render();
 
-		if (m_pressed)
-			m_viewIndicator.Render();	
+		if(drawFrustum)
+			if (m_pressed)
+				m_viewIndicator.Render();	
 	}
 }
 

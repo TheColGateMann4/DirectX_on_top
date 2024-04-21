@@ -20,7 +20,7 @@ public:
 	void LinkChildrenToPipeline(RenderGraph& renderGraph);
 
 public:
-	virtual void Update(float deltatime);
+	virtual void Update(GFX& gfx, float deltatime);
 
 	virtual void AddChild(std::unique_ptr<SceneObject> child);
 
@@ -37,6 +37,12 @@ public:
 	virtual void MakePropeties(GFX& gfx);
 
 	virtual void MakeAdditionalPropeties(GFX& gfx);
+
+	void SetVisibilityInHierarchy(bool visibility);
+
+	bool GetVisibilityInHierarchy() const;
+
+	bool HaveVisibleChildren() const;
 
 	void GenerateTree(SceneObject*& pressedNode);
 
@@ -86,6 +92,8 @@ public:
 	size_t m_sceneIndex = 0;
 
 protected:
+	bool m_visibleInHierarchy = true;
+
 	Shape* m_shape = nullptr;
 
 	SceneObject* m_pressedNode = nullptr;

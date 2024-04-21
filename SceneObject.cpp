@@ -16,7 +16,7 @@ void SceneObject::LinkChildrenToPipeline(RenderGraph& renderGraph)
 	}
 }
 
-void SceneObject::Update(float deltatime)
+void SceneObject::Update(GFX& gfx, float deltatime)
 {
 
 }
@@ -54,9 +54,14 @@ void SceneObject::MakeHierarchy(GFX& gfx)
 
 void SceneObject::GenerateTree(SceneObject*& pressedNode)
 {
+	if (!m_visibleInHierarchy)
+		return;
+
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
 
-	if (m_children.empty())
+	bool haveVisibleChildren = HaveVisibleChildren();
+
+	if (!haveVisibleChildren)
 		flags |= ImGuiTreeNodeFlags_Leaf;
 	if (m_pressed)
 		flags |= ImGuiTreeNodeFlags_Selected;
@@ -80,8 +85,9 @@ void SceneObject::GenerateTree(SceneObject*& pressedNode)
 
 	if (nodeExpanded)
 	{
-		for (const auto& child : m_children)
-			child->GenerateTree(pressedNode);
+		if(haveVisibleChildren)
+			for (const auto& child : m_children)
+				child->GenerateTree(pressedNode);
 
 		ImGui::TreePop();
 	}
@@ -154,6 +160,28 @@ void SceneObject::MakePropeties(GFX& gfx)
 void SceneObject::MakeAdditionalPropeties(GFX& gfx)
 {
 
+}
+
+void SceneObject::SetVisibilityInHierarchy(bool visibility)
+{
+	m_visibleInHierarchy = visibility;
+}
+
+bool SceneObject::GetVisibilityInHierarchy() const
+{
+	return m_visibleInHierarchy;
+}
+
+bool SceneObject::HaveVisibleChildren() const
+{
+	if (m_children.empty())
+		return false;
+
+	for (const auto& child : m_children)
+		if (child->GetVisibilityInHierarchy())
+			return true;
+
+	return false;
 }
 
 void SceneObject::ResetLocalTransform() noexcept

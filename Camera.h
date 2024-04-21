@@ -22,7 +22,7 @@ public:
 
 public:
 	void Move(const DirectX::XMFLOAT3& moveoffset);
-	void Look(const DirectX::XMFLOAT3 lookoffset);
+	void Look(const DirectX::XMFLOAT3 lookoffset, float multiplyBySensivity = false);
 
 public:
 	void Reset(GFX& gfx);
@@ -62,6 +62,9 @@ private:
 	float m_AspectRatio;
 	float m_NearZ = 0.5f;
 	float m_FarZ = 400.0f;
+
+	bool drawFrustum = true;
+	bool drawIndicator = true;
 
 	bool m_active;
 	size_t m_cameraIndex;

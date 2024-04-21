@@ -1,5 +1,5 @@
 #include "PointLight.h"
-#include "Camera.h"
+#include "ShadowCamera.h"
 #include "imgui/imgui.h"
 
 PointLight::PointLight(GFX& gfx, float radius, DirectX::XMFLOAT3 startingPosition)
@@ -26,7 +26,7 @@ PointLight::PointLight(GFX& gfx, float radius, DirectX::XMFLOAT3 startingPositio
 
 	Reset(); // lazy setting values on startup
 
-	auto pCameraChild = std::make_unique<Camera>(gfx);
+	auto pCameraChild = std::make_unique<ShadowCamera>(gfx);
 	m_cameraChild = pCameraChild.get();
 
 	AddChild(std::move(pCameraChild));
@@ -34,7 +34,7 @@ PointLight::PointLight(GFX& gfx, float radius, DirectX::XMFLOAT3 startingPositio
 
 
 
-Camera* PointLight::GetShadowCamera()
+ShadowCamera* PointLight::GetShadowCamera()
 {
 	return m_cameraChild;
 }
@@ -44,14 +44,14 @@ void PointLight::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 	m_model.LinkToPipeline(renderGraph);
 }
 
-void PointLight::Update(float deltaTime)
+void PointLight::Update(GFX& gfx, float deltaTime)
 {
 	DynamicConstantBuffer::BufferData& bufferData = constBufferData;
 
 	DirectX::XMFLOAT3* lightColor = bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor");
 
 
-	if (enableChroma && deltaTime - lastDeltaTime >= chromaDeltaTime)
+	if (enableChroma && accumulatedDeltaTime - deltaTime >= chromaDeltaTime)
 	{
 		int incrementColor = colorToDecrement == 2 ? 0 : colorToDecrement + 1;
 		float* pIncrementColor = &((float*)lightColor)[incrementColor];
@@ -84,17 +84,35 @@ void PointLight::Update(float deltaTime)
 				*pDecrementColor -= 0.003f;
 
 		justSwitched = false;
-		lastDeltaTime = deltaTime;
+		accumulatedDeltaTime = 0.0f;
+	}
+	else
+	{
+		accumulatedDeltaTime += deltaTime;
+	}
+
+	if (enableChroma)
+	{
+		const DirectX::XMFLOAT3& modelColor = m_model.GetColor();
+
+		if (lightColor->x != modelColor.x ||
+			lightColor->y != modelColor.y ||
+			lightColor->z != modelColor.z)
+		{
+			m_model.UpdateLightColorBuffer(gfx, *lightColor);
+		}
 	}
 }
 
 void PointLight::MakeAdditionalPropeties(GFX& gfx)
 {
+	if (!GetPressedState())
+		return;
+
 	DynamicConstantBuffer::BufferData& bufferData = constBufferData;
 
 	DirectX::XMFLOAT3* lightColor = bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("lightColor");
 
-	if (GetPressedState())
 	{
 		ImGui::Text("Color");
 		ImGui::ColorEdit3("Light Color", reinterpret_cast<float*>(lightColor), ImGuiColorEditFlags_NoAlpha);
@@ -121,7 +139,7 @@ void PointLight::MakeAdditionalPropeties(GFX& gfx)
 		}
 	}
 
-	if(GetPressedState() || enableChroma)
+	if(!enableChroma)
 	{
 		const DirectX::XMFLOAT3& modelColor = m_model.GetColor();
 

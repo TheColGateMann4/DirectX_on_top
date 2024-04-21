@@ -5,7 +5,7 @@
 #include "DynamicConstantBuffer.h"
 #include "SceneObject.h"
 
-class Camera;
+class ShadowCamera;
 
 class PointLight : public SceneObject
 {
@@ -13,11 +13,11 @@ public:
 	PointLight(GFX& gfx, float radius = 0.5f, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
 
 public:
-	Camera* GetShadowCamera();
+	ShadowCamera* GetShadowCamera();
 	
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
 
-	virtual void Update(float deltaTime) override;
+	virtual void Update(GFX& gfx, float deltaTime) override;
 
 	virtual void MakeAdditionalPropeties(GFX& gfx) override;
 
@@ -37,12 +37,12 @@ private:
 	mutable PointLightModel m_model;
 	mutable NonCachedBuffer m_pcbuffer;
 	mutable DynamicConstantBuffer::BufferData constBufferData;
-	Camera* m_cameraChild;
+	ShadowCamera* m_cameraChild;
 
 private:
 	bool enableChroma = false;
 	float chromaDeltaTime = 0.02f;
-	float lastDeltaTime = 0.0f;
+	float accumulatedDeltaTime = 0.0f;
 	int colorToDecrement = 0;
 	bool incrementingNow = true;
 	bool justSwitched = false;

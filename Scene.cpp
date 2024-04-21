@@ -20,10 +20,13 @@ void Scene::LinkModelsToPipeline(class RenderGraph& renderGraph)
 	}
 }
 
-void Scene::UpdateModels(float deltaTime)
+void Scene::UpdateModels(GFX& gfx, float deltaTime)
 {
+	for (auto& light : m_lights)
+		light->Update(gfx, deltaTime);
+
 	for (auto& model : m_models)
-		model->Update(deltaTime);
+		model->Update(gfx, deltaTime);
 }
 
 void Scene::DrawModels(GFX& gfx)

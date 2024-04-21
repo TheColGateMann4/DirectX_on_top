@@ -144,11 +144,11 @@ void Application::Update()
 
 	if (cursorLocked && !cursorShowing)
 		if (lookOffset.x != 0 || lookOffset.y != 0)
-			scene.GetCameraManager()->GetActiveCamera()->Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f });
+			scene.GetCameraManager()->GetActiveCamera()->Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f }, true);
 
 	window.Graphics.BeginFrame();
 
-	scene.UpdateModels(deltaTime);
+	scene.UpdateModels(window.Graphics, deltaTime);
 
 	scene.DrawModels(window.Graphics);
 
