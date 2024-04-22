@@ -7,23 +7,13 @@ ShadowCamera::ShadowCamera(GFX& gfx, float aspectRatio)
 {
 	m_depthTextureCube = std::make_shared<DepthTextureCube>(gfx, 3);
 
-	//SetVisibilityInHierarchy(false);
+	SetVisibilityInHierarchy(false);
 }
 
 
 void ShadowCamera::RenderThisObjectOnScene() const noexcept(!IS_DEBUG)
 {
 	// we are not drawing any indicators since this object is meant to be invisible
-
-	if (!m_active)
-	{
-		if (drawIndicator)
-			m_indicator.Render();
-
-		if (drawFrustum)
-			if (m_pressed)
-				m_viewIndicator.Render();
-	}
 }
 
 void ShadowCamera::SetCurrentCubeDrawingIndex(GFX& gfx, CubeTextureDrawingOrder index, RenderTarget* renderTarget)

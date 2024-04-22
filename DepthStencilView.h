@@ -61,16 +61,6 @@ public:
 	DepthStencilViewTextureCube(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture, size_t index);
 
 public:
-	const DepthStencilViewTextureCube& operator=(DepthStencilViewTextureCube toAssign)
-	{
-		if (pDepthStencilView != NULL)
-			pDepthStencilView->Release();
-
-		pDepthStencilView = toAssign.pDepthStencilView;
-
-		return *this;
-	}
-
 	virtual void Bind(GFX& gfx) noexcept override;
 };
 

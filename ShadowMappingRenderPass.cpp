@@ -12,9 +12,9 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 	:
 	RenderJobPass(name)
 {
-	//m_bindsGraphicBuffersByItself = true;
+	m_bindsGraphicBuffersByItself = true;
 	m_renderTarget = std::make_shared<RenderTarget>(gfx, gfx.GetWidth(), gfx.GetWidth());
-	m_depthStencilView = std::make_shared<DepthStencilView>(gfx, DepthStencilView::DepthOnly, true);
+	//m_depthStencilView = std::make_shared<DepthStencilView>(gfx, DepthStencilView::DepthOnly, true);
 
 	{
 		DynamicConstantBuffer::BufferLayout layout;
@@ -58,7 +58,6 @@ void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 void ShadowMappingRenderPass::RenderModels(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	//we are not clearning m_depthStencilView since we don't use it. We are using depthStencils from shadowCamera
-	m_depthStencilView->Clear(gfx);
 	m_renderTarget->Clear(gfx);
 
 	RenderJobPass::Render(gfx);
@@ -67,39 +66,39 @@ void ShadowMappingRenderPass::RenderModels(GFX& gfx) const noexcept(!IS_DEBUG)
 void ShadowMappingRenderPass::RenderFromAllAngles(GFX& gfx, ShadowCamera* shadowCamera) const noexcept(!IS_DEBUG)
 {
 	//front
-	//shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Front, m_renderTarget.get());
+	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Front, m_renderTarget.get());
 	RenderModels(gfx);
 
 // 	//Back
  	shadowCamera->Look({ -_Pi, 0.0f, 0.0f });
-// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Back, m_renderTarget.get());
+ 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Back, m_renderTarget.get());
  	RenderModels(gfx);
 // 
 // 	//Up
 //	shadowCamera->Look({ -_Pi, _Pi / 2, 0.0f });
 	shadowCamera->Look({ 0.0f, _Pi / 2, 0.0f });
-// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Up, m_renderTarget.get());
+ 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Up, m_renderTarget.get());
 	RenderModels(gfx);
 // 
 // 	//Down
 // 	shadowCamera->Look({ 0.0f, -_Pi, 0.0f });
  	shadowCamera->Look({ 0.0f, -_Pi / 2, 0.0f });
-// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Down, m_renderTarget.get());
+ 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Down, m_renderTarget.get());
  	RenderModels(gfx);
 // 
 // 	//Left
 //	shadowCamera->Look({ -_Pi / 2, _Pi / 2, 0.0f });
 	shadowCamera->Look({ -_Pi / 2, 0.0f, 0.0f });
-// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Left, m_renderTarget.get());
+ 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Left, m_renderTarget.get());
  	RenderModels(gfx);
 // 
 // 	//Right
 // 	shadowCamera->Look({ _Pi, 0.0f, 0.0f });
  	shadowCamera->Look({ _Pi / 2, 0.0f, 0.0f });
-// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Right, m_renderTarget.get());
+ 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Right, m_renderTarget.get());
  	RenderModels(gfx);
 // 
 // 	//leaving how it was
-// 	shadowCamera->Look({ -_Pi / 2, 0.0f, 0.0f });
+//	shadowCamera->Look({ -_Pi / 2, 0.0f, 0.0f });
  	shadowCamera->Look({ 0.0f, 0.0f, 0.0f });
 }

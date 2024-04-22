@@ -25,32 +25,6 @@ float GetShadowLevel(TextureCube t_depthMap, SamplerComparisonState s_depthCompa
     if (depthMapCoords.z < 0.0f || depthMapCoords.z > 1.0f)
         return 0.0f;
     
-    if (circleFilter)
-    {
-        float2 textureCoords = depthMapCoords.xy;
-        
-        {
-            float textureWidth, textureHeight;
-            t_depthMap.GetDimensions(textureWidth, textureHeight);
-        
-            float ratio = textureWidth / textureHeight;
-        
-            if (ratio > 1.0f)
-            {
-                textureCoords.x = abs(textureCoords.x * ratio - ratio * 0.5f) + 0.5f;
-            }
-            else if (ratio < 1.0f)
-            {
-                textureCoords.y = abs(textureCoords.y * ratio - ratio * 0.5f) + 0.5f;
-            }
-        }
-        
-        textureCoords.xy = abs(textureCoords.xy - 0.5f);
-        
-        if (sqrt(pow(textureCoords.x, 2) + pow(textureCoords.y, 2)) > radius / 2)
-            return 0.0f;
-    }
-    
     float result = 0.0f;
     
     float pixelWidth = 0.0f, pixelHeight = 0.0f;
@@ -91,7 +65,5 @@ float GetShadowLevel(TextureCube t_depthMap, SamplerComparisonState s_depthCompa
 float4 CalculateDepthTextureCoords(float3 position, matrix model, matrix shadowViewProjection)
 {
     float4 modelPosition = mul(float4(position, 1.0f), model);
-    float4 positionRelativeToShadowCamera = mul(modelPosition, shadowViewProjection);
-
-    return (positionRelativeToShadowCamera * float4(0.5f, -0.5f, 1.0f, 1.0f)) + (float4(0.5f, 0.5f, 0.0f, 0.0f) * positionRelativeToShadowCamera.w);
+    return mul(modelPosition, shadowViewProjection);
 }

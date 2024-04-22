@@ -17,7 +17,7 @@ public:
 	virtual void Bind(GFX& gfx) noexcept override;
 
 private:
-	DepthStencilViewTextureCube m_depthStencilView[6] = {};
+	std::shared_ptr<DepthStencilViewTextureCube> m_depthStencilView[6];
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShaderResourceView;
 	UINT32 m_slot;
 };
