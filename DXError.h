@@ -12,7 +12,7 @@
 //--------------------------------------------------------------------------------------
 
 #pragma once
-#include "ErrorHandling.h"
+#include <windows.h>
 #include <sal.h>
 
 #ifdef __cplusplus

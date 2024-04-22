@@ -1,4 +1,5 @@
 #include "ErrorHandling.h"
+#include "ErrorMacros.h"
 #include "DXError.h"
 #include <sstream>
 

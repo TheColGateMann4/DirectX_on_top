@@ -1,7 +1,6 @@
 #pragma once
 #include "Includes.h"
 #include <exception>
-#include "ErrorMacros.h"
 
 #ifdef _DEBUG
 #include "wrl_no_warnings.h"

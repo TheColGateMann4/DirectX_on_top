@@ -59,11 +59,11 @@
 //--------------------------------------------------------------------------------------
 #define  CHK_ERR_W(hrchk, strOut) \
         case hrchk: \
-             return L##strOut;
+             return L## #strOut;
 
 #define  CHK_ERRA_W(hrchk) \
         case hrchk: \
-             return L#hrchk;
+             return L## #hrchk;
 
 #define  CHK_ERR_A(hrchk, strOut) \
         case hrchk: \
@@ -78,11 +78,11 @@
 #define  CHK_ERR_WIN32A_W(hrchk) \
         case HRESULT_FROM_WIN32b(hrchk): \
         case hrchk: \
-             return L#hrchk;
+             return L## #hrchk;
 
 #define  CHK_ERR_WIN32_ONLY_W(hrchk, strOut) \
         case HRESULT_FROM_WIN32b(hrchk): \
-             return L##strOut;
+             return L## #strOut;
 
 #define  CHK_ERR_WIN32A_A(hrchk) \
         case HRESULT_FROM_WIN32b(hrchk): \
@@ -100,7 +100,7 @@ const WCHAR* WINAPI DXGetErrorStringW(_In_ HRESULT hr)
 #define CHK_ERR CHK_ERR_W
 #define CHK_ERR_WIN32A CHK_ERR_WIN32A_W
 #define CHK_ERR_WIN32_ONLY CHK_ERR_WIN32_ONLY_W
-#define DX_STR_WRAP(...) L##__VA_ARGS__
+#define DX_STR_WRAP(...) L## #__VA_ARGS__
 #include "DXGetErrorString.inl"
 #undef DX_STR_WRAP
 #undef CHK_ERR_WIN32A
@@ -137,11 +137,11 @@ const CHAR* WINAPI DXGetErrorStringA(_In_ HRESULT hr)
 
 #define  CHK_ERRA_W(hrchk) \
         case hrchk: \
-             wcscpy_s( desc, count, L#hrchk ); \
+             wcscpy_s( desc, count, L## #hrchk ); \
 			 break;
 #define  CHK_ERR_W(hrchk, strOut) \
         case hrchk: \
-             wcscpy_s( desc, count, L##strOut ); \
+             wcscpy_s( desc, count, L## #strOut ); \
 			 break;
 #define  CHK_ERRA_A(hrchk) \
         case hrchk: \
@@ -180,7 +180,7 @@ void WINAPI DXGetErrorDescriptionA(_In_ HRESULT hr, _Out_cap_(count) CHAR* desc,
 HRESULT WINAPI DXTraceW(_In_z_ const WCHAR* strFile, _In_ DWORD dwLine, _In_ HRESULT hr,
 	_In_opt_ const WCHAR* strMsg, _In_ bool bPopMsgBox)
 {
-#define DX_STR_WRAP(...) L##__VA_ARGS__
+#define DX_STR_WRAP(...) L## #__VA_ARGS__
 #define DX_CHAR WCHAR
 #define DX_SPRINTF_S swprintf_s
 #define DX_STRCPY_S wcscpy_s
