@@ -5,14 +5,16 @@
 #include "Scene.h"
 #include "Pointlight.h"
 #include "Camera.h"
+#include "ShadowCamera.h"
+#include "CubeTextureDrawingOrder.h"
 
-ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name, class Scene& scene)
+ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 	:
-	RenderJobPass(name),
-	m_scene(&scene)
+	RenderJobPass(name)
 {
-	m_depthStencilView = std::make_shared<DepthStencilViewWithTexture>(gfx, 3,DepthStencilView::Mode::DepthOnly);
-	m_renderTarget = std::make_shared<RenderTarget>(gfx, gfx.GetWidth(), gfx.GetHeight());
+	//m_bindsGraphicBuffersByItself = true;
+	m_renderTarget = std::make_shared<RenderTarget>(gfx, gfx.GetWidth(), gfx.GetWidth());
+	m_depthStencilView = std::make_shared<DepthStencilView>(gfx, DepthStencilView::DepthOnly, true);
 
 	{
 		DynamicConstantBuffer::BufferLayout layout;
@@ -24,7 +26,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name, cla
 		shadowCameraTransformBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, 1, false);
 	}
 
-	RegisterOutput(RenderPassBufferOutput<DepthStencilView>::GetUnique("shadowMap", &m_depthStencilView));
+	//RegisterOutput(RenderPassBindableOutput<DepthTextureCube>::GetUnique("shadowMap", &depthTextureCube));
 	RegisterOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("shadowCameraTransformBuffer", &shadowCameraTransformBuffer));
 
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::Off));
@@ -33,7 +35,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name, cla
 void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	Camera* previousCamera = m_scene->GetCameraManager()->GetActiveCamera();
-	Camera* shadowCamera = m_scene->GetLights().front()->GetShadowCamera();
+	ShadowCamera* shadowCamera = m_scene->GetLights().front()->GetShadowCamera();
 
 	{
 		DynamicConstantBuffer::BufferData bufferData = shadowCameraTransformBuffer->GetBufferData();
@@ -48,12 +50,56 @@ void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 
 	m_scene->GetCameraManager()->SetActiveCameraByPtr(shadowCamera);
 
-	{
-		m_depthStencilView->Clear(gfx);
-		m_renderTarget->Clear(gfx);
-
-		RenderJobPass::Render(gfx);
-	}
+	RenderFromAllAngles(gfx, shadowCamera);
 
 	m_scene->GetCameraManager()->SetActiveCameraByPtr(previousCamera);
+}
+
+void ShadowMappingRenderPass::RenderModels(GFX& gfx) const noexcept(!IS_DEBUG)
+{
+	//we are not clearning m_depthStencilView since we don't use it. We are using depthStencils from shadowCamera
+	m_depthStencilView->Clear(gfx);
+	m_renderTarget->Clear(gfx);
+
+	RenderJobPass::Render(gfx);
+}
+
+void ShadowMappingRenderPass::RenderFromAllAngles(GFX& gfx, ShadowCamera* shadowCamera) const noexcept(!IS_DEBUG)
+{
+	//front
+	//shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Front, m_renderTarget.get());
+	RenderModels(gfx);
+
+// 	//Back
+ 	shadowCamera->Look({ -_Pi, 0.0f, 0.0f });
+// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Back, m_renderTarget.get());
+ 	RenderModels(gfx);
+// 
+// 	//Up
+//	shadowCamera->Look({ -_Pi, _Pi / 2, 0.0f });
+	shadowCamera->Look({ 0.0f, _Pi / 2, 0.0f });
+// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Up, m_renderTarget.get());
+	RenderModels(gfx);
+// 
+// 	//Down
+// 	shadowCamera->Look({ 0.0f, -_Pi, 0.0f });
+ 	shadowCamera->Look({ 0.0f, -_Pi / 2, 0.0f });
+// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Down, m_renderTarget.get());
+ 	RenderModels(gfx);
+// 
+// 	//Left
+//	shadowCamera->Look({ -_Pi / 2, _Pi / 2, 0.0f });
+	shadowCamera->Look({ -_Pi / 2, 0.0f, 0.0f });
+// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Left, m_renderTarget.get());
+ 	RenderModels(gfx);
+// 
+// 	//Right
+// 	shadowCamera->Look({ _Pi, 0.0f, 0.0f });
+ 	shadowCamera->Look({ _Pi / 2, 0.0f, 0.0f });
+// 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Right, m_renderTarget.get());
+ 	RenderModels(gfx);
+// 
+// 	//leaving how it was
+// 	shadowCamera->Look({ -_Pi / 2, 0.0f, 0.0f });
+ 	shadowCamera->Look({ 0.0f, 0.0f, 0.0f });
 }

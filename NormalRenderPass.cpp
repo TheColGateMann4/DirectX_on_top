@@ -4,6 +4,12 @@
 #include "RenderTarget.h"
 #include "BindableClassesMacro.h"
 #include "imgui/imgui.h"
+#include "DepthTextureCube.h"
+
+#include "Scene.h";
+#include "PointLight.h"
+#include "ShadowCamera.h"
+#include "DepthTextureCube.h"
 
 NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 	: 
@@ -12,7 +18,6 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 {
 	RegisterInput(std::make_unique<RenderPassBufferInput<RenderTarget>>("renderTarget", &m_renderTarget));
 	RegisterInput(std::make_unique<RenderPassBufferInput<DepthStencilView>>("depthStencilView", &m_depthStencilView));
-	AddBindableInput<DepthStencilViewWithTexture>("shadowMap");
 	AddBindableInput<CachedBuffer>("shadowCameraTransformBuffer");
 
 	RegisterOutput(std::make_unique<RenderPassBufferOutput<RenderTarget>>("renderTarget", &m_renderTarget));

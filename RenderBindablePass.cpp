@@ -27,7 +27,8 @@ void RenderBindablePass::AddBindable(std::shared_ptr<Bindable> bindable) noexcep
 
 void RenderBindablePass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
-	Bind(gfx);
+	if(!m_bindsGraphicBuffersByItself)
+		Bind(gfx);
 
 	for (auto& bindable : m_bindables)
 		bindable->Bind(gfx);

@@ -35,6 +35,7 @@ private:
 	std::vector<std::shared_ptr<Bindable>> m_bindables;
 
 protected:
+	bool m_bindsGraphicBuffersByItself = false;
 	std::shared_ptr<RenderTarget> m_renderTarget;
 	std::shared_ptr<DepthStencilView> m_depthStencilView;
 };

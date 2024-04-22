@@ -1,19 +1,24 @@
 #include "ShaderFunctions.hlsli"
 #include "FloatHLSLMacros.hlsli"
 
-float GetShadowLevelAtOffsetByHardware(Texture2D t_depthMap, SamplerComparisonState s_depthComparisonSampler, float2 depthMapCoords : DEPTHTEXCOORD, float depth, float bias, int2 offset)
+float GetShadowLevelAtOffsetByHardware(TextureCube t_depthMap, SamplerComparisonState s_depthComparisonSampler, float3 depthMapCoords : DEPTHTEXCOORD, float depth, float bias)
 {
-    return t_depthMap.SampleCmpLevelZero(s_depthComparisonSampler, depthMapCoords, depth - bias, offset);
+    return t_depthMap.SampleCmpLevelZero(s_depthComparisonSampler, depthMapCoords, depth - bias);
 }
 
-float GetShadowLevelAtOffset(Texture2D t_depthMap, SamplerState s_depthSampler, float2 depthMapCoords : DEPTHTEXCOORD, float depth, float bias, int2 offset)
+float GetShadowLevelAtOffset(TextureCube t_depthMap, SamplerState s_depthSampler, float3 depthMapCoords : DEPTHTEXCOORD, float depth, float bias, int3 offset)
 {
     const float4 sample = t_depthMap.Sample(s_depthSampler, depthMapCoords + offset);
     
     return (sample.r <= depth - bias) ? 1.0f : 0.0f;
 }
+/*
 
-float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthComparisonSampler, SamplerState s_depthSampler, float4 depthMapCoords : DEPTHTEXCOORD, int samples, float bias, bool byHardware, bool circleFilter, float radius)
+    All this is setup just to not throw errors. The point is to first get TextureCube working, then make our shaders handle that.
+    Vertex Shader depthCoords passing math will need to be reworked
+
+*/
+float GetShadowLevel(TextureCube t_depthMap, SamplerComparisonState s_depthComparisonSampler, SamplerState s_depthSampler, float4 depthMapCoords : DEPTHTEXCOORD, int samples, float bias, bool byHardware, bool circleFilter, float radius)
 {        
     depthMapCoords.xyz = depthMapCoords.xyz / depthMapCoords.w;
     
@@ -71,9 +76,9 @@ float GetShadowLevel(Texture2D t_depthMap, SamplerComparisonState s_depthCompari
             {
                 if (abs(y) <= samples)
                     if (byHardware)
-                        result += GetShadowLevelAtOffsetByHardware(t_depthMap, s_depthComparisonSampler, depthMapCoords.xy, depth, bias, int2(x, y));
+                        result += GetShadowLevelAtOffsetByHardware(t_depthMap, s_depthComparisonSampler, depthMapCoords.xyz, depth, bias);
                     else
-                        result += GetShadowLevelAtOffset(t_depthMap, s_depthSampler, depthMapCoords.xy, depth, bias, float2(depthMapCoords.x + x * pixelWidth, depthMapCoords.y + y * pixelHeight));
+                        result += GetShadowLevelAtOffset(t_depthMap, s_depthSampler, depthMapCoords.xyz, depth, bias, float3(depthMapCoords.x + x * pixelWidth, depthMapCoords.y + y * pixelHeight, 0.0f));
             }
         }
     }

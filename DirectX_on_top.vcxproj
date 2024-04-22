@@ -182,6 +182,7 @@
     <ClInclude Include="CubeMapTexture.h" />
     <ClInclude Include="DepthStencilState.h" />
     <ClInclude Include="DepthStencilView.h" />
+    <ClInclude Include="DepthTextureCube.h" />
     <ClInclude Include="DXError.h" />
     <ClInclude Include="DynamicConstantBuffer.h" />
     <ClInclude Include="ErrorHandling.h" />
@@ -237,6 +238,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SamplerState.h" />
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="ShadowCamera.h" />
     <ClInclude Include="ShadowMappingRenderPass.h" />
     <ClInclude Include="ShadowSamplerStateManager.h" />
     <ClInclude Include="Shape.h" />
@@ -270,7 +272,9 @@
     <ClCompile Include="CameraViewAreaIndicator.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="CubeMapTexture.cpp" />
+    <ClCompile Include="CubeTextureDrawingOrder.h" />
     <ClCompile Include="DepthStencilView.cpp" />
+    <ClCompile Include="DepthTextureCube.cpp" />
     <ClCompile Include="DXError.cpp" />
     <ClCompile Include="DynamicConstantBuffer.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
@@ -320,6 +324,7 @@
     <ClCompile Include="RasterizerState.cpp" />
     <ClCompile Include="SamplerState.cpp" />
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="ShadowCamera.cpp" />
     <ClCompile Include="ShadowMappingRenderPass.cpp" />
     <ClCompile Include="ShadowSamplerStateManager.cpp" />
     <ClCompile Include="Shape.cpp" />

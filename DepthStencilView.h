@@ -17,8 +17,11 @@ public:
 	};
 
 public:
-	DepthStencilView(GFX& gfx, Mode depthStencilViewMode = StencilAndDepth);
+	DepthStencilView();
 
+	DepthStencilView(GFX& gfx, Mode depthStencilViewMode = StencilAndDepth, bool isForcedRatio = false);
+
+public:
 	virtual void BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer = nullptr) override;
 
 	void Bind(GFX& gfx) noexcept;
@@ -48,6 +51,27 @@ public:
 private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
 	size_t m_slot;
+};
+
+class DepthStencilViewTextureCube : public DepthStencilView
+{
+public:
+	DepthStencilViewTextureCube();
+
+	DepthStencilViewTextureCube(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture, size_t index);
+
+public:
+	const DepthStencilViewTextureCube& operator=(DepthStencilViewTextureCube toAssign)
+	{
+		if (pDepthStencilView != NULL)
+			pDepthStencilView->Release();
+
+		pDepthStencilView = toAssign.pDepthStencilView;
+
+		return *this;
+	}
+
+	virtual void Bind(GFX& gfx) noexcept override;
 };
 
 

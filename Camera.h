@@ -56,7 +56,7 @@ private:
 		return "";
 	}
 
-private:
+protected:
 	float m_movespeed = 12.0f;
 	float m_sensivity = 0.008f;
 
