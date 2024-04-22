@@ -14,7 +14,9 @@ class Camera : public SceneObject
 	friend class ShadowMappingRenderPass;
 
 public:
-	Camera(GFX& gfx, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
+	Camera(GFX& gfx, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f }, float aspectRatio = 0.0f);
+
+	virtual ~Camera() = default;
 
 public:
 	DirectX::XMMATRIX GetCameraView() const;

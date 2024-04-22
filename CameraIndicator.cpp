@@ -10,25 +10,6 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 {
 	float aspectRatio = parent->m_AspectRatio;
 
-	std::vector<DirectX::XMFLOAT3> vertices
-	{
-		{ 0.2f * aspectRatio, 0.3f, -1.0f },
-		{ 0.2f * aspectRatio, -0.3f, -1.0f },
-		{ -0.2f * aspectRatio, -0.3f, -1.0f },
-		{ -0.2f * aspectRatio, 0.3f, -1.0f },
-
-		{ 0.7f * aspectRatio, 0.8f, 0.0f },
-		{ 0.7f * aspectRatio, -0.8f, 0.0f },
-		{ -0.7f * aspectRatio, -0.8f, 0.0f },
-		{ -0.7f * aspectRatio, 0.8f, 0.0f }
-	};
-
-	DynamicVertex::VertexLayout vertexLayout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
-	DynamicVertex::VertexBuffer vertexBuffer(std::move(vertexLayout));
-
-	for (const auto& position : vertices)
-		vertexBuffer.Emplace_Back(position);
-
 	std::vector<UINT32> indices =
 	{
 		//small square
@@ -44,9 +25,10 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 		2,6,	3,7
 	};
 
+	std::vector<D3D11_INPUT_ELEMENT_DESC> layout;
 
 	m_pTransformConstBuffer = std::make_shared<TransformConstBuffer>(gfx, *this, 0);
-	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, "$cameraIndicator", vertexBuffer);
+	m_pVertexBuffer = GetVertexBuffer(gfx, aspectRatio, &layout);
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, "$cameraIndicator", indices);
 	m_pTopology = Topology::GetBindable(gfx, D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
@@ -64,7 +46,7 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 
 		std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS.cso");
 
-		step.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout().GetDirectXLayout(), pVertexShader.get()));
+		step.AddBindable(InputLayout::GetBindable(gfx, layout, pVertexShader.get()));
 		step.AddBindable(pVertexShader);
 		step.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 		step.AddBindable(std::make_shared<CachedBuffer>(gfx, constBufferData, 1, true));
@@ -78,4 +60,40 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 DirectX::XMMATRIX CameraIndicator::GetTranformMatrix() const noexcept
 {
 	return m_parent->GetSceneTranformMatrix();
+}
+
+void CameraIndicator::UpdateVertexBuffer(GFX& gfx)
+{
+	float aspectRatio = m_parent->m_AspectRatio;
+
+	m_pVertexBuffer = GetVertexBuffer(gfx, aspectRatio);
+}
+
+std::shared_ptr<VertexBuffer> CameraIndicator::GetVertexBuffer(GFX& gfx, float aspectRatio, std::vector<D3D11_INPUT_ELEMENT_DESC>* layout)
+{
+	std::vector<DirectX::XMFLOAT3> vertices
+	{
+		{ 0.2f, 0.2f, -1.0f },
+		{ 0.2f, -0.2f, -1.0f },
+		{ -0.2f, -0.2f, -1.0f },
+		{ -0.2f, 0.2f, -1.0f },
+
+		{ 0.7f * aspectRatio, 0.7f, 0.0f },
+		{ 0.7f * aspectRatio, -0.7f, 0.0f },
+		{ -0.7f * aspectRatio, -0.7f, 0.0f },
+		{ -0.7f * aspectRatio, 0.7f, 0.0f }
+	};
+
+	DynamicVertex::VertexLayout vertexLayout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
+	DynamicVertex::VertexBuffer vertexBuffer(std::move(vertexLayout));
+
+	for (const auto& position : vertices)
+		vertexBuffer.Emplace_Back(position);
+
+	if (layout != nullptr)
+		*layout = vertexBuffer.GetLayout().GetDirectXLayout();
+
+	std::string vertexBufferTag = "$cameraIndicator@" + std::to_string(aspectRatio);
+
+	return VertexBuffer::GetBindable(gfx, vertexBufferTag.c_str(), vertexBuffer);
 }

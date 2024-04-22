@@ -101,3 +101,8 @@ void RenderPass::CheckPassIntegrity() const
 	for (const auto& input : m_inputs)
 		input->CheckInputIntegrity();
 }
+
+void RenderPass::SetScenePtr(Scene* scene)
+{
+	m_scene = scene;
+}

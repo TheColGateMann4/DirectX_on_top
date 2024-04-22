@@ -132,6 +132,8 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 
 	SetTarget("backBuffer", "ignoreZBufferPass.renderTarget");
 	Finish();
+
+	SetPassesScenePtr(&scene);
 }
 
 void GaussBlurRenderGraph::SetCooficients(class GFX& gfx, int range, float sigma, std::shared_ptr<CachedBuffer>* cooficientSettings) noexcept

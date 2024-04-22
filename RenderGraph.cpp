@@ -82,6 +82,12 @@ void RenderGraph::SetTarget(const char* inputName, const std::string& linkedReso
 	foundInput->Link(objectName, passName);
 }
 
+void RenderGraph::SetPassesScenePtr(class Scene* scene)
+{
+	for (auto& pass : m_passes)
+		pass->SetScenePtr(scene);
+}
+
 void RenderGraph::AddPass(std::unique_ptr<RenderPass> pass)
 {
 	for (size_t i = 0; i < m_passes.size(); i++)

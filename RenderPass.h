@@ -3,6 +3,8 @@
 #include "RenderPassOuput.h"
 #include "RenderPassInput.h"
 
+class Scene;
+
 class RenderPass
 {
 	friend class RenderGraph;
@@ -30,9 +32,14 @@ public:
 
 	virtual void Reset() {};
 
+	void SetScenePtr(Scene* scene);
+
 private:
 	std::vector<std::unique_ptr<RenderPassOutput>> m_outputs;
 	std::vector<std::unique_ptr<RenderPassInput>> m_inputs;
 	const char* m_name;
+
+protected:
+	Scene* m_scene;
 };
 

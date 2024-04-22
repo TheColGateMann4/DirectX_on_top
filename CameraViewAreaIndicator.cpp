@@ -99,7 +99,7 @@ std::shared_ptr<VertexBuffer> CameraViewAreaIndicator::GetVertexBuffer(GFX& gfx,
 	if(layout != nullptr)
 		*layout = vertexBuffer.GetLayout().GetDirectXLayout();
 
-	std::string vertexBufferTag = "$cameraViewIndicator@" + std::to_string(fov) + '@' + std::to_string(farZ) + '@' + std::to_string(nearZ);
+	std::string vertexBufferTag = "$cameraViewIndicator@" + std::to_string(fov) + '@' + std::to_string(farZ) + '@' + std::to_string(nearZ) + '@' + std::to_string(aspectRatio);
 
 	return VertexBuffer::GetBindable(gfx, vertexBufferTag.c_str(), vertexBuffer);
 }
@@ -128,5 +128,5 @@ void CameraViewAreaIndicator::UpdateVertexBuffer(GFX& gfx)
 	float startLength = CalculateLengthOfViewTriangle(fov, nearZ);
 	float endLength = CalculateLengthOfViewTriangle(fov, farZ);
 
-	m_pVertexBuffer = GetVertexBuffer(gfx, fov, nearZ, farZ, startLength, endLength, aspectRatio, nullptr);
+	m_pVertexBuffer = GetVertexBuffer(gfx, fov, nearZ, farZ, startLength, endLength, aspectRatio);
 }

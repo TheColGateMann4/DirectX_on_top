@@ -23,6 +23,8 @@ public:
 
 	void SetTarget(const char* inputName, const std::string& linkedResource);
 
+	void SetPassesScenePtr(class Scene* scene);
+
 	void AddPass(std::unique_ptr<RenderPass> pass);
 
 	void AddGlobalOutput(std::unique_ptr<RenderPassOutput> output);
@@ -54,7 +56,7 @@ private:
 	void LinkInputs(RenderPass* pass);
 	void LinkGlobalInputs();
 
-private:
+protected:
 	std::vector<std::unique_ptr<RenderPass>> m_passes;
 	std::vector<std::unique_ptr<RenderPassOutput>> m_globalOutputs;
 	std::vector<std::unique_ptr<RenderPassInput>> m_globalInputs;

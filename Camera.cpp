@@ -8,14 +8,13 @@
 #include "Graphics.h"
 #include "CameraManager.h"
 
-Camera::Camera(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
+Camera::Camera(GFX& gfx, DirectX::XMFLOAT3 startingPosition, float aspectRatio)
 	:
 	SceneObject(startingPosition),
-	m_AspectRatio((float)gfx.GetWidth() / (float)gfx.GetHeight()),
+	m_AspectRatio((aspectRatio == 0.0f) ? ((float)gfx.GetWidth() / (float)gfx.GetHeight()) : aspectRatio),
 	m_indicator(gfx, this),
 	m_viewIndicator(gfx, this)
 {
-
 	UpdateProjectionMatrix(gfx);
 }
 
@@ -65,13 +64,22 @@ void Camera::Move(const DirectX::XMFLOAT3& moveoffset)
 
 void Camera::Look(const DirectX::XMFLOAT3 lookoffset, float multiplyBySensivity)
 {
-	float halfRotation = 0.999f * (_Pi / 2);
+	if (!multiplyBySensivity)
+	{
+		m_rotation.x = lookoffset.x;		//pitch
+		m_rotation.y = lookoffset.y;		//yaw
+		m_rotation.z = lookoffset.z;		//roll
+	}
+	else
+	{
+		float halfRotation = 0.999f * (_Pi / 2);
 
-	float sensivityMultipler = (multiplyBySensivity) ? m_sensivity : 1.0f;
+		float sensivityMultipler = (multiplyBySensivity) ? m_sensivity : 1.0f;
 
-	m_rotation.x = WrapAngle(m_rotation.x + lookoffset.x * sensivityMultipler, _Pi);							//pitch
-	m_rotation.y = std::clamp(m_rotation.y + lookoffset.y * sensivityMultipler, -halfRotation, halfRotation);	//yaw
-	m_rotation.z = WrapAngle(m_rotation.z + lookoffset.z * sensivityMultipler, _Pi);							//roll
+		m_rotation.x = WrapAngle(m_rotation.x + lookoffset.x * sensivityMultipler, _Pi);							//pitch
+		m_rotation.y = std::clamp(m_rotation.y + lookoffset.y * sensivityMultipler, -halfRotation, halfRotation);	//yaw
+		m_rotation.z = WrapAngle(m_rotation.z + lookoffset.z * sensivityMultipler, _Pi);							//roll
+	}
 }
 
 void Camera::Reset(GFX& gfx)
@@ -127,6 +135,7 @@ void Camera::MakePropeties(GFX& gfx)
 	checkChanged(ImGui::SliderAngle("fov", &m_Fov, 30.0f, 180.0f, "%.1f"));
 	checkChanged(ImGui::SliderFloat("nearZ", &m_NearZ, 0.1f, (m_FarZ < 10.0f) ? m_FarZ - 1.0f : 10.0f, "%.1f"));
 	checkChanged(ImGui::SliderFloat("farZ", &m_FarZ, m_NearZ + 1.0f, 1000.0f, "%.1f"));
+	checkChanged(ImGui::SliderFloat("aspectRatio", &m_AspectRatio, 0.1f, 10.0f, "%.1f"));
 
 	ImGui::Checkbox("Indicator", &drawIndicator);
 	ImGui::Checkbox("View Indicator", &drawFrustum);
@@ -171,6 +180,7 @@ void Camera::UpdateProjectionMatrix(GFX& gfx)
 	m_projection = DirectX::XMMatrixPerspectiveFovLH(m_Fov, m_AspectRatio, m_NearZ, m_FarZ);
 
 	m_viewIndicator.UpdateVertexBuffer(gfx);
+	m_indicator.UpdateVertexBuffer(gfx);
 }
 
 float Camera::WrapAngle(float angle, float value)
