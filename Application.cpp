@@ -171,8 +171,6 @@ void Application::Update()
 	if(showImguiWindows && imguiDemoWindow)
 		ImGui::ShowDemoWindow();
 
-	static_cast<NormalRenderPass*>(renderGraph.GetRenderJobPass("normalPass"))->ShowWindow(window.Graphics, showImguiWindows);
-
 	scene.DrawModelHierarchy(showImguiWindows);
 
 	fpsCounter.Draw(deltaTime);

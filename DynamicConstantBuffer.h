@@ -335,7 +335,7 @@ namespace DynamicConstantBuffer
 		}
 
 		template<DataType type>
-		void* GetArrayDataPointerValue(const char* arrayName, size_t arrayIndex)
+		DynamicConstantBuffer::DataTypeMap<type>::type* GetArrayDataPointerValue(const char* arrayName, size_t arrayIndex)
 		{
 			size_t arrayIndexInLayout = m_layout.GetIndexOfElement(arrayName);
 			LayoutElement* layoutElement = m_layout.m_elements.at(arrayIndexInLayout).second.get();
@@ -348,7 +348,7 @@ namespace DynamicConstantBuffer
 
 			assert(bytesOffsetOfElement <= m_size);
 
-			return static_cast<void*>(static_cast<char*>(m_pDataBuffer) + bytesOffsetOfElement);
+			return static_cast<DynamicConstantBuffer::DataTypeMap<type>::type*>(static_cast<void*>(static_cast<char*>(m_pDataBuffer) + bytesOffsetOfElement));
 		}
 
 	public:
@@ -369,6 +369,14 @@ namespace DynamicConstantBuffer
 			assert(newBuffer != nullptr);
 
 			m_pDataBuffer = newBuffer;
+		}
+
+		template<DataType type>
+		DynamicConstantBuffer::DataTypeMap<type>::type* AddElement(const char* elementName, ImguiAdditionalInfo::ImguiInfo* imguiInfo = nullptr)
+		{
+			AddLayoutElement<type>(elementName, imguiInfo);
+
+			return static_cast<DynamicConstantBuffer::DataTypeMap<type>::type*>(static_cast<void*>(static_cast<char*>(m_pDataBuffer) + m_layout.GetOffsetOfElement(elementName)));
 		}
 
 	public:

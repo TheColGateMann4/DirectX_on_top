@@ -21,6 +21,8 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 		texMetaData
 	));
 
+	m_textureFormat = texMetaData.format;
+
 	THROW_GFX_IF_FAILED(LoadFromWICFile(
 		wImagePath.c_str(),
 		WIC_FLAGS_NONE,

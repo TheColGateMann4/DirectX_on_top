@@ -7,8 +7,6 @@ cbuffer objectBuffer : register(b1)
 {
     bool b_normalMapEnabled;
     bool b_normalMapHasAlpha;
-    bool b_specularMap;
-    bool b_specularMapHasAlpha;
     float b_specularIntensity;
     float4 b_specularColor;
     float b_specularPower;

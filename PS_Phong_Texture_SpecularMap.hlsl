@@ -9,6 +9,7 @@ cbuffer objectBuffer : register(b1)
     bool b_normalMapHasAlpha;
     bool b_specularMapEnable;
     bool b_specularMapHasAlpha;
+    bool b_specularMapAlphaChannelOnly;
     float b_specularMapWeight;
     float4 b_specularColor;
     float b_specularPower;
@@ -51,10 +52,18 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
         if(b_specularMapEnable)
         {
             const float4 specularSample = t_specularTexture.Sample(s_sampler, textureCoords);
-            specularColor = specularSample.rgb * b_specularMapWeight;
 
-            if(b_specularMapHasAlpha)
-                specularPower = pow(2.0f, specularSample.a * 13.0f);
+            if(b_specularMapAlphaChannelOnly)
+            {
+                specularPower = specularSample.r;
+            }
+            else
+            {
+                specularColor = specularSample.rgb * b_specularMapWeight;
+
+                if(b_specularMapHasAlpha)
+                    specularPower = pow(2.0f, specularSample.a * 13.0f);
+            }
         }
     
         specular = GetSpecular(positionRelativeToCamera, normal, VectorLength, attenuation, specularPower, b_lightColor, b_diffuseIntensity);

@@ -55,6 +55,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 {
 	bool hasSpecularMap = false;
 	bool specularHasAlpha = false;
+	bool specularMapAlphaChannelOnly = false;
 	bool hasNormalMap = false;
 	bool normalMapHasAlpha = false;
 	bool hasDiffuseMap = false;
@@ -90,12 +91,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		else
 		{
 			material.Get(AI_MATKEY_COLOR_DIFFUSE, reinterpret_cast<aiColor3D&>(DiffuseColor));
-			constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float4>("materialColor");
-			constBufferData += DiffuseColor;
+			*constBufferData.AddElement<DynamicConstantBuffer::DataType::Float4>("materialColor") = DiffuseColor;
 		}
-
-		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Bool>("normalMap");
-		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Bool>("normalMapHasAlpha");
 
 		if (material.GetTexture(aiTextureType_NORMALS, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
@@ -104,72 +101,57 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 			normalMeshBindables.push_back(std::move(normalTexture));
 			hasNormalMap = true;
 
-			constBufferData += (BOOL)hasNormalMap;
-			constBufferData += (BOOL)normalMapHasAlpha;
+			*constBufferData.AddElement<DynamicConstantBuffer::DataType::Bool>("normalMap") = (BOOL)hasNormalMap;
+			*constBufferData.AddElement<DynamicConstantBuffer::DataType::Bool>("normalMapHasAlpha") = (BOOL)normalMapHasAlpha;
 
 			pixelShaderName += "_Normals";
-		}
-		else
-		{
-			constBufferData += (BOOL)false;
-			constBufferData += (BOOL)false;
-		}
-
-		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Bool>("specularMap");
-		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Bool>("specularMapHasAlpha");
-
-		{
-			DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
-			floatInfo.v_min = 0.0f;
-			floatInfo.v_max = 2.0f;
-			constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float>("specularMapWeight", &floatInfo);
 		}
 
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &textureFileName) == aiReturn_SUCCESS)
 		{
 			auto specularTexture = Texture::GetBindable(gfx, modelPath + textureFileName.C_Str(), 1);
 			specularHasAlpha = specularTexture->HasAlpha();
+
+			{
+				DXGI_FORMAT specularTextureFormat = specularTexture->GetTextureFormat();
+				specularMapAlphaChannelOnly = specularTextureFormat == DXGI_FORMAT_R8_UNORM || specularTextureFormat == DXGI_FORMAT_R32_FLOAT;
+			}
+
 			normalMeshBindables.push_back(std::move(specularTexture));
 			hasSpecularMap = true;
 
-			constBufferData += (BOOL)true;
-			constBufferData += (BOOL)specularHasAlpha;
+			*constBufferData.AddElement<DynamicConstantBuffer::DataType::Bool>("specularMap") = (BOOL)true;
+			*constBufferData.AddElement<DynamicConstantBuffer::DataType::Bool>("specularMapHasAlpha") = (BOOL)specularHasAlpha;
+			*constBufferData.AddElement<DynamicConstantBuffer::DataType::Bool>("specularMapAlphaChannelOnly") = (BOOL)specularMapAlphaChannelOnly;
+
+			DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
+			floatInfo.v_min = 0.0f;
+			floatInfo.v_max = 2.0f;
+			*constBufferData.AddElement<DynamicConstantBuffer::DataType::Float>("specularMapWeight", &floatInfo) = 1.0f;
 
 			pixelShaderName += "_SpecularMap";
 
 		}
 		else
 		{
-			constBufferData += (BOOL)false;
-			constBufferData += (BOOL)false;
-
 			if(hasDiffuseMap)
 				pixelShaderName += "_Specular";
 		}
 
-		constBufferData += 1.0f;
-
 		material.Get(AI_MATKEY_COLOR_SPECULAR, reinterpret_cast<aiColor3D&>(SpecularColor));
 
-		constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float4>("specularColor");
-
-		constBufferData += SpecularColor;
+		*constBufferData.AddElement<DynamicConstantBuffer::DataType::Float4>("specularColor") = SpecularColor;
 
 
 		//getting shinyness
 		{
 			material.Get(AI_MATKEY_SHININESS, shinyness);
 
-			{
-				DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
-				floatInfo.v_min = 0.1f;
-				floatInfo.v_max = 150.0f;
-				floatInfo.format = "%.2f";
-
-				constBufferData.AddLayoutElement<DynamicConstantBuffer::DataType::Float>("specularPower", &floatInfo);
-			}
-
-			constBufferData += shinyness;
+			DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
+			floatInfo.v_min = 0.1f;
+			floatInfo.v_max = 150.0f;
+			floatInfo.format = "%.2f";
+			*constBufferData.AddElement<DynamicConstantBuffer::DataType::Float>("specularPower", &floatInfo) = shinyness;
 		}
 
 		if (hasSpecularMap || hasDiffuseMap || hasNormalMap)

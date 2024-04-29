@@ -31,6 +31,11 @@ public:
 		return m_hasAlpha;
 	}
 
+	DXGI_FORMAT GetTextureFormat()
+	{
+		return m_textureFormat;
+	}
+
 private:
 	static std::string GenerateUID(const std::string& imagePath, UINT32 slot = 0, bool isCube = false)
 	{
@@ -40,6 +45,7 @@ private:
 protected:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShaderResourceView;
 	std::string m_imagePath;
+	DXGI_FORMAT m_textureFormat;
 	UINT32 m_slot;
 	bool m_isCube;
 	bool m_hasAlpha = false;

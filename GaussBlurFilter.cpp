@@ -57,13 +57,13 @@ void GaussBlurFilter::SetCooficients(class GFX& gfx, int range, float sigma) noe
 		else
 			sum += gaussDensity;
 
-		float* cooficientValue = static_cast<float*>(bufferData.GetArrayDataPointerValue<DynamicConstantBuffer::DataType::Float4>("cooficients", cooficientIndex));
+		float* cooficientValue = reinterpret_cast<float*>(bufferData.GetArrayDataPointerValue<DynamicConstantBuffer::DataType::Float4>("cooficients", cooficientIndex));
 		*cooficientValue = gaussDensity;
 	}
 
 	for (int i = 0; i <= *numberUsed; i++)
 	{
-		float* cooficientValue = static_cast<float*>(bufferData.GetArrayDataPointerValue<DynamicConstantBuffer::DataType::Float4>("cooficients", i));
+		float* cooficientValue = reinterpret_cast<float*>(bufferData.GetArrayDataPointerValue<DynamicConstantBuffer::DataType::Float4>("cooficients", i));
 
 		*cooficientValue /= sum;
 	}
