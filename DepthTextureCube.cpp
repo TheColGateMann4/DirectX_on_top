@@ -20,7 +20,7 @@ DepthTextureCube::DepthTextureCube(GFX& gfx, size_t slot)
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
@@ -28,7 +28,7 @@ DepthTextureCube::DepthTextureCube(GFX& gfx, size_t slot)
 
 	for (size_t i = 0; i < 6; i++)
 	{
-		m_depthStencilView[i] = std::make_shared<DepthStencilViewTextureCube>(gfx, pCubeTexture, i);
+		m_renderTargetViews[i] = std::make_shared<RenderTargetTextureCube>(gfx, pCubeTexture, i);
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
@@ -40,14 +40,14 @@ DepthTextureCube::DepthTextureCube(GFX& gfx, size_t slot)
 	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pCubeTexture.Get(), &shaderResourceViewDesc, &pShaderResourceView));
 }
 
-void DepthTextureCube::BindDepthTextureCubeSide(GFX& gfx, CubeTextureDrawingOrder index, RenderTarget* renderTarget)
+void DepthTextureCube::BindDepthTextureCubeSide(GFX& gfx, CubeTextureDrawingOrder index, DepthStencilView* depthStencilView)
 {
 	int iIndex = static_cast<int>(index);
 	assert(iIndex < 6 && iIndex >= 0);
 
-	m_depthStencilView[iIndex]->Clear(gfx);
+	m_renderTargetViews[iIndex]->Clear(gfx);
 
-	m_depthStencilView[iIndex]->BindRenderTarget(gfx, renderTarget);
+	m_renderTargetViews[iIndex]->BindRenderTarget(gfx, depthStencilView);
 }
 
 void DepthTextureCube::Bind(GFX& gfx) noexcept

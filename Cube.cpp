@@ -28,9 +28,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 		{
 			RenderStep shadowStep("shadowMappingPass");
 
-			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
-
-			shadowStep.AddBindable(PixelShader::GetBindable(gfx, "PS.cso"));
+			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Shadow.cso");
 
 			shadowStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pVertexShader.get()));
 

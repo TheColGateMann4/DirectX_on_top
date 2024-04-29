@@ -13,7 +13,8 @@ Camera::Camera(GFX& gfx, DirectX::XMFLOAT3 startingPosition, float aspectRatio)
 	SceneObject(startingPosition),
 	m_AspectRatio((aspectRatio == 0.0f) ? ((float)gfx.GetWidth() / (float)gfx.GetHeight()) : aspectRatio),
 	m_indicator(gfx, this),
-	m_viewIndicator(gfx, this)
+	m_viewIndicator(gfx, this),
+	m_upVector(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
 {
 	UpdateProjectionMatrix(gfx);
 }
@@ -24,7 +25,7 @@ DirectX::XMMATRIX Camera::GetCameraView() const
 	DirectX::XMFLOAT3 worldRotation = GetWorldRotation();
 
 	const DirectX::XMVECTOR forwardVector = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	DirectX::XMVECTOR upwardsVector = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR upwardsVector = m_upVector;
 
 	if (worldRotation.z != 0.0f)
 		upwardsVector = DirectX::XMVector3Rotate(upwardsVector, DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), worldRotation.z));
@@ -169,6 +170,11 @@ void Camera::RenderThisObjectOnScene() const noexcept(!IS_DEBUG)
 void Camera::SetActive(bool active)
 {
 	m_active = active;
+}
+
+void Camera::SetUpVector(DirectX::XMFLOAT3 upVector)
+{
+	m_upVector = DirectX::XMVectorSet(upVector.x, upVector.y, upVector.z, 0.0f);
 }
 
 void Camera::UpdateProjectionMatrix(GFX& gfx)

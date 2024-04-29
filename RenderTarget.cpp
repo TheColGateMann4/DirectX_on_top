@@ -3,15 +3,24 @@
 #include "Graphics.h"
 #include "ErrorMacros.h"
 
+RenderTarget::RenderTarget()
+	:
+	m_width(0), m_height(0), m_isBackBuffer(false), m_isTextureRenderTarget(false), m_initialized(false)
+{
+}
+
 RenderTarget::RenderTarget(GFX& gfx, const int width, const int height, bool isTextureRenderTarget)
 	:
-	m_width(width), m_height(height), m_isBackBuffer(false), m_isTextureRenderTarget(isTextureRenderTarget)
+	m_width(width), m_height(height), m_isBackBuffer(false), m_isTextureRenderTarget(isTextureRenderTarget), m_initialized(true)
 {
 	Update(gfx);
 }
 
 void RenderTarget::Update(GFX& gfx)
 {
+	if (!m_initialized)
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+
 	HRESULT hr;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture = nullptr;
 
@@ -55,7 +64,8 @@ void RenderTarget::Update(GFX& gfx)
 RenderTarget::RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTexture)
 	:
 	m_isBackBuffer(true), // setting it this way since we only use it for backBuffer for now
-	m_isTextureRenderTarget(false) // m_isTextureRenderTarget means that it binds texture, not that it uses one to create RenderTargetView
+	m_isTextureRenderTarget(false), // m_isTextureRenderTarget means that it binds texture, not that it uses one to create RenderTargetView
+	m_initialized(true)
 {
 	HRESULT hr;
 
@@ -85,10 +95,14 @@ RenderTarget::RenderTarget(const RenderTarget& renderTarget)
 	this->m_isBackBuffer = renderTarget.m_isBackBuffer;
 	this->m_isTextureRenderTarget = renderTarget.m_isTextureRenderTarget;
 	this->m_pRenderTargetView = renderTarget.m_pRenderTargetView;
+	this->m_initialized = renderTarget.m_initialized;
 }
 
 void RenderTarget::MakeAndSetLocalViewport(GFX& gfx)
 {
+	if (!m_initialized)
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+
 	D3D11_VIEWPORT viewport = {};
 	viewport.Width = m_width;
 	viewport.Height = m_height;
@@ -105,6 +119,9 @@ void RenderTarget::MakeAndSetLocalViewport(GFX& gfx)
 
 void RenderTarget::GetBuffer(ID3D11Resource** resource)
 {
+	if (!m_initialized)
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+
 	m_pRenderTargetView->GetResource(resource);
 }
 
@@ -115,6 +132,9 @@ void RenderTarget::Bind(GFX& gfx) noexcept
 
 void RenderTarget::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 {
+	if (!m_initialized)
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+
 	MakeAndSetLocalViewport(gfx);
 	
 	ID3D11DepthStencilView* usedDepthStencilView = nullptr;
@@ -142,12 +162,18 @@ void RenderTarget::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 
 void RenderTarget::Clear(GFX& gfx) const
 {
+	if (!m_initialized)
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.0f };
 	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->ClearRenderTargetView(m_pRenderTargetView.Get(), &color.x));
 }
 
 void RenderTarget::ChangeResolution(GFX& gfx, const int width, const int height) noexcept
 {
+	if (!m_initialized)
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+
 	m_width = width;
 	m_height = height;
 
@@ -194,4 +220,45 @@ RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, cons
 void RenderTargetWithTexture::Bind(GFX& gfx) noexcept
 {
 	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf());
+}
+
+
+
+RenderTargetTextureCube::RenderTargetTextureCube()
+{
+
+}
+
+RenderTargetTextureCube::RenderTargetTextureCube(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture, size_t index)
+{
+	m_isTextureRenderTarget = true;
+	m_initialized = true;
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	pTexture->GetDesc(&textureDesc);
+
+	m_width = textureDesc.Width;
+	m_height = textureDesc.Height;
+
+	HRESULT hr;
+
+	D3D11_RENDER_TARGET_VIEW_DESC targetViewDesc = {};
+	targetViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	targetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+	targetViewDesc.Texture2DArray.ArraySize = 1;
+	targetViewDesc.Texture2DArray.FirstArraySlice = index;
+	targetViewDesc.Texture2DArray.MipSlice = 0;
+
+	THROW_GFX_IF_FAILED(
+		GFX::GetDevice(gfx)->CreateRenderTargetView(
+			pTexture.Get(),
+			&targetViewDesc,
+			&m_pRenderTargetView
+		)
+	);
+}
+
+void RenderTargetTextureCube::Bind(GFX& gfx) noexcept
+{
+	// we are not binding this one since it will be bound by CubeTexture object
 }

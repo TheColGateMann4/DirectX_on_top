@@ -6,6 +6,7 @@
 class RenderTarget : public Bindable, public GraphicBuffer
 {
 public:
+	RenderTarget();
 	RenderTarget(GFX& gfx, const int width, const int height, bool isTextureRenderTarget = false);
 	RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTexture);
 	RenderTarget(const RenderTarget& renderTarget);
@@ -31,6 +32,7 @@ protected:
 	int m_height;
 	bool m_isBackBuffer;
 	bool m_isTextureRenderTarget;
+	bool m_initialized;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 };
 
@@ -46,4 +48,15 @@ public:
 private:
 	int m_slot;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
+};
+
+class RenderTargetTextureCube : public RenderTarget
+{
+public:
+	RenderTargetTextureCube();
+
+	RenderTargetTextureCube(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture, size_t index);
+
+public:
+	virtual void Bind(GFX& gfx) noexcept override;
 };

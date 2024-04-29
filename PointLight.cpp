@@ -26,7 +26,7 @@ PointLight::PointLight(GFX& gfx, float radius, DirectX::XMFLOAT3 startingPositio
 
 	Reset(); // lazy setting values on startup
 
-	auto pCameraChild = std::make_unique<ShadowCamera>(gfx, 1.0f);
+	auto pCameraChild = std::make_unique<ShadowCamera>(gfx);
 	m_cameraChild = pCameraChild.get();
 
 	AddChild(std::move(pCameraChild));

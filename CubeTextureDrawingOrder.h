@@ -2,10 +2,10 @@
 
 enum CubeTextureDrawingOrder : int
 {
-	Front,
-	Back,
+	Right,
+	Left,
 	Up,
 	Down,
-	Left,
-	Right
+	Front,
+	Back
 };

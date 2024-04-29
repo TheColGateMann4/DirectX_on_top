@@ -13,8 +13,8 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 	RenderJobPass(name)
 {
 	m_bindsGraphicBuffersByItself = true;
-	m_renderTarget = std::make_shared<RenderTarget>(gfx, gfx.GetWidth(), gfx.GetWidth());
-	//m_depthStencilView = std::make_shared<DepthStencilView>(gfx, DepthStencilView::DepthOnly, true);
+	m_depthStencilView = std::make_shared<DepthStencilView>(gfx, DepthStencilView::StencilAndDepth, true);
+	depthTextureCube = std::make_shared<DepthTextureCube>(gfx, 3);
 
 	{
 		DynamicConstantBuffer::BufferLayout layout;
@@ -26,10 +26,12 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 		shadowCameraTransformBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, 1, false);
 	}
 
-	//RegisterOutput(RenderPassBindableOutput<DepthTextureCube>::GetUnique("shadowMap", &depthTextureCube));
+	RegisterOutput(RenderPassBindableOutput<DepthTextureCube>::GetUnique("shadowMap", &depthTextureCube));
 	RegisterOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("shadowCameraTransformBuffer", &shadowCameraTransformBuffer));
 
+	AddBindable(BlendState::GetBindable(gfx, false));
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::Off));
+	AddBindable(PixelShader::GetBindable(gfx, "PS_Shadow.cso"));
 }
 
 void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
@@ -40,10 +42,13 @@ void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 	{
 		DynamicConstantBuffer::BufferData bufferData = shadowCameraTransformBuffer->GetBufferData();
 
-		DirectX::XMMATRIX shadowCameraView = shadowCamera->GetCameraView();
-		DirectX::XMMATRIX shadowCameraProjection = shadowCamera->GetProjection();
+		DirectX::XMFLOAT3 position = shadowCamera->GetWorldPosition();
 
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Matrix>("shadowCameraView") = DirectX::XMMatrixTranspose(shadowCameraView * shadowCameraProjection);
+		DirectX::XMMATRIX cameraModel = DirectX::XMMatrixTranspose(
+			DirectX::XMMatrixTranslation(-position.x, -position.y, -position.z)
+		);
+
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Matrix>("shadowCameraView") = cameraModel;
 
 		shadowCameraTransformBuffer->Update(gfx, bufferData);
 	}
@@ -57,48 +62,43 @@ void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 
 void ShadowMappingRenderPass::RenderModels(GFX& gfx) const noexcept(!IS_DEBUG)
 {
-	//we are not clearning m_depthStencilView since we don't use it. We are using depthStencils from shadowCamera
-	m_renderTarget->Clear(gfx);
+	m_depthStencilView->Clear(gfx);
 
 	RenderJobPass::Render(gfx);
 }
 
 void ShadowMappingRenderPass::RenderFromAllAngles(GFX& gfx, ShadowCamera* shadowCamera) const noexcept(!IS_DEBUG)
 {
-	//front
-	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Front, m_renderTarget.get());
+	//Right
+	shadowCamera->Look({ _Pi / 2, 0.0f, 0.0f });
+	depthTextureCube->BindDepthTextureCubeSide(gfx, CubeTextureDrawingOrder::Right, m_depthStencilView.get());
 	RenderModels(gfx);
 
-// 	//Back
- 	shadowCamera->Look({ -_Pi, 0.0f, 0.0f });
- 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Back, m_renderTarget.get());
- 	RenderModels(gfx);
-// 
-// 	//Up
-//	shadowCamera->Look({ -_Pi, _Pi / 2, 0.0f });
-	shadowCamera->Look({ 0.0f, _Pi / 2, 0.0f });
- 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Up, m_renderTarget.get());
-	RenderModels(gfx);
-// 
-// 	//Down
-// 	shadowCamera->Look({ 0.0f, -_Pi, 0.0f });
- 	shadowCamera->Look({ 0.0f, -_Pi / 2, 0.0f });
- 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Down, m_renderTarget.get());
- 	RenderModels(gfx);
-// 
-// 	//Left
-//	shadowCamera->Look({ -_Pi / 2, _Pi / 2, 0.0f });
+ 	//Left
 	shadowCamera->Look({ -_Pi / 2, 0.0f, 0.0f });
- 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Left, m_renderTarget.get());
+	depthTextureCube->BindDepthTextureCubeSide(gfx, CubeTextureDrawingOrder::Left, m_depthStencilView.get());
  	RenderModels(gfx);
-// 
-// 	//Right
-// 	shadowCamera->Look({ _Pi, 0.0f, 0.0f });
- 	shadowCamera->Look({ _Pi / 2, 0.0f, 0.0f });
- 	shadowCamera->SetCurrentCubeDrawingIndex(gfx, CubeTextureDrawingOrder::Right, m_renderTarget.get());
+
+ 	//Up
+	shadowCamera->SetUpVector({ 0.0f, 0.0f, -1.0f });
+	shadowCamera->Look({ 0.0f, -_Pi / 2, 0.0f });
+	depthTextureCube->BindDepthTextureCubeSide(gfx, CubeTextureDrawingOrder::Up, m_depthStencilView.get());
+	RenderModels(gfx);
+ 
+ 	//Down
+	shadowCamera->SetUpVector({ 0.0f, 0.0f, 1.0f });
+	shadowCamera->Look({0.0f, _Pi / 2, 0.0f });
+	depthTextureCube->BindDepthTextureCubeSide(gfx, CubeTextureDrawingOrder::Down, m_depthStencilView.get());
  	RenderModels(gfx);
-// 
-// 	//leaving how it was
-//	shadowCamera->Look({ -_Pi / 2, 0.0f, 0.0f });
- 	shadowCamera->Look({ 0.0f, 0.0f, 0.0f });
+
+	//Back
+	shadowCamera->SetUpVector({ 0.0f, 1.0f, 0.0f });
+	shadowCamera->Look({ -_Pi, 0.0f, 0.0f });
+	depthTextureCube->BindDepthTextureCubeSide(gfx, CubeTextureDrawingOrder::Back, m_depthStencilView.get());
+	RenderModels(gfx);
+
+ 	//Front
+	shadowCamera->Look({ 0.0f , 0.0f, 0.0f });
+	depthTextureCube->BindDepthTextureCubeSide(gfx, CubeTextureDrawingOrder::Front, m_depthStencilView.get());
+ 	RenderModels(gfx);
 }

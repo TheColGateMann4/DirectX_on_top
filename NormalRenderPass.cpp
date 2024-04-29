@@ -6,11 +6,6 @@
 #include "imgui/imgui.h"
 #include "DepthTextureCube.h"
 
-#include "Scene.h";
-#include "PointLight.h"
-#include "ShadowCamera.h"
-#include "DepthTextureCube.h"
-
 NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 	: 
 	RenderJobPass(name),
@@ -19,6 +14,7 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 	RegisterInput(std::make_unique<RenderPassBufferInput<RenderTarget>>("renderTarget", &m_renderTarget));
 	RegisterInput(std::make_unique<RenderPassBufferInput<DepthStencilView>>("depthStencilView", &m_depthStencilView));
 	AddBindableInput<CachedBuffer>("shadowCameraTransformBuffer");
+	AddBindableInput<DepthTextureCube>("shadowMap");
 
 	RegisterOutput(std::make_unique<RenderPassBufferOutput<RenderTarget>>("renderTarget", &m_renderTarget));
 	RegisterOutput(std::make_unique<RenderPassBufferOutput<DepthStencilView>>("depthStencilView", &m_depthStencilView));
@@ -95,8 +91,8 @@ void NormalRenderPass::ShowWindow(GFX& gfx, bool show)
 
 		bool bufferChanged = bufferData.MakeImguiMenu();
 			
-			if(bufferChanged)
-				shadowSettings->Update(gfx, bufferData);
+		if(bufferChanged)
+			shadowSettings->Update(gfx, bufferData);
 
 		{
 			bool changed = false;
@@ -115,8 +111,6 @@ void NormalRenderPass::ShowWindow(GFX& gfx, bool show)
 				ImGui::Text("Hardware Varibles");
 
 				checkChanged(ImGui::SliderInt("hBias", &bias, 0, 1000000));
-				checkChanged(ImGui::SliderFloat("hBiasClamp", &biasClamp, 0.00001f, 1.0f, "%.5f"));
-				checkChanged(ImGui::SliderFloat("hSlopeScaledDepthBias", &slopeScaledDepthBias, 0.0f, 100.0f, "%.5f"));
 			}
 
 			if (changed)

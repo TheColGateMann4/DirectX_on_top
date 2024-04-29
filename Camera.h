@@ -39,6 +39,8 @@ public:
 
 	void SetActive(bool active);
 
+	void SetUpVector(DirectX::XMFLOAT3 upVector);
+
 private:
 	void UpdateProjectionMatrix(GFX& gfx);
 
@@ -75,5 +77,7 @@ private:
 	CameraViewAreaIndicator m_viewIndicator;
 
 	DirectX::XMMATRIX m_projection = {};
+
+	DirectX::XMVECTOR m_upVector;
 };
 

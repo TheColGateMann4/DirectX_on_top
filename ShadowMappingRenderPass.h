@@ -20,5 +20,5 @@ private:
 
 private:
 	std::shared_ptr<CachedBuffer> shadowCameraTransformBuffer;
-	mutable std::shared_ptr<DepthTextureCube> depthTextureCube;
+	std::shared_ptr<DepthTextureCube> depthTextureCube;
 };

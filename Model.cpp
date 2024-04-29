@@ -235,11 +235,11 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 		{
 			RenderStep shadowStep("shadowMappingPass");
 
-			shadowStep.AddBindable(PixelShader::GetBindable(gfx, "PS.cso"));
+			std::shared_ptr<VertexShader> pShadowShader = VertexShader::GetBindable(gfx, "VS_Shadow.cso");
 
-			shadowStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pNormalVertexShader.get()));
+			shadowStep.AddBindable(InputLayout::GetBindable(gfx, vertexBuffer.GetLayout(), pShadowShader.get()));
 
-			shadowStep.AddBindable(pNormalVertexShader);
+			shadowStep.AddBindable(std::move(pShadowShader));
 
 			shadowTechnique.AddRenderStep(shadowStep);
 		}
