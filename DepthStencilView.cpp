@@ -45,7 +45,7 @@ DepthStencilView::DepthStencilView(GFX& gfx, Mode depthStencilViewMode, bool isF
 
 void DepthStencilView::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 {
-	THROW_INTERNAL_ERROR("Tried to bind null depthStencilView", pDepthStencilView == nullptr);
+	THROW_INTERNAL_ERROR_IF("Tried to bind null depthStencilView", pDepthStencilView == nullptr);
 
 	if (graphicBuffer == nullptr)
 	{
@@ -93,7 +93,7 @@ DXGI_FORMAT DepthStencilView::GetTypelessFormat(DepthStencilView::Mode depthSten
 	errorString += std::to_string(depthStencilViewMode);
 	errorString += "\".";
 
-	THROW_INTERNAL_ERROR(errorString.c_str(), true);
+	THROW_INTERNAL_ERROR(errorString.c_str());
 }
 
 DXGI_FORMAT DepthStencilView::GetTypedFormat(DepthStencilView::Mode depthStencilViewMode)
@@ -107,7 +107,7 @@ DXGI_FORMAT DepthStencilView::GetTypedFormat(DepthStencilView::Mode depthStencil
 	errorString += std::to_string(depthStencilViewMode);
 	errorString += "\".";
 
-	THROW_INTERNAL_ERROR(errorString.c_str(), true);
+	THROW_INTERNAL_ERROR(errorString.c_str());
 }
 
 DXGI_FORMAT DepthStencilView::GetColorTypeFormat(DepthStencilView::Mode depthStencilViewMode)
@@ -121,7 +121,7 @@ DXGI_FORMAT DepthStencilView::GetColorTypeFormat(DepthStencilView::Mode depthSte
 	errorString += std::to_string(depthStencilViewMode);
 	errorString += "\".";
 
-	THROW_INTERNAL_ERROR(errorString.c_str(), true);
+	THROW_INTERNAL_ERROR(errorString.c_str());
 }
 
 

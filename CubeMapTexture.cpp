@@ -58,7 +58,7 @@ CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slo
 					errorString += std::to_string(i);
 					errorString += ".";
 
-					THROW_INTERNAL_ERROR(errorString.c_str(), true);
+					THROW_INTERNAL_ERROR(errorString.c_str());
 				}
 
 			THROW_GFX_IF_FAILED(LoadFromWICFile(

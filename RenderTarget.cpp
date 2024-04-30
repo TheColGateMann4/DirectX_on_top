@@ -19,7 +19,7 @@ RenderTarget::RenderTarget(GFX& gfx, const int width, const int height, bool isT
 void RenderTarget::Update(GFX& gfx)
 {
 	if (!m_initialized)
-		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget");
 
 	HRESULT hr;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture = nullptr;
@@ -101,7 +101,7 @@ RenderTarget::RenderTarget(const RenderTarget& renderTarget)
 void RenderTarget::MakeAndSetLocalViewport(GFX& gfx)
 {
 	if (!m_initialized)
-		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget");
 
 	D3D11_VIEWPORT viewport = {};
 	viewport.Width = m_width;
@@ -120,7 +120,7 @@ void RenderTarget::MakeAndSetLocalViewport(GFX& gfx)
 void RenderTarget::GetBuffer(ID3D11Resource** resource)
 {
 	if (!m_initialized)
-		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget");
 
 	m_pRenderTargetView->GetResource(resource);
 }
@@ -133,7 +133,7 @@ void RenderTarget::Bind(GFX& gfx) noexcept
 void RenderTarget::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 {
 	if (!m_initialized)
-		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget");
 
 	MakeAndSetLocalViewport(gfx);
 	
@@ -163,7 +163,7 @@ void RenderTarget::BindRenderTarget(GFX& gfx, GraphicBuffer* graphicBuffer)
 void RenderTarget::Clear(GFX& gfx) const
 {
 	if (!m_initialized)
-		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
+		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget");
 
 	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4{ 0.0f, 0.0f, 0.0f, 0.0f };
 	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->ClearRenderTargetView(m_pRenderTargetView.Get(), &color.x));

@@ -181,7 +181,7 @@ void Camera::UpdateProjectionMatrix(GFX& gfx)
 {
 	bool setWrongEntriesProjectionMatrix = (m_Fov == 0.0f || m_AspectRatio == 0.0f || m_NearZ == 0.0f || m_FarZ == 0.0f);
 
-	THROW_INTERNAL_ERROR("Wrong entries were set for camera projection matrix", setWrongEntriesProjectionMatrix);
+	THROW_INTERNAL_ERROR_IF("Wrong entries were set for camera projection matrix", setWrongEntriesProjectionMatrix);
 
 	m_projection = DirectX::XMMatrixPerspectiveFovLH(m_Fov, m_AspectRatio, m_NearZ, m_FarZ);
 

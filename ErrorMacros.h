@@ -7,7 +7,9 @@
 #define THROW_GFX_FAILED(hr) throw ErrorHandler::GFXException{ (UINT32)__LINE__, __FILE__, hr};
 #define THROW_NOGFX throw ErrorHandler::NoGFXException{(UINT32)__LINE__, __FILE__};
 
-#define THROW_INTERNAL_ERROR(errorString, statement) if(statement)throw ErrorHandler::InternalException{ (UINT32)__LINE__ , __FILE__ , errorString};
+#define THROW_INTERNAL_ERROR(errorString) throw ErrorHandler::InternalException{ (UINT32)__LINE__ , __FILE__ , errorString};
+
+#define THROW_INTERNAL_ERROR_IF(errorString, statement) if(statement)throw ErrorHandler::InternalException{ (UINT32)__LINE__ , __FILE__ , errorString};
 
 #define THROW_MODEL_EXCEPTION(errorString) throw ErrorHandler::ModelException{(UINT32)__LINE__ , __FILE__ , errorString};
 
