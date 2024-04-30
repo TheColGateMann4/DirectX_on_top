@@ -5,8 +5,8 @@
 Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube)
 	:
 	m_slot(slot),
-	m_isCube(isCube),
-	m_imagePath(imagePath)
+	m_imagePath(imagePath),
+	m_isCube(isCube)
 {
 	HRESULT hr;
 	using namespace DirectX;

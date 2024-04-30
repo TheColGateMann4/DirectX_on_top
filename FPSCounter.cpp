@@ -37,8 +37,8 @@ void FPSCounter::Draw(const float deltaTime)
 	{
 		constexpr float offsetFromCorner = 2.0f;
 
-		ImGui::PushStyleColor(ImGuiCol_Border, 0.0f);
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, 0.0f);
+		ImGui::PushStyleColor(ImGuiCol_Border, 0);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, 0);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, offsetFromCorner });
 
 		if (ImGui::Begin("FpsCounter", nullptr, windowFlags))

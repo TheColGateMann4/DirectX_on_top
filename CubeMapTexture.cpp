@@ -7,8 +7,8 @@
 
 CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slot)
 	:
-	m_slot(slot),
-	m_imagePath(imagePath)
+	m_imagePath(imagePath),
+	m_slot(slot)
 {
 	HRESULT hr;
 	using namespace DirectX;
@@ -17,6 +17,8 @@ CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slo
 
 	TexMetadata texMetaData;
 	ScratchImage partialImage[6];
+
+	bool texMetaDataWasInitialized = false;
 
 	{
 		size_t startPositionOfExtension = wImagePath.rfind('.');
@@ -41,7 +43,10 @@ CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slo
 			));
 
 			if (i == 0)
+			{
 				texMetaData = localTexMetaData;
+				texMetaDataWasInitialized = true;
+			}
 			else
 				if (CHECK_METADATA_MEMBER(width) ||
 					CHECK_METADATA_MEMBER(height) ||
@@ -71,6 +76,17 @@ CubeMapTexture::CubeMapTexture(GFX& gfx, const std::string imagePath, UINT32 slo
 	}
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pCubeTexture;
+
+	if (!texMetaDataWasInitialized)
+	{
+		std::string errorString = "Texture meta data wasn't initialized. Image path was: \"";
+		errorString += imagePath;
+		errorString += "\". Slot was: ";
+		errorString += slot;
+		errorString += "\".";
+
+		THROW_INTERNAL_ERROR(errorString.c_str(), true);
+	}
 
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	textureDesc.Width = texMetaData.width;

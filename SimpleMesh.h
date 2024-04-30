@@ -9,11 +9,11 @@ public:
 	SimpleMesh() = default;
 	SimpleMesh(DynamicVertex::VertexBuffer vertices, std::vector<UINT32> indices)
 		: 
-		m_vertices(std::move(vertices)),
-		m_indices(std::move(indices))
+		m_indices(std::move(indices)),
+		m_vertices(std::move(vertices))
 	{
-		assert(m_vertices.GetSize() > 2);
 		assert(m_indices.size() % 3 == 0);
+		assert(m_vertices.GetSize() > 2);
 	}
 
 public:

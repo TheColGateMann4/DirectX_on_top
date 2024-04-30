@@ -134,8 +134,8 @@ namespace DynamicConstantBuffer
 		};
 		struct ImguiIntInfo : public ImguiInfo
 		{
-			float v_min = 0;
-			float v_max = 10;
+			int v_min = 0;
+			int v_max = 10;
 			std::string format = "%d";
 			ImGuiSliderFlags flags = ImGuiSliderFlags_None;
 		};

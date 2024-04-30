@@ -171,9 +171,6 @@ void RenderTarget::Clear(GFX& gfx) const
 
 void RenderTarget::ChangeResolution(GFX& gfx, const int width, const int height) noexcept
 {
-	if (!m_initialized)
-		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget", true);
-
 	m_width = width;
 	m_height = height;
 

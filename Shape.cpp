@@ -17,16 +17,12 @@ void Shape::LinkToPipeline(class RenderGraph& renderGraph)
 
 void Shape::Bind(GFX& gfx) const noexcept
 {
-	assert(m_pIndexBuffer != nullptr);
 	m_pIndexBuffer->Bind(gfx);
 
-	assert(m_pTransformConstBuffer != nullptr);
 	m_pTransformConstBuffer->Bind(gfx);
 
-	assert(m_pVertexBuffer != nullptr);
 	m_pVertexBuffer->Bind(gfx);
 
-	assert(m_pTopology != nullptr);
 	m_pTopology->Bind(gfx);
 }
 

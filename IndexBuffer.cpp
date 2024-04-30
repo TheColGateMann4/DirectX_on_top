@@ -3,8 +3,9 @@
 #include "Graphics.h"
 
 IndexBuffer::IndexBuffer(GFX& gfx, const std::string bufferUID, const std::vector<UINT32>& indices)
-	: m_count( (UINT32)indices.size()),
-	m_bufferUID(bufferUID)
+	: 
+	m_bufferUID(bufferUID),
+	m_count( (UINT32)indices.size())
 {
 	HRESULT hr;
 

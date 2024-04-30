@@ -59,3 +59,5 @@ constexpr float _Pi = 3.14159265358979f;
 #else
 	#define IS_DEBUG FALSE
 #endif
+
+#pragma warning(disable:4100)

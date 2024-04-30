@@ -94,7 +94,7 @@ void RenderGraph::AddPass(std::unique_ptr<RenderPass> pass)
 		if (strcmp(pass->m_name, m_passes.at(i)->m_name) == 0)
 		{
 			std::string errorMessage = "Passed added had the same name as pass on position: ";
-			errorMessage += '0' + i;
+			errorMessage += std::to_string(i);
 			errorMessage += ". Both passes had name: ";
 			errorMessage += m_passes.at(i)->m_name;
 			errorMessage += ".";

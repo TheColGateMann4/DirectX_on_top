@@ -102,8 +102,8 @@ public:
 	}
 
 private:
-	bool m_linked;
 	std::shared_ptr<T>* m_bindable;
+	bool m_linked;
 };
 
 template<class T>

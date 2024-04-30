@@ -53,8 +53,8 @@ private:
 	LRESULT HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
 private:
-	UINT32 m_width;
 	UINT32 m_height;
+	UINT32 m_width;
 	HWND m_hWnd;
 	BOOL m_cursorShowing = true;
 	BOOL m_cursorLocked = false;
