@@ -8,7 +8,8 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 	:
 	m_parent(parent)
 {
-	float aspectRatio = parent->m_AspectRatio;
+	CameraSettings cameraSettings;
+	m_parent->GetCameraSettings(&cameraSettings);
 
 	std::vector<UINT32> indices =
 	{
@@ -28,7 +29,7 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 	std::vector<D3D11_INPUT_ELEMENT_DESC> layout;
 
 	m_pTransformConstBuffer = std::make_shared<TransformConstBuffer>(gfx, *this, 0);
-	m_pVertexBuffer = GetVertexBuffer(gfx, aspectRatio, &layout);
+	m_pVertexBuffer = GetVertexBuffer(gfx, cameraSettings.m_AspectRatio, &layout);
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, "$cameraIndicator", indices);
 	m_pTopology = Topology::GetBindable(gfx, D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
@@ -64,9 +65,10 @@ DirectX::XMMATRIX CameraIndicator::GetTranformMatrix() const noexcept
 
 void CameraIndicator::UpdateVertexBuffer(GFX& gfx)
 {
-	float aspectRatio = m_parent->m_AspectRatio;
+	CameraSettings cameraSettings;
+	m_parent->GetCameraSettings(&cameraSettings);
 
-	m_pVertexBuffer = GetVertexBuffer(gfx, aspectRatio);
+	m_pVertexBuffer = GetVertexBuffer(gfx, cameraSettings.m_AspectRatio);
 }
 
 std::shared_ptr<VertexBuffer> CameraIndicator::GetVertexBuffer(GFX& gfx, float aspectRatio, std::vector<D3D11_INPUT_ELEMENT_DESC>* layout)

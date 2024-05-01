@@ -177,6 +177,14 @@ void Camera::SetUpVector(DirectX::XMFLOAT3 upVector)
 	m_upVector = DirectX::XMVectorSet(upVector.x, upVector.y, upVector.z, 0.0f);
 }
 
+void Camera::GetCameraSettings(CameraSettings* cameraSettings) const
+{
+	cameraSettings->m_Fov = m_Fov;
+	cameraSettings->m_AspectRatio = m_AspectRatio;
+	cameraSettings->m_NearZ = m_NearZ;
+	cameraSettings->m_FarZ = m_FarZ;
+}
+
 void Camera::UpdateProjectionMatrix(GFX& gfx)
 {
 	bool setWrongEntriesProjectionMatrix = (m_Fov == 0.0f || m_AspectRatio == 0.0f || m_NearZ == 0.0f || m_FarZ == 0.0f);

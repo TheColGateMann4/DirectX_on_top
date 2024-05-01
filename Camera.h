@@ -5,14 +5,17 @@
 #include "CameraViewAreaIndicator.h"
 
 class GFX;
-class CameraManager;
+
+struct CameraSettings
+{
+	float m_Fov;
+	float m_AspectRatio;
+	float m_NearZ;
+	float m_FarZ;
+};
 
 class Camera : public SceneObject
 {
-	friend class CameraIndicator;
-	friend class CameraViewAreaIndicator;
-	friend class ShadowMappingRenderPass;
-
 public:
 	Camera(GFX& gfx, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f }, float aspectRatio = 0.0f);
 
@@ -40,6 +43,8 @@ public:
 	void SetActive(bool active);
 
 	void SetUpVector(DirectX::XMFLOAT3 upVector);
+
+	void GetCameraSettings(CameraSettings* cameraSettings) const;
 
 private:
 	void UpdateProjectionMatrix(GFX& gfx);

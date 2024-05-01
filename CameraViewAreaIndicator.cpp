@@ -8,20 +8,18 @@ CameraViewAreaIndicator::CameraViewAreaIndicator(GFX& gfx, Camera* parent)
 	:
 	m_parent(parent)
 {
-	float aspectRatio = parent->m_AspectRatio;
+	CameraSettings cameraSettings;
+	m_parent->GetCameraSettings(&cameraSettings);
 
-	float fov = m_parent->m_Fov;
-	float nearZ = m_parent->m_NearZ;
-	float farZ = m_parent->m_FarZ;
-	float startLength = CalculateLengthOfViewTriangle(fov, nearZ);
-	float endLength = CalculateLengthOfViewTriangle(fov, farZ);
+	float startLength = CalculateLengthOfViewTriangle(cameraSettings.m_Fov, cameraSettings.m_NearZ);
+	float endLength = CalculateLengthOfViewTriangle(cameraSettings.m_Fov, cameraSettings.m_FarZ);
 
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> DirectXLayout;
 	std::vector<UINT32> indices;
 
 	m_pTransformConstBuffer = std::make_shared<TransformConstBuffer>(gfx, *this, 0);
-	m_pVertexBuffer = GetVertexBuffer(gfx, fov, nearZ, farZ, startLength, endLength, aspectRatio, &DirectXLayout);
+	m_pVertexBuffer = GetVertexBuffer(gfx, startLength, endLength, &cameraSettings, &DirectXLayout);
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, "$cameraIndicator", indices);
 	m_pTopology = Topology::GetBindable(gfx, D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
@@ -75,19 +73,19 @@ DirectX::XMMATRIX CameraViewAreaIndicator::GetTranformMatrix() const noexcept
 	return m_parent->GetSceneTranformMatrix();
 }
 
-std::shared_ptr<VertexBuffer> CameraViewAreaIndicator::GetVertexBuffer(GFX& gfx, float fov, float nearZ, float farZ, float startLength, float endLength, float aspectRatio, std::vector<D3D11_INPUT_ELEMENT_DESC>* layout)
+std::shared_ptr<VertexBuffer> CameraViewAreaIndicator::GetVertexBuffer(GFX& gfx, float startLength, float endLength, CameraSettings* cameraSettings, std::vector<D3D11_INPUT_ELEMENT_DESC>* layout)
 {
 	std::vector<DirectX::XMFLOAT3> vertices
 	{
-		{ startLength * aspectRatio, startLength, nearZ },
-		{ startLength * aspectRatio, -startLength, nearZ},
-		{ -startLength * aspectRatio, -startLength, nearZ},
-		{ -startLength * aspectRatio, startLength, nearZ },
+		{ startLength * cameraSettings->m_AspectRatio, startLength, cameraSettings->m_NearZ },
+		{ startLength * cameraSettings->m_AspectRatio, -startLength, cameraSettings->m_NearZ},
+		{ -startLength * cameraSettings->m_AspectRatio, -startLength, cameraSettings->m_NearZ},
+		{ -startLength * cameraSettings->m_AspectRatio, startLength, cameraSettings->m_NearZ },
 
-		{ endLength * aspectRatio, endLength, farZ },
-		{ endLength * aspectRatio, -endLength, farZ },
-		{ -endLength * aspectRatio, -endLength, farZ },
-		{ -endLength * aspectRatio, endLength, farZ }
+		{ endLength * cameraSettings->m_AspectRatio, endLength, cameraSettings->m_FarZ },
+		{ endLength * cameraSettings->m_AspectRatio, -endLength, cameraSettings->m_FarZ },
+		{ -endLength * cameraSettings->m_AspectRatio, -endLength, cameraSettings->m_FarZ },
+		{ -endLength * cameraSettings->m_AspectRatio, endLength, cameraSettings->m_FarZ }
 	};
 
 	DynamicVertex::VertexLayout vertexLayout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
@@ -99,7 +97,7 @@ std::shared_ptr<VertexBuffer> CameraViewAreaIndicator::GetVertexBuffer(GFX& gfx,
 	if(layout != nullptr)
 		*layout = vertexBuffer.GetLayout().GetDirectXLayout();
 
-	std::string vertexBufferTag = "$cameraViewIndicator@" + std::to_string(fov) + '@' + std::to_string(farZ) + '@' + std::to_string(nearZ) + '@' + std::to_string(aspectRatio);
+	std::string vertexBufferTag = "$cameraViewIndicator@" + std::to_string(cameraSettings->m_Fov) + '@' + std::to_string(cameraSettings->m_FarZ) + '@' + std::to_string(cameraSettings->m_NearZ) + '@' + std::to_string(cameraSettings->m_AspectRatio);
 
 	return VertexBuffer::GetBindable(gfx, vertexBufferTag.c_str(), vertexBuffer);
 }
@@ -120,13 +118,12 @@ float CameraViewAreaIndicator::CalculateLengthOfViewTriangle(float fov, float wi
 
 void CameraViewAreaIndicator::UpdateVertexBuffer(GFX& gfx)
 {
-	float aspectRatio = m_parent->m_AspectRatio;
+	CameraSettings cameraSettings = {};
 
-	float fov = m_parent->m_Fov;
-	float nearZ = m_parent->m_NearZ;
-	float farZ = m_parent->m_FarZ;
-	float startLength = CalculateLengthOfViewTriangle(fov, nearZ);
-	float endLength = CalculateLengthOfViewTriangle(fov, farZ);
+	m_parent->GetCameraSettings(&cameraSettings);
 
-	m_pVertexBuffer = GetVertexBuffer(gfx, fov, nearZ, farZ, startLength, endLength, aspectRatio);
+	float startLength = CalculateLengthOfViewTriangle(cameraSettings.m_Fov, cameraSettings.m_NearZ);
+	float endLength = CalculateLengthOfViewTriangle(cameraSettings.m_Fov, cameraSettings.m_FarZ);
+
+	m_pVertexBuffer = GetVertexBuffer(gfx, startLength, endLength, &cameraSettings);
 }
