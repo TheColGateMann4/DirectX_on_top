@@ -239,7 +239,6 @@
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="ShadowCamera.h" />
     <ClInclude Include="ShadowMappingRenderPass.h" />
-    <ClInclude Include="ShadowSamplerStateManager.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Sheet.h" />
     <ClInclude Include="SimpleMesh.h" />
@@ -324,7 +323,6 @@
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="ShadowCamera.cpp" />
     <ClCompile Include="ShadowMappingRenderPass.cpp" />
-    <ClCompile Include="ShadowSamplerStateManager.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sheet.cpp" />
     <ClCompile Include="Skybox.cpp" />
@@ -517,16 +515,6 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="PS_Shadow.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)Shaders\%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
     <FxCompile Include="VS_Fullscreen.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -681,9 +669,11 @@
     <None Include="FloatHLSLMacros.hlsli" />
     <None Include="PointLightConstBuffer.hlsli" />
     <None Include="ShaderFunctions.hlsli" />
-    <None Include="ShadowFunctions.hlsli" />
+    <None Include="PS_ShadowFunctions.hlsli" />
     <None Include="ShadowResources.hlsli" />
-    <None Include="TransformConstBuffer.hlsli" />
+    <None Include="PS_TransformConstBuffer.hlsli" />
+    <None Include="VS_ShadowFunctions.hlsli" />
+    <None Include="VS_TransformConstBuffer.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

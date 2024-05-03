@@ -12,12 +12,12 @@ public:
 	DepthTextureCube(GFX& gfx, size_t slot);
 
 public:
-	void BindDepthTextureCubeSide(GFX& gfx, CubeTextureDrawingOrder index, DepthStencilView* depthStencilView);
+	void BindDepthTextureCubeSide(GFX& gfx, CubeTextureDrawingOrder index, RenderTarget* renderTarget);
 
 	virtual void Bind(GFX& gfx) noexcept override;
 
 private:
-	std::shared_ptr<RenderTargetTextureCube> m_renderTargetViews[6];
+	std::shared_ptr<DepthStencilViewTextureCube> m_depthStencilViews[6];
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShaderResourceView;
 	UINT32 m_slot;
 };

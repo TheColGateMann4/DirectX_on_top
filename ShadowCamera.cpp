@@ -6,6 +6,10 @@ ShadowCamera::ShadowCamera(GFX& gfx)
 	Camera(gfx, {0.0f, 0.0f, 0.0f}, 1.0f)
 {
 	SetVisibilityInHierarchy(false);
+
+	m_NearZ = 0.1f;
+	m_FarZ = 100.0f;
+	UpdateProjectionMatrix(gfx);
 }
 
 

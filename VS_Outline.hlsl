@@ -1,9 +1,4 @@
-cbuffer constBuffer : register(b0)
-{
-    matrix model;
-    matrix modelView;
-    matrix modelViewProjection;
-};
+#include "VS_TransformConstBuffer.hlsli"
 
 cbuffer scaleConstBuffer : register(b2)
 {

@@ -6,74 +6,31 @@
 #include "imgui/imgui.h"
 #include "DepthTextureCube.h"
 
+#include "Camera.h"
+#include "Scene.h"
+#include "PointLight.h"
+#include "ShadowCamera.h"
+
 NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 	: 
-	RenderJobPass(name),
-	samplerStateManager(gfx)
+	RenderJobPass(name)
 {
 	RegisterInput(std::make_unique<RenderPassBufferInput<RenderTarget>>("renderTarget", &m_renderTarget));
 	RegisterInput(std::make_unique<RenderPassBufferInput<DepthStencilView>>("depthStencilView", &m_depthStencilView));
 	AddBindableInput<CachedBuffer>("shadowCameraTransformBuffer");
 	AddBindableInput<DepthTextureCube>("shadowMap");
+	AddBindableInput<CachedBuffer>("shadowCameraData");
 
 	RegisterOutput(std::make_unique<RenderPassBufferOutput<RenderTarget>>("renderTarget", &m_renderTarget));
 	RegisterOutput(std::make_unique<RenderPassBufferOutput<DepthStencilView>>("depthStencilView", &m_depthStencilView));
 
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Off));
-	AddBindable(BlendState::GetBindable(gfx, false));
 	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::BILINEAR));
-
-	{
-
-		DynamicConstantBuffer::BufferLayout layout;
-
-		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiIntInfo pcfLevelInfo = {};
-		pcfLevelInfo.v_min = 0;
-		pcfLevelInfo.v_max = 4;
-
-		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo biasInfo = {};
-		biasInfo.v_min = 0.0f;
-		biasInfo.v_max = 0.005f;
-		biasInfo.format = "%.6f";
-
-		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo radiusInfo = {};
-		radiusInfo.v_min = 0.01f;
-		radiusInfo.v_max = 1.0f;
-		radiusInfo.format = "%.2f";
-
-		layout.Add<DynamicConstantBuffer::DataType::Int>("PCF_level", &pcfLevelInfo);
-		layout.Add<DynamicConstantBuffer::DataType::Float>("bias", &biasInfo);
-		layout.Add<DynamicConstantBuffer::DataType::Bool>("hardwarePCF");
-		layout.Add<DynamicConstantBuffer::DataType::Bool>("bilinear");
-		layout.Add<DynamicConstantBuffer::DataType::Bool>("circleFilter");
-		layout.Add<DynamicConstantBuffer::DataType::Float>("radius", &radiusInfo);
-
-		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
-
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("PCF_level") = 0;
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("bias") = 0.0f;
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("hardwarePCF") = FALSE;
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("circleFilter") = FALSE;
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("radius") = 1.0f;
-
-		shadowSettings = std::make_shared<CachedBuffer>(gfx, bufferData, 4, true);
-	}
-
-	AddBindable(shadowSettings);
-
-
-	//objects with normal mesh use only these two, so we can dirty override them
-	shadowRasterizerNoBackculling = RasterizerState::GetBindable(gfx, true);
-	shadowRasterizerWithculling = RasterizerState::GetBindable(gfx, false);
-
-	shadowRasterizerNoBackculling->ChangeDepthValues(gfx, bias, biasClamp, slopeScaledDepthBias);
-	shadowRasterizerWithculling->ChangeDepthValues(gfx, bias, biasClamp, slopeScaledDepthBias);
+	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 1, SamplerState::LESS_EQUAL, SamplerState::POINT));
 }
 
 void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
-	samplerStateManager.Bind(gfx);
-
 	RenderJobPass::Render(gfx);
 
 	//unbinding depthStencilView texture after we used it where we needed it

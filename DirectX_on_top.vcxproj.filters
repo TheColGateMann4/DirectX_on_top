@@ -327,9 +327,6 @@
     <ClInclude Include="NullTexture.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowSamplerStateManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CubeMapTexture.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
@@ -560,9 +557,6 @@
     <ClCompile Include="NullTexture.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowSamplerStateManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CubeMapTexture.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
@@ -698,9 +692,6 @@
     <FxCompile Include="VS_Shadow.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Shadow.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="VS_Skybox.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
@@ -718,13 +709,19 @@
     <None Include="FloatHLSLMacros.hlsli">
       <Filter>Shader\Header Files</Filter>
     </None>
-    <None Include="ShadowFunctions.hlsli">
+    <None Include="PS_ShadowFunctions.hlsli">
       <Filter>Shader\Header Files</Filter>
     </None>
     <None Include="ShadowResources.hlsli">
       <Filter>Shader\Header Files</Filter>
     </None>
-    <None Include="TransformConstBuffer.hlsli">
+    <None Include="PS_TransformConstBuffer.hlsli">
+      <Filter>Shader\Header Files</Filter>
+    </None>
+    <None Include="VS_TransformConstBuffer.hlsli">
+      <Filter>Shader\Header Files</Filter>
+    </None>
+    <None Include="VS_ShadowFunctions.hlsli">
       <Filter>Shader\Header Files</Filter>
     </None>
   </ItemGroup>

@@ -1,7 +1,8 @@
 #pragma once
 #include "Includes.h"
-#include "Graphics.h"
 #include "RenderTechnique.h"
+
+class GFX;
 
 class Shape
 {

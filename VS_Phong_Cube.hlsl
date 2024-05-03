@@ -1,11 +1,5 @@
-#include "ShadowFunctions.hlsli"
-
-cbuffer constBuffer : register(b0)
-{
-    matrix model;
-    matrix modelView;
-    matrix modelViewProjection;
-};
+#include "VS_ShadowFunctions.hlsli"
+#include "VS_TransformConstBuffer.hlsli"
 
 cbuffer shadowBuffer : register(b1)
 {

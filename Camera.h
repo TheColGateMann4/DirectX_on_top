@@ -47,8 +47,6 @@ public:
 	void GetCameraSettings(CameraSettings* cameraSettings) const;
 
 private:
-	void UpdateProjectionMatrix(GFX& gfx);
-
 	float WrapAngle(float angle, float value);
 
 	virtual const char* GetName() const override
@@ -63,7 +61,10 @@ private:
 		return "";
 	}
 
-private:
+protected:
+	void UpdateProjectionMatrix(GFX& gfx);
+
+protected:
 	float m_movespeed = 12.0f;
 	float m_sensivity = 0.008f;
 
@@ -72,6 +73,7 @@ private:
 	float m_NearZ = 0.5f;
 	float m_FarZ = 400.0f;
 
+private:
 	bool drawFrustum = true;
 	bool drawIndicator = true;
 

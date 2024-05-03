@@ -1,8 +1,7 @@
-#include "ShadowFunctions.hlsli"
-
+#include "PS_ShadowFunctions.hlsli"
 #include "PointLightConstBuffer.hlsli"
 #include "ShadowResources.hlsli"
-#include "TransformConstBuffer.hlsli"
+#include "PS_TransformConstBuffer.hlsli"
 
 cbuffer objectBuffer : register(b1)
 {
@@ -22,7 +21,7 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     
     float3 diffuse, specular;
     
-    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, depthMapCoords);
+    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, depthMapCoords, c0, c1);
     
     if(shadowLevel != 0.0f)
     {
