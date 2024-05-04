@@ -36,6 +36,8 @@ PointLightModel::PointLightModel(GFX& gfx, PointLight* parent, float radius)
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), vertexShader.get()));
 
+			normalStep.AddBindable(RasterizerState::GetBindable(gfx, true));
+
 			normalStep.AddBindable(std::move(vertexShader));
 
 			normalTechnique.AddRenderStep(normalStep);
