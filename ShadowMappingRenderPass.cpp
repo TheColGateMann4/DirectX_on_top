@@ -31,6 +31,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 
 		layout.Add<DynamicConstantBuffer::DataType::Float>("c0");
 		layout.Add<DynamicConstantBuffer::DataType::Float>("c1");
+		layout.Add<DynamicConstantBuffer::DataType::Int>("pcf");
 
 		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 
@@ -42,7 +43,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 	RegisterOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("shadowCameraData", &shadowCameraData));
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::Off));
 	AddBindable(NullPixelShader::GetBindable(gfx));
-	AddBindable(RasterizerState::GetBindable(gfx, true, 40, 0.93f, 0.545f));
+	shadowRasterizer = RasterizerState::GetBindable(gfx, true, 40, 0.00365f, 0.909f);
 }
 
 void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
@@ -64,6 +65,7 @@ void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 void ShadowMappingRenderPass::RenderModels(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	m_renderTarget->Clear(gfx);
+	shadowRasterizer->Bind(gfx);
 
 	RenderJobPass::Render(gfx);
 }
@@ -127,6 +129,7 @@ void ShadowMappingRenderPass::UpdateCameraData(GFX& gfx, ShadowCamera* shadowCam
 
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("c0") = -nearZ * farZ / (farZ - nearZ);
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("c1") = farZ / (farZ - nearZ);
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("pcf") = pcf;
 
 	shadowCameraData->Update(gfx, bufferData);
 
@@ -145,4 +148,40 @@ void ShadowMappingRenderPass::UpdateCameraTransformBuffer(GFX& gfx, ShadowCamera
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Matrix>("shadowCameraView") = cameraModel;
 
 	shadowCameraTransformBuffer->Update(gfx, bufferData);
+}
+
+void ShadowMappingRenderPass::ShowWindow(GFX& gfx, bool show)
+{
+	if (!show)
+		return;
+
+	if (ImGui::Begin("Shadow Settings"))
+	{
+		bool changed = false;
+
+		auto checkChanged = [&changed](bool returnFromStatement) mutable
+			{
+				changed = changed || returnFromStatement;
+			};
+
+		{
+			DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
+			floatInfo.v_min = 0.0f;
+			floatInfo.v_max = 0.005f;
+			floatInfo.format = "%.6f";
+
+			checkChanged(ImGui::SliderInt("pcf", &pcf, 0, 5));
+
+			ImGui::Text("Hardware Varibles");
+
+			checkChanged(ImGui::SliderInt("hBias", &bias, 0, 1000000));
+			checkChanged(ImGui::SliderFloat("hBiasClamp", &biasClamp, 0.00001f, 1.0f, "%.5f"));
+			checkChanged(ImGui::SliderFloat("hSlopeScaledDepthBias", &slopeScaledDepthBias, 0.0f, 100.0f, "%.5f"));
+		}
+
+		if (changed)
+			shadowRasterizer->ChangeDepthValues(gfx, bias, biasClamp, slopeScaledDepthBias);
+
+		ImGui::End();
+	}
 }

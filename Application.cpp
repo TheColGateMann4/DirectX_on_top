@@ -4,7 +4,7 @@
 #include <random>
 #include "CameraManager.h"
 #include "Camera.h"
-#include "NormalRenderPass.h"
+#include "ShadowMappingRenderPass.h"
 #include "Skybox.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
@@ -172,6 +172,8 @@ void Application::Update()
 		ImGui::ShowDemoWindow();
 
 	scene.DrawModelHierarchy(showImguiWindows);
+
+	static_cast<ShadowMappingRenderPass*>(renderGraph.GetRenderJobPass("shadowMappingPass"))->ShowWindow(window.Graphics, showImguiWindows);
 
 	fpsCounter.Draw(deltaTime);
 
