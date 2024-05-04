@@ -80,9 +80,8 @@ void Scene::DrawModelHierarchy(bool show)
 			m_pressedNode->MakePropeties(m_window->Graphics);
 			m_pressedNode->MakeAdditionalPropeties(m_window->Graphics);
 		}
-
-		ImGui::End();
 	}
+	ImGui::End();
 }
 
 CameraManager* Scene::GetCameraManager()

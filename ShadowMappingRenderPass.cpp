@@ -182,7 +182,7 @@ void ShadowMappingRenderPass::ShowWindow(GFX& gfx, bool show)
 
 		if (changed)
 			shadowRasterizer->ChangeDepthValues(gfx, bias, biasClamp, slopeScaledDepthBias);
-
-		ImGui::End();
 	}
+
+	ImGui::End();
 }

@@ -57,9 +57,8 @@ void FPSCounter::Draw(const float deltaTime)
 
 
 			ImGui::Text(fpsText.c_str());
-
-			ImGui::End();
 		}
+		ImGui::End();
 
 		ImGui::PopStyleColor(2);
 		ImGui::PopStyleVar();
