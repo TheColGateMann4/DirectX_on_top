@@ -43,7 +43,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 	RegisterOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("shadowCameraData", &shadowCameraData));
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::Off));
 	AddBindable(NullPixelShader::GetBindable(gfx));
-	shadowRasterizer = RasterizerState::GetBindable(gfx, true, 40, 0.00365f, 0.909f);
+	shadowRasterizer = RasterizerState::GetBindable(gfx, true, bias, biasClamp, slopeScaledDepthBias);
 }
 
 void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
@@ -118,18 +118,19 @@ void ShadowMappingRenderPass::UpdateCameraData(GFX& gfx, ShadowCamera* shadowCam
 
 
 	if(cameraDataInitialized)
-		if (nearZ == prevNearZ && farZ == prevFarZ)
+		if (nearZ == prevNearZ && farZ == prevFarZ && pcf == prevPCF)
 			return;
 
 	// Setting cameraDataInitialized to true and updating prev camera Z could have been done somewhere besides const functions. But this is way more clear.
 	// Making those members mutable makes the code more inconsistent but its right in this case since its used to remove some ununnecessary looping and updating const buffer
 	prevNearZ = nearZ;
 	prevFarZ = farZ;
+	prevPCF = pcf;
 	cameraDataInitialized = true;
 
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("c0") = -nearZ * farZ / (farZ - nearZ);
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("c1") = farZ / (farZ - nearZ);
-	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("pcf") = pcf;
+	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("pcf") = pcf;
 
 	shadowCameraData->Update(gfx, bufferData);
 

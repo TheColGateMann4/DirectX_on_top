@@ -33,11 +33,12 @@ private:
 	mutable bool cameraDataInitialized = false;
 	mutable float prevNearZ = 0.0f;
 	mutable float prevFarZ = 0.0f;
+	mutable int prevPCF = 0;
 
 	std::shared_ptr<RasterizerState> shadowRasterizer;
 
 	INT bias = 40;
 	FLOAT biasClamp = 0.00365f;
-	FLOAT slopeScaledDepthBias = 0.909f;
-	INT pcf = 0;
+	FLOAT slopeScaledDepthBias = 3.464f;
+	INT pcf = 4;
 };

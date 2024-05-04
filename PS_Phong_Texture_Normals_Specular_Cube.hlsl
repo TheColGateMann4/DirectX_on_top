@@ -21,7 +21,7 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     
     float3 diffuse, specular;
     
-    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, depthMapCoords, c0, c1);
+    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, depthMapCoords, c0, c1, pcf);
     
     if(shadowLevel != 0.0f)
     {
