@@ -26,8 +26,7 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Off));
 	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::POINT));
-	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 1, SamplerState::LESS_EQUAL, SamplerState::POINT));
-	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 2, SamplerState::NEVER, SamplerState::POINT));
+	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 1, SamplerState::LESS_EQUAL, SamplerState::BILINEAR));
 }
 
 void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)

@@ -10,8 +10,6 @@ float CalculateDepth(float3 positionInShadowSpace, float c0, float c1)
     return (c1 * axisLength + c0) / axisLength;
 }
 
-SamplerState s_depthNormalSampler : register(s2);
-
 float GetShadowDepthAtOffset(TextureCube t_depthMap, SamplerComparisonState s_depthComparisonSampler, float4 depthMapCoords : DEPTHTEXCOORD, float c0, float c1, int2 offset)
 {
     uint width, height;
@@ -55,16 +53,7 @@ float GetShadowDepthAtOffset(TextureCube t_depthMap, SamplerComparisonState s_de
     // by multiplying by longestAxis we are going back into normal space from ratio'd space
     const float3 localDepthCoords = (depthCoordsInRatioSpace + personalizedOffsetInRatioSpace) * longestAxis;
     
-    float depth = CalculateDepth(localDepthCoords, c0, c1);
-    const float depthSample = t_depthMap.Sample(s_depthNormalSampler, localDepthCoords);
-    const float baseDepthSample = t_depthMap.Sample(s_depthNormalSampler, depthMapCoords.xyz);
-    
-    depth += depthSample;
-    depth += baseDepthSample;
-    depth -= depthSample;
-    depth -= baseDepthSample;
-    
-    return t_depthMap.SampleCmpLevelZero(s_depthComparisonSampler, localDepthCoords, depth);
+    return t_depthMap.SampleCmpLevelZero(s_depthComparisonSampler, localDepthCoords, CalculateDepth(localDepthCoords, c0, c1));
 }
 
 float GetShadowLevel(TextureCube t_depthMap, SamplerComparisonState s_depthComparisonSampler, float4 depthMapCoords : DEPTHTEXCOORD, float c0, float c1, int pcf)
