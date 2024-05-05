@@ -17,11 +17,11 @@ float GetShadowDepthAtOffset(TextureCube t_depthMap, SamplerComparisonState s_de
     t_depthMap.GetDimensions(width, height);
     
     //we are checking for longset axis to determine the ratios
-    const float3 lengthOfAxels = abs(depthMapCoords);
+    const float3 lengthOfAxels = abs(depthMapCoords.xyz);
     const float longestAxis = max(lengthOfAxels.x, max(lengthOfAxels.y, lengthOfAxels.z));
     
     //getting ratio space values
-    const float3 depthCoordsInRatioSpace = depthMapCoords / longestAxis;
+    const float3 depthCoordsInRatioSpace = depthMapCoords.xyz / longestAxis;
     
     //we are using ratio space just for adding offset which is ratio'd by default
     const float2 offsetInRatioSpace = offset * (1.0f / width);
@@ -34,17 +34,17 @@ float GetShadowDepthAtOffset(TextureCube t_depthMap, SamplerComparisonState s_de
     //
     // If we would do something like this but with care of individual values then this should be taken care of.
     // But we care only about outcome of values, so we are safe
-    if (lengthOfAxels.x > lengthOfAxels.y && lengthOfAxels.x > lengthOfAxels.z)
+    if (abs(depthMapCoords.x) == longestAxis)
     {
         personalizedOffsetInRatioSpace.y = offsetInRatioSpace.x;
         personalizedOffsetInRatioSpace.z = offsetInRatioSpace.y;
     }
-    else if (lengthOfAxels.y > lengthOfAxels.x && lengthOfAxels.y > lengthOfAxels.z)
+    else if (abs(depthMapCoords.y) == longestAxis)
     {
         personalizedOffsetInRatioSpace.x = offsetInRatioSpace.x;
         personalizedOffsetInRatioSpace.z = offsetInRatioSpace.y;
     }
-    else if (lengthOfAxels.z > lengthOfAxels.x && lengthOfAxels.z > lengthOfAxels.y)
+    else if (abs(depthMapCoords.z) == longestAxis)
     {
         personalizedOffsetInRatioSpace.x = offsetInRatioSpace.x;
         personalizedOffsetInRatioSpace.y = offsetInRatioSpace.y;
