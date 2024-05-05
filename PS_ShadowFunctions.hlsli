@@ -34,7 +34,7 @@ float GetShadowDepthAtOffset(TextureCube t_depthMap, SamplerComparisonState s_de
     //
     // If we would do something like this but with care of individual values then this should be taken care of.
     // But we care only about outcome of values, so we are safe
-    if (abs(depthCoordsInRatioSpace.x)  == 1.0f) // 1.0f is longest axis
+    if (abs(depthCoordsInRatioSpace.x) == 1.0f) // 1.0f is longest axis
     {
         personalizedOffsetInRatioSpace.y = offsetInRatioSpace.x;
         personalizedOffsetInRatioSpace.z = offsetInRatioSpace.y;
@@ -44,13 +44,22 @@ float GetShadowDepthAtOffset(TextureCube t_depthMap, SamplerComparisonState s_de
         personalizedOffsetInRatioSpace.x = offsetInRatioSpace.x;
         personalizedOffsetInRatioSpace.z = offsetInRatioSpace.y;
     }
-    else
+    else if (abs(depthCoordsInRatioSpace.z) == 1.0f)
     {
         personalizedOffsetInRatioSpace.x = offsetInRatioSpace.x;
         personalizedOffsetInRatioSpace.y = offsetInRatioSpace.y;
     }
+    /*
+    else
+    {
+        We need last else-if check since gpu makes some optimizations and "all" of our entries end up in this statement.
+        The VS debugger gives us somehow results that we'd want even though on our screen we could see wrong results on our screen.
+        But surely graphic debugger gives us wrong data.
+    
+        That means some of our entries will pass through this PCF system without offset. Which means our smoothing is wrong because of this.
+    }
+    */
    
-    // by multiplying by longestAxis we are going back into normal space from ratio'd space
     const float3 localDepthCoords = (depthCoordsInRatioSpace + personalizedOffsetInRatioSpace) * longestAxis;
     
     return t_depthMap.SampleCmpLevelZero(s_depthComparisonSampler, localDepthCoords, CalculateDepth(localDepthCoords, c0, c1));
