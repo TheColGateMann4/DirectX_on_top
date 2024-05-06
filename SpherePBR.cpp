@@ -95,7 +95,7 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("emission") = m_emission;
 				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("reflectivity") = m_reflectivity;
 
-				normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_PBR_Diffuse_Normal_Roughness.cso"));
+				normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_PBR_Diffuse_Normal_Roughness_Metallic.cso"));
 
 				normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
 			}
@@ -113,6 +113,8 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 			normalStep.AddBindable(Texture::GetBindable(gfx, "Images\\Textures\\patterned_wooden_wall_panel\\normal.jpg", 1, false, true));
 
 			normalStep.AddBindable(Texture::GetBindable(gfx, "Images\\Textures\\patterned_wooden_wall_panel\\roughness.jpg", 2, false, true));
+
+			normalStep.AddBindable(Texture::GetBindable(gfx, "Images\\Textures\\patterned_wooden_wall_panel\\metallic.jpg", 3, false, true));
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, sphereModel.GetLayout(), pVertexShader.get()));
 

@@ -725,7 +725,7 @@
     <FxCompile Include="VS_Shadow_Height.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_PBR_Diffuse_Normal_Roughness.hlsl">
+    <FxCompile Include="PS_PBR_Diffuse_Normal_Roughness_Metallic.hlsl">
       <Filter>Shader\PBR</Filter>
     </FxCompile>
   </ItemGroup>

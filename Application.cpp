@@ -21,7 +21,7 @@ BOOL Application::Initiate()
 	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{0.0f, 5.0f, -10.0f}));
 	//scene.AddSceneObject(std::make_unique<Camera>(window.Graphics));
 	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics, 0.5f, DirectX::XMFLOAT3{0.0f, 3.0f, 0.0f}));
-	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
+	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Flashlight\\Flashlight.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, 6.0f }));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 1.0f, DirectX::XMFLOAT3{ 6.0f, 0.0f, 0.0f }));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Ghosts\\GroundCape1.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, -7.0f }));

@@ -23,6 +23,7 @@ cbuffer ObjectBuffer : register(b1)
 Texture2D t_diffuseMap : register(t0);
 Texture2D t_normalMap : register(t1);
 Texture2D t_roughnessMap : register(t2);
+Texture2D t_metalicMap : register(t3);
 
 SamplerState s_sampler : register(s0);
 
@@ -64,9 +65,9 @@ float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, co
 {
     const float alpha = pow(t_roughnessMap.Sample(s_sampler, textureCoords), 2.0f);
     const float3 Ks = FrenelsEquation(reflectivity, V, H);
-    const float3 Kd = (float3(1.0f, 1.0f, 1.0f) - Ks) * (1.0f - metalic);
+    const float3 Kd = (float3(1.0f, 1.0f, 1.0f) - Ks) * (1.0f - t_metalicMap.Sample(s_sampler, textureCoords));
     
-    const float3 lambert = t_diffuseMap.Sample(s_sampler, textureCoords) / _Pi;
+    const float3 lambert = t_diffuseMap.Sample(s_sampler, textureCoords);
     
     const float3 cookTorranceNumerator = NormalDist(alpha, N, H) * GeometryShadow(alpha, N, V, L) * FrenelsEquation(reflectivity, V, H);
     float cookTorranceDenominator = 4.0f * max(dot(V, N), 0.0f) * max(dot(L, N), 0.0f);
