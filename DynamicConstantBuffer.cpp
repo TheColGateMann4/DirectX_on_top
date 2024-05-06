@@ -609,14 +609,16 @@ void DynamicConstantBuffer::BufferData::MakeFinished()
 
 	ResizeBuffer(m_size + bytesAdded);
 
-	for (const auto& addedSpace : addedSpacesVector)
+	for (size_t i = 0; i < addedSpacesVector.size(); i++)
 	{
-		size_t sourceSizeToMove = possibleSizeWithoutPaddingAtTheEnd - (addedSpace * 4);
+		size_t currentAddedSpacePosition = addedSpacesVector.at(i) + i;
+
+		size_t sourceSizeToMove = possibleSizeWithoutPaddingAtTheEnd - (currentAddedSpacePosition * 4);
 
 		// multiplying by 4 because we want to get size of floats, and plus 4 since we are moving memory by 1 float size
-		size_t destinationSize = m_size - ((addedSpace * 4) + 4); 
+		size_t destinationSize = m_size - ((currentAddedSpacePosition * 4) + 4);
 
-		void* src = static_cast<char*>(m_pDataBuffer) + (addedSpace * 4);
+		void* src = static_cast<char*>(m_pDataBuffer) + (currentAddedSpacePosition * 4);
 		void* dest = static_cast<char*>(src) + 4;
 
 		memmove_s(dest, destinationSize, src, sourceSizeToMove);
