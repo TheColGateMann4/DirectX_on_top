@@ -18,6 +18,7 @@ struct VSOUT
     float3 viewTangent : TANGENT;
     float3 viewBitangent : BITANGENT;
     float2 textureCoords : TEXCOORD;
+    float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
 
@@ -36,6 +37,7 @@ VSOUT main(float3 position : POSITION, float3 normal : NORMAL, float3 tangent : 
     vsout.viewBitangent = mul(bitangent, (float3x3)modelView);
     vsout.textureCoords = textureCoords;
     vsout.position = mul(float4(position, 1.0f), modelViewProjection);
+    vsout.depthMapCoords = CalculateDepthTextureCoords(position, model, shadowViewProjection);
 
     return vsout;
 }

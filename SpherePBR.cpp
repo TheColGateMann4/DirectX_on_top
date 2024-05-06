@@ -34,7 +34,7 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 
 
 		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("mapMultipler") = 1.0f;
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("mapMultipler") = 0.15f;
 
 		CachedBuffer::GetBindable(gfx, bufferData, 2, false, "mapMultiplerData");
 	}
@@ -103,6 +103,8 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 			normalStep.AddBindable(CachedBuffer::GetBindableWithoutCreation(gfx, "mapMultiplerData"));
 
 			normalStep.AddBindable(BlendState::GetBindable(gfx, false));
+
+			normalStep.AddBindable(RasterizerState::GetBindable(gfx, true));
 
 			normalStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, false));
 
