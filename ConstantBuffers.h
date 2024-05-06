@@ -157,26 +157,41 @@ public:
 
 	using ConstantBuffer::Bind;
 
-public:
-	static std::shared_ptr<CachedBuffer> GetBindable(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
+	void SetBufferID(const char* bufferID)
 	{
-		return BindableList::GetBindable<CachedBuffer>(gfx, bufferData, slot, isPixelShader);
+		m_bufferID = bufferID;
+	}
+
+public:
+	static std::shared_ptr<CachedBuffer> GetBindable(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader, const char* bufferID)
+	{
+		std::shared_ptr<CachedBuffer> pCachedBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, slot, isPixelShader);
+		pCachedBuffer->m_bufferID = bufferID;
+
+		BindableList::PushBindable(pCachedBuffer, bufferID);
+
+		return pCachedBuffer;
+	}
+
+	static std::shared_ptr<CachedBuffer> GetBindableWithoutCreation(GFX& gfx, const char* bufferID)
+	{
+		return BindableList::GetBindableWithoutCreation<CachedBuffer>(gfx, bufferID);
 	}
 
 	std::string GetLocalUID() const noexcept override
 	{
-		return GenerateUID(constBufferData, m_slot, m_isPixelShader);
+		return GenerateUID(m_bufferID.c_str());
 	};
 
-	static std::string GetStaticUID(const DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader) noexcept
+	static std::string GetStaticUID(const char* bufferID) noexcept
 	{
-		return GenerateUID(bufferData, slot, isPixelShader);
+		return GenerateUID(bufferID);
 	};
 
 private:
-	static std::string GenerateUID(const DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
+	static std::string GenerateUID(const char* bufferID)
 	{
-		return bufferData.GetLayout().GetIdentificator() + '@' + std::to_string(slot) + '@' + (char)('0' + isPixelShader);
+		return bufferID;
 	}
 
 public:
@@ -201,6 +216,7 @@ private:
 	using ConstantBuffer::pConstantBuffer;
 	using ConstantBuffer::m_slot;
 	using ConstantBuffer::m_isPixelShader;
+	std::string m_bufferID = "";
 };
 
 
