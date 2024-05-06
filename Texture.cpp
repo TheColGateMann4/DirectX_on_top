@@ -2,11 +2,12 @@
 #include "ErrorMacros.h"
 #include <DirectXTex.h>
 
-Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube)
+Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube, bool isPixelShaderResource)
 	:
 	m_slot(slot),
 	m_imagePath(imagePath),
-	m_isCube(isCube)
+	m_isCube(isCube),
+	m_isPixelShaderResource(isPixelShaderResource)
 {
 	HRESULT hr;
 	using namespace DirectX;
@@ -15,20 +16,53 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 	ScratchImage textures;
 	std::wstring wImagePath = std::wstring(imagePath.begin(), imagePath.end());
 
-	THROW_GFX_IF_FAILED(GetMetadataFromWICFile(
-		wImagePath.c_str(),
-		WIC_FLAGS_NONE,
-		texMetaData
-	));
+	size_t dotPosition = m_imagePath.rfind('.');
+
+	if (dotPosition == std::string::npos)
+	{
+		std::string errorString = "Could not found extension in texture name. Texture path was: \"";
+		errorString += m_imagePath;
+		errorString += "\".";
+		THROW_INTERNAL_ERROR(errorString.c_str());
+	}
+
+	std::string extension = std::string(m_imagePath.begin() + dotPosition + 1, m_imagePath.end());
+
+	for (size_t i = 0; i < extension.length(); i++)
+		extension.at(i) = std::tolower(extension.at(i));
 
 	m_textureFormat = texMetaData.format;
+	
+	if (extension == "tga")
+	{
+		THROW_GFX_IF_FAILED(GetMetadataFromTGAFile(
+			wImagePath.c_str(),
+			TGA_FLAGS_NONE,
+			texMetaData
+		));
 
-	THROW_GFX_IF_FAILED(LoadFromWICFile(
-		wImagePath.c_str(),
-		WIC_FLAGS_NONE,
-		&texMetaData,
-		textures
-	));
+		THROW_GFX_IF_FAILED(LoadFromTGAFile(
+			wImagePath.c_str(),
+			TGA_FLAGS_NONE,
+			&texMetaData,
+			textures
+		));
+	}
+	else
+	{
+		THROW_GFX_IF_FAILED(GetMetadataFromWICFile(
+			wImagePath.c_str(),
+			WIC_FLAGS_NONE,
+			texMetaData
+		));
+
+		THROW_GFX_IF_FAILED(LoadFromWICFile(
+			wImagePath.c_str(),
+			WIC_FLAGS_NONE,
+			&texMetaData,
+			textures
+		));
+	}
 
 	m_hasAlpha = !textures.IsAlphaAllOpaque();
 			
@@ -74,10 +108,14 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 
 	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pTexture.Get(), &shaderResourceViewDesc, &pShaderResourceView));
 
-	GFX::GetDeviceContext(gfx)->GenerateMips(pShaderResourceView.Get());
+	if(isPixelShaderResource)
+		GFX::GetDeviceContext(gfx)->GenerateMips(pShaderResourceView.Get());
 }
 
 void Texture::Bind(GFX& gfx) noexcept
 {
-	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
+	if(m_isPixelShaderResource)
+		GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
+	else
+		GFX::GetDeviceContext(gfx)->VSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
 }

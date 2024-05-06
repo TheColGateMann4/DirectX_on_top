@@ -33,29 +33,29 @@ public:
 	};
 
 public:
-	SamplerState(GFX& gfx, Mode samplerMode, size_t slot = 0, Comparison comparison = NEVER, Filter filter = ANISOTROPIC);
+	SamplerState(GFX& gfx, Mode samplerMode, size_t slot = 0, Comparison comparison = NEVER, Filter filter = ANISOTROPIC, bool isPixelShaderResource = true);
 	void Bind(GFX& gfx) noexcept override;
 
 public:
-	static std::shared_ptr<SamplerState> GetBindable(GFX& gfx, Mode samplerMode, size_t slot = 0, Comparison comparison = NEVER, Filter filter = ANISOTROPIC)
+	static std::shared_ptr<SamplerState> GetBindable(GFX& gfx, Mode samplerMode, size_t slot = 0, Comparison comparison = NEVER, Filter filter = ANISOTROPIC, bool isPixelShaderResource = true)
 	{
-		return BindableList::GetBindable<SamplerState>(gfx, samplerMode, slot, comparison, filter);
+		return BindableList::GetBindable<SamplerState>(gfx, samplerMode, slot, comparison, filter, isPixelShaderResource);
 	}
 
 	std::string GetLocalUID() const noexcept override
 	{
-		return GenerateUID(m_samplerMode, m_slot, m_comparison, m_filter);
+		return GenerateUID(m_samplerMode, m_slot, m_comparison, m_filter, m_isPixelShaderResource);
 	};
 
-	static std::string GetStaticUID(Mode samplerMode, size_t slot, Comparison comparison, Filter filter) noexcept
+	static std::string GetStaticUID(Mode samplerMode, size_t slot, Comparison comparison, Filter filter, bool isPixelShaderResource) noexcept
 	{
-		return GenerateUID(samplerMode, slot, comparison, filter);
+		return GenerateUID(samplerMode, slot, comparison, filter, isPixelShaderResource);
 	};
 
 private:
-	static std::string GenerateUID(Mode samplerMode, size_t slot, Comparison comparison, Filter filter)
+	static std::string GenerateUID(Mode samplerMode, size_t slot, Comparison comparison, Filter filter, bool isPixelShaderResource)
 	{
-		return std::to_string(samplerMode) + '@' + std::to_string(slot) + '@' + std::to_string(comparison) + '@' + std::to_string(filter);
+		return std::to_string(samplerMode) + '@' + std::to_string(slot) + '@' + std::to_string(comparison) + '@' + std::to_string(filter) + '@' + std::to_string(isPixelShaderResource);
 	}
 
 protected:
@@ -64,4 +64,5 @@ protected:
 	size_t m_slot;
 	Comparison m_comparison;
 	Filter m_filter;
+	bool m_isPixelShaderResource;
 };

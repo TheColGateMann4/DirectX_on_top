@@ -716,6 +716,12 @@
     <FxCompile Include="PS_PBR_NoMaps.hlsl">
       <Filter>Shader\PBR</Filter>
     </FxCompile>
+    <FxCompile Include="VS_PBR_HeightMap.hlsl">
+      <Filter>Shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Shadow_HeightMap.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="PointLightConstBuffer.hlsli">

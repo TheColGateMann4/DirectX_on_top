@@ -3,12 +3,13 @@
 #include "ErrorMacros.h"
 #include "Graphics.h"
 
-SamplerState::SamplerState(GFX& gfx, Mode samplerMode, size_t slot, Comparison comparison, Filter filter)
+SamplerState::SamplerState(GFX& gfx, Mode samplerMode, size_t slot, Comparison comparison, Filter filter, bool isPixelShaderResource)
 	: 
 	m_samplerMode(samplerMode),
 	m_slot(slot),
 	m_comparison(comparison),
-	m_filter(filter)
+	m_filter(filter),
+	m_isPixelShaderResource(isPixelShaderResource)
 {
 	HRESULT hr;
 	
@@ -33,5 +34,9 @@ SamplerState::SamplerState(GFX& gfx, Mode samplerMode, size_t slot, Comparison c
 
 void SamplerState::Bind(GFX& gfx) noexcept
 {
-	GFX::GetDeviceContext(gfx)->PSSetSamplers(m_slot, 1, pSamplerState.GetAddressOf());
+	if(m_isPixelShaderResource)
+		GFX::GetDeviceContext(gfx)->PSSetSamplers(m_slot, 1, pSamplerState.GetAddressOf());
+	else
+		GFX::GetDeviceContext(gfx)->VSSetSamplers(m_slot, 1, pSamplerState.GetAddressOf());
+
 }

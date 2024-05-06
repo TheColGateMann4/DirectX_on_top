@@ -13,7 +13,6 @@ public:
 	static std::shared_ptr<T> GetBindable(GFX& gfx, Params&& ...params)
 	{
 		static_assert(std::is_base_of<Bindable, T>::value, "passed bindable must be delivered from Bindable class");
-
 		return m_Get().m_GetBindable<T>(gfx, std::forward<Params>(params)...);
 	}
 
@@ -21,7 +20,6 @@ public:
 	static std::shared_ptr<T> GetBindableWithoutCreation(GFX& gfx, Params&& ...params)
 	{
 		static_assert(std::is_base_of<Bindable, T>::value, "passed bindable must be delivered from Bindable class");
-
 		return m_Get().m_GetBindableWithoutCreation<T>(gfx, std::forward<Params>(params)...);
 	}
 
