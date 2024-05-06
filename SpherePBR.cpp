@@ -15,6 +15,8 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 
 	SimpleMesh sphereModel = Sphere::GetMeshWithNormalsAndTextureMapping(1.0f, 30, 60);
 
+	Sphere::CalculateTangents(sphereModel);
+
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), sphereModel.m_indices);
 	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), sphereModel.m_vertices);
 	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -43,7 +45,7 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 		{
 			RenderStep shadowStep("shadowMappingPass");
 
-			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Shadow_HeightMap.cso");
+			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Shadow_Height.cso");
 
 			shadowStep.AddBindable(InputLayout::GetBindable(gfx, sphereModel.GetLayout(), pVertexShader.get()));
 
@@ -67,7 +69,7 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 		{
 			RenderStep normalStep("normalPass");
 
-			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_PBR_HeightMap.cso");
+			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_PBR_Height.cso");
 
 			{
 				DynamicConstantBuffer::BufferLayout layout;
@@ -93,7 +95,7 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("emission") = m_emission;
 				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("reflectivity") = m_reflectivity;
 
-				normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_PBR_NoMaps.cso"));
+				normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_PBR_Diffuse_Normal_Roughness.cso"));
 
 				normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
 			}
@@ -105,6 +107,12 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 			normalStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, false));
 
 			normalStep.AddBindable(Texture::GetBindable(gfx, "Images\\Textures\\patterned_wooden_wall_panel\\height.tga", 0, false, false));
+
+			normalStep.AddBindable(Texture::GetBindable(gfx, "Images\\Textures\\patterned_wooden_wall_panel\\diffuse.jpg", 0, false, true));
+
+			normalStep.AddBindable(Texture::GetBindable(gfx, "Images\\Textures\\patterned_wooden_wall_panel\\normal.jpg", 1, false, true));
+
+			normalStep.AddBindable(Texture::GetBindable(gfx, "Images\\Textures\\patterned_wooden_wall_panel\\roughness.jpg", 2, false, true));
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, sphereModel.GetLayout(), pVertexShader.get()));
 

@@ -602,6 +602,9 @@
     <ClCompile Include="SpherePBR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SimpleMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -713,14 +716,17 @@
     <FxCompile Include="VS_PBR.hlsl">
       <Filter>Shader\PBR</Filter>
     </FxCompile>
-    <FxCompile Include="PS_PBR_NoMaps.hlsl">
+    <FxCompile Include="PS_PBR.hlsl">
       <Filter>Shader\PBR</Filter>
     </FxCompile>
-    <FxCompile Include="VS_PBR_HeightMap.hlsl">
+    <FxCompile Include="VS_PBR_Height.hlsl">
       <Filter>Shader\PBR</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Shadow_HeightMap.hlsl">
+    <FxCompile Include="VS_Shadow_Height.hlsl">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_PBR_Diffuse_Normal_Roughness.hlsl">
+      <Filter>Shader\PBR</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

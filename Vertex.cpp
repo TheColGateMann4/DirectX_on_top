@@ -1,4 +1,5 @@
 #include "Vertex.h"
+#include "ErrorMacros.h"
 
 #define FOR_ALL_VERTEX_ELEMENTS(additionalStatement) \
 	STATEMENT(DynamicVertex::VertexLayout::VertexComponent::Position2D, additionalStatement) \
@@ -117,6 +118,18 @@ std::string DynamicVertex::VertexLayout::GetUID() const
 		result += element.GetCode();
 
 	return result;
+}
+
+size_t DynamicVertex::VertexLayout::GetIndexOfElement(VertexLayout::VertexComponent elementType) const
+{
+	for (size_t i = 0; i < m_elements.size(); i++)
+		if (m_elements[i].GetType() == elementType)
+			return i;
+
+	std::string errorString = "Layout element type could not be found. Element type was: \"";
+	errorString += std::to_string(static_cast<size_t>(elementType));
+	errorString += "\".";
+	THROW_INTERNAL_ERROR(errorString.c_str());
 }
 
 
@@ -262,7 +275,7 @@ DynamicVertex::ConstVertex DynamicVertex::VertexBuffer::Front() const noexcept(!
 
 DynamicVertex::ConstVertex DynamicVertex::VertexBuffer::operator[](size_t i) const noexcept(!IS_DEBUG)
 {
-	return const_cast<VertexBuffer&>(*this)[i];
+	return const_cast<const VertexBuffer&>(*this)[i];
 }
 
 

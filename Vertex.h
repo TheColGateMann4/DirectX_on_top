@@ -257,6 +257,8 @@ namespace DynamicVertex
 
 		std::string GetUID() const;
 
+		size_t GetIndexOfElement(VertexLayout::VertexComponent elementType) const;
+
 	private:
 		std::vector<Element> m_elements;
 	};
@@ -338,7 +340,7 @@ namespace DynamicVertex
 
 	public:
 		template<VertexLayout::VertexComponent type>
-		const auto& Attr() const noexcept(!IS_DEBUG)
+		const auto& Attribute() const noexcept(!IS_DEBUG)
 		{
 			return const_cast<Vertex&>(m_vertex).Attribute<type>();
 		}
