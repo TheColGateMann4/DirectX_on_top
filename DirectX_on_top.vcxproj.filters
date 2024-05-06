@@ -73,6 +73,12 @@
     <Filter Include="Header Files\Render\RenderGraph\RenderGraphType">
       <UniqueIdentifier>{6846b4e9-7569-4869-a35c-b7fa4964137f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Phong">
+      <UniqueIdentifier>{0d0b3bec-882c-40f4-bf1b-9a7a0eb3cb01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\PBR">
+      <UniqueIdentifier>{a8ed7917-ec75-4ef2-8412-f6cc4e23d169}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes.h">
@@ -351,6 +357,9 @@
     <ClInclude Include="DepthTextureCube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SpherePBR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -590,6 +599,9 @@
     <ClCompile Include="CubeTextureDrawingOrder.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="SpherePBR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -629,43 +641,7 @@
     <FxCompile Include="PS_TextureAnimation.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Specular.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="PS_Solid.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_SpecularMap.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong_Texture_Normals.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Normals_Specular.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Normals_SpecularMap.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong_Normals.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_NoMaps.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Mask_Normals_SpecularMap.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Normals_Specular_NoTangent.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Normals_Specular_Cube.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong_Cube.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="VS_Outline.hlsl">
@@ -697,6 +673,48 @@
     </FxCompile>
     <FxCompile Include="PS_Skybox.hlsl">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_NoMaps.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_Mask_Normals_SpecularMap.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_Normals_Specular.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_Normals_Specular_Cube.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_Normals_Specular_NoTangent.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_Normals_SpecularMap.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_Specular.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Phong_Texture_SpecularMap.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Phong.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Phong_Cube.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Phong_Normals.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Phong_Texture_Normals.hlsl">
+      <Filter>Shader\Phong</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_PBR.hlsl">
+      <Filter>Shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_PBR_NoMaps.hlsl">
+      <Filter>Shader\PBR</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

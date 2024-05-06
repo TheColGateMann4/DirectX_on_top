@@ -98,6 +98,106 @@ public:
 		return { std::move(vertices),std::move(indices) };
 	}
 
+	// Sphere generating algorithm taken from StackOverflow, made by Rabbid76
+	//https://stackoverflow.com/questions/45482988/generating-spheres-vertices-indices-and-normals
+	static SimpleMesh GetMeshWithNormalsAndTextureMapping(float radius = 1.0f, UINT32 verticalDivisions = 12, UINT32 horizontalDivisions = 24)
+	{
+		DynamicVertex::VertexLayout layout = DynamicVertex::VertexLayout()
+			.Append(DynamicVertex::VertexLayout::Position3D)
+			.Append(DynamicVertex::VertexLayout::Normal)
+			.Append(DynamicVertex::VertexLayout::Texture2D);
+
+		DynamicVertex::VertexBuffer vertices(std::move(layout));
+
+		int circCnt = (int)(horizontalDivisions + 0.5f);
+		if (circCnt < 4) circCnt = 4;
+		int circCnt_2 = circCnt / 2;
+		int layerCount = (int)(horizontalDivisions + 0.5f);
+		if (layerCount < 2) layerCount = 2;
+
+		for (int tbInx = 0; tbInx <= layerCount; tbInx++)
+		{
+			float v = (1.0 - (float)tbInx / layerCount);
+			float heightFac = sin((1.0 - 2.0 * tbInx / layerCount) * _Pi / 2.0);
+			float cosUp = sqrt(1.0 - heightFac * heightFac);
+			float z = heightFac;
+			for (int i = 0; i <= circCnt_2; i++)
+			{
+				float u = (float)i / (float)circCnt_2;
+				float angle = _Pi * u;
+				float x = cos(angle) * cosUp;
+				float y = sin(angle) * cosUp;
+				vertices.Emplace_Back(DirectX::XMFLOAT3(x * radius, y * radius, z * radius), DirectX::XMFLOAT3(x, y, z), DirectX::XMFLOAT2(u, v));
+			}
+			for (int i = 0; i <= circCnt_2; i++)
+			{
+				float u = (float)i / (float)circCnt_2;
+				float angle = _Pi * u + _Pi;
+				float x = cos(angle) * cosUp;
+				float y = sin(angle) * cosUp;
+				vertices.Emplace_Back(DirectX::XMFLOAT3(x * radius, y * radius, z * radius), DirectX::XMFLOAT3(x, y, z), DirectX::XMFLOAT2(u, v));
+			}
+		}
+		std::vector<UINT32> indices;
+
+		{
+			auto AddFace3 = [&indices](int first, int second, int third) mutable
+				{
+					indices.push_back(first);
+					indices.push_back(second);
+					indices.push_back(third);
+				};
+
+			auto AddFace4 = [&indices](int first, int second, int third, int fourth) mutable
+				{
+					indices.push_back(first);
+					indices.push_back(second);
+					indices.push_back(third);
+					indices.push_back(third);
+					indices.push_back(fourth);
+					indices.push_back(first);
+				};
+
+			int circSize_2;
+			int circSize;
+			//Bottom cap
+			{
+				circSize_2 = circCnt_2 + 1;
+				circSize = circSize_2 * 2;
+				for (int i = 0; i < circCnt_2; i++)
+					AddFace3(circSize + i, circSize + i + 1, i);
+				for (int i = circCnt_2 + 1; i < 2 * circCnt_2 + 1; i++)
+					AddFace3(circSize + i, circSize + i + 1, i);
+			}
+
+			//Discs
+			{
+				for (int tbInx = 1; tbInx < layerCount - 1; tbInx++)
+				{
+					int ringStart = tbInx * circSize;
+					int nextRingStart = (tbInx + 1) * circSize;
+					for (int i = 0; i < circCnt_2; i++)
+						AddFace4(ringStart + i, nextRingStart + i, nextRingStart + i + 1, ringStart + i + 1);
+					ringStart += circSize_2;
+					nextRingStart += circSize_2;
+					for (int i = 0; i < circCnt_2; i++)
+						AddFace4(ringStart + i, nextRingStart + i, nextRingStart + i + 1, ringStart + i + 1);
+				}
+			}
+
+			//Top cap
+			{
+				int start = (layerCount - 1) * circSize;
+				for (int i = 0; i < circCnt_2; i++)
+					AddFace3(start + i + 1, start + i, start + i + circSize);
+				for (int i = circCnt_2 + 1; i < 2 * circCnt_2 + 1; i++)
+					AddFace3(start + i + 1, start + i, start + i + circSize);
+			}
+		}
+
+		return {std::move(vertices), std::move(indices)};
+	}
+
 private:
 	// positional
 	FLOAT r;
