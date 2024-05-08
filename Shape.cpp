@@ -23,7 +23,8 @@ void Shape::Bind(GFX& gfx) const noexcept
 
 	m_pVertexBuffer->Bind(gfx);
 
-	m_pTopology->Bind(gfx);
+	if(m_pTopology)
+		m_pTopology->Bind(gfx);
 }
 
 void Shape::AddRenderTechnique(const RenderTechnique& technique)

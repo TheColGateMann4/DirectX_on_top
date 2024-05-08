@@ -34,7 +34,7 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 3;
 
-		m_constBuffer = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true);
+		m_constBuffer = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, TargetPixelShader);
 	}
 
 	pIndexBuffer = dynamic_cast<IndexBuffer*>(m_bindables.back().get());

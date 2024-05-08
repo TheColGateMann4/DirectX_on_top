@@ -34,5 +34,5 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 	RenderJobPass::Render(gfx);
 
 	//unbinding depthStencilView texture after we used it where we needed it
-	NullTexture::GetBindable(gfx, 3, true)->Bind(gfx);
+	NullTexture::GetBindable(gfx, 5, true)->Bind(gfx);
 }

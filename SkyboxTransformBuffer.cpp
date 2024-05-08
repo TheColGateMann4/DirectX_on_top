@@ -11,7 +11,7 @@ void SkyboxTransformBuffer::Initialize(GFX& gfx, UINT32 slot)
 {
 	TCBLayout = { "MA" };
 
-	vcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, slot, false);
+	vcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, slot, TargetVertexShader);
 }
 
 void SkyboxTransformBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept

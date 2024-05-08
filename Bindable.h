@@ -1,6 +1,14 @@
 #pragma once
 #include "Includes.h"
 
+enum TargetShader
+{
+	TargetPixelShader,
+	TargetVertexShader,
+	TargetHullShader,
+	TargetDomainShader
+};
+
 class Bindable
 {
 public:

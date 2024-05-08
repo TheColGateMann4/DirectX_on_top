@@ -72,7 +72,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
 
-			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, true));
+			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetPixelShader));
 
 			normalStep.AddBindable(Texture::GetBindable(gfx, diffuseTexture, 0, true));
 
@@ -113,7 +113,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 			maskStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
-			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, true));
+			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, TargetPixelShader));
 
 			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pVertexShader.get()));
 

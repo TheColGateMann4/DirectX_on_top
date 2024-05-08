@@ -2,12 +2,12 @@
 #include "ErrorMacros.h"
 #include <DirectXTex.h>
 
-Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube, bool isPixelShaderResource)
+Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube, TargetShader targetShader)
 	:
 	m_slot(slot),
 	m_imagePath(imagePath),
 	m_isCube(isCube),
-	m_isPixelShaderResource(isPixelShaderResource)
+	m_targetShader(targetShader)
 {
 	HRESULT hr;
 	using namespace DirectX;
@@ -108,14 +108,18 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 
 	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pTexture.Get(), &shaderResourceViewDesc, &pShaderResourceView));
 
-	if(isPixelShaderResource)
+	if(m_targetShader == TargetPixelShader)
 		GFX::GetDeviceContext(gfx)->GenerateMips(pShaderResourceView.Get());
 }
 
 void Texture::Bind(GFX& gfx) noexcept
 {
-	if(m_isPixelShaderResource)
+	if(m_targetShader == TargetPixelShader)
 		GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
-	else
+	else if(m_targetShader == TargetVertexShader)
 		GFX::GetDeviceContext(gfx)->VSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
+	else if (m_targetShader == TargetHullShader)
+		GFX::GetDeviceContext(gfx)->HSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());	
+	else if (m_targetShader == TargetDomainShader)
+		GFX::GetDeviceContext(gfx)->DSSetShaderResources(m_slot, 1, pShaderResourceView.GetAddressOf());
 }

@@ -12,12 +12,12 @@ public:
 		:	
 			pConstantBuffer(nullptr),
 			m_slot(0),
-			m_isPixelShader(false)
+			m_targetShader(TargetPixelShader)
 	{}
 
-	ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
+	ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, TargetShader targetShader)
 		: m_slot(slot),
-		m_isPixelShader(isPixelShader)
+		m_targetShader(targetShader)
 	{
 		HRESULT hr;
 
@@ -37,9 +37,9 @@ public:
 		THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&constBufferDesc, &constBufferResourceData, &pConstantBuffer));
 	}
 
-	ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferLayout& layout,UINT32 slot, bool isPixelShader)
+	ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferLayout& layout,UINT32 slot, TargetShader targetShader)
 		: m_slot(slot),
-		m_isPixelShader(isPixelShader)
+		m_targetShader(targetShader)
 	{
 		HRESULT hr;
 
@@ -81,12 +81,14 @@ public:
 
 	void Bind(GFX& gfx) noexcept override
 	{
-		assert(pConstantBuffer != nullptr);
-
-		if (m_isPixelShader)
+		if (m_targetShader == TargetPixelShader)
 			GFX::GetDeviceContext(gfx)->PSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
-		else
+		else if (m_targetShader == TargetVertexShader)
 			GFX::GetDeviceContext(gfx)->VSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
+		else if (m_targetShader == TargetHullShader)
+			GFX::GetDeviceContext(gfx)->HSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
+		else if (m_targetShader == TargetDomainShader)
+			GFX::GetDeviceContext(gfx)->DSSetConstantBuffers(m_slot, 1, pConstantBuffer.GetAddressOf());
 	}
 
 public:
@@ -97,7 +99,7 @@ public:
 
 		pConstantBuffer = toAssign.pConstantBuffer;
 		m_slot = toAssign.m_slot;
-		m_isPixelShader = toAssign.m_isPixelShader;
+		m_targetShader = toAssign.m_targetShader;
 
 		return *this;
 	}
@@ -110,13 +112,13 @@ public:
 
 	bool isPixelShaderType() const
 	{
-		return m_isPixelShader;
+		return m_targetShader;
 	}
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 	UINT32 m_slot;
-	bool m_isPixelShader;
+	TargetShader m_targetShader;
 };
 
 
@@ -130,15 +132,15 @@ public:
 		ConstantBuffer::ConstantBuffer()
 	{}
 
-	CachedBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader)
+	CachedBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, TargetShader targetShader)
 		:
 		constBufferData(bufferData),
-		ConstantBuffer::ConstantBuffer(gfx, bufferData, slot, isPixelShader)
+		ConstantBuffer::ConstantBuffer(gfx, bufferData, slot, targetShader)
 	{}
 
-	CachedBuffer(GFX& gfx, DynamicConstantBuffer::BufferLayout& layout, UINT32 slot, bool isPixelShader)
+	CachedBuffer(GFX& gfx, DynamicConstantBuffer::BufferLayout& layout, UINT32 slot, TargetShader targetShader)
 		:
-		ConstantBuffer::ConstantBuffer(gfx, layout, slot, isPixelShader)
+		ConstantBuffer::ConstantBuffer(gfx, layout, slot, targetShader)
 	{}
 
 public:
@@ -163,9 +165,9 @@ public:
 	}
 
 public:
-	static std::shared_ptr<CachedBuffer> GetBindable(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, bool isPixelShader, const char* bufferID)
+	static std::shared_ptr<CachedBuffer> GetBindable(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, UINT32 slot, TargetShader targetShader, const char* bufferID)
 	{
-		std::shared_ptr<CachedBuffer> pCachedBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, slot, isPixelShader);
+		std::shared_ptr<CachedBuffer> pCachedBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, slot, targetShader);
 		pCachedBuffer->m_bufferID = bufferID;
 
 		BindableList::PushBindable(pCachedBuffer, bufferID);
@@ -204,7 +206,7 @@ public:
 
 		pConstantBuffer = toAssign.pConstantBuffer;
 		m_slot = toAssign.m_slot;
-		m_isPixelShader = toAssign.m_isPixelShader;
+		m_targetShader = toAssign.m_targetShader;
 
 		return *this;
 	}
@@ -215,7 +217,7 @@ public:
 private:
 	using ConstantBuffer::pConstantBuffer;
 	using ConstantBuffer::m_slot;
-	using ConstantBuffer::m_isPixelShader;
+	using ConstantBuffer::m_targetShader;
 	std::string m_bufferID = "";
 };
 
@@ -240,7 +242,7 @@ public:
 
 		pConstantBuffer = toAssign.pConstantBuffer;
 		m_slot = toAssign.m_slot;
-		m_isPixelShader = toAssign.m_isPixelShader;
+		m_targetShader = toAssign.m_targetShader;
 
 		return *this;
 	}
@@ -248,5 +250,5 @@ public:
 private:
 	using ConstantBuffer::pConstantBuffer;
 	using ConstantBuffer::m_slot;
-	using ConstantBuffer::m_isPixelShader;
+	using ConstantBuffer::m_targetShader;
 };

@@ -32,7 +32,7 @@ PointLightModel::PointLightModel(GFX& gfx, PointLight* parent, float radius)
 
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
-			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 1, true));
+			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, m_colorBuffer, 1, TargetPixelShader));
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, model.GetLayout(), vertexShader.get()));
 

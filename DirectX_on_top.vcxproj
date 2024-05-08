@@ -183,6 +183,7 @@
     <ClInclude Include="DepthStencilState.h" />
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="DepthTextureCube.h" />
+    <ClInclude Include="DomainShader.h" />
     <ClInclude Include="DXError.h" />
     <ClInclude Include="DynamicConstantBuffer.h" />
     <ClInclude Include="ErrorHandling.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="GaussBlurRenderGraph.h" />
     <ClInclude Include="GraphicBuffer.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="HullShader.h" />
     <ClInclude Include="IgnoreZBufferRenderPass.h" />
     <ClInclude Include="ImguiManager.h" />
     <ClInclude Include="imgui\backend\imgui_impl_dx11.h" />
@@ -213,7 +215,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="NormalOutlineRenderGraph.h" />
     <ClInclude Include="NormalRenderPass.h" />
-    <ClInclude Include="NullPixelShader.h" />
+    <ClInclude Include="NullShader.h" />
     <ClInclude Include="NullTexture.h" />
     <ClInclude Include="OutlineMaskingRenderPass.h" />
     <ClInclude Include="OutlineRenderPass.h" />
@@ -274,6 +276,7 @@
     <ClCompile Include="CubeTextureDrawingOrder.h" />
     <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="DepthTextureCube.cpp" />
+    <ClCompile Include="DomainShader.cpp" />
     <ClCompile Include="DXError.cpp" />
     <ClCompile Include="DynamicConstantBuffer.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
@@ -285,6 +288,7 @@
     <ClCompile Include="GaussBlurRenderGraph.cpp" />
     <ClCompile Include="GraphicBuffer.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="HullShader.cpp" />
     <ClCompile Include="IgnoreZBufferRenderPass.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
     <ClCompile Include="imgui\backend\imgui_impl_dx11.cpp" />
@@ -301,7 +305,7 @@
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NormalOutlineRenderGraph.cpp" />
     <ClCompile Include="NormalRenderPass.cpp" />
-    <ClCompile Include="NullPixelShader.cpp" />
+    <ClCompile Include="NullShader.cpp" />
     <ClCompile Include="NullTexture.cpp" />
     <ClCompile Include="OutlineMaskingRenderPass.cpp" />
     <ClCompile Include="OutlineRenderPass.cpp" />
@@ -350,6 +354,54 @@
     <Image Include="icons8-video-card-96.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="DS_Test.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="DS_Wave.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="HS_Test.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="HS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="PS_FaceColors.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -546,6 +598,14 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="VS_NoProjection.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="VS_PBR.hlsl">

@@ -237,7 +237,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, pixelShaderName));
 
-			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, constBufferData, 1, true));
+			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, constBufferData, 1, TargetPixelShader));
 
 			normalStep.AddBindable(RasterizerState::GetBindable(gfx, diffuseMapHasAlpha));
 
@@ -281,7 +281,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 
 			maskStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
-			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, true));
+			maskStep.AddBindable(std::make_shared<CachedBuffer>(gfx, pixelBufferData, 1, TargetPixelShader));
 
 			maskStep.AddBindable(InputLayout::GetBindable(gfx, { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 } }, pMaskVertexShader.get()));
 

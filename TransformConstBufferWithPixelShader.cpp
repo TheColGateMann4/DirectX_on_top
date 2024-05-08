@@ -5,7 +5,7 @@ TransformConstBufferWithPixelShader::TransformConstBufferWithPixelShader(GFX& gf
 	:
 	TransformConstBuffer(gfx, parent, vertexBufferSlot)
 {
-	pcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, pixelBufferSlot, true);
+	pcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, pixelBufferSlot, TargetPixelShader);
 }
 
 void TransformConstBufferWithPixelShader::Bind(GFX& gfx) noexcept

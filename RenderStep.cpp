@@ -7,10 +7,19 @@ RenderStep::RenderStep(const RenderStep& renderStep) noexcept
 {
 	m_pass = renderStep.m_pass;
 
-	m_bindables.reserve(renderStep.m_bindables.size());
+	{
+		m_bindables.reserve(renderStep.m_bindables.size());
 
-	for (auto& bindable : renderStep.m_bindables)
-		m_bindables.push_back(bindable);
+		for (auto& bindable : renderStep.m_bindables)
+			m_bindables.push_back(bindable);
+	}
+
+	{
+		m_postRenderBindables.reserve(renderStep.m_postRenderBindables.size());
+
+		for (auto& bindable : renderStep.m_postRenderBindables)
+			m_postRenderBindables.push_back(bindable);
+	}
 
 	m_targetPassName = renderStep.m_targetPassName;
 	m_active = renderStep.m_active;
@@ -33,6 +42,13 @@ void RenderStep::Bind(GFX& gfx) const noexcept
 			bindable->Bind(gfx);
 }
 
+void RenderStep::PostRenderBind(GFX& gfx) const noexcept
+{
+	if (m_active)
+		for (const auto& bindable : m_postRenderBindables)
+			bindable->Bind(gfx);
+}
+
 void RenderStep::LinkToPipeline(RenderGraph& renderGraph)
 {
 	if (!m_linked)
@@ -46,4 +62,9 @@ void RenderStep::LinkToPipeline(RenderGraph& renderGraph)
 void RenderStep::AddBindable(std::shared_ptr<Bindable> bindable)
 {
 	m_bindables.push_back(bindable);
+}
+
+void RenderStep::AddPostRenderBindable(std::shared_ptr<Bindable> bindable)
+{
+	m_postRenderBindables.push_back(bindable);
 }

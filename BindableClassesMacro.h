@@ -15,5 +15,7 @@
 #include "DepthStencilState.h"
 #include "TransformConstBuffer.h"
 #include "TransformConstBufferWithPixelShader.h"
-#include "NullPixelShader.h"
 #include "NullTexture.h"
+#include "HullShader.h"
+#include "DomainShader.h"
+#include "NullShader.h"

@@ -8,7 +8,7 @@ class GFX;
 class TransformConstBuffer : public Bindable
 {
 public:
-	TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot = 0);
+	TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot = 0, TargetShader targetShader = TargetVertexShader);
 
 public:
 	virtual void Initialize(GFX& gfx, UINT32 slot);
@@ -26,4 +26,5 @@ protected:
 	DynamicConstantBuffer::BufferLayout TCBLayout;
 
 	std::shared_ptr<NonCachedBuffer> vcbuf;
+	TargetShader m_targetShader;
 };

@@ -5,5 +5,5 @@ cbuffer shadowCameraData : register(b4)
     int pcf;
 };
 
-TextureCube t_depthMap : register(t4);
+TextureCube t_depthMap : register(t5);
 SamplerComparisonState s_depthComparisonSampler : register(s1);

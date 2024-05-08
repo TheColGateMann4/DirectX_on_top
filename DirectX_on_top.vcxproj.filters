@@ -246,9 +246,6 @@
     <ClInclude Include="RenderTechnique.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="NullPixelShader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
     <ClInclude Include="DepthStencilView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -359,6 +356,15 @@
     </ClInclude>
     <ClInclude Include="SpherePBR.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HullShader.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="DomainShader.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="NullShader.h">
+      <Filter>Header Files\Bindable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -478,9 +484,6 @@
     </ClCompile>
     <ClCompile Include="Shape.cpp">
       <Filter>Source Files\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="NullPixelShader.cpp">
-      <Filter>Source Files\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="DepthStencilView.cpp">
       <Filter>Source Files</Filter>
@@ -605,6 +608,15 @@
     <ClCompile Include="SimpleMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HullShader.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="DomainShader.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="NullShader.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -727,6 +739,21 @@
     </FxCompile>
     <FxCompile Include="PS_PBR_Diffuse_Normal_Roughness_Metallic.hlsl">
       <Filter>Shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="HS_Test.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="DS_Test.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="HS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="DS_Wave.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_NoProjection.hlsl">
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

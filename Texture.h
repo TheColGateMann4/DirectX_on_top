@@ -7,23 +7,23 @@
 class Texture : public Bindable
 {
 public:
-	Texture(GFX& gfx, const std::string imagePath, UINT32 slot = 0, bool isCube = false, bool isPixelShaderResource = true);
+	Texture(GFX& gfx, const std::string imagePath, UINT32 slot = 0, bool isCube = false, TargetShader targetShader = TargetPixelShader);
 	void Bind(GFX& gfx) noexcept override;
 
 public:
-	static std::shared_ptr<Texture> GetBindable(GFX& gfx, const std::string imagePath, UINT32 slot = 0, bool isCube = false, bool isPixelShaderResource = true)
+	static std::shared_ptr<Texture> GetBindable(GFX& gfx, const std::string imagePath, UINT32 slot = 0, bool isCube = false, TargetShader targetShader = TargetPixelShader)
 	{
-		return BindableList::GetBindable<Texture>(gfx, imagePath, slot, isCube, isPixelShaderResource);
+		return BindableList::GetBindable<Texture>(gfx, imagePath, slot, isCube, targetShader);
 	}
 
 	std::string GetLocalUID() const noexcept override
 	{
-		return GenerateUID(m_imagePath, m_slot, m_isCube, m_isPixelShaderResource);
+		return GenerateUID(m_imagePath, m_slot, m_isCube, m_targetShader);
 	};
 
-	static std::string GetStaticUID(const std::string imagePath, UINT32 slot = 0, bool isCube = false, bool isPixelShaderResource = true) noexcept
+	static std::string GetStaticUID(const std::string imagePath, UINT32 slot = 0, bool isCube = false, TargetShader targetShader = TargetPixelShader) noexcept
 	{
-		return GenerateUID(imagePath, slot, isCube, isPixelShaderResource);
+		return GenerateUID(imagePath, slot, isCube, targetShader);
 	};
 
 	bool HasAlpha() const
@@ -37,9 +37,9 @@ public:
 	}
 
 private:
-	static std::string GenerateUID(const std::string& imagePath, UINT32 slot = 0, bool isCube = false, bool isPixelShaderResource = true)
+	static std::string GenerateUID(const std::string& imagePath, UINT32 slot = 0, bool isCube = false, TargetShader targetShader = TargetPixelShader)
 	{
-		return imagePath + std::to_string(slot) + std::to_string(isCube) + std::to_string(isPixelShaderResource);
+		return imagePath + std::to_string(slot) + std::to_string(isCube) + std::to_string(targetShader);
 	}
 
 protected:
@@ -49,6 +49,6 @@ protected:
 	UINT32 m_slot;
 	bool m_isCube;
 	bool m_hasAlpha = false;
-	bool m_isPixelShaderResource;
+	TargetShader m_targetShader;
 };
 

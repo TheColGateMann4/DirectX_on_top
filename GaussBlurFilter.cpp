@@ -15,7 +15,7 @@ GaussBlurFilter::GaussBlurFilter(GFX& gfx, int range, float sigma)
 
 		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 
-		m_cooficients = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true);
+		m_cooficients = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, TargetPixelShader);
 	}
 
 	{
@@ -25,7 +25,7 @@ GaussBlurFilter::GaussBlurFilter(GFX& gfx, int range, float sigma)
 		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("horizontal") = true;
 
-		m_blurSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 1, true);
+		m_blurSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 1, TargetPixelShader);
 	}
 
 	SetCooficients(gfx, range, sigma);

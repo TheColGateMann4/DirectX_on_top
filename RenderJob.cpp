@@ -17,4 +17,6 @@ void RenderJob::Bind(GFX& gfx) const
 	m_step->Bind(gfx);
 
 	gfx.DrawIndexed(m_shape->GetIndexCount());
+
+	m_step->PostRenderBind(gfx);
 }

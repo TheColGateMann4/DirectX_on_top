@@ -9,7 +9,7 @@ OutlineMaskingRenderPass::OutlineMaskingRenderPass(class GFX& gfx, const char* n
 
 	RegisterInput(RenderPassBufferInput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
 
-	AddBindable(NullPixelShader::GetBindable(gfx));
+	AddBindable(NullShader::GetBindable(gfx, TargetPixelShader));
 	AddBindable(VertexShader::GetBindable(gfx, "VS.cso"));
 
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Write));

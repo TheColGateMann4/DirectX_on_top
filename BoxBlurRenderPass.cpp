@@ -12,7 +12,7 @@ BoxBlurRenderPass::BoxBlurRenderPass(class GFX& gfx, const char* name)
 		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 3;
 
-		blurData = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, true);
+		blurData = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, TargetPixelShader);
 	}
 
 	RegisterOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("renderTarget", &m_renderTarget));

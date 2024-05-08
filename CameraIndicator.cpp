@@ -50,7 +50,7 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 		step.AddBindable(InputLayout::GetBindable(gfx, layout, pVertexShader.get()));
 		step.AddBindable(pVertexShader);
 		step.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
-		step.AddBindable(std::make_shared<CachedBuffer>(gfx, constBufferData, 1, true));
+		step.AddBindable(std::make_shared<CachedBuffer>(gfx, constBufferData, 1, TargetPixelShader));
 
 		technique.AddRenderStep(step);
 	}

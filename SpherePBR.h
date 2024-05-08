@@ -5,7 +5,7 @@
 class SpherePBR : public SceneObject, public Shape
 {
 public:
-	SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
+	SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
 
 public:
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override

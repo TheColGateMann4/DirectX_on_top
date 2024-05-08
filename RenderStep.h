@@ -34,7 +34,11 @@ public:
 
 	void Bind(GFX& gfx) const noexcept;
 
+	void PostRenderBind(GFX& gfx) const noexcept;
+
 	void AddBindable(std::shared_ptr<Bindable> bindable);
+
+	void AddPostRenderBindable(std::shared_ptr<Bindable> bindable);
 
 public:
 	template<class T>
@@ -74,6 +78,7 @@ public:
 private:
 	RenderJobPass* m_pass = nullptr;
 	std::vector<std::shared_ptr<Bindable>> m_bindables = {};
+	std::vector<std::shared_ptr<Bindable>> m_postRenderBindables = {};
 	const char* m_targetPassName;
 	bool m_active = true;
 	bool m_linked = false;

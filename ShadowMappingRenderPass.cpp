@@ -14,7 +14,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 {
 	m_bindsGraphicBuffersByItself = true;
 	m_renderTarget = std::make_shared<RenderTarget>(gfx, gfx.GetWidth(), gfx.GetWidth());
-	depthTextureCube = std::make_shared<DepthTextureCube>(gfx, 4);
+	depthTextureCube = std::make_shared<DepthTextureCube>(gfx, 5);
 
 	{
 		DynamicConstantBuffer::BufferLayout layout;
@@ -23,7 +23,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 
 		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 
-		shadowCameraTransformBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, 1, false);
+		shadowCameraTransformBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetVertexShader);
 	} 
 
 	{
@@ -35,14 +35,14 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 
 		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 
-		shadowCameraData = std::make_shared<CachedBuffer>(gfx, bufferData, 4, true);
+		shadowCameraData = std::make_shared<CachedBuffer>(gfx, bufferData, 4, TargetPixelShader);
 	}
 
 	RegisterOutput(RenderPassBindableOutput<DepthTextureCube>::GetUnique("shadowMap", &depthTextureCube));
 	RegisterOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("shadowCameraTransformBuffer", &shadowCameraTransformBuffer));
 	RegisterOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("shadowCameraData", &shadowCameraData));
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::Off));
-	AddBindable(NullPixelShader::GetBindable(gfx));
+	AddBindable(NullShader::GetBindable(gfx, TargetPixelShader));
 	shadowRasterizer = RasterizerState::GetBindable(gfx, true, bias, biasClamp, slopeScaledDepthBias);
 }
 

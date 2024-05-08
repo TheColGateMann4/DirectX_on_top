@@ -1,9 +1,10 @@
 #include "TransformConstBuffer.h"
 #include "Camera.h"
 
-TransformConstBuffer::TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot)
+TransformConstBuffer::TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot, TargetShader targetShader)
 	:
-	m_parent(parent)
+	m_parent(parent),
+	m_targetShader(targetShader)
 {
 	Initialize(gfx, slot);
 }
@@ -12,7 +13,7 @@ void TransformConstBuffer::Initialize(GFX& gfx, UINT32 slot)
 {
 	TCBLayout = { "MAMAMA" };
 
-	vcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, slot, false);
+	vcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, slot, m_targetShader);
 }
 
 void TransformConstBuffer::Bind(GFX& gfx) noexcept
