@@ -110,7 +110,7 @@ public:
 		return m_slot;
 	}
 
-	bool isPixelShaderType() const
+	TargetShader GetShaderType() const
 	{
 		return m_targetShader;
 	}

@@ -33,29 +33,29 @@ public:
 	};
 
 public:
-	SamplerState(GFX& gfx, Mode samplerMode, size_t slot = 0, Comparison comparison = NEVER, Filter filter = ANISOTROPIC, bool isPixelShaderResource = true);
+	SamplerState(GFX& gfx, Mode samplerMode, size_t slot = 0, Comparison comparison = NEVER, Filter filter = ANISOTROPIC, TargetShader targetShader = TargetPixelShader);
 	void Bind(GFX& gfx) noexcept override;
 
 public:
-	static std::shared_ptr<SamplerState> GetBindable(GFX& gfx, Mode samplerMode, size_t slot = 0, Comparison comparison = NEVER, Filter filter = ANISOTROPIC, bool isPixelShaderResource = true)
+	static std::shared_ptr<SamplerState> GetBindable(GFX& gfx, Mode samplerMode, size_t slot = 0, Comparison comparison = NEVER, Filter filter = ANISOTROPIC, TargetShader targetShader = TargetPixelShader)
 	{
-		return BindableList::GetBindable<SamplerState>(gfx, samplerMode, slot, comparison, filter, isPixelShaderResource);
+		return BindableList::GetBindable<SamplerState>(gfx, samplerMode, slot, comparison, filter, targetShader);
 	}
 
 	std::string GetLocalUID() const noexcept override
 	{
-		return GenerateUID(m_samplerMode, m_slot, m_comparison, m_filter, m_isPixelShaderResource);
+		return GenerateUID(m_samplerMode, m_slot, m_comparison, m_filter, m_targetShader);
 	};
 
-	static std::string GetStaticUID(Mode samplerMode, size_t slot, Comparison comparison, Filter filter, bool isPixelShaderResource) noexcept
+	static std::string GetStaticUID(Mode samplerMode, size_t slot, Comparison comparison, Filter filter, TargetShader targetShader) noexcept
 	{
-		return GenerateUID(samplerMode, slot, comparison, filter, isPixelShaderResource);
+		return GenerateUID(samplerMode, slot, comparison, filter, targetShader);
 	};
 
 private:
-	static std::string GenerateUID(Mode samplerMode, size_t slot, Comparison comparison, Filter filter, bool isPixelShaderResource)
+	static std::string GenerateUID(Mode samplerMode, size_t slot, Comparison comparison, Filter filter, TargetShader targetShader)
 	{
-		return std::to_string(samplerMode) + '@' + std::to_string(slot) + '@' + std::to_string(comparison) + '@' + std::to_string(filter) + '@' + std::to_string(isPixelShaderResource);
+		return std::to_string(samplerMode) + '@' + std::to_string(slot) + '@' + std::to_string(comparison) + '@' + std::to_string(filter) + '@' + std::to_string(targetShader);
 	}
 
 protected:
@@ -64,5 +64,5 @@ protected:
 	size_t m_slot;
 	Comparison m_comparison;
 	Filter m_filter;
-	bool m_isPixelShaderResource;
+	TargetShader m_targetShader;
 };

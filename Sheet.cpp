@@ -16,7 +16,7 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), sheetModel.m_indices);
 	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), sheetModel.m_vertices);
 	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
-	m_pTransformConstBuffer = std::make_shared<TransformConstBuffer>(gfx, *this, 0, TargetDomainShader);
+	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetDomainShader, 0} });
 
 	{
 		RenderTechnique normalTechnique("normal");
@@ -67,6 +67,8 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Solid.cso"));
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, sheetModel.GetLayout(), pVertexShader.get()));
+
+			normalStep.AddBindable(RasterizerState::GetBindable(gfx, false));
 
 			normalStep.AddBindable(std::move(pVertexShader));
 
