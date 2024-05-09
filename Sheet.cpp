@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "Includes.h"
 #include "SimpleMesh.h"
-#include "TransformConstBufferWithPixelShader.h"
 
 Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 	:
@@ -11,10 +10,12 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 {
 	SetShape(this);
 
-	SimpleMesh sheetModel = GetTesselatedMesh(1, 1);
+	SimpleMesh sheetModel = GetTesselatedMesh(1, 1, m_planeLength, 2.5f);
 
-	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), sheetModel.m_indices);
-	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), sheetModel.m_vertices);
+	std::string modelName = GetName() + std::to_string(m_planeLength);
+
+	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, modelName, sheetModel.m_indices);
+	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, modelName, sheetModel.m_vertices);
 	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetDomainShader, 0} });
 
@@ -103,7 +104,20 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 
 }
 
-SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio)
+void Sheet::MakeAdditionalPropeties(GFX& gfx)
+{
+	if (ImGui::SliderFloat("length", &m_planeLength, 0.1f, 10.0f, "%.1f"))
+	{
+		SimpleMesh sheetModel = GetTesselatedMesh(1, 1, m_planeLength, 2.0f);
+
+		std::string modelName = GetName() + std::to_string(m_planeLength);
+
+		m_pIndexBuffer = IndexBuffer::GetBindable(gfx, modelName, sheetModel.m_indices);
+		m_pVertexBuffer = VertexBuffer::GetBindable(gfx, modelName, sheetModel.m_vertices);
+	}
+}
+
+SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio, float length, float scale)
 {
 	if (TesselationRatio == 0)
 		std::abort();
@@ -122,36 +136,43 @@ SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 
 	const float minNormalizedPosition = 0.0f;
 	const float lengthOfTriangle = (maxNormalizedPosition - minNormalizedPosition) / TesselationRatio;
 
-	for (UINT32 row = 0; row < TesselationRatio + 1; row++)
-		for (UINT32 column = 0; column < TesselationRatio + 1; column++)
-		{
-			vertices.Emplace_Back(
-				DirectX::XMFLOAT3( column * lengthOfTriangle * 2, 0, row * lengthOfTriangle * 2),
-				DirectX::XMFLOAT3( 0.0f, 0.0f, -1.0f),
-				DirectX::XMFLOAT2((column * lengthOfTriangle) * textureRatio,(row * lengthOfTriangle) * textureRatio)
-			);
+	size_t repetitions = std::floor(length);
+	float lastRowOffset = length - repetitions;
 
-			if (row < TesselationRatio && column < TesselationRatio)
+	float basePositionOffset = 0.0f;
+	size_t baseIndex = 0;
+	float farScale = scale;
+
+	for (size_t i = 0; i <= repetitions; i++)
+	{
+		for (UINT32 row = 0; row < TesselationRatio + 1; row++)
+			for (UINT32 column = 0; column < TesselationRatio + 1; column++)
 			{
-				//front
-				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column);
-				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
-				indices.push_back((row * (TesselationRatio + 1)) + column);
+				if (i == repetitions)
+					farScale *= lastRowOffset;
 
-				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
-				indices.push_back((row * (TesselationRatio + 1)) + column + 1);
-				indices.push_back((row * (TesselationRatio + 1)) + column);
-				
-				//back
-				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
-				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column);
-				indices.push_back((row * (TesselationRatio + 1)) + column);
+				vertices.Emplace_Back(
+					DirectX::XMFLOAT3(column * lengthOfTriangle * scale, 0, row * lengthOfTriangle * scale),
+					DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f),
+					DirectX::XMFLOAT2((column * lengthOfTriangle) * textureRatio, (row * lengthOfTriangle) * textureRatio)
+				);
 
-				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
-				indices.push_back((row * (TesselationRatio + 1)) + column);
-				indices.push_back((row * (TesselationRatio + 1)) + column + 1);
+				if (row < TesselationRatio && column < TesselationRatio)
+				{
+					//front
+					indices.push_back(baseIndex + ((row + 1) * (TesselationRatio + 1)) + column);
+					indices.push_back(baseIndex + ((row + 1) * (TesselationRatio + 1)) + column + 1);
+					indices.push_back(baseIndex + (row * (TesselationRatio + 1)) + column);
+
+					indices.push_back(baseIndex + ((row + 1) * (TesselationRatio + 1)) + column + 1);
+					indices.push_back(baseIndex + (row * (TesselationRatio + 1)) + column + 1);
+					indices.push_back(baseIndex + (row * (TesselationRatio + 1)) + column);
+				}
 			}
-		}
+
+		basePositionOffset += scale;
+		baseIndex += 6 * TesselationRatio * TesselationRatio;
+	}
 
 	return { std::move(vertices), std::move(indices) };
 }

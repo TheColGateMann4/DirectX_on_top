@@ -22,7 +22,9 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 	m_pTopology = nullptr;
 	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetVertexShader, 0}, {TargetPixelShader, 2}, {TargetDomainShader, 0} });
 
-	// pushing our const buffer to bindable list
+
+	DynamicConstantBuffer::BufferData bufferData;
+	
 	{
 		DynamicConstantBuffer::BufferLayout layout;
 
@@ -33,10 +35,8 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 		layout.Add<DynamicConstantBuffer::DataType::Float>("mapMultipler", &floatInfo);
 
 
-		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
+		bufferData = std::move(layout);
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("mapMultipler") = 0.15f;
-
-		CachedBuffer::GetBindable(gfx, bufferData, 2, TargetVertexShader, "mapMultiplerData");
 	}
 
 	{
@@ -49,11 +49,11 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 
 			shadowStep.AddBindable(InputLayout::GetBindable(gfx, sphereModel.GetLayout(), pVertexShader.get()));
 
-			shadowStep.AddBindable(CachedBuffer::GetBindableWithoutCreation(gfx, "mapMultiplerData"));
-
-			shadowStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, false));
+			shadowStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, TargetVertexShader));
 
 			shadowStep.AddBindable(Texture::GetBindable(gfx, texturePath + "height.tga", 0, false, TargetVertexShader));
+
+			shadowStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 2, TargetVertexShader));
 
 			shadowStep.AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
@@ -71,9 +71,7 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 		{
 			RenderStep normalStep("normalPass");
 
-			//std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_PBR_Height.cso");
-			
-			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_PBR.cso");
+			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_PBR_Height.cso");
 
 			{
 				DynamicConstantBuffer::BufferLayout layout;
@@ -106,13 +104,11 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 				normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetPixelShader));
 			}
 
-			normalStep.AddBindable(CachedBuffer::GetBindableWithoutCreation(gfx, "mapMultiplerData"));
+			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetDomainShader));
 
 			normalStep.AddBindable(BlendState::GetBindable(gfx, false));
 
-			normalStep.AddBindable(RasterizerState::GetBindable(gfx, true));
-
-			normalStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, false));
+			normalStep.AddBindable(RasterizerState::GetBindable(gfx, false));
 
 // 			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "height.tga", 0, false, TargetVertexShader));
 // 
@@ -126,7 +122,9 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 // 
 // 			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "reflection.jpg", 4, false));
 
-			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "height.tga", 0, false, TargetHullShader));
+			normalStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, TargetDomainShader));
+
+			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "height.tga", 0, false, TargetDomainShader));
 
 			normalStep.AddBindable(HullShader::GetBindable(gfx, "HS_test.cso"));
 

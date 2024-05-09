@@ -254,7 +254,6 @@
     <ClInclude Include="Time.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="TransformConstBuffer.h" />
-    <ClInclude Include="TransformConstBufferWithPixelShader.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexShader.h" />
@@ -340,7 +339,6 @@
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Topology.cpp" />
     <ClCompile Include="TransformConstBuffer.cpp" />
-    <ClCompile Include="TransformConstBufferWithPixelShader.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />

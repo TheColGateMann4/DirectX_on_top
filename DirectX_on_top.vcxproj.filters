@@ -213,9 +213,6 @@
     <ClInclude Include="BindableList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TransformConstBufferWithPixelShader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -585,9 +582,6 @@
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="TransformConstBuffer.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="TransformConstBufferWithPixelShader.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="Skybox.cpp">

@@ -24,9 +24,9 @@ public:
 	// techniqueNumber and stepNumber are defaulted since normal technique and normal step are always defined first - at least for now
 	// isPixelShader is strictly for contant buffers, its defaulted to true since cached buffers for vertexShaders are very rare occurances
 	template<class T>
-	T* GetBindable(size_t techniqueNumber = 0, size_t stepNumber = 0, size_t slotNumber = 0, bool isPixelShader = true) const noexcept
+	T* GetBindable(size_t techniqueNumber = 0, size_t stepNumber = 0, size_t slotNumber = 0, TargetShader targetShader = TargetPixelShader) const noexcept
 	{
-		return m_techniques.at(techniqueNumber).GetBindable<T>(stepNumber, slotNumber, isPixelShader);
+		return m_techniques.at(techniqueNumber).GetBindable<T>(stepNumber, slotNumber, targetShader);
 	}
 	
 	template<class T>

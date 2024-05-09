@@ -9,6 +9,8 @@ class Sheet : public SceneObject, public Shape
 public:
 	Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
 
+	virtual void MakeAdditionalPropeties(GFX& gfx) override;
+
 public:
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override
 	{
@@ -34,8 +36,10 @@ private:
 	virtual void Update(GFX& gfx, float deltatime) override;
 
 private:
-	static SimpleMesh GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio);
+	static SimpleMesh GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio, float length = 1.0f, float scale = 2.0f);
 
 	std::shared_ptr<CachedBuffer> deltaTimeCbuffer;
+
+	float m_planeLength = 2.0f;
 };
 

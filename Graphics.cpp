@@ -101,7 +101,7 @@ void GFX::FinishFrame()
 	DXGImanager.Set();
 #endif
 
-	if (FAILED(hr = pSwapChain->Present(0, NULL)))
+	if (FAILED(hr = pSwapChain->Present(1, NULL)))
 	{
 		if (hr == DXGI_ERROR_DEVICE_REMOVED)
 		{

@@ -1,14 +1,22 @@
 struct VS_CONTROL_POINT_OUTPUT
 {
-    float3 positionRelativeToCamera : POSITION;
-    float3 normal : NORMAL;
+    float3 viewPosition : POSITION;
+    float3 viewNormal : NORMAL;
+    float3 viewTangent : TANGENT;
+    float3 viewBitangent : BITANGENT;
+    float2 textureCoords : TEXCOORD;
+    float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
 
 struct HS_CONTROL_POINT_OUTPUT
 {
-    float3 positionRelativeToCamera : POSITION;
-    float3 normal : NORMAL;
+    float3 viewPosition : POSITION;
+    float3 viewNormal : NORMAL;
+    float3 viewTangent : TANGENT;
+    float3 viewBitangent : BITANGENT;
+    float2 textureCoords : TEXCOORD;
+    float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
 
@@ -36,7 +44,7 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 
 [domain("tri")]
 [partitioning("fractional_odd")]
-[outputtopology("triangle_ccw")]
+[outputtopology("triangle_cw")]
 [outputcontrolpoints(3)]
 [patchconstantfunc("CalcHSPatchConstants")]
 HS_CONTROL_POINT_OUTPUT main( 
@@ -46,8 +54,12 @@ HS_CONTROL_POINT_OUTPUT main(
 {
 	HS_CONTROL_POINT_OUTPUT Output;
 
-	Output.positionRelativeToCamera =  ip[i].positionRelativeToCamera;
-	Output.normal =  ip[i].normal;
+	Output.viewPosition =  ip[i].viewPosition;
+	Output.viewNormal =  ip[i].viewNormal;
+	Output.viewTangent = ip[i].viewTangent;
+	Output.viewBitangent = ip[i].viewBitangent;
+	Output.textureCoords = ip[i].textureCoords;
+	Output.depthMapCoords = ip[i].depthMapCoords;
 	Output.position = ip[i].position;
 
 	return Output;

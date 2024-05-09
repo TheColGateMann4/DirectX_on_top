@@ -17,7 +17,7 @@ Skybox::Skybox(class GFX& gfx, float scale, std::string skyboxTexture)
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), skyboxModel.m_indices);
 	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), skyboxModel.m_vertices);
 	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pTransformConstBuffer = std::make_shared<SkyboxTransformBuffer>(gfx, *this, 0);
+	m_pTransformConstBuffer = SkyboxTransformBuffer::GetBindable(gfx, *this, { {TargetVertexShader, 0} });
 
 	{
 		RenderTechnique shadowTechnique("skybox");

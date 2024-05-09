@@ -43,7 +43,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 	RegisterOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("shadowCameraData", &shadowCameraData));
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::Off));
 	AddBindable(NullShader::GetBindable(gfx, TargetPixelShader));
-	shadowRasterizer = RasterizerState::GetBindable(gfx, true, bias, biasClamp, slopeScaledDepthBias);
+	shadowRasterizer = std::make_unique<RasterizerState>(gfx, true, bias, biasClamp, slopeScaledDepthBias);
 }
 
 void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)

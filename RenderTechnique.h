@@ -26,9 +26,9 @@ public:
 
 public:
 	template<class T>
-	T* GetBindable(size_t stepNumber, size_t slotNumber, bool isPixelShader) const noexcept
+	T* GetBindable(size_t stepNumber, size_t slotNumber, TargetShader targetShader = TargetPixelShader) const noexcept
 	{
-		return m_steps.at(stepNumber).GetBindable<T>(slotNumber, isPixelShader);
+		return m_steps.at(stepNumber).GetBindable<T>(slotNumber, targetShader);
 	}
 
 	template<class T>

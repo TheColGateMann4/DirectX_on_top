@@ -20,6 +20,8 @@ cbuffer ObjectBuffer : register(b1)
     float3 b_reflectivity;
 };
 
+#include "ShaderFunctions.hlsli"
+
 static const float _Pi = 3.14159265358979323846f;
 
 float NormalDist(const float alpha, const float3 N, const float3 H)
@@ -68,7 +70,12 @@ float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, co
     const float3 cookTorrance = cookTorranceNumerator / cookTorranceDenominator;
 
     const float3 BRDF = Kd * lambert + Ks * cookTorrance;
-    const float3 outgoingLight = emission + BRDF * b_lightColor * max(dot(L, N), 0.0f);
+
+    const float lengthOfDistanceToLight = length(L - V);
+
+    const float atteniuation = GetAttenuation(lengthOfDistanceToLight, b_attenuationConst, b_attenuationLinear, b_attenuationQuadratic);
+
+    const float3 outgoingLight = (((float3(1.0f, 1.0f, 1.0f) + emission) * BRDF) * b_lightColor * max(dot(L, N), 0.0f)) * atteniuation;
 
     return saturate(outgoingLight);
 }
