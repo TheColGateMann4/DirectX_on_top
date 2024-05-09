@@ -209,7 +209,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(GFX& gfx, const aiMesh& mesh, const aiMat
 	resultMesh->m_pIndexBuffer = IndexBuffer::GetBindable(gfx, bufferUID, indices);
 	resultMesh->m_pVertexBuffer = VertexBuffer::GetBindable(gfx, bufferUID, vertexBuffer);
 	resultMesh->m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	resultMesh->m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *resultMesh, 0, 2);
+	resultMesh->m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *resultMesh, { {TargetVertexShader, 0}, {TargetPixelShader, 2} });
 
 	{
 		RenderTechnique shadowTechnique("shadow");

@@ -1,34 +1,40 @@
 #include "TransformConstBuffer.h"
 #include "Camera.h"
 
-TransformConstBuffer::TransformConstBuffer(GFX& gfx, const Shape& parent, UINT32 slot, TargetShader targetShader)
+TransformConstBuffer::TransformConstBuffer(GFX& gfx, const Shape& parent, std::vector<TargetShaderBufferBinding> targetBuffers)
 	:
 	m_parent(parent),
-	m_targetShader(targetShader)
+	m_targetBuffers(targetBuffers)
 {
-	Initialize(gfx, slot);
-}
 
-void TransformConstBuffer::Initialize(GFX& gfx, UINT32 slot)
-{
-	TCBLayout = { "MAMAMA" };
-
-	vcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, slot, m_targetShader);
 }
 
 void TransformConstBuffer::Bind(GFX& gfx) noexcept
 {
-	DynamicConstantBuffer::BufferData constBuffer(TCBLayout);
+	if (!initialized)
+	{
+		TCBLayout = GetBufferLayout();
 
-	GetBuffer(gfx, constBuffer);
+		for (const auto& targetShader : m_targetBuffers)
+			constBuffers.push_back(std::make_shared<NonCachedBuffer>(gfx, TCBLayout, targetShader.slot, targetShader.type));
 
-	UpdateAndBindConstBuffer(gfx, constBuffer);
+		initialized = true;
+	}
+
+	DynamicConstantBuffer::BufferData bufferData(TCBLayout);
+
+	GetBuffer(gfx, bufferData);
+
+	UpdateAndBindConstBuffer(gfx, bufferData);
 }
 
-void TransformConstBuffer::UpdateAndBindConstBuffer(GFX& gfx, const DynamicConstantBuffer::BufferData& constBuffer) noexcept
+void TransformConstBuffer::UpdateAndBindConstBuffer(GFX& gfx, const DynamicConstantBuffer::BufferData& bufferData) noexcept
 {
-	vcbuf->Update(gfx, constBuffer);
-	vcbuf->Bind(gfx);
+	for(auto& constBuffer : constBuffers)
+	{
+		constBuffer->Update(gfx, bufferData);
+		constBuffer->Bind(gfx);
+	}
 }
 
 void TransformConstBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept
@@ -39,4 +45,9 @@ void TransformConstBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData
 	bufferData += DirectX::XMMatrixTranspose(ModelTransform);
 	bufferData += DirectX::XMMatrixTranspose(ModelTransformView);
 	bufferData += DirectX::XMMatrixTranspose(ModelTransformView * gfx.GetActiveCamera()->GetProjection());
+}
+
+DynamicConstantBuffer::BufferLayout TransformConstBuffer::GetBufferLayout() const noexcept
+{
+	return {"MAMAMA"};
 }

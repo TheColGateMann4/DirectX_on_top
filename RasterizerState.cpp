@@ -1,9 +1,9 @@
 #include "RasterizerState.h"
 #include "ErrorMacros.h"
 
-RasterizerState::RasterizerState(GFX& gfx, bool disableBackfaceCulling, INT depthBias, FLOAT depthBiasClamp, FLOAT slopeScaledDepthBias)
+RasterizerState::RasterizerState(GFX& gfx, bool backfaceCulling, INT depthBias, FLOAT depthBiasClamp, FLOAT slopeScaledDepthBias)
 	:
-	m_disableBackfaceCulling(disableBackfaceCulling),
+	m_backfaceCulling(backfaceCulling),
 	m_depthBias(depthBias),
 	m_depthBiasClamp(depthBiasClamp),
 	m_slopeScaledDepthBias(slopeScaledDepthBias)
@@ -11,7 +11,7 @@ RasterizerState::RasterizerState(GFX& gfx, bool disableBackfaceCulling, INT dept
 	HRESULT hr;
 
 	D3D11_RASTERIZER_DESC rasterizerDesc = { CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{}) };
-	rasterizerDesc.CullMode = m_disableBackfaceCulling ? D3D11_CULL_NONE : D3D11_CULL_BACK;
+	rasterizerDesc.CullMode = m_backfaceCulling ? D3D11_CULL_NONE : D3D11_CULL_BACK;
 	rasterizerDesc.DepthBias = m_depthBias;
 	rasterizerDesc.DepthBiasClamp = m_depthBiasClamp;
 	rasterizerDesc.SlopeScaledDepthBias = m_slopeScaledDepthBias;
@@ -28,7 +28,7 @@ void RasterizerState::ChangeDepthValues(GFX& gfx, INT depthBias, FLOAT depthBias
 	HRESULT hr;
 
 	D3D11_RASTERIZER_DESC rasterizerDesc = { CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{}) };
-	rasterizerDesc.CullMode = m_disableBackfaceCulling ? D3D11_CULL_NONE : D3D11_CULL_BACK;
+	rasterizerDesc.CullMode = m_backfaceCulling ? D3D11_CULL_NONE : D3D11_CULL_BACK;
 	rasterizerDesc.DepthBias = m_depthBias;
 	rasterizerDesc.DepthBiasClamp = m_depthBiasClamp;
 	rasterizerDesc.SlopeScaledDepthBias = m_slopeScaledDepthBias;

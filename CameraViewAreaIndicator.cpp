@@ -18,7 +18,7 @@ CameraViewAreaIndicator::CameraViewAreaIndicator(GFX& gfx, Camera* parent)
 	std::vector<D3D11_INPUT_ELEMENT_DESC> DirectXLayout;
 	std::vector<UINT32> indices;
 
-	m_pTransformConstBuffer = std::make_shared<TransformConstBuffer>(gfx, *this, 0);
+	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetVertexShader, 0} });
 	m_pVertexBuffer = GetVertexBuffer(gfx, startLength, endLength, &cameraSettings, &DirectXLayout);
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, "$cameraIndicator", indices);
 	m_pTopology = Topology::GetBindable(gfx, D3D_PRIMITIVE_TOPOLOGY_LINELIST);

@@ -2,16 +2,11 @@
 #include "Shape.h"
 #include "Camera.h"
 
-SkyboxTransformBuffer::SkyboxTransformBuffer(GFX& gfx, const Shape& parent, UINT32 slot)
+SkyboxTransformBuffer::SkyboxTransformBuffer(GFX& gfx, const Shape& parent, std::vector<TargetShaderBufferBinding> targetBuffers)
 	:
-	TransformConstBuffer(gfx, parent, slot)
-{}
-
-void SkyboxTransformBuffer::Initialize(GFX& gfx, UINT32 slot)
+	TransformConstBuffer(gfx, parent, targetBuffers)
 {
-	TCBLayout = { "MA" };
 
-	vcbuf = std::make_shared<NonCachedBuffer>(gfx, TCBLayout, slot, TargetVertexShader);
 }
 
 void SkyboxTransformBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept
@@ -19,4 +14,9 @@ void SkyboxTransformBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferDat
 	const auto cameraViewProjection = gfx.GetActiveCamera()->GetCameraView() * gfx.GetActiveCamera()->GetProjection();
 
 	bufferData += DirectX::XMMatrixTranspose(cameraViewProjection);
+}
+
+DynamicConstantBuffer::BufferLayout SkyboxTransformBuffer::GetBufferLayout() const noexcept
+{
+	return { "MA" };
 }

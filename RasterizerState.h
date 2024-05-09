@@ -7,7 +7,7 @@
 class RasterizerState : public Bindable
 {
 public:
-	RasterizerState(GFX& gfx, bool disableBackfaceCulling, INT depthBias = D3D11_DEFAULT_DEPTH_BIAS, FLOAT depthBiasClamp = D3D11_DEFAULT_DEPTH_BIAS_CLAMP, FLOAT slopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS);
+	RasterizerState(GFX& gfx, bool backfaceCulling, INT depthBias = D3D11_DEFAULT_DEPTH_BIAS, FLOAT depthBiasClamp = D3D11_DEFAULT_DEPTH_BIAS_CLAMP, FLOAT slopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS);
 
 public:
 	void ChangeDepthValues(GFX& gfx, INT depthBias = D3D11_DEFAULT_DEPTH_BIAS, FLOAT depthBiasClamp = D3D11_DEFAULT_DEPTH_BIAS_CLAMP, FLOAT slopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS);
@@ -15,29 +15,29 @@ public:
 	void Bind(GFX& gfx) noexcept override;
 
 public:
-	static std::shared_ptr<RasterizerState> GetBindable(GFX& gfx, bool disableBackfaceCulling, INT depthBias = D3D11_DEFAULT_DEPTH_BIAS, FLOAT depthBiasClamp = D3D11_DEFAULT_DEPTH_BIAS_CLAMP, FLOAT slopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS)
+	static std::shared_ptr<RasterizerState> GetBindable(GFX& gfx, bool backfaceCulling, INT depthBias = D3D11_DEFAULT_DEPTH_BIAS, FLOAT depthBiasClamp = D3D11_DEFAULT_DEPTH_BIAS_CLAMP, FLOAT slopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS)
 	{
-		return BindableList::GetBindable<RasterizerState>(gfx, disableBackfaceCulling, depthBias, depthBiasClamp, slopeScaledDepthBias);
+		return BindableList::GetBindable<RasterizerState>(gfx, backfaceCulling, depthBias, depthBiasClamp, slopeScaledDepthBias);
 	}
 
 	std::string GetLocalUID() const noexcept override
 	{
-		return GenerateUID(m_disableBackfaceCulling, m_depthBias, m_depthBiasClamp, m_slopeScaledDepthBias);
+		return GenerateUID(m_backfaceCulling, m_depthBias, m_depthBiasClamp, m_slopeScaledDepthBias);
 	};
 
-	static std::string GetStaticUID(bool disableBackfaceCulling, INT depthBias, FLOAT depthBiasClamp, FLOAT slopeScaledDepthBias) noexcept
+	static std::string GetStaticUID(bool backfaceCulling, INT depthBias, FLOAT depthBiasClamp, FLOAT slopeScaledDepthBias) noexcept
 	{
-		return GenerateUID(disableBackfaceCulling, depthBias, depthBiasClamp, slopeScaledDepthBias);
+		return GenerateUID(backfaceCulling, depthBias, depthBiasClamp, slopeScaledDepthBias);
 	};
 
 private:
-	static std::string GenerateUID(bool disableBackfaceCulling, INT depthBias, FLOAT depthBiasClamp, FLOAT slopeScaledDepthBias)
+	static std::string GenerateUID(bool backfaceCulling, INT depthBias, FLOAT depthBiasClamp, FLOAT slopeScaledDepthBias)
 	{
-		return std::to_string(disableBackfaceCulling) + '@' + std::to_string(depthBias) + '@' + std::to_string(depthBiasClamp) + '@' + std::to_string(slopeScaledDepthBias);
+		return std::to_string(backfaceCulling) + '@' + std::to_string(depthBias) + '@' + std::to_string(depthBiasClamp) + '@' + std::to_string(slopeScaledDepthBias);
 	}
 
 protected:
-	bool m_disableBackfaceCulling;
+	bool m_backfaceCulling;
 	INT m_depthBias;
 	FLOAT m_depthBiasClamp;
 	FLOAT m_slopeScaledDepthBias;

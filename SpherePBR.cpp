@@ -20,7 +20,7 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), sphereModel.m_indices);
 	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), sphereModel.m_vertices);
 	m_pTopology = nullptr;
-	m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2);
+	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetVertexShader, 0}, {TargetPixelShader, 2}, {TargetDomainShader, 0} });
 
 	// pushing our const buffer to bindable list
 	{

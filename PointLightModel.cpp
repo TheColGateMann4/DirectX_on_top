@@ -17,7 +17,7 @@ PointLightModel::PointLightModel(GFX& gfx, PointLight* parent, float radius)
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, "3535SPHERE", model.m_indices);
 	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, "3535SPHERE", model.m_vertices);
 	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pTransformConstBuffer = std::make_shared<TransformConstBufferWithPixelShader>(gfx, *this, 0, 2);
+	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetVertexShader, 0}, {TargetPixelShader, 2} });
 
 	{
 		RenderTechnique normalTechnique("normal");
