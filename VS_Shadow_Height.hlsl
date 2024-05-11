@@ -1,18 +1,19 @@
-#include "VS_TransformConstBuffer.hlsli"
-
-cbuffer heightMapSettings : register(b2)
-{
-    float b_mapMultipler;
-};
-
 Texture2D t_heightMap : register(t0);
 SamplerState s_sampler : register(s0);
 
-float4 main(float3 position : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD) : SV_POSITION
+struct VSOUT
 {
-    const float heightMapSample = t_heightMap.SampleLevel(s_sampler, textureCoords, 0).r * b_mapMultipler;
+    float3 normal : NORMAL;
+    float2 textureCoords : TEXCOORD;
+    float4 position : SV_POSITION;
+};
 
-    position += normal * heightMapSample;
+VSOUT main(float3 position : POSITION, float3 normal : NORMAL, float2 textureCoords : TEXCOORD)
+{
+    VSOUT vsout;
+    vsout.normal = normal;
+    vsout.textureCoords = textureCoords;
+    vsout.position = float4(position, 1.0f);
 
-    return mul(float4(position, 1.0f), modelViewProjection);
+    return vsout;
 }

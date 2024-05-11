@@ -1,5 +1,6 @@
 #include "ShadowResources.hlsli"
 #include "PS_ShadowFunctions.hlsli"
+#include "VS_TransformConstBuffer.hlsli"
 
 cbuffer lightBuffer : register(b0)
 {
@@ -21,6 +22,7 @@ cbuffer ObjectBuffer : register(b1)
     float3 b_diffuseColor;
     float3 b_emission;
     float3 b_reflectivity;
+    float3 b_insideColor;
 };
 
 Texture2D t_diffuseMap : register(t0);
@@ -28,6 +30,8 @@ Texture2D t_normalMap : register(t1);
 Texture2D t_roughnessMap : register(t2);
 Texture2D t_metalicMap : register(t3);
 Texture2D t_reflectiveMap : register(t4);
+
+TextureCube t_skybox : register(t6);
 
 SamplerState s_sampler : register(s0);
 
@@ -65,16 +69,9 @@ float3 FrenelsEquation(const float3 F0, const float3 V, const float3 H)
     return F0 + (float3(1.0f, 1.0f, 1.0f) - F0) * pow(1.0f - max(dot(V, H), 0.0f), 5.0f);
 }
 
-float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, float3 reflectivity, const float3 emission, float3 diffuseColor, float metalic, float roughness, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD)
-{
-    reflectivity = t_reflectiveMap.Sample(s_sampler, textureCoords).xyz;
-    metalic = t_metalicMap.Sample(s_sampler, textureCoords).xyz;
-    roughness = t_roughnessMap.Sample(s_sampler, textureCoords).xyz;
-    diffuseColor = t_diffuseMap.Sample(s_sampler, textureCoords).xyz;
-
-    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, depthMapCoords, c0, c1, pcf);
-    
-    float3 outgoingLight;
+float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, float3 reflectivity, const float3 emission, float3 diffuseColor, float metalic, float roughness, float shadowLevel, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD)
+{    
+    float3 outgoingLight = float3(0.0f, 0.0f, 0.0f);
     
     if(shadowLevel != 0.0f)
     {
@@ -92,9 +89,18 @@ float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, fl
         const float3 BRDF = Kd * lambert + Ks * cookTorrance;
         outgoingLight = emission + (BRDF * shadowLevel) * b_lightColor * max(dot(L, N), 0.0f);
     }
-    else
-        outgoingLight = float3(0.0f, 0.0f, 0.0f);
     
+    if(metalic != 0.0f)
+    {
+        float3 skyboxSampleVector = 2 * dot(V, N) * N - V;
+
+        skyboxSampleVector = mul(skyboxSampleVector, (float3x3)modelView);
+
+        const float3 skyboxSample = t_skybox.Sample(s_sampler, skyboxSampleVector).xyz;
+    
+        outgoingLight += skyboxSample * metalic;
+    }
+
     return saturate(outgoingLight);
 }   
 
@@ -104,6 +110,13 @@ float4 main(float3 viewPosition : POSITION, float3 viewNormal : NORMAL, float3 v
     const float3 V = normalize(-viewPosition);
     const float3 L = normalize(b_viewLightPosition - viewPosition);
     const float3 H = normalize(V + L);
+    
+    const float roughness = t_roughnessMap.Sample(s_sampler, textureCoords).x * b_roughness;
+    const float metalic = t_metalicMap.Sample(s_sampler, textureCoords).x * b_metalic;
+    const float3 reflectivity = t_reflectiveMap.Sample(s_sampler, textureCoords).xyz * b_reflectivity;
+    const float3 diffuseColor = t_diffuseMap.Sample(s_sampler, textureCoords).xyz * b_diffuseColor;
 
-    return float4(GetPBR(N, V, L, H, b_reflectivity, b_emission, b_diffuseColor, b_metalic, b_roughness, textureCoords, depthMapCoords), 1.0f);
+    const float shadowLevel = GetShadowDebugLevel(t_depthMap, s_depthComparisonSampler, s_sampler, depthMapCoords, c0, c1, pcf);
+
+    return float4(GetPBR(N, V, L, H, reflectivity, b_emission, diffuseColor, metalic, roughness, shadowLevel, textureCoords, depthMapCoords), 1.0f);
 }

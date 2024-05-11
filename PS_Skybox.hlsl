@@ -1,4 +1,4 @@
-TextureCube t_skyboxTexture : register(t0);
+TextureCube t_skyboxTexture : register(t6);
 SamplerState s_sampler : register(s0);
 
 float4 main(float3 worldPosition : POSITION) : SV_TARGET
