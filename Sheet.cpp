@@ -10,12 +10,10 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 {
 	SetShape(this);
 
-	SimpleMesh sheetModel = GetTesselatedMesh(1, 1, m_planeLength, 2.5f);
+	SimpleMesh sheetModel = GetTesselatedMesh(1, 1, 2.5f);
 
-	std::string modelName = GetName() + std::to_string(m_planeLength);
-
-	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, modelName, sheetModel.m_indices);
-	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, modelName, sheetModel.m_vertices);
+	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), sheetModel.m_indices);
+	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), sheetModel.m_vertices);
 	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetDomainShader, 0} });
 
@@ -34,7 +32,7 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 				DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("deltaTime") = 0.0f;
 
-				deltaTimeCbuffer = std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetDomainShader);
+				deltaTimeCbuffer = CachedBuffer::GetBindable(gfx, bufferData, {{TargetDomainShader, 1}});
 				normalStep.AddBindable(deltaTimeCbuffer);
 			}
 
@@ -61,7 +59,7 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("scale") = 0.25f;
 
 
-				normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 2, TargetDomainShader));
+				normalStep.AddBindable(CachedBuffer::GetBindable(gfx, bufferData, {{TargetDomainShader, 2}}));
 			}
 
 
@@ -79,7 +77,7 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 
 			{
 				DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo factorInfo = {};
-				factorInfo.v_min = 0.1f;
+				factorInfo.v_min = 1.0f;
 				factorInfo.v_max = 20.0f;
 				factorInfo.format = "%.2f";
 
@@ -89,7 +87,7 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 				DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("tesselationFactor") = 10.0f;
 
-				normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 0, TargetHullShader));
+				normalStep.AddBindable(CachedBuffer::GetBindable(gfx, bufferData, {{TargetHullShader, 0}}));
 			}
 
 			normalStep.AddPostRenderBindable(NullShader::GetBindable(gfx, TargetHullShader));
@@ -104,20 +102,7 @@ Sheet::Sheet(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 
 }
 
-void Sheet::MakeAdditionalPropeties(GFX& gfx)
-{
-	if (ImGui::SliderFloat("length", &m_planeLength, 0.1f, 10.0f, "%.1f"))
-	{
-		SimpleMesh sheetModel = GetTesselatedMesh(1, 1, m_planeLength, 2.0f);
-
-		std::string modelName = GetName() + std::to_string(m_planeLength);
-
-		m_pIndexBuffer = IndexBuffer::GetBindable(gfx, modelName, sheetModel.m_indices);
-		m_pVertexBuffer = VertexBuffer::GetBindable(gfx, modelName, sheetModel.m_vertices);
-	}
-}
-
-SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio, float length, float scale)
+SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 textureRatio, float scale)
 {
 	if (TesselationRatio == 0)
 		std::abort();
@@ -136,43 +121,27 @@ SimpleMesh Sheet::GetTesselatedMesh(const UINT32 TesselationRatio, const UINT32 
 	const float minNormalizedPosition = 0.0f;
 	const float lengthOfTriangle = (maxNormalizedPosition - minNormalizedPosition) / TesselationRatio;
 
-	size_t repetitions = std::floor(length);
-	float lastRowOffset = length - repetitions;
+	for (UINT32 row = 0; row < TesselationRatio + 1; row++)
+		for (UINT32 column = 0; column < TesselationRatio + 1; column++)
+		{
+			vertices.Emplace_Back(
+				DirectX::XMFLOAT3(column * lengthOfTriangle * scale, 0, row * lengthOfTriangle * scale),
+				DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f),
+				DirectX::XMFLOAT2((column * lengthOfTriangle) * textureRatio, (row * lengthOfTriangle) * textureRatio)
+			);
 
-	float basePositionOffset = 0.0f;
-	size_t baseIndex = 0;
-	float farScale = scale;
-
-	for (size_t i = 0; i <= repetitions; i++)
-	{
-		for (UINT32 row = 0; row < TesselationRatio + 1; row++)
-			for (UINT32 column = 0; column < TesselationRatio + 1; column++)
+			if (row <= TesselationRatio && column <= TesselationRatio)
 			{
-				if (i == repetitions)
-					farScale *= lastRowOffset;
+				//front
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column);
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
+				indices.push_back((row * (TesselationRatio + 1)) + column);
 
-				vertices.Emplace_Back(
-					DirectX::XMFLOAT3(column * lengthOfTriangle * scale, 0, row * lengthOfTriangle * scale),
-					DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f),
-					DirectX::XMFLOAT2((column * lengthOfTriangle) * textureRatio, (row * lengthOfTriangle) * textureRatio)
-				);
-
-				if (row < TesselationRatio && column < TesselationRatio)
-				{
-					//front
-					indices.push_back(baseIndex + ((row + 1) * (TesselationRatio + 1)) + column);
-					indices.push_back(baseIndex + ((row + 1) * (TesselationRatio + 1)) + column + 1);
-					indices.push_back(baseIndex + (row * (TesselationRatio + 1)) + column);
-
-					indices.push_back(baseIndex + ((row + 1) * (TesselationRatio + 1)) + column + 1);
-					indices.push_back(baseIndex + (row * (TesselationRatio + 1)) + column + 1);
-					indices.push_back(baseIndex + (row * (TesselationRatio + 1)) + column);
-				}
+				indices.push_back(((row + 1) * (TesselationRatio + 1)) + column + 1);
+				indices.push_back((row * (TesselationRatio + 1)) + column + 1);
+				indices.push_back((row * (TesselationRatio + 1)) + column);
 			}
-
-		basePositionOffset += scale;
-		baseIndex += 6 * TesselationRatio * TesselationRatio;
-	}
+		}
 
 	return { std::move(vertices), std::move(indices) };
 }

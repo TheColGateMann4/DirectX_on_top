@@ -8,13 +8,6 @@ class GFX;
 class TransformConstBuffer : public Bindable
 {
 public:
-	struct TargetShaderBufferBinding
-	{
-		TargetShader type = TargetVertexShader;
-		UINT32 slot = 0;
-	};
-
-public:
 	TransformConstBuffer(GFX& gfx, const Shape& parent, std::vector<TargetShaderBufferBinding> targetBuffers);
 
 	// making this function because when we use regular std::make_unique we can't use initialization list,

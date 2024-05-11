@@ -22,7 +22,7 @@ PointLight::PointLight(GFX& gfx, float radius, DirectX::XMFLOAT3 startingPositio
 
 	constBufferData = DynamicConstantBuffer::BufferData(layout);
 
-	m_pcbuffer = NonCachedBuffer(gfx, layout, 0, TargetPixelShader);
+	m_pcbuffer = NonCachedBuffer(gfx, layout, {{TargetPixelShader, 0}});
 
 	Reset(); // lazy setting values on startup
 

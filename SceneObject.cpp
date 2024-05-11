@@ -148,7 +148,7 @@ void SceneObject::MakePropeties(GFX& gfx)
 				// Writing off stuff from each buffer to set by user
 				for (auto& constantBuffer : stepBufferData.second)
 				{
-					DynamicConstantBuffer::BufferData bufferData = constantBuffer->constBufferData;
+					DynamicConstantBuffer::BufferData bufferData = constantBuffer->GetBufferData();
 					if (bufferData.MakeImguiMenu())
 						constantBuffer->Update(gfx, bufferData);
 				}

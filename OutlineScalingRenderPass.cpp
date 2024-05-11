@@ -19,7 +19,7 @@ OutlineScalingRenderPass::OutlineScalingRenderPass(class GFX& gfx, const char* n
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("horizontal") = horizontal;
 		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 1;
 
-		outlineScalingBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, 0, TargetPixelShader);
+		outlineScalingBuffer = CachedBuffer::GetBindable(gfx, bufferData, {{TargetPixelShader, 0}});
 	}
 
 	AddBindable(outlineScalingBuffer);

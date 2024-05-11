@@ -99,9 +99,7 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 
 				normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_PBR.cso"));
 
-				//normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_PBR_Diffuse_Normal_Roughness_Metallic.cso"));
-
-				normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetPixelShader));
+				normalStep.AddBindable(CachedBuffer::GetBindable(gfx, bufferData, {{TargetPixelShader, 1}}));
 			}
 
 			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetDomainShader));

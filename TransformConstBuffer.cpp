@@ -16,7 +16,7 @@ void TransformConstBuffer::Bind(GFX& gfx) noexcept
 		TCBLayout = GetBufferLayout();
 
 		for (const auto& targetShader : m_targetBuffers)
-			constBuffers.push_back(std::make_shared<NonCachedBuffer>(gfx, TCBLayout, targetShader.slot, targetShader.type));
+			constBuffers.push_back(NonCachedBuffer::GetBindable(gfx, TCBLayout, {{targetShader.type, targetShader.slot}}));
 
 		initialized = true;
 	}

@@ -34,7 +34,7 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = 3;
 
-		m_constBuffer = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, TargetPixelShader);
+		m_constBuffer = CachedBuffer::GetBindable(gfx, constBufferData, {{TargetPixelShader, 0}});
 	}
 
 	pIndexBuffer = dynamic_cast<IndexBuffer*>(m_bindables.back().get());
@@ -64,7 +64,7 @@ void FullscreenFilter::ChangeBlurStrength(GFX& gfx, int strength)
 	if (currentShaderName != "Blur" && currentShaderName != "Outline")
 		return;
 
-	DynamicConstantBuffer::BufferData bufferData = m_constBuffer->constBufferData;
+	DynamicConstantBuffer::BufferData bufferData = m_constBuffer->GetBufferData();
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("strength") = strength;
 
 	m_constBuffer->Update(gfx, bufferData);

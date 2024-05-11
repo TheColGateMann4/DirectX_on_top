@@ -70,7 +70,7 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 				DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 
 
-				m_cooficientSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, TargetPixelShader);
+				m_cooficientSettings = CachedBuffer::GetBindable(gfx, constBufferData, {{TargetPixelShader, 0}});
 
 				SetCooficients(gfx, 7, 2.6f, &m_cooficientSettings);
 
@@ -85,7 +85,7 @@ GaussBlurRenderGraph::GaussBlurRenderGraph(class GFX& gfx, class Scene& scene)
 				*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("horizontal") = true;
 
 
-				m_directionSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 1, TargetPixelShader);
+				m_directionSettings = CachedBuffer::GetBindable(gfx, constBufferData, {{TargetPixelShader, 1}});
 
 				AddGlobalOutput(RenderPassBindableOutput<CachedBuffer>::GetUnique("gaussDirectionSettings", &m_directionSettings));
 			}

@@ -56,6 +56,11 @@ public:
 		return m_techniques.at(techniqueNum).m_active;
 	}
 
+	RenderTechnique* GetTechnique(size_t techniqueNum)
+	{
+		return &m_techniques.at(techniqueNum);
+	}
+
 public:
 	void AddRenderTechnique(const RenderTechnique& technique);
 

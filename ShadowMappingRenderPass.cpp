@@ -23,7 +23,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 
 		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 
-		shadowCameraTransformBuffer = std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetVertexShader);
+		shadowCameraTransformBuffer = CachedBuffer::GetBindable(gfx, bufferData, { {TargetVertexShader, 1}, {TargetDomainShader, 2} });
 	} 
 
 	{
@@ -35,7 +35,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 
 		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
 
-		shadowCameraData = std::make_shared<CachedBuffer>(gfx, bufferData, 4, TargetPixelShader);
+		shadowCameraData = CachedBuffer::GetBindable(gfx, bufferData, {{TargetPixelShader, 4}});
 	}
 
 	RegisterOutput(RenderPassBindableOutput<DepthTextureCube>::GetUnique("shadowMap", &depthTextureCube));

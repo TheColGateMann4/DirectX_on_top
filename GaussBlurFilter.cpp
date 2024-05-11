@@ -15,7 +15,7 @@ GaussBlurFilter::GaussBlurFilter(GFX& gfx, int range, float sigma)
 
 		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 
-		m_cooficients = std::make_shared<CachedBuffer>(gfx, constBufferData, 0, TargetPixelShader);
+		m_cooficients = CachedBuffer::GetBindable(gfx, constBufferData, {{TargetPixelShader, 0}});
 	}
 
 	{
@@ -25,7 +25,7 @@ GaussBlurFilter::GaussBlurFilter(GFX& gfx, int range, float sigma)
 		DynamicConstantBuffer::BufferData constBufferData(constBufferLayout);
 		*constBufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("horizontal") = true;
 
-		m_blurSettings = std::make_shared<CachedBuffer>(gfx, constBufferData, 1, TargetPixelShader);
+		m_blurSettings = CachedBuffer::GetBindable(gfx, constBufferData, {{TargetPixelShader, 1}});
 	}
 
 	SetCooficients(gfx, range, sigma);
@@ -40,7 +40,7 @@ void GaussBlurFilter::Bind(GFX& gfx) const noexcept
 void GaussBlurFilter::SetCooficients(class GFX& gfx, int range, float sigma) noexcept
 {
 	assert(range <= 14);
-	DynamicConstantBuffer::BufferData bufferData = m_cooficients->constBufferData;
+	DynamicConstantBuffer::BufferData bufferData = m_cooficients->GetBufferData();
 	
 	int* numberUsed = bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("numberUsed");
 
@@ -73,7 +73,7 @@ void GaussBlurFilter::SetCooficients(class GFX& gfx, int range, float sigma) noe
 
 void GaussBlurFilter::SetHorizontal(GFX& gfx, bool horizontal)
 {
-	DynamicConstantBuffer::BufferData bufferData = m_blurSettings->constBufferData;
+	DynamicConstantBuffer::BufferData bufferData = m_blurSettings->GetBufferData();
 	*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("horizontal") = horizontal;
 	m_blurSettings->Update(gfx, bufferData);
 }

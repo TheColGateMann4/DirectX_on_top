@@ -9,6 +9,12 @@ enum TargetShader
 	TargetDomainShader
 };
 
+struct TargetShaderBufferBinding
+{
+	TargetShader type = TargetVertexShader;
+	UINT32 slot = 0;
+};
+
 class Bindable
 {
 public:
