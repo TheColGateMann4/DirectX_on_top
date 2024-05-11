@@ -118,13 +118,11 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 
 			normalStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, TargetDomainShader));
 
-			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "height.tga", 0, false, TargetDomainShader));
-
-			normalStep.AddBindable(HullShader::GetBindable(gfx, "HS_test.cso"));
+			normalStep.AddBindable(HullShader::GetBindable(gfx, "HS_Test.cso"));
 
 			normalStep.AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST));
 
-			normalStep.AddBindable(DomainShader::GetBindable(gfx, "DS_test.cso"));
+			normalStep.AddBindable(DomainShader::GetBindable(gfx, "DS_Test.cso"));
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, sphereModel.GetLayout(), pVertexShader.get()));
 
