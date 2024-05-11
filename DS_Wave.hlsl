@@ -38,8 +38,7 @@ DS_OUTPUT main(
 {
 	DS_OUTPUT Output;
 
-	Output.position = float4(
-		patch[0].position *domain.x+patch[1].position*domain.y+patch[2].position*domain.z);
+	Output.position = patch[0].position * domain.x + patch[1].position * domain.y + patch[2].position * domain.z;
 
 	Output.position.y = (sin(Output.position.x * stepness + time * speed) - 0.5f) * scale + Output.position.y;
 

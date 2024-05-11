@@ -45,6 +45,11 @@ public:
 		m_steps.push_back(renderStep);
 	}
 
+	RenderStep* GetStep(size_t stepNum)
+	{
+		return &m_steps.at(stepNum);
+	}
+
 public:
 	std::string GetName() const noexcept
 	{

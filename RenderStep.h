@@ -49,7 +49,9 @@ public:
 			if (T* bindableOfDesiredType = dynamic_cast<T*>(bindable.get()))
 				if (std::is_base_of_v<ConstantBuffer, T>)
 				{
-					if ((bindableOfDesiredType->GetSlot() == slotNumber) && (bindableOfDesiredType->GetShaderType() == targetShader))
+					TargetShaderBufferBinding buffer = bindableOfDesiredType->GetShaders().front();
+
+					if ((buffer.slot == slotNumber) && (buffer.type == targetShader))
 						return bindableOfDesiredType;
 				}
 				else
@@ -68,6 +70,21 @@ public:
 		for (auto& bindable : m_bindables)
 			if (T* bindableOfDesiredType = dynamic_cast<T*>(bindable.get()))
 				result.back().second.push_back(bindableOfDesiredType);
+	}
+
+	template<class T>
+	void RemoveBindable(std::string bindableUID)
+	{
+		for (size_t i = 0; i < m_bindables.size(); i++)
+			if (T* bindableOfDesiredType = dynamic_cast<T*>(m_bindables.at(i).get()))
+			{
+				//if (bindableUID == bindableOfDesiredType.GetLocalUID())
+				//{
+					m_bindables.erase(m_bindables.begin() + i); // keep in mind about removing it from bindable list
+
+					i--;
+				//}
+			}
 	}
 
 	RenderJobPass* GetRenderPass() const

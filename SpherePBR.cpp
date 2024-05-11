@@ -18,23 +18,6 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 	m_pTopology = nullptr;
 	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetVertexShader, 0}, {TargetPixelShader, 2}, {TargetDomainShader, 0} });
 
-
-	DynamicConstantBuffer::BufferData bufferData;
-	
-	{
-		DynamicConstantBuffer::BufferLayout layout;
-
-		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
-		floatInfo.v_min = 0.0f;
-		floatInfo.v_max = 3.0f;
-
-		layout.Add<DynamicConstantBuffer::DataType::Float>("mapMultipler", &floatInfo);
-
-
-		bufferData = std::move(layout);
-		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("mapMultipler") = 0.15f;
-	}
-
 	{
 		RenderTechnique shadowTechnique("shadow");
 
@@ -45,15 +28,50 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 
 			shadowStep.AddBindable(InputLayout::GetBindable(gfx, sphereModel.GetLayout(), pVertexShader.get()));
 
-			shadowStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, TargetVertexShader));
+			shadowStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, TargetDomainShader));
 
-			shadowStep.AddBindable(Texture::GetBindable(gfx, texturePath + "height.tga", 0, false, TargetVertexShader));
+			{
+				DynamicConstantBuffer::BufferLayout layout;
 
-			shadowStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 2, TargetVertexShader));
+				DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
+				floatInfo.v_min = 0.0f;
+				floatInfo.v_max = 3.0f;
 
-			shadowStep.AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+				layout.Add<DynamicConstantBuffer::DataType::Float>("mapMultipler", &floatInfo);
+
+
+				DynamicConstantBuffer::BufferData heightMapFactor = std::move(layout);
+				*heightMapFactor.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("mapMultipler") = 0.15f;
+
+				shadowStep.AddBindable(CachedBuffer::GetSharedBindable(gfx, heightMapFactor, { {TargetDomainShader, 1} }, "heightMapFactor"));
+			}
+
+			{
+				DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo factorInfo = {};
+				factorInfo.v_min = 1.0f;
+				factorInfo.v_max = 50.0f;
+				factorInfo.format = "%.2f";
+
+				DynamicConstantBuffer::BufferLayout layout;
+				layout.Add<DynamicConstantBuffer::DataType::Float>("tesselationFactor", &factorInfo);
+
+				DynamicConstantBuffer::BufferData tesselationFactorData = std::move(layout);
+				*tesselationFactorData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("tesselationFactor") = 10.0f;
+
+				shadowStep.AddBindable(CachedBuffer::GetSharedBindable(gfx, tesselationFactorData, { {TargetHullShader, 0} }, "tesselationFactor"));
+			}
+
+			shadowStep.AddBindable(HullShader::GetBindable(gfx, "HS_Shadow_Test.cso"));
+
+			shadowStep.AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST));
+
+			shadowStep.AddBindable(DomainShader::GetBindable(gfx, "DS_Shadow_Test.cso"));
 
 			shadowStep.AddBindable(std::move(pVertexShader));
+
+			shadowStep.AddPostRenderBindable(NullShader::GetBindable(gfx, TargetHullShader));
+
+			shadowStep.AddPostRenderBindable(NullShader::GetBindable(gfx, TargetDomainShader));
 
 			shadowTechnique.AddRenderStep(shadowStep);
 		}
@@ -84,37 +102,28 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 				layout.Add<DynamicConstantBuffer::DataType::Float3>("diffuseColor", &colorInfo);
 				layout.Add<DynamicConstantBuffer::DataType::Float3>("emission", &colorInfo);
 				layout.Add<DynamicConstantBuffer::DataType::Float3>("reflectivity", &colorInfo);
-
+				layout.Add<DynamicConstantBuffer::DataType::Float3>("insideColor", &colorInfo);
 
 				DynamicConstantBuffer::BufferData bufferData(std::move(layout));
-				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("roughness") = m_roughness;
-				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("metalic") = m_metalic;
-				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("diffuseColor") = m_color;
-				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("emission") = m_emission;
-				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("reflectivity") = m_reflectivity;
+				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("roughness") = 1.0f;
+				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("metalic") = 1.0f;
+				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("diffuseColor") = { 1.0f, 1.0f, 1.0f };
+				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("emission") = { 0.0f, 0.0f, 0.0f };
+				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("reflectivity") = { 1.0f, 1.0f, 1.0f };
+				*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float3>("insideColor") = { 1.0f, 1.0f, 1.0f };
 
-				normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_PBR.cso"));
+				normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_PBR_Diffuse_Normal_Roughness_Metallic.cso"));
 
 				normalStep.AddBindable(CachedBuffer::GetBindable(gfx, bufferData, {{TargetPixelShader, 1}}));
 			}
 
-			normalStep.AddBindable(std::make_shared<CachedBuffer>(gfx, bufferData, 1, TargetDomainShader));
+			normalStep.AddBindable(CachedBuffer::GetBindableWithoutCreation(gfx, "tesselationFactor"));
 
 			normalStep.AddBindable(BlendState::GetBindable(gfx, false));
 
 			normalStep.AddBindable(RasterizerState::GetBindable(gfx, false));
 
-// 			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "height.tga", 0, false, TargetVertexShader));
-// 
-// 			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "diffuse.jpg", 0, false));
-// 
-// 			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "normal.jpg", 1, false));
-// 
-// 			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "roughness.jpg", 2, false));
-// 
-// 			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "metallic.jpg", 3, false));
-// 
-// 			normalStep.AddBindable(Texture::GetBindable(gfx, texturePath + "reflection.jpg", 4, false));
+			normalStep.AddBindable(CachedBuffer::GetBindableWithoutCreation(gfx, "heightMapFactor"));
 
 			normalStep.AddBindable(SamplerState::GetBindable(gfx, SamplerState::CLAMP, 0, SamplerState::NEVER, SamplerState::BILINEAR, TargetDomainShader));
 

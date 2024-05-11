@@ -1,22 +1,14 @@
 struct VS_CONTROL_POINT_OUTPUT
 {
-    float3 viewPosition : POSITION;
-    float3 viewNormal : NORMAL;
-    float3 viewTangent : TANGENT;
-    float3 viewBitangent : BITANGENT;
+    float3 normal : NORMAL;
     float2 textureCoords : TEXCOORD;
-    float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
 
 struct HS_CONTROL_POINT_OUTPUT
 {
-    float3 viewPosition : POSITION;
-    float3 viewNormal : NORMAL;
-    float3 viewTangent : TANGENT;
-    float3 viewBitangent : BITANGENT;
+    float3 normal : NORMAL;
     float2 textureCoords : TEXCOORD;
-    float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
 
@@ -59,13 +51,9 @@ HS_CONTROL_POINT_OUTPUT main(
 {
 	HS_CONTROL_POINT_OUTPUT Output;
 
-	Output.viewPosition =  ip[i].viewPosition;
-	Output.viewNormal =  ip[i].viewNormal;
-	Output.viewTangent = ip[i].viewTangent;
-	Output.viewBitangent = ip[i].viewBitangent;
-	Output.textureCoords = ip[i].textureCoords;
-	Output.depthMapCoords = ip[i].depthMapCoords;
-	Output.position = ip[i].position;
+    Output.normal = ip[i].normal;
+    Output.textureCoords = ip[i].textureCoords;
+    Output.position = ip[i].position;
 
 	return Output;
 }

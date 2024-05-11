@@ -611,6 +611,9 @@
     <ClCompile Include="NullShader.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="ConstantBuffers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -747,6 +750,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="VS_NoProjection.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="HS_Shadow_Test.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="DS_Shadow_Test.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
