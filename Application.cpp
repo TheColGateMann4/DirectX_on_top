@@ -28,7 +28,7 @@ BOOL Application::Initiate()
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Ghosts\\GroundCape1.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, -7.0f }));
 	scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", DirectX::XMFLOAT3{ 8.0f, 3.0f, 5.0f }));
 	//scene.AddSceneObject(std::make_unique<Cube>(window.Graphics, 1.0f, "Models\\brickwall\\brick_wall_diffuse.jpg", "Models\\brickwall\\brick_wall_normal.jpg", DirectX::XMFLOAT3{ 4.0f, 3.0f, 4.0f }));
-	scene.AddSceneObject(std::make_unique<SpherePBR>(window.Graphics, "Images\\Textures\\patterned_wooden_wall_panel\\", DirectX::XMFLOAT3{-5.0f, 3.0f, 2.0f}));
+	scene.AddSceneObject(std::make_unique<SpherePBR>(window.Graphics, DirectX::XMFLOAT3{-5.0f, 3.0f, 2.0f}));
 	scene.AddSceneObject(std::make_unique<Sheet>(window.Graphics, DirectX::XMFLOAT3{1.0f, 0.0f, 0.0f}));
 	scene.AddSceneObject(std::make_unique<Skybox>(window.Graphics, 20.0f, "Images\\SpaceSkybox\\Space.png"));
 	scene.LinkModelsToPipeline(renderGraph);

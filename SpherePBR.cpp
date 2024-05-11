@@ -1,15 +1,11 @@
 #include "SpherePBR.h"
 #include "Sphere.h"
 #include "BindableClassesMacro.h"
+#include <Shlwapi.h>
 
-SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 startingPosition)
+SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 	:
-	SceneObject(startingPosition),
-	m_roughness(0.56f),
-	m_metalic(0.0f),
-	m_color(DirectX::XMFLOAT3{ 0.0f, 1.0f, 1.0f }),
-	m_emission(DirectX::XMFLOAT3{ 0.0f, 0.0f, 0.0f }),
-	m_reflectivity(DirectX::XMFLOAT3{ 0.286f, 0.286f, 0.286f })
+	SceneObject(startingPosition)
 {
 	SetShape(this);
 
@@ -142,5 +138,62 @@ SpherePBR::SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 starti
 		}
 
 		AddRenderTechnique(normalTechnique);
+	}
+
+	ChangeModel(gfx, selectedTextureName);
+}
+
+void SpherePBR::ChangeModel(GFX& gfx, const char* textureName)
+{
+	std::string fullTextureName = "Images\\Textures\\";
+	fullTextureName += textureName;
+	fullTextureName += '\\';
+
+	const char* heightMapTextureName = PathFileExistsA((fullTextureName + "height.tga").c_str()) ? "height.tga" : "height.jpg";
+
+	{
+		RenderStep* shadowStep = GetTechnique(0)->GetStep(0);
+
+		shadowStep->RemoveBindable<Texture>("");
+
+		shadowStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + heightMapTextureName, 0, false, TargetDomainShader));
+	}
+
+	{
+		RenderStep* normalStep = GetTechnique(1)->GetStep(0);
+
+		normalStep->RemoveBindable<Texture>("");
+
+		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + heightMapTextureName, 0, false, TargetDomainShader));
+
+		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + "diffuse.jpg", 0, false));
+
+		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + "normal.jpg", 1, false));
+
+		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + "roughness.jpg", 2, false));
+
+		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + "metallic.jpg", 3, false));
+
+		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + "reflection.jpg", 4, false));
+	}
+}
+
+void SpherePBR::MakeAdditionalPropeties(GFX& gfx)
+{
+	if (ImGui::BeginCombo("textureName", selectedTextureName))
+	{
+		for (int textureIndex = 0; textureIndex < textureNameList.size(); textureIndex++)
+		{
+			bool is_selected = (selectedTextureName == textureNameList.at(textureIndex));
+			if (ImGui::Selectable(textureNameList.at(textureIndex).c_str(), is_selected))
+			{
+				selectedTextureName = textureNameList.at(textureIndex).c_str();
+				ChangeModel(gfx, selectedTextureName);
+			}
+
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
 	}
 }

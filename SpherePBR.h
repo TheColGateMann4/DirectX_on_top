@@ -5,7 +5,12 @@
 class SpherePBR : public SceneObject, public Shape
 {
 public:
-	SpherePBR(GFX& gfx, std::string texturePath, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
+	SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
+
+public:
+	void ChangeModel(GFX& gfx, const char* textureName);
+
+
 
 public:
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override
@@ -28,11 +33,10 @@ public:
 	{
 		return "PBR_Sphere";
 	}
+	
+	virtual void MakeAdditionalPropeties(GFX& gfx) override;
 
 private:
-	float m_roughness;
-	float m_metalic;
-	DirectX::XMFLOAT3 m_color;
-	DirectX::XMFLOAT3 m_emission;
-	DirectX::XMFLOAT3 m_reflectivity;
+	const std::vector<std::string> textureNameList = {"dark_acoustic_panel", "grey_porous_rock", "patterned_wooden_wall_panel", "space_station_foil", "violet_crystal", "quilted_black_leather", "golden_metal", "graffiti_tag_decals"};
+	const char* selectedTextureName = textureNameList.at(0).c_str();
 };
