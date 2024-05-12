@@ -37,11 +37,19 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 				floatInfo.v_min = 0.0f;
 				floatInfo.v_max = 3.0f;
 
+				DynamicConstantBuffer::ImguiAdditionalInfo::ImguiIntInfo intInfo = {};
+				intInfo.v_min = 1;
+				intInfo.v_max = 4;
+
 				layout.Add<DynamicConstantBuffer::DataType::Float>("mapMultipler", &floatInfo);
+				layout.Add<DynamicConstantBuffer::DataType::Bool>("enableMultisampling");
+				layout.Add<DynamicConstantBuffer::DataType::Int>("sampleNumber", &intInfo);
 
 
 				DynamicConstantBuffer::BufferData heightMapFactor = std::move(layout);
 				*heightMapFactor.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("mapMultipler") = 0.15f;
+				*heightMapFactor.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("enableMultisampling") = TRUE;
+				*heightMapFactor.GetElementPointerValue<DynamicConstantBuffer::DataType::Int>("sampleNumber") = 1;
 
 				shadowStep.AddBindable(CachedBuffer::GetSharedBindable(gfx, heightMapFactor, { {TargetDomainShader, 1} }, "heightMapFactor"));
 			}

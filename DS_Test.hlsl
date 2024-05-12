@@ -36,6 +36,8 @@ struct HS_CONSTANT_DATA_OUTPUT
 cbuffer heightMapSettings : register(b1)
 {
     float b_mapMultipler;
+    bool b_enableMultisampling;
+    int b_sampleNumber;
 };
 
 cbuffer shadowBuffer : register(b2)
@@ -78,38 +80,15 @@ DS_OUTPUT main(
 
 	Output.worldNormal = patch[0].worldNormal * domain.x + patch[1].worldNormal * domain.y + patch[2].worldNormal * domain.z;
 
-	const float heightMapSample = t_heightMap.SampleLevel(s_sampler, Output.textureCoords, 0).r * b_mapMultipler;
-    Output.position.xyz += Output.viewNormal * heightMapSample;
 
-    //getting displaced tangent bitangent and normal
-//     {
-//      int width, height;
-//     
-//         t_heightMap.GetDimensions(width, height);
-//     
-//         const float texelSize = 1.0f / width;
-//     
-//         const float3 tangent = orthogonal(Output.viewNormal);
-//         const float3 bitangent = normalize(cross(Output.viewNormal, tangent));
-//         const float3 neighbour1 = Output.position + tangent;
-//         const float3 neighbour2 = Output.position + bitangent;
-//     
-//         const float2 neighbour1uv = heightMapSample + float2(-texelSize, 0);
-//         const float2 neighbour2uv = heightMapSample  + float2(0, -texelSize);
-//         const float3 displacedNeighbour1 = neighbour1 + Output.viewNormal * heightMapSample;
-//         const float3 displacedNeighbour2 = neighbour2 + Output.viewNormal * heightMapSample;
-//        
-//         const float3 displacedTangent = displacedNeighbour1 - Output.position;
-//         const float3 displacedBitangent = displacedNeighbour2 - Output.position;
-//         
-//         const float3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
-//     
-//         Output.viewTangent = mul(displacedTangent, modelView);
-//     
-//         Output.viewBitangent = mul(displacedBitangent, modelView);
-//     
-//         Output.viewNormal = mul(displacedNormal, modelView);
-//       }
+    float heightMapSample;
+
+    if(b_enableMultisampling)
+        heightMapSample = SampleNearPixels(t_heightMap, s_sampler, Output.textureCoords, b_sampleNumber).r * b_mapMultipler;
+    else
+        heightMapSample = t_heightMap.SampleLevel(s_sampler, Output.textureCoords, 0).r * b_mapMultipler;
+
+    Output.position.xyz += Output.viewNormal * heightMapSample;
 
     Output.depthMapCoords = CalculateDepthTextureCoords(Output.position, model, shadowViewProjection);
 
