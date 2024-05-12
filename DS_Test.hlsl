@@ -8,6 +8,8 @@ struct DS_OUTPUT
     float3 viewTangent : TANGENT;
     float3 viewBitangent : BITANGENT;
     float2 textureCoords : TEXCOORD;
+    float3 worldPosition : WORLDPOSITION;
+    float3 worldNormal : WORLDNORMAL;
     float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
@@ -19,6 +21,8 @@ struct HS_CONTROL_POINT_OUTPUT
     float3 viewTangent : TANGENT;
     float3 viewBitangent : BITANGENT;
     float2 textureCoords : TEXCOORD;
+    float3 worldPosition : WORLDPOSITION;
+    float3 worldNormal : WORLDNORMAL;
     float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
@@ -69,6 +73,10 @@ DS_OUTPUT main(
 	Output.textureCoords = patch[0].textureCoords * domain.x + patch[1].textureCoords * domain.y + patch[2].textureCoords * domain.z;
 
 	Output.position = patch[0].position * domain.x + patch[1].position * domain.y + patch[2].position * domain.z;
+
+	Output.worldPosition = patch[0].worldPosition * domain.x + patch[1].worldPosition * domain.y + patch[2].worldPosition * domain.z;
+
+	Output.worldNormal = patch[0].worldNormal * domain.x + patch[1].worldNormal * domain.y + patch[2].worldNormal * domain.z;
 
 	const float heightMapSample = t_heightMap.SampleLevel(s_sampler, Output.textureCoords, 0).r * b_mapMultipler;
     Output.position.xyz += Output.viewNormal * heightMapSample;

@@ -5,6 +5,8 @@ struct VS_CONTROL_POINT_OUTPUT
     float3 viewTangent : TANGENT;
     float3 viewBitangent : BITANGENT;
     float2 textureCoords : TEXCOORD;
+    float3 worldPosition : WORLDPOSITION;
+    float3 worldNormal : WORLDNORMAL;
     float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
@@ -16,6 +18,8 @@ struct HS_CONTROL_POINT_OUTPUT
     float3 viewTangent : TANGENT;
     float3 viewBitangent : BITANGENT;
     float2 textureCoords : TEXCOORD;
+    float3 worldPosition : WORLDPOSITION;
+    float3 worldNormal : WORLDNORMAL;
     float4 depthMapCoords : DEPTHTEXCOORD;
     float4 position : SV_POSITION;
 };
@@ -64,6 +68,8 @@ HS_CONTROL_POINT_OUTPUT main(
 	Output.viewTangent = ip[i].viewTangent;
 	Output.viewBitangent = ip[i].viewBitangent;
 	Output.textureCoords = ip[i].textureCoords;
+	Output.worldPosition = ip[i].worldPosition;
+	Output.worldNormal = ip[i].worldNormal;
 	Output.depthMapCoords = ip[i].depthMapCoords;
 	Output.position = ip[i].position;
 
