@@ -14,7 +14,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 {
 	m_bindsGraphicBuffersByItself = true;
 	m_renderTarget = std::make_shared<RenderTarget>(gfx, gfx.GetWidth(), gfx.GetWidth());
-	depthTextureCube = std::make_shared<DepthTextureCube>(gfx, 5);
+	depthTextureCube = std::make_shared<DepthTextureCube>(gfx, 6);
 
 	{
 		DynamicConstantBuffer::BufferLayout layout;

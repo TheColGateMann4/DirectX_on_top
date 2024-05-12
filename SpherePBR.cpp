@@ -190,6 +190,8 @@ void SpherePBR::ChangeModel(GFX& gfx, const char* textureName)
 		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + "metallic.jpg", 3, false));
 
 		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + "reflection.jpg", 4, false));
+
+		normalStep->AddBindable(Texture::GetBindable(gfx, fullTextureName + "ao.jpg", 5, false));
 	}
 }
 

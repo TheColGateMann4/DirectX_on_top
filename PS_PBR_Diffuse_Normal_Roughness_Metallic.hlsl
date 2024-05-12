@@ -30,8 +30,9 @@ Texture2D t_normalMap : register(t1);
 Texture2D t_roughnessMap : register(t2);
 Texture2D t_metalicMap : register(t3);
 Texture2D t_reflectiveMap : register(t4);
+Texture2D t_ambientMap : register(t5);
 
-TextureCube t_skybox : register(t6);
+TextureCube t_skybox : register(t7);
 
 SamplerState s_sampler : register(s0);
 
@@ -69,17 +70,17 @@ float3 FrenelsEquation(const float3 F0, const float3 V, const float3 H)
     return F0 + (float3(1.0f, 1.0f, 1.0f) - F0) * pow(1.0f - max(dot(V, H), 0.0f), 5.0f);
 }
 
-float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, float3 reflectivity, const float3 emission, float3 diffuseColor, float metalic, float roughness, float shadowLevel, float3 worldPosition : WORLDPOSITION, float3 worldNormal : WORLDNORMAL, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD)
+float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, float3 reflectivity, const float3 emission, float3 diffuseColor, float metalic, float roughness, float ambient, float shadowLevel, float3 worldPosition : WORLDPOSITION, float3 worldNormal : WORLDNORMAL, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD)
 {    
     float3 outgoingLight = float3(0.0f, 0.0f, 0.0f);
     
+    const float3 Ks = FrenelsEquation(reflectivity, V, H);
+    const float3 Kd = (float3(1.0f, 1.0f, 1.0f) - Ks) * (1.0f - metalic);
+    const float3 lambert = diffuseColor;
+
     if(shadowLevel != 0.0f)
     {
         const float alpha = pow(roughness, 2.0f);
-        const float3 Ks = FrenelsEquation(reflectivity, V, H);
-        const float3 Kd = (float3(1.0f, 1.0f, 1.0f) - Ks) * (1.0f - metalic);
-        
-        const float3 lambert = diffuseColor;
         
         const float3 cookTorranceNumerator = NormalDist(alpha, N, H) * GeometryShadow(alpha, N, V, L) * FrenelsEquation(reflectivity, V, H);
         float cookTorranceDenominator = 4.0f * max(dot(V, N), 0.0f) * max(dot(L, N), 0.0f);
@@ -87,9 +88,11 @@ float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, fl
         const float3 cookTorrance = cookTorranceNumerator / cookTorranceDenominator;
     
         const float3 BRDF = Kd * lambert + Ks * cookTorrance;
-        outgoingLight = emission + (BRDF * shadowLevel) * b_lightColor * max(dot(L, N), 0.0f);
+        outgoingLight = (BRDF * shadowLevel) * b_lightColor * max(dot(L, N), 0.0f);
     }
-    
+
+    outgoingLight += emission + (ambient * 0.3f) * lambert;
+
     if(metalic != 0.0f)
     {    
         float3 skyboxSampleVector = 2 * dot(worldPosition, worldNormal) * worldNormal - worldPosition;
@@ -111,8 +114,9 @@ float4 main(float3 viewPosition : POSITION, float3 viewNormal : NORMAL, float3 v
     const float metalic = t_metalicMap.Sample(s_sampler, textureCoords).x * b_metalic;
     const float3 reflectivity = t_reflectiveMap.Sample(s_sampler, textureCoords).xyz * b_reflectivity;
     const float3 diffuseColor = t_diffuseMap.Sample(s_sampler, textureCoords).xyz * b_diffuseColor;
+    const float ambient = t_diffuseMap.Sample(s_sampler, textureCoords).x;
 
     const float shadowLevel = GetShadowDebugLevel(t_depthMap, s_depthComparisonSampler, s_sampler, depthMapCoords, c0, c1, pcf);
 
-    return float4(GetPBR(N, V, L, H, reflectivity, b_emission, diffuseColor, metalic, roughness, shadowLevel, worldPosition, worldNormal, textureCoords, depthMapCoords), 1.0f);
+    return float4(GetPBR(N, V, L, H, reflectivity, b_emission, diffuseColor, metalic, roughness, ambient, shadowLevel, worldPosition, worldNormal, textureCoords, depthMapCoords), 1.0f);
 }
