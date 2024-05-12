@@ -91,7 +91,7 @@ float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, fl
         outgoingLight = (BRDF * shadowLevel) * b_lightColor * max(dot(L, N), 0.0f);
     }
 
-    outgoingLight += emission + (ambient * 0.3f) * lambert;
+    outgoingLight += emission + ambient * lambert;
 
     if(metalic != 0.0f)
     {    
@@ -114,7 +114,7 @@ float4 main(float3 viewPosition : POSITION, float3 viewNormal : NORMAL, float3 v
     const float metalic = t_metalicMap.Sample(s_sampler, textureCoords).x * b_metalic;
     const float3 reflectivity = t_reflectiveMap.Sample(s_sampler, textureCoords).xyz * b_reflectivity;
     const float3 diffuseColor = t_diffuseMap.Sample(s_sampler, textureCoords).xyz * b_diffuseColor;
-    const float ambient = t_diffuseMap.Sample(s_sampler, textureCoords).x;
+    const float ambient = t_diffuseMap.Sample(s_sampler, textureCoords).x * b_ambient.x;
 
     const float shadowLevel = GetShadowDebugLevel(t_depthMap, s_depthComparisonSampler, s_sampler, depthMapCoords, c0, c1, pcf);
 
