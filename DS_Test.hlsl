@@ -88,13 +88,11 @@ DS_OUTPUT main(
     else
         heightMapSample = t_heightMap.SampleLevel(s_sampler, Output.textureCoords, 0).r * b_mapMultipler;
 
-    Output.position.xyz += Output.viewNormal * heightMapSample;
+    Output.position.xyz += Output.worldNormal * heightMapSample;
 
     Output.depthMapCoords = CalculateDepthTextureCoords(Output.position, model, shadowViewProjection);
 
     Output.position = mul(Output.position, modelViewProjection);
-
-    Output.viewNormal = mul(Output.viewNormal, (float3x3)modelView);
 
 	return Output;
 }

@@ -23,7 +23,7 @@ VSOUT main(float3 position : POSITION, float3 normal : NORMAL, float3 tangent : 
 {
     VSOUT vsout;
     vsout.viewPosition = (float3) mul(float4(position, 1.0f), modelView);
-    vsout.normal = normal;
+    vsout.normal = mul(normal, (float3x3) modelView);
     vsout.viewTangent = mul(tangent, (float3x3) modelView);
     vsout.viewBitangent = mul(bitangent, (float3x3)modelView);
     vsout.textureCoords = textureCoords;
