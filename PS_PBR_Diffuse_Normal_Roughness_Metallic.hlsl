@@ -69,7 +69,7 @@ float3 FrenelsEquation(const float3 F0, const float3 V, const float3 H)
     return F0 + (float3(1.0f, 1.0f, 1.0f) - F0) * pow(1.0f - max(dot(V, H), 0.0f), 5.0f);
 }
 
-float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, float3 reflectivity, const float3 emission, float3 diffuseColor, float metalic, float roughness, float shadowLevel, float3 skyboxSample, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD)
+float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, float3 reflectivity, const float3 emission, float3 diffuseColor, float metalic, float roughness, float shadowLevel, float3 worldPosition : WORLDPOSITION, float3 worldNormal : WORLDNORMAL, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD)
 {    
     float3 outgoingLight = float3(0.0f, 0.0f, 0.0f);
     
@@ -92,13 +92,15 @@ float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, fl
     
     if(metalic != 0.0f)
     {    
-        outgoingLight += skyboxSample * metalic;
+        float3 skyboxSampleVector = 2 * dot(worldPosition, worldNormal) * worldNormal - worldPosition;
+        
+        outgoingLight += t_skybox.Sample(s_sampler, skyboxSampleVector).xyz * metalic;
     }
 
     return saturate(outgoingLight);
 }   
 
-float4 main(float3 viewPosition : POSITION, float3 viewNormal : NORMAL, float3 viewTangent : TANGENT, float3 viewBitangent : BITANGENT, float2 textureCoords : TEXCOORD, float3 position : WORLDPOSITION, float3 normal : WORLDNORMAL, float4 depthMapCoords : DEPTHTEXCOORD) : SV_TARGET
+float4 main(float3 viewPosition : POSITION, float3 viewNormal : NORMAL, float3 viewTangent : TANGENT, float3 viewBitangent : BITANGENT, float2 textureCoords : TEXCOORD, float3 worldPosition : WORLDPOSITION, float3 worldNormal : WORLDNORMAL, float4 depthMapCoords : DEPTHTEXCOORD) : SV_TARGET
 {  
     const float3 N = GetNormalInViewSpace(viewNormal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_normalMap);
     const float3 V = normalize(-viewPosition);
@@ -110,14 +112,7 @@ float4 main(float3 viewPosition : POSITION, float3 viewNormal : NORMAL, float3 v
     const float3 reflectivity = t_reflectiveMap.Sample(s_sampler, textureCoords).xyz * b_reflectivity;
     const float3 diffuseColor = t_diffuseMap.Sample(s_sampler, textureCoords).xyz * b_diffuseColor;
 
-    float3 skyboxSample = float3(0.0f, 0.0f, 0.0f);
-    {
-        float3 skyboxSampleVector = 2 * dot(position, normal) * normal - position;
-        
-        skyboxSample = t_skybox.Sample(s_sampler, skyboxSampleVector).xyz;
-    }
-
     const float shadowLevel = GetShadowDebugLevel(t_depthMap, s_depthComparisonSampler, s_sampler, depthMapCoords, c0, c1, pcf);
 
-    return float4(GetPBR(N, V, L, H, reflectivity, b_emission, diffuseColor, metalic, roughness, shadowLevel, skyboxSample, textureCoords, depthMapCoords), 1.0f);
+    return float4(GetPBR(N, V, L, H, reflectivity, b_emission, diffuseColor, metalic, roughness, shadowLevel, worldPosition, worldNormal, textureCoords, depthMapCoords), 1.0f);
 }
