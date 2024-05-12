@@ -5,8 +5,6 @@
 
 FPSCounter::FPSCounter(GFX& gfx)
 	:
-	fpsNumber(0),
-	timeCounter(1.0f),
 	m_screenWidth(static_cast<float>(gfx.GetWidth())),
 	m_screenHeight(static_cast<float>(gfx.GetHeight()))
 {
@@ -15,15 +13,17 @@ FPSCounter::FPSCounter(GFX& gfx)
 
 void FPSCounter::Draw(const float deltaTime)
 {
-	timeCounter += deltaTime;
+	m_accumulatedDeltatime += deltaTime;
+	m_countedTimes++;
 
-	if (timeCounter >= 0.2f)
+	if (m_accumulatedDeltatime >= 0.2f)
 	{
-		timeCounter = 0.0f;
-
-		float tempFps = 1.0f / deltaTime;
+		float tempFps = 1.0f / (m_accumulatedDeltatime / m_countedTimes);
 
 		fpsNumber = std::round(tempFps);
+
+		m_accumulatedDeltatime = 0.0f;
+		m_countedTimes = 0;
 	}
 
 	ImGuiWindowFlags windowFlags =
