@@ -266,7 +266,7 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
 		return true;
 
-	ImGuiIO imguiio = ImGui::GetIO();
+	ImGuiIO& imguiio = ImGui::GetIO();
 
 	switch (msg)
 	{
