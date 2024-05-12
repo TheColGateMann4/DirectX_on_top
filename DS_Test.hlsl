@@ -90,6 +90,10 @@ DS_OUTPUT main(
 
     Output.position.xyz += Output.worldNormal * heightMapSample;
 
+    Output.viewPosition.xyz += Output.worldNormal * heightMapSample;
+
+    Output.worldPosition.xyz += Output.worldNormal * heightMapSample;
+
     Output.depthMapCoords = CalculateDepthTextureCoords(Output.position, model, shadowViewProjection);
 
     Output.position = mul(Output.position, modelViewProjection);
