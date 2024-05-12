@@ -51,11 +51,6 @@ SamplerState s_sampler : register(s0);
 
 #define NUM_CONTROL_POINTS 3
 
-float3 orthogonal(float3 v) 
-{
-    return normalize(abs(v.x) > abs(v.z) ? float3(-v.y, v.x, 0.0)  : float3(0.0, -v.z, v.y));
-}
-
 [domain("tri")]
 DS_OUTPUT main(
 	HS_CONSTANT_DATA_OUTPUT input,
@@ -80,19 +75,21 @@ DS_OUTPUT main(
 
 	Output.worldNormal = patch[0].worldNormal * domain.x + patch[1].worldNormal * domain.y + patch[2].worldNormal * domain.z;
 
-
-    float heightMapSample;
-
-    if(b_enableMultisampling)
-        heightMapSample = SampleNearPixels(t_heightMap, s_sampler, Output.textureCoords, b_sampleNumber).r * b_mapMultipler;
-    else
-        heightMapSample = t_heightMap.SampleLevel(s_sampler, Output.textureCoords, 0).r * b_mapMultipler;
-
-    Output.position.xyz += Output.worldNormal * heightMapSample;
-
-    Output.viewPosition.xyz += Output.worldNormal * heightMapSample;
-
-    Output.worldPosition.xyz += Output.worldNormal * heightMapSample;
+    // height map stuff
+    {
+        float heightMapSample;
+    
+        if(b_enableMultisampling)
+            heightMapSample = SampleNearPixels(t_heightMap, s_sampler, Output.textureCoords, b_sampleNumber).r * b_mapMultipler;
+        else
+            heightMapSample = t_heightMap.SampleLevel(s_sampler, Output.textureCoords, 0).r * b_mapMultipler;
+    
+        Output.position.xyz += Output.worldNormal * heightMapSample;
+    
+        Output.viewPosition.xyz += Output.worldNormal * heightMapSample;
+    
+        Output.worldPosition.xyz += Output.worldNormal * heightMapSample;
+    }
 
     Output.depthMapCoords = CalculateDepthTextureCoords(Output.position, model, shadowViewProjection);
 
