@@ -41,7 +41,7 @@ static const float _Pi = 3.14159265358979323846f;
 float NormalDist(const float alpha, const float3 N, const float3 H)
 {
     const float numerator = pow(alpha, 2.0f);
-    const float3 NdotH = max(dot(N, H), 0.0f);
+    const float NdotH = max(dot(N, H), 0.0f);
 
     float denominator = _Pi * pow(pow(NdotH, 2.0f) * (pow(alpha, 2.0f) - 1.0f) + 1.0f, 2.0f);
     denominator = max(denominator, 0.000001f);
