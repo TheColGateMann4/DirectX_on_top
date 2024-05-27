@@ -70,7 +70,7 @@ float3 FrenelsEquation(const float3 F0, const float3 V, const float3 H)
     return F0 + (float3(1.0f, 1.0f, 1.0f) - F0) * pow(1.0f - max(dot(V, H), 0.0f), 5.0f);
 }
 
-float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, float3 lightColor, float3 reflectivity, const float3 emission, float3 diffuseColor, float metalic, float roughness, float ambient, float shadowLevel, float3 worldPosition : WORLDPOSITION, float3 worldNormal : WORLDNORMAL, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD)
+float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, float3 lightColor, float3 reflectivity, const float3 emission, float3 diffuseColor, float metalic, float roughness, float ambient, float shadowLevel, float attenuation, float3 worldPosition : WORLDPOSITION, float3 worldNormal : WORLDNORMAL, float2 textureCoords : TEXCOORD, float4 depthMapCoords : DEPTHTEXCOORD)
 {    
     float3 outgoingLight = float3(0.0f, 0.0f, 0.0f);
     
@@ -88,7 +88,7 @@ float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, fl
         const float3 cookTorrance = cookTorranceNumerator / cookTorranceDenominator;
     
         const float3 BRDF = Kd * lambert + Ks * cookTorrance;
-        outgoingLight = (BRDF * shadowLevel) * lightColor * max(dot(L, N), 0.0f);
+        outgoingLight = (BRDF * shadowLevel) * lightColor * max(dot(L, N), 0.0f) * attenuation;
     }
 
     outgoingLight += emission + b_ambient * ambient;
@@ -107,16 +107,17 @@ float4 main(float3 viewPosition : POSITION, float3 viewNormal : NORMAL, float3 v
 {  
     const float3 N = GetNormalInViewSpace(viewNormal, normalize(viewTangent), normalize(viewBitangent), textureCoords, s_sampler, t_normalMap);
     const float3 V = normalize(-viewPosition);
-    const float3 L = normalize(b_viewLightPosition - viewPosition);
+    const float3 L = b_viewLightPosition - viewPosition;
     const float3 H = normalize(V + L);
     
     const float roughness = t_roughnessMap.Sample(s_sampler, textureCoords).x * b_roughness;
     const float metalic = t_metalicMap.Sample(s_sampler, textureCoords).x * b_metalic;
     const float3 reflectivity = t_reflectiveMap.Sample(s_sampler, textureCoords).xyz * b_reflectivity;
     const float3 diffuseColor = t_diffuseMap.Sample(s_sampler, textureCoords).xyz * b_diffuseColor;
-    const float ambient = t_diffuseMap.Sample(s_sampler, textureCoords).x * b_ambient.x;
+    const float ambient = t_diffuseMap.Sample(s_sampler, textureCoords).x;
 
+    const float attenuation = GetAttenuation(length(L), b_attenuationConst, b_attenuationLinear, b_attenuationQuadratic);
     const float shadowLevel = GetShadowDebugLevel(t_depthMap, s_depthComparisonSampler, s_sampler, depthMapCoords, c0, c1, pcf);
 
-    return float4(GetPBR(N, V, L, H, b_lightColor, reflectivity, b_emission, diffuseColor, metalic, roughness, ambient, shadowLevel, worldPosition, worldNormal, textureCoords, depthMapCoords), 1.0f);
+    return float4(GetPBR(N, V, normalize(L), H, b_lightColor, reflectivity, b_emission, diffuseColor, metalic, roughness, ambient, shadowLevel, attenuation, worldPosition, worldNormal, textureCoords, depthMapCoords), 1.0f);
 }
