@@ -91,7 +91,7 @@ float3 GetPBR(const float3 N, const float3 V, const float3 L, const float3 H, fl
         outgoingLight = (BRDF * shadowLevel) * lightColor * max(dot(L, N), 0.0f);
     }
 
-    outgoingLight += emission + ambient * lambert;
+    outgoingLight += emission + b_ambient * ambient;
 
     if(metalic != 0.0f)
     {    
