@@ -1,6 +1,6 @@
 #include "ShadowResources.hlsli"
 #include "PS_ShadowFunctions.hlsli"
-#include "VS_TransformConstBuffer.hlsli"
+#include "PS_TransformConstBuffer.hlsli"
 
 cbuffer lightBuffer : register(b0)
 {
@@ -117,7 +117,7 @@ float4 main(float3 viewPosition : POSITION, float3 viewNormal : NORMAL, float3 v
     const float ambient = t_diffuseMap.Sample(s_sampler, textureCoords).x;
 
     const float attenuation = GetAttenuation(length(L), b_attenuationConst, b_attenuationLinear, b_attenuationQuadratic);
-    const float shadowLevel = GetShadowDebugLevel(t_depthMap, s_depthComparisonSampler, s_sampler, depthMapCoords, c0, c1, pcf);
+    const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, depthMapCoords, c0, c1, pcf);
 
     return float4(GetPBR(N, V, normalize(L), H, b_lightColor, reflectivity, b_emission, diffuseColor, metalic, roughness, ambient, shadowLevel, attenuation, worldPosition, worldNormal, textureCoords, depthMapCoords), 1.0f);
 }
