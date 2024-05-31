@@ -29,7 +29,7 @@ Skybox::Skybox(class GFX& gfx, float scale, std::string skyboxTexture)
 
  			shadowStep.AddBindable(InputLayout::GetBindable(gfx, skyboxModel.GetLayout(), pVertexShader.get()));
 
-			shadowStep.AddBindable(CubeMapTexture::GetBindable(gfx, "Images\\SpaceSkybox\\Space.png", 7));
+			shadowStep.AddBindable(CubeMapTexture::GetBindable(gfx, skyboxTexture, 7));
 
 			shadowStep.AddBindable(std::move(pVertexShader));
 
