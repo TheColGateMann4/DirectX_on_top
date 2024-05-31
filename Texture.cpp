@@ -30,8 +30,6 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 
 	for (size_t i = 0; i < extension.length(); i++)
 		extension.at(i) = std::tolower(extension.at(i));
-
-	m_textureFormat = texMetaData.format;
 	
 	if (extension == "tga")
 	{
@@ -64,6 +62,7 @@ Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube
 		));
 	}
 
+	m_textureFormat = texMetaData.format;
 	m_hasAlpha = !textures.IsAlphaAllOpaque();
 			
 // 	THROW_GFX_IF_FAILED(CreateShaderResourceView(
