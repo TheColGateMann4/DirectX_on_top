@@ -11,8 +11,8 @@ enum TargetShader
 
 struct TargetShaderBufferBinding
 {
-	TargetShader type = TargetVertexShader;
-	UINT32 slot = 0;
+	TargetShader type;
+	UINT32 slot;
 };
 
 class Bindable
