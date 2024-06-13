@@ -6,7 +6,8 @@ enum TargetShader
 	TargetPixelShader,
 	TargetVertexShader,
 	TargetHullShader,
-	TargetDomainShader
+	TargetDomainShader,
+	TargetComputeShader
 };
 
 struct TargetShaderBufferBinding

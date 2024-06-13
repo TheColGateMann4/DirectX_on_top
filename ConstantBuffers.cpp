@@ -78,26 +78,31 @@ void ConstantBuffer::Bind(GFX& gfx) noexcept
 	{
 		switch (targetShader.type)
 		{
-		case TargetPixelShader:
-		{
-			GFX::GetDeviceContext(gfx)->PSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
-			break;
-		}
-		case TargetVertexShader:
-		{
-			GFX::GetDeviceContext(gfx)->VSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
-			break;
-		}
-		case TargetHullShader:
-		{
-			GFX::GetDeviceContext(gfx)->HSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
-			break;
-		}
-		case TargetDomainShader:
-		{
-			GFX::GetDeviceContext(gfx)->DSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
-			break;
-		}
+			case TargetPixelShader:
+			{
+				GFX::GetDeviceContext(gfx)->PSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
+				break;
+			}
+			case TargetVertexShader:
+			{
+				GFX::GetDeviceContext(gfx)->VSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
+				break;
+			}
+			case TargetHullShader:
+			{
+				GFX::GetDeviceContext(gfx)->HSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
+				break;
+			}
+			case TargetDomainShader:
+			{
+				GFX::GetDeviceContext(gfx)->DSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
+				break;
+			}
+			case TargetComputeShader:
+			{
+				GFX::GetDeviceContext(gfx)->CSSetConstantBuffers(targetShader.slot, 1, pConstantBuffer.GetAddressOf());
+				break;
+			}
 		}
 	}
 }

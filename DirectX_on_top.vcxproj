@@ -177,6 +177,7 @@
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraViewAreaIndicator.h" />
+    <ClInclude Include="ComputeShader.h" />
     <ClInclude Include="ConstantBuffers.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeMapTexture.h" />
@@ -239,6 +240,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SamplerState.h" />
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="ShaderUnorderedAccessView.h" />
     <ClInclude Include="ShadowCamera.h" />
     <ClInclude Include="ShadowMappingRenderPass.h" />
     <ClInclude Include="Shape.h" />
@@ -270,6 +272,7 @@
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraViewAreaIndicator.cpp" />
+    <ClCompile Include="ComputeShader.cpp" />
     <ClCompile Include="ConstantBuffers.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="CubeMapTexture.cpp" />
@@ -326,6 +329,7 @@
     <ClCompile Include="RasterizerState.cpp" />
     <ClCompile Include="SamplerState.cpp" />
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="ShaderUnorderedAccessView.cpp" />
     <ClCompile Include="ShadowCamera.cpp" />
     <ClCompile Include="ShadowMappingRenderPass.cpp" />
     <ClCompile Include="Shape.cpp" />
@@ -353,6 +357,18 @@
     <Image Include="icons8-video-card-96.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="CS_Test.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LocalDebuggerWorkingDirectory)/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="DS_Shadow_Test.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>

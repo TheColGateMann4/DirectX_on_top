@@ -29,6 +29,8 @@ public:
 public:
 	void DrawIndexed(UINT32 count);
 
+	void Dispatch(DirectX::XMUINT3 threadsCount);
+
 public:
 	Camera* GetActiveCamera() const;
 

@@ -363,6 +363,12 @@
     <ClInclude Include="NullShader.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="ComputeShader.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderUnorderedAccessView.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -614,6 +620,12 @@
     <ClCompile Include="ConstantBuffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ComputeShader.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderUnorderedAccessView.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DirectX_on_top.rc">
@@ -756,6 +768,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="DS_Shadow_Test.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="CS_Test.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

@@ -147,6 +147,18 @@ void GFX::DrawIndexed(UINT32 count)
 	);
 }
 
+void GFX::Dispatch(DirectX::XMUINT3 threadsCount)
+{
+	THROW_INFO_EXCEPTION
+	(
+		pDeviceContext->Dispatch(
+			threadsCount.x,
+			threadsCount.y,
+			threadsCount.z
+		)
+	);
+}
+
 Camera* GFX::GetActiveCamera() const
 {
 	return m_cameraManager->GetActiveCamera();

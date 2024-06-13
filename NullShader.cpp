@@ -19,4 +19,6 @@ VOID NullShader::Bind(GFX& gfx) noexcept
 		GFX::GetDeviceContext(gfx)->HSSetShader(nullptr, NULL, NULL);
 	else if (m_targetShader == TargetDomainShader)
 		GFX::GetDeviceContext(gfx)->DSSetShader(nullptr, NULL, NULL);
+	else if (m_targetShader == TargetComputeShader)
+		GFX::GetDeviceContext(gfx)->CSSetShader(nullptr, NULL, NULL);
 }
