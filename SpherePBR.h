@@ -36,6 +36,8 @@ public:
 	
 	virtual void MakeAdditionalPropeties(GFX& gfx) override;
 
+	virtual void Update(GFX& gfx, float deltatime) override;
+
 private:
 	const std::vector<std::string> textureNameList = {"dark_acoustic_panel", "grey_porous_rock", "patterned_wooden_wall_panel", "space_station_foil", "violet_crystal", "quilted_black_leather", "golden_metal", "graffiti_tag_decals"};
 	const char* selectedTextureName = textureNameList.at(textureNameList.size() - 2).c_str();

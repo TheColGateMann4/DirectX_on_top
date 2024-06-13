@@ -214,3 +214,68 @@ void SpherePBR::MakeAdditionalPropeties(GFX& gfx)
 		ImGui::EndCombo();
 	}
 }
+
+#include "ShaderUnorderedAccessView.h"
+#include "ComputeShader.h"
+
+void SpherePBR::Update(GFX& gfx, float deltatime)
+{
+	HRESULT hr;
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstBuffer;
+
+	{
+		ComputeShader::GetBindable(gfx, "CS_Test.cso")->Bind(gfx);
+	}
+
+
+	{
+		{
+			UINT32 dataBuffer[32] = {};
+
+			D3D11_BUFFER_DESC bufferDesc = {};
+			bufferDesc.ByteWidth = sizeof(dataBuffer);
+			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			bufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
+			bufferDesc.CPUAccessFlags = NULL;
+			bufferDesc.MiscFlags = NULL;
+			bufferDesc.StructureByteStride = sizeof(UINT32);
+
+			D3D11_SUBRESOURCE_DATA subResourceData = {};
+			subResourceData.pSysMem = dataBuffer;
+
+			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pBuffer));
+		}
+
+		std::make_shared<ShaderUnorderedAccessView>(gfx, 0, pBuffer, DXGI_FORMAT_R32_UINT, D3D11_UAV_DIMENSION_BUFFER)->Bind(gfx);
+	}
+
+	{
+		gfx.Dispatch({ 1,1,1 });
+	}
+
+
+	{
+		{
+			HRESULT hr;
+
+			UINT32 dataBuffer[32] = {};
+
+			D3D11_BUFFER_DESC bufferDesc = {};
+			bufferDesc.ByteWidth = sizeof(dataBuffer);
+			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			bufferDesc.CPUAccessFlags = NULL;
+			bufferDesc.MiscFlags = NULL;
+			bufferDesc.StructureByteStride = sizeof(UINT32);
+
+			D3D11_SUBRESOURCE_DATA subResourceData = {};
+			subResourceData.pSysMem = dataBuffer;
+
+			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pConstBuffer));
+		}
+
+		THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopyResource(pConstBuffer.Get(), pBuffer.Get()));
+	}
+}
