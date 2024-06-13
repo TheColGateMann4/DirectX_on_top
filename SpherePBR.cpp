@@ -232,7 +232,7 @@ void SpherePBR::Update(GFX& gfx, float deltatime)
 
 	{
 		{
-			UINT32 dataBuffer[32] = {};
+			UINT32 dataBuffer[20] = {};
 
 			D3D11_BUFFER_DESC bufferDesc = {};
 			bufferDesc.ByteWidth = sizeof(dataBuffer);
@@ -260,7 +260,7 @@ void SpherePBR::Update(GFX& gfx, float deltatime)
 		{
 			HRESULT hr;
 
-			UINT32 dataBuffer[32] = {};
+			UINT32 dataBuffer[24] = {};
 
 			D3D11_BUFFER_DESC bufferDesc = {};
 			bufferDesc.ByteWidth = sizeof(dataBuffer);
@@ -276,6 +276,12 @@ void SpherePBR::Update(GFX& gfx, float deltatime)
 			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pConstBuffer));
 		}
 
-		THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopyResource(pConstBuffer.Get(), pBuffer.Get()));
+		D3D11_BOX box = {};
+		box.left = 0;
+		box.right = 20 * sizeof(UINT32);
+		box.top = box.front = 0;
+		box.bottom = box.back = 1; // setting those to 1 just to pass empty box test
+
+		THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pConstBuffer.Get(), 0, 0, 0, 0, pBuffer.Get(), 0, &box));
 	}
 }
