@@ -257,27 +257,9 @@ void SpherePBR::Update(GFX& gfx, float deltatime)
 
 
 	{
-		{
-			HRESULT hr;
+		std::shared_ptr<NonCachedBuffer> pNonCachedBuffer = NonCachedBuffer::GetBindable(gfx, sizeof(UINT32), 24, { {TargetPixelShader, 0} });
 
-			D3D11_BUFFER_DESC bufferDesc = {};
-			bufferDesc.ByteWidth = 24 * sizeof(UINT32);
-			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-			bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-			bufferDesc.CPUAccessFlags = NULL;
-			bufferDesc.MiscFlags = NULL;
-			bufferDesc.StructureByteStride = sizeof(UINT32);
-
-			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, nullptr, &pConstBuffer));
-		}
-
-		D3D11_BOX box = {};
-		box.left = 0;
-		box.right = 20 * sizeof(UINT32);
-		box.top = box.front = 0;
-		box.bottom = box.back = 1; // setting those to 1 just to pass empty box test
-
-		THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pConstBuffer.Get(), 0, 0, 0, 0, pBuffer.Get(), 0, &box));
+		pNonCachedBuffer->CopyResourceFrom(gfx, pBuffer.Get(), 20 * sizeof(UINT32));
 
 		//GFX::GetDevice(gfx)->CreateShaderResourceView(pBuffer.Get(), , );
 

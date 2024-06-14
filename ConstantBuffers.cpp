@@ -50,6 +50,13 @@ ConstantBuffer::ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferLayout& la
 	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&constBufferDesc, NULL, &pConstantBuffer));
 }
 
+ConstantBuffer::ConstantBuffer(std::vector<TargetShaderBufferBinding> targetShader)
+	:
+	pConstantBuffer(nullptr),
+	m_targetShaders(targetShader)
+{
+
+}
 
 void ConstantBuffer::Update(GFX& gfx, const DynamicConstantBuffer::BufferData& bufferData)
 {
@@ -198,10 +205,34 @@ std::string CachedBuffer::GenerateUID(const char* bufferID)
 
 
 
+NonCachedBuffer::NonCachedBuffer(GFX& gfx, UINT32 structureSize, UINT32 structuresInBufferNum, std::vector<TargetShaderBufferBinding> targetShader)
+	:
+	ConstantBuffer(targetShader)
+{
+	HRESULT hr;
+
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.ByteWidth = structuresInBufferNum * structureSize;
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = NULL;
+	bufferDesc.MiscFlags = NULL;
+	bufferDesc.StructureByteStride = structureSize;
+
+	D3D11_SUBRESOURCE_DATA subResourceData = {};
+	subResourceData.pSysMem = nullptr;
+
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, nullptr, &pConstantBuffer));
+}
 
 std::shared_ptr<NonCachedBuffer> NonCachedBuffer::GetBindable(GFX& gfx, DynamicConstantBuffer::BufferLayout& bufferLayout, std::vector<TargetShaderBufferBinding> targetShaders)
 {
 	return std::make_shared<NonCachedBuffer>(gfx, bufferLayout, targetShaders);
+}
+
+std::shared_ptr<NonCachedBuffer> NonCachedBuffer::GetBindable(GFX& gfx, UINT32 structureSize, UINT32 structuresInBufferNum, std::vector<TargetShaderBufferBinding> targetShader)
+{
+	return std::make_shared<NonCachedBuffer>(gfx, structureSize, structuresInBufferNum, targetShader);
 }
 
 NonCachedBuffer& NonCachedBuffer::operator=(NonCachedBuffer toAssign)
@@ -213,4 +244,15 @@ NonCachedBuffer& NonCachedBuffer::operator=(NonCachedBuffer toAssign)
 	m_targetShaders = toAssign.m_targetShaders;
 
 	return *this;
+}
+
+void NonCachedBuffer::CopyResourceFrom(GFX& gfx, ID3D11Resource* pSourceResource, UINT32 bufferSizeToCopyInBytes)
+{
+	D3D11_BOX box = {};
+	box.left = 0;
+	box.right = 20 * sizeof(UINT32);
+	box.top = box.front = 0;
+	box.bottom = box.back = 1; // setting those to 1 just to pass empty box test
+
+	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pConstantBuffer.Get(), 0, 0, 0, 0, pSourceResource, 0, &box));
 }
