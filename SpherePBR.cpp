@@ -260,20 +260,15 @@ void SpherePBR::Update(GFX& gfx, float deltatime)
 		{
 			HRESULT hr;
 
-			UINT32 dataBuffer[24] = {};
-
 			D3D11_BUFFER_DESC bufferDesc = {};
-			bufferDesc.ByteWidth = sizeof(dataBuffer);
+			bufferDesc.ByteWidth = 24 * sizeof(UINT32);
 			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 			bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 			bufferDesc.CPUAccessFlags = NULL;
 			bufferDesc.MiscFlags = NULL;
 			bufferDesc.StructureByteStride = sizeof(UINT32);
 
-			D3D11_SUBRESOURCE_DATA subResourceData = {};
-			subResourceData.pSysMem = dataBuffer;
-
-			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pConstBuffer));
+			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, nullptr, &pConstBuffer));
 		}
 
 		D3D11_BOX box = {};
@@ -283,5 +278,9 @@ void SpherePBR::Update(GFX& gfx, float deltatime)
 		box.bottom = box.back = 1; // setting those to 1 just to pass empty box test
 
 		THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pConstBuffer.Get(), 0, 0, 0, 0, pBuffer.Get(), 0, &box));
+
+		//GFX::GetDevice(gfx)->CreateShaderResourceView(pBuffer.Get(), , );
+
+		//GFX::GetDeviceContext(gfx)->CSSetShaderResources(0, 1, pBuffer.GetAddressOf());
 	}
 }
