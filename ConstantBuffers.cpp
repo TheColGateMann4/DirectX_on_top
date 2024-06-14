@@ -6,7 +6,7 @@ ConstantBuffer::ConstantBuffer()
 	pConstantBuffer(nullptr),
 	m_targetShaders({ {TargetPixelShader, 0} }) // if light buffer will be overriden during runtime we will notice immediately
 {
-
+	// its worth adding that creating empty constant buffer in our pipeline is perfectly fine, as long as its initialized later on, that's why we don't throw and error here
 }
 
 ConstantBuffer::ConstantBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData, std::vector<TargetShaderBufferBinding> targetShaders)
