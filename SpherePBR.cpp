@@ -248,7 +248,7 @@ void SpherePBR::Update(GFX& gfx, float deltatime)
 			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pBuffer));
 		}
 
-		std::make_shared<ShaderUnorderedAccessView>(gfx, 0, pBuffer, DXGI_FORMAT_R32_UINT, D3D11_UAV_DIMENSION_BUFFER)->Bind(gfx);
+		std::make_shared<ShaderUnorderedAccessView>(gfx, 0, pBuffer, DXGI_FORMAT_R32_UINT)->Bind(gfx);
 	}
 
 	{
