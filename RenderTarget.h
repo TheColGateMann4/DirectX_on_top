@@ -51,14 +51,3 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pRTTexture;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pSRTexture;
 };
-
-class RenderTargetTextureCube : public RenderTarget
-{
-public:
-	RenderTargetTextureCube();
-
-	RenderTargetTextureCube(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture, size_t index);
-
-public:
-	virtual void Bind(GFX& gfx) noexcept override;
-};
