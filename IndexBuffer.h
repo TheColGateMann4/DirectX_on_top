@@ -6,12 +6,12 @@
 class IndexBuffer : public Bindable
 {
 public:
-	IndexBuffer(GFX& gfx, const std::vector<UINT32>& indices)
-		:	IndexBuffer(gfx, "UNKNOWN", indices){}
+	IndexBuffer(GFX& gfx, const std::vector<UINT32>& indices);
 
 	IndexBuffer(GFX& gfx, const std::string bufferUID, const std::vector<UINT32>& indices);
 
-	VOID Bind(GFX& gfx) noexcept override;
+public:
+	void Bind(GFX& gfx) noexcept override;
 
 	UINT32 GetCount() const noexcept;
 
