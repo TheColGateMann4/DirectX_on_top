@@ -54,16 +54,3 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pSRTexture;
 	size_t m_slot;
 };
-
-class DepthStencilViewTextureCube : public DepthStencilView
-{
-public:
-	DepthStencilViewTextureCube();
-
-	DepthStencilViewTextureCube(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture, size_t index);
-
-public:
-	virtual void Bind(GFX& gfx) noexcept override;
-};
-
-
