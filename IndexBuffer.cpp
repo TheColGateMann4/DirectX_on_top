@@ -18,7 +18,7 @@ IndexBuffer::IndexBuffer(GFX& gfx, const std::string bufferUID, const std::vecto
 
 	D3D11_BUFFER_DESC bufferDesc = {};
 	bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	bufferDesc.CPUAccessFlags = 0;
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.ByteWidth = m_count * sizeof(UINT32);
