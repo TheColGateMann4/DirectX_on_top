@@ -27,9 +27,6 @@ DepthStencilView::DepthStencilView(GFX& gfx, Mode depthStencilViewMode, bool isF
 		depthDecs.Usage = D3D11_USAGE_DEFAULT;
 		depthDecs.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-		if (depthStencilViewMode == DepthOnly)
-			depthDecs.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
-
 		THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&depthDecs, NULL, &pDepthStencil));
 	}
 
@@ -132,9 +129,21 @@ DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, size_t slot, 
 	m_slot(slot)
 {
 	HRESULT hr;
-	Microsoft::WRL::ComPtr<ID3D11Resource> pDepthStencilTexture;
 
-	pDepthStencilView->GetResource(&pDepthStencilTexture);
+	pDepthStencilView->GetResource(&pDSTexture);
+
+	D3D11_TEXTURE2D_DESC depthDecs = {};
+	depthDecs.Width = gfx.GetWidth();
+	depthDecs.Height = gfx.GetHeight();
+	depthDecs.MipLevels = 1;
+	depthDecs.ArraySize = 1;
+	depthDecs.Format = GetTypelessFormat(depthStencilViewMode);
+	depthDecs.SampleDesc.Count = 1;
+	depthDecs.SampleDesc.Quality = 0;
+	depthDecs.Usage = D3D11_USAGE_DEFAULT;
+	depthDecs.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&depthDecs, NULL, &pSRTexture));
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC textureViewDesc = {};
 	textureViewDesc.Format = GetColorTypeFormat(depthStencilViewMode);
@@ -144,7 +153,7 @@ DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, size_t slot, 
 
 	THROW_GFX_IF_FAILED(
 		GFX::GetDevice(gfx)->CreateShaderResourceView(
-			pDepthStencilTexture.Get(),
+			pSRTexture.Get(),
 			&textureViewDesc,
 			&m_pTextureView
 		)
@@ -153,6 +162,8 @@ DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, size_t slot, 
 
 void DepthStencilViewWithTexture::Bind(GFX& gfx) noexcept
 {
+	GFX::GetDeviceContext(gfx)->CopyResource(pSRTexture.Get(), pDSTexture.Get());
+
 	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf());
 }
 

@@ -50,6 +50,8 @@ public:
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
+	Microsoft::WRL::ComPtr<ID3D11Resource> pDSTexture;	
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pSRTexture;
 	size_t m_slot;
 };
 
