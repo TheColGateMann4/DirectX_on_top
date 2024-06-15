@@ -7,32 +7,29 @@ class ShaderUnorderedAccessView : public Bindable
 {
 public:
 	ShaderUnorderedAccessView(GFX& gfx, UINT32 slot, Microsoft::WRL::ComPtr<ID3D11Resource> pResource, DXGI_FORMAT resourceFormat);
-	ShaderUnorderedAccessView(GFX& gfx, UINT32 slot)
-	{
 
-	}
 	void Bind(GFX& gfx) noexcept override;
 
 public:
-	static std::shared_ptr<ShaderUnorderedAccessView> GetBindable(GFX& gfx, UINT32 slot)
+	static std::shared_ptr<ShaderUnorderedAccessView> GetBindable(GFX& gfx, UINT32 slot, Microsoft::WRL::ComPtr<ID3D11Resource> pResource, DXGI_FORMAT resourceFormat)
 	{
-		return BindableList::GetBindable<ShaderUnorderedAccessView>(gfx, slot);
+		return std::make_shared<ShaderUnorderedAccessView>(gfx, slot, pResource, resourceFormat);
 	}
 
 	std::string GetLocalUID() const noexcept override
 	{
-		return GenerateUID(m_slot);
+		return GenerateUID();
 	};
 
-	static std::string GetStaticUID(const UINT32 slot) noexcept
+	static std::string GetStaticUID() noexcept
 	{
-		return GenerateUID(slot);
+		return GenerateUID();
 	};
 
 private:
-	static std::string GenerateUID(const UINT32 slot)
+	static std::string GenerateUID()
 	{
-		return std::to_string(slot);
+		return "";
 	}
 
 	static constexpr D3D11_UAV_DIMENSION GetUAVDimension(const D3D11_RESOURCE_DIMENSION resourceDimension);
