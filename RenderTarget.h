@@ -48,6 +48,8 @@ public:
 private:
 	int m_slot;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pRTTexture;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_pSRTexture;
 };
 
 class RenderTargetTextureCube : public RenderTarget

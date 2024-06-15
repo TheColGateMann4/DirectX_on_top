@@ -22,7 +22,6 @@ void RenderTarget::Update(GFX& gfx)
 		THROW_INTERNAL_ERROR("Tried to Update uninitialized RenderTarget");
 
 	HRESULT hr;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture = nullptr;
 
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	textureDesc.Width = m_width;
@@ -37,13 +36,13 @@ void RenderTarget::Update(GFX& gfx)
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
-	if (m_isTextureRenderTarget) textureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pRTTexture;
 
 	THROW_GFX_IF_FAILED(
 		GFX::GetDevice(gfx)->CreateTexture2D(
 			&textureDesc,
 			nullptr,
-			&pTexture
+			&pRTTexture
 		)
 	);
 
@@ -54,7 +53,7 @@ void RenderTarget::Update(GFX& gfx)
 
 	THROW_GFX_IF_FAILED(
 		GFX::GetDevice(gfx)->CreateRenderTargetView(
-			pTexture.Get(),
+			pRTTexture.Get(),
 			&targetViewDesc,
 			&m_pRenderTargetView
 		)
@@ -184,6 +183,8 @@ RenderTargetWithTexture::RenderTargetWithTexture(const RenderTargetWithTexture& 
 {
 	this->m_slot = renderTarget.m_slot;
 	this->m_pTextureView = renderTarget.m_pTextureView;
+	this->m_pRTTexture = renderTarget.m_pRTTexture;
+	this->m_pSRTexture = renderTarget.m_pSRTexture;
 }
 
 RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, const int height, int slot)
@@ -192,22 +193,49 @@ RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, cons
 	m_slot(slot)
 {
 	HRESULT hr;
-	Microsoft::WRL::ComPtr<ID3D11Resource> pTexture = nullptr;
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc = {};
+	D3D11_TEXTURE2D_DESC renderTargetTextureDesc = {};
 
-	m_pRenderTargetView->GetResource(pTexture.GetAddressOf());
+	{
+		Microsoft::WRL::ComPtr<ID3D11Resource> pRTResource;
 
-	m_pRenderTargetView->GetDesc(&renderTargetViewDesc);
+		m_pRenderTargetView->GetResource(&pRTResource);
+
+		pRTResource->QueryInterface(m_pRTTexture.GetAddressOf());
+
+
+		m_pRTTexture->GetDesc(&renderTargetTextureDesc);
+	}
+
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Width = m_width;
+	textureDesc.Height = m_height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = renderTargetTextureDesc.Format;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	THROW_GFX_IF_FAILED(
+		GFX::GetDevice(gfx)->CreateTexture2D(
+			&textureDesc,
+			nullptr,
+			&m_pSRTexture
+		)
+	);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC textureViewDesc = {};
-	textureViewDesc.Format = renderTargetViewDesc.Format;
+	textureViewDesc.Format = renderTargetTextureDesc.Format;
 	textureViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	textureViewDesc.Texture2D.MostDetailedMip = 0;
 	textureViewDesc.Texture2D.MipLevels = 1;
 
 	THROW_GFX_IF_FAILED(
 		GFX::GetDevice(gfx)->CreateShaderResourceView(
-			pTexture.Get(),
+			m_pSRTexture.Get(),
 			&textureViewDesc,
 			&m_pTextureView
 		)
@@ -216,6 +244,8 @@ RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, cons
 
 void RenderTargetWithTexture::Bind(GFX& gfx) noexcept
 {
+	GFX::GetDeviceContext(gfx)->CopyResource(m_pSRTexture.Get(), m_pRTTexture.Get());
+
 	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf());
 }
 
