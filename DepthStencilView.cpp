@@ -79,7 +79,7 @@ void DepthStencilView::Clear(GFX& gfx) const
 	GFX::GetDeviceContext(gfx)->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
-DXGI_FORMAT DepthStencilView::GetTypelessFormat(DepthStencilView::Mode depthStencilViewMode)
+constexpr DXGI_FORMAT DepthStencilView::GetTypelessFormat(DepthStencilView::Mode depthStencilViewMode)
 {
 	if (depthStencilViewMode == StencilAndDepth)
 		return DXGI_FORMAT_R24G8_TYPELESS;
@@ -93,7 +93,7 @@ DXGI_FORMAT DepthStencilView::GetTypelessFormat(DepthStencilView::Mode depthSten
 	THROW_INTERNAL_ERROR(errorString.c_str());
 }
 
-DXGI_FORMAT DepthStencilView::GetTypedFormat(DepthStencilView::Mode depthStencilViewMode)
+constexpr DXGI_FORMAT DepthStencilView::GetTypedFormat(DepthStencilView::Mode depthStencilViewMode)
 {
 	if (depthStencilViewMode == StencilAndDepth)
 		return DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -107,7 +107,7 @@ DXGI_FORMAT DepthStencilView::GetTypedFormat(DepthStencilView::Mode depthStencil
 	THROW_INTERNAL_ERROR(errorString.c_str());
 }
 
-DXGI_FORMAT DepthStencilView::GetColorTypeFormat(DepthStencilView::Mode depthStencilViewMode)
+constexpr DXGI_FORMAT DepthStencilView::GetColorTypeFormat(DepthStencilView::Mode depthStencilViewMode)
 {
 	if (depthStencilViewMode == StencilAndDepth)
 		return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;

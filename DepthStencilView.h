@@ -30,11 +30,11 @@ public:
 
 	virtual void Clear(GFX& gfx) const override;
 
-	static DXGI_FORMAT GetTypelessFormat(Mode depthStencilViewMode);
+	static constexpr DXGI_FORMAT GetTypelessFormat(Mode depthStencilViewMode);
 
-	static DXGI_FORMAT GetTypedFormat(Mode depthStencilViewMode);
+	static constexpr DXGI_FORMAT GetTypedFormat(Mode depthStencilViewMode);
 
-	static DXGI_FORMAT GetColorTypeFormat(Mode depthStencilViewMode);
+	static constexpr DXGI_FORMAT GetColorTypeFormat(Mode depthStencilViewMode);
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView;
