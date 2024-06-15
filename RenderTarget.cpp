@@ -69,7 +69,14 @@ RenderTarget::RenderTarget(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource>& pTe
 	HRESULT hr;
 
 	D3D11_TEXTURE2D_DESC textureDesc = {};
-	static_cast<ID3D11Texture2D*>(pTexture.Get())->GetDesc(&textureDesc);
+	
+	{
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> pTextureResource;
+		pTexture->QueryInterface(pTextureResource.GetAddressOf());
+
+		pTextureResource->GetDesc(&textureDesc);
+	}
+
 	m_height = textureDesc.Height;
 	m_width = textureDesc.Width;
 
