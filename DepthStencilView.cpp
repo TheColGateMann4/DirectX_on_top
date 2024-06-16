@@ -27,6 +27,9 @@ DepthStencilView::DepthStencilView(GFX& gfx, Mode depthStencilViewMode, bool isF
 		depthDecs.Usage = D3D11_USAGE_DEFAULT;
 		depthDecs.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
+		if (depthStencilViewMode == DepthOnly)
+			depthDecs.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+
 		THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&depthDecs, NULL, &pDepthStencil));
 	}
 
@@ -130,20 +133,9 @@ DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, size_t slot, 
 {
 	HRESULT hr;
 
-	pDepthStencilView->GetResource(&pDSTexture);
+	Microsoft::WRL::ComPtr<ID3D11Resource> pDepthStencilTexture;
 
-	D3D11_TEXTURE2D_DESC depthDecs = {};
-	depthDecs.Width = gfx.GetWidth();
-	depthDecs.Height = gfx.GetHeight();
-	depthDecs.MipLevels = 1;
-	depthDecs.ArraySize = 1;
-	depthDecs.Format = GetTypelessFormat(depthStencilViewMode);
-	depthDecs.SampleDesc.Count = 1;
-	depthDecs.SampleDesc.Quality = 0;
-	depthDecs.Usage = D3D11_USAGE_DEFAULT;
-	depthDecs.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateTexture2D(&depthDecs, NULL, &pSRTexture));
+	pDepthStencilView->GetResource(&pDepthStencilTexture);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC textureViewDesc = {};
 	textureViewDesc.Format = GetColorTypeFormat(depthStencilViewMode);
@@ -153,7 +145,7 @@ DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, size_t slot, 
 
 	THROW_GFX_IF_FAILED(
 		GFX::GetDevice(gfx)->CreateShaderResourceView(
-			pSRTexture.Get(),
+			pDepthStencilTexture.Get(),
 			&textureViewDesc,
 			&m_pTextureView
 		)
@@ -162,7 +154,35 @@ DepthStencilViewWithTexture::DepthStencilViewWithTexture(GFX& gfx, size_t slot, 
 
 void DepthStencilViewWithTexture::Bind(GFX& gfx) noexcept
 {
-	GFX::GetDeviceContext(gfx)->CopyResource(pSRTexture.Get(), pDSTexture.Get());
-
 	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf());
+}
+
+DepthStencilViewTextureCube::DepthStencilViewTextureCube()
+{
+
+}
+
+DepthStencilViewTextureCube::DepthStencilViewTextureCube(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture, size_t index)
+{
+	HRESULT hr;
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDecs = {};
+	depthStencilViewDecs.Format = GetTypedFormat(DepthOnly);
+	depthStencilViewDecs.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+	depthStencilViewDecs.Texture2DArray.ArraySize = 1;
+	depthStencilViewDecs.Texture2DArray.FirstArraySlice = index;
+	depthStencilViewDecs.Texture2DArray.MipSlice = 0;
+
+	THROW_GFX_IF_FAILED(
+		GFX::GetDevice(gfx)->CreateDepthStencilView(
+			pTexture.Get(),
+			&depthStencilViewDecs,
+			&pDepthStencilView
+		)
+	);
+}
+
+void DepthStencilViewTextureCube::Bind(GFX& gfx) noexcept
+{
+	// we are not binding this one since it will be bound by CubeTexture object
 }
