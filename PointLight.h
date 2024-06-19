@@ -27,7 +27,7 @@ public:
 	virtual void RenderThisObjectOnScene() const noexcept(!IS_DEBUG) override;
 	void Bind(GFX &gfx, DirectX::XMMATRIX CameraView_) const noexcept;
 
-public:
+protected:
 	const char* GetName() const override
 	{
 		return "PointLight";

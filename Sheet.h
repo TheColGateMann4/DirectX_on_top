@@ -25,6 +25,7 @@ public:
 		return this->GetSceneTranformMatrix();
 	}
 
+protected:
 	const char* GetName() const override
 	{
 		return "Sheet";

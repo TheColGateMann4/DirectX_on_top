@@ -56,7 +56,9 @@ public:
 
 	DirectX::XMFLOAT3 GetWorldRotation() const;
 
-public:
+	virtual std::string GetOriginalName(bool withStatus) const;
+
+protected:
 	virtual const char* GetName() const = 0;
 
 	virtual const char* GetNameSpecialStatus() const;

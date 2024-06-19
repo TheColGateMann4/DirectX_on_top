@@ -23,7 +23,7 @@ public:
 		return this->GetSceneTranformMatrix();
 	}
 
-public:
+protected:
 	const char* GetName() const override
 	{
 		return "Skybox";

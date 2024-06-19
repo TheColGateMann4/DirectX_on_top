@@ -22,6 +22,7 @@ public:
 
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
 
+protected:
 	virtual const char* GetName() const override;
 
 private:

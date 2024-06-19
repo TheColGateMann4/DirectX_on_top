@@ -25,7 +25,7 @@ public:
 
 	void MakeHierarchy(GFX& gfx) override;
 
-public:
+protected:
 	const char* GetName() const override
 	{
 		return m_fileName.c_str();

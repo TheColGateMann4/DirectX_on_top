@@ -49,6 +49,7 @@ public:
 private:
 	float WrapAngle(float angle, float value);
 
+protected:
 	virtual const char* GetName() const override
 	{
 		return "Camera";
