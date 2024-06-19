@@ -22,8 +22,12 @@ public:
 
 	void DrawModelHierarchy(bool show);
 
+	void AddSceneObject(std::unique_ptr<SceneObject>&& model);
 	CameraManager* GetCameraManager();
 
+	std::vector<PointLight*>& GetLights();
+
+private:
 	void AddLightObject(PointLight* model);
 
 	void AddCameraObject(Camera* model);
