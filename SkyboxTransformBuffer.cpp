@@ -11,7 +11,7 @@ SkyboxTransformBuffer::SkyboxTransformBuffer(GFX& gfx, const Shape& parent, std:
 
 void SkyboxTransformBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept
 {
-	const auto cameraViewProjection = gfx.GetActiveCamera()->GetCameraView() * gfx.GetActiveCamera()->GetProjection();
+	const auto cameraViewProjection = gfx.GetActiveCamera()->GetProjectionView();
 
 	bufferData += DirectX::XMMatrixTranspose(cameraViewProjection);
 }

@@ -44,6 +44,11 @@ DirectX::XMMATRIX Camera::GetProjection() const
 	return m_projection;
 }
 
+DirectX::XMMATRIX Camera::GetProjectionView() const
+{
+	return GetCameraView() * GetProjection();
+}
+
 void Camera::Move(const DirectX::XMFLOAT3& moveoffset)
 {
 	DirectX::XMFLOAT3 movedOffsetRelativeToRotation = {};
@@ -183,6 +188,16 @@ void Camera::GetCameraSettings(CameraSettings* cameraSettings) const
 	cameraSettings->m_AspectRatio = m_AspectRatio;
 	cameraSettings->m_NearZ = m_NearZ;
 	cameraSettings->m_FarZ = m_FarZ;
+}
+
+const DirectX::XMFLOAT3* Camera::GetFrustumBuffer() const
+{
+	return m_viewIndicator.GetVerticeBuffer();
+}
+
+UINT32 Camera::GetFrustumBufferByteSize() const
+{
+	return m_viewIndicator.GetVerticeBufferByteSize();
 }
 
 void Camera::UpdateProjectionMatrix(GFX& gfx)

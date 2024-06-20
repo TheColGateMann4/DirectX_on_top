@@ -24,6 +24,7 @@ public:
 public:
 	DirectX::XMMATRIX GetCameraView() const;
 	DirectX::XMMATRIX GetProjection() const;
+	DirectX::XMMATRIX GetProjectionView() const; // making this function to keep directX matrix multiplication functions inside camera.cpp
 
 public:
 	void Move(const DirectX::XMFLOAT3& moveoffset);
@@ -45,6 +46,10 @@ public:
 	void SetUpVector(DirectX::XMFLOAT3 upVector);
 
 	void GetCameraSettings(CameraSettings* cameraSettings) const;
+
+	const DirectX::XMFLOAT3* GetFrustumBuffer() const;
+
+	UINT32 GetFrustumBufferByteSize() const;
 
 private:
 	float WrapAngle(float angle, float value);

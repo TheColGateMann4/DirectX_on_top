@@ -19,7 +19,7 @@ CameraViewAreaIndicator::CameraViewAreaIndicator(GFX& gfx, Camera* parent)
 	std::vector<UINT32> indices;
 
 	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetVertexShader, 0} });
-	m_pVertexBuffer = GetVertexBuffer(gfx, startLength, endLength, &cameraSettings, &DirectXLayout);
+	m_pVertexBuffer = GetVertexBuffer(gfx, startLength, endLength, &cameraSettings, m_vertices, &DirectXLayout);
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, "$cameraIndicator", indices);
 	m_pTopology = Topology::GetBindable(gfx, D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
@@ -73,9 +73,11 @@ DirectX::XMMATRIX CameraViewAreaIndicator::GetTranformMatrix() const noexcept
 	return m_parent->GetSceneTranformMatrix();
 }
 
-std::shared_ptr<VertexBuffer> CameraViewAreaIndicator::GetVertexBuffer(GFX& gfx, float startLength, float endLength, CameraSettings* cameraSettings, std::vector<D3D11_INPUT_ELEMENT_DESC>* layout)
+std::shared_ptr<VertexBuffer> CameraViewAreaIndicator::GetVertexBuffer(GFX& gfx, float startLength, float endLength, CameraSettings* cameraSettings, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<D3D11_INPUT_ELEMENT_DESC>* layout)
 {
-	std::vector<DirectX::XMFLOAT3> vertices
+	vertices.clear();
+
+	vertices =
 	{
 		{ startLength * cameraSettings->m_AspectRatio, startLength, cameraSettings->m_NearZ },
 		{ startLength * cameraSettings->m_AspectRatio, -startLength, cameraSettings->m_NearZ},
@@ -125,5 +127,15 @@ void CameraViewAreaIndicator::UpdateVertexBuffer(GFX& gfx)
 	float startLength = CalculateLengthOfViewTriangle(cameraSettings.m_Fov, cameraSettings.m_NearZ);
 	float endLength = CalculateLengthOfViewTriangle(cameraSettings.m_Fov, cameraSettings.m_FarZ);
 
-	m_pVertexBuffer = GetVertexBuffer(gfx, startLength, endLength, &cameraSettings);
+	m_pVertexBuffer = GetVertexBuffer(gfx, startLength, endLength, &cameraSettings, m_vertices);
+}
+
+const DirectX::XMFLOAT3* CameraViewAreaIndicator::GetVerticeBuffer() const
+{
+	return &m_vertices.at(0);
+}
+
+UINT32 CameraViewAreaIndicator::GetVerticeBufferByteSize() const
+{
+	return m_vertices.size() * sizeof(DirectX::XMFLOAT3);
 }
