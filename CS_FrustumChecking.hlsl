@@ -42,6 +42,48 @@ float3 GetFrustumVertice(uint index)
     return float3(cameraFrustumData[index], cameraFrustumData[index + 1], cameraFrustumData[index + 2]);
 }
 
+// Checks if the ourPoint is between two points on slopes
+// ! secondPoint has to be larger than firstPoint in the slope axis
+// ! pointOnOtherSide is point going into - of axis
+//
+//              Imagine this is our view frustum:
+//
+//                                      ------* secondPoint
+//                               ---X---
+//                        -------   |  // we basicly get Y value where the point hit line
+//        firstPoint *----          |  // between firstPoint and Second Point
+//                   |              |
+//               /   |              |
+//              /    |              |
+//       [Camera]    |              * ourPoint
+//              \    |              |
+//               \   |              |
+//                   |              |
+//  pointOnOtherSide *----          |
+//                        -------   |
+//                               ---X---
+//                                      -------
+//
+//      *  represents point thats being taken as argument
+//      X  represents point calculated, we use these to check if ourPoint is in wanted area
+//
+bool CheckForSlope(float3 firstPoint, float3 secondPoint, float3 pointOnOtherSide, float3 ourPoint, bool getY)
+{
+    float ourPointWantedAxis = getY ? ourPoint.y : ourPoint.x;    
+    float firstPointWantedAxis = getY ? firstPoint.y : firstPoint.x;    
+    float secondPointWantedAxis = getY ? secondPoint.y : secondPoint.x;
+    float pointOnOtherSideWantedAxis = getY ? pointOnOtherSide.y : pointOnOtherSide.x;
+    
+    float difference = (abs(ourPoint.z) - abs(firstPoint.z)) / (abs(secondPoint.z) - abs(firstPoint.z));
+
+    float offsetFromPoint = (secondPointWantedAxis - firstPointWantedAxis) * difference;
+
+    float topPoint = firstPointWantedAxis + offsetFromPoint;
+    float bottomPoint = pointOnOtherSideWantedAxis - offsetFromPoint;
+
+    return ourPointWantedAxis < topPoint && ourPointWantedAxis > bottomPoint;
+}
+
 // when whole plan gets finished, this will be called:
 // when camera moves: all objects per that camera view frustum
 // when object moves: moved object per all camera view frustums
@@ -53,17 +95,16 @@ void main( uint3 DTid : SV_DispatchThreadID )
     for(int iCubeVertice = 0; iCubeVertice < 8; iCubeVertice++)
     {
         float3 verticePos = GetCubeVertice(iCubeVertice);
-
-        if(verticePos.y < GetFrustumVertice(5).y || verticePos.y > GetFrustumVertice(4).y)
-            continue;
-
         if(verticePos.z < GetFrustumVertice(0).z || verticePos.z > GetFrustumVertice(4).z)
             continue;
 
-        if(verticePos.x < GetFrustumVertice(6).x || verticePos.x > GetFrustumVertice(5).x) // its not cube so we need to account for slope
+        if(!CheckForSlope(GetFrustumVertice(0), GetFrustumVertice(4), GetFrustumVertice(1), verticePos, true))
+            continue;
+
+        if(!CheckForSlope(GetFrustumVertice(0), GetFrustumVertice(4), GetFrustumVertice(3), verticePos, false))
             continue;
 
         result[0] = 1;
         return;
-    }   
+    }
 }
