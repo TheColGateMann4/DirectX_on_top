@@ -43,6 +43,16 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 		// UAV setup
 		{
 			{
+				float pData[6] = 
+				{
+					FLT_MAX,
+					FLT_MAX,
+					FLT_MAX,
+					-FLT_MAX,
+					-FLT_MAX,
+					-FLT_MAX,
+				};
+
 				D3D11_BUFFER_DESC bufferDesc = {};
 				bufferDesc.ByteWidth = uavBufferSize * sizeof(float);
 				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -51,7 +61,10 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 				bufferDesc.MiscFlags = NULL;
 				bufferDesc.StructureByteStride = sizeof(float);
 
-				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, nullptr, &pModelCubeRWBuffer));
+				D3D11_SUBRESOURCE_DATA subResourceData = {};
+				subResourceData.pSysMem = pData;
+
+				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pModelCubeRWBuffer));
 			}
 
 			ShaderUnorderedAccessView::GetBindable(gfx, 0, pModelCubeRWBuffer, DXGI_FORMAT_R32_FLOAT)->Bind(gfx);
