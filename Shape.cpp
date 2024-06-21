@@ -275,7 +275,7 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 
 		// reading out our return value
 		{
-			BOOL result = FALSE;
+			BOOL result;
 
 			D3D11_MAPPED_SUBRESOURCE subresourceData = {};
 
