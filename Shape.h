@@ -62,6 +62,9 @@ public:
 	}
 
 public:
+	bool CheckIfVisible(GFX& gfx, class Camera* camera);
+
+public:
 	void AddRenderTechnique(const RenderTechnique& technique);
 
 public:

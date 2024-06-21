@@ -773,6 +773,15 @@
     <FxCompile Include="CS_Test.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="CS_BoundsCubeOfModel.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="CS_FrustumChecking.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="CS_ProcessVertices.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="PointLightConstBuffer.hlsli">
