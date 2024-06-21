@@ -33,14 +33,10 @@ private:
 
 	void AddCameraObject(Camera* model);
 
-	void AddSceneObject(std::unique_ptr<SceneObject>&& model);
-
-	std::vector<PointLight*>& GetLights();
-
 private:
 	void CleanupPressedNodes();
 
-private:
+public:
 	std::vector<std::unique_ptr<SceneObject>> m_models;
 	std::vector<PointLight*> m_lights;
 

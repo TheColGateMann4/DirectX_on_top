@@ -63,8 +63,6 @@ protected:
 
 	virtual const char* GetNameSpecialStatus() const;
 
-	virtual std::string GetOriginalName(bool withStatus) const;
-
 	virtual void SetSceneIndex(size_t index);
 
 
