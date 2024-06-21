@@ -403,7 +403,7 @@ namespace DynamicVertex
 		VertexLayout m_layout;
 		float vertexScale = 1.0f;
 	};
-}
+};
 
 #undef FOR_ALL_VERTEX_ELEMENTS
 #undef MAKE_DATA_FOR_VERTEX_COMPONENT
