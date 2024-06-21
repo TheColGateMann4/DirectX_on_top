@@ -118,7 +118,7 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 				bufferDesc.StructureByteStride = sizeof(UINT);
 
 				D3D11_SUBRESOURCE_DATA subResourceData = {};
-				subResourceData.pSysMem = &pData;
+				subResourceData.pSysMem = pData;
 
 				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pBuffer));
 			}
