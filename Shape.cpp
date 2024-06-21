@@ -35,7 +35,6 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 {
 	HRESULT hr;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pModelCubeRWBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> pFrustumRWBuffer;
 	constexpr UINT32 uavBufferSize = 6;
 
 	// Step 1. Getting cube positions that contain our model
@@ -137,30 +136,10 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 		}
 	}
 
-	// Step 2. multiplying frustum and cube bounds by camera projection view matrix
+	// Step 2. cube bounds by camera projection view matrix
 	{
 
 		// we don't need to bind pModelCubeRWBuffer UAV since its still bound, gotta keep that on mind though
-
-		// Binding view frustum as UAV
-		{
-			{
-				D3D11_BUFFER_DESC bufferDesc = {};
-				bufferDesc.ByteWidth = camera->GetFrustumBufferByteSize();
-				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-				bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-				bufferDesc.CPUAccessFlags = NULL;
-				bufferDesc.MiscFlags = NULL;
-				bufferDesc.StructureByteStride = sizeof(float);
-
-				D3D11_SUBRESOURCE_DATA subResourceData = {};
-				subResourceData.pSysMem = camera->GetFrustumBuffer();
-
-				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pFrustumRWBuffer));
-			}
-
-			ShaderUnorderedAccessView::GetBindable(gfx, 1, pFrustumRWBuffer, DXGI_FORMAT_R32_FLOAT)->Bind(gfx);
-		}
 
 		// binding camera projection view matrix as buffer
 		{
@@ -250,6 +229,23 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 
 		// Binding view frustum as buffer
 		{
+			Microsoft::WRL::ComPtr<ID3D11Buffer> pBuffer;
+
+			{
+				D3D11_BUFFER_DESC bufferDesc = {};
+				bufferDesc.ByteWidth = camera->GetFrustumBufferByteSize();
+				bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+				bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+				bufferDesc.CPUAccessFlags = NULL;
+				bufferDesc.MiscFlags = NULL;
+				bufferDesc.StructureByteStride = sizeof(float);
+
+				D3D11_SUBRESOURCE_DATA subResourceData = {};
+				subResourceData.pSysMem = camera->GetFrustumBuffer();
+
+				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pBuffer));
+			}
+
 			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pBufferView;
 
 			{
@@ -259,7 +255,7 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 				shaderResourceViewDesc.Buffer.FirstElement = 0;
 				shaderResourceViewDesc.Buffer.NumElements = 8 * 3;
 
-				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pFrustumRWBuffer.Get(), &shaderResourceViewDesc, &pBufferView));
+				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pBuffer.Get(), &shaderResourceViewDesc, &pBufferView));
 			}
 
 			THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CSSetShaderResources(1, 1, pBufferView.GetAddressOf()));
