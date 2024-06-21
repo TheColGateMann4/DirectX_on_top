@@ -12,7 +12,16 @@ public:
 
 	VertexBuffer(GFX& gfx, const std::string bufferUID, const DynamicVertex::VertexBuffer& vertexBuffer);
 
+public:
 	void Bind(GFX& gfx) noexcept override;
+
+	ID3D11Buffer* Get() const;
+
+	UINT32 GetBufferByteSize() const;
+
+	UINT32 GetBufferSize() const;
+
+	const DynamicVertex::VertexLayout& GetLayout() const;
 
 public:
 	static std::shared_ptr<VertexBuffer> GetBindable(GFX& gfx, const std::string bufferUID, const DynamicVertex::VertexBuffer& vertexBuffer)
@@ -40,7 +49,9 @@ private:
 
 protected:
 	UINT32 m_stride;
+	UINT32 m_bufferSize;
 	std::string m_bufferUID;
+	DynamicVertex::VertexLayout m_vertexLayout;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
 };
