@@ -19,11 +19,29 @@ RWBuffer<float> result : register(u0);
 [numthreads(1, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
-    //hardcoding it for now to just get it done quick
-    result[RESULT_INDEX_MINUS_X] = -1.0f;
-    result[RESULT_INDEX_MINUS_Y] = -1.0f;
-    result[RESULT_INDEX_MINUS_Z] = -1.0f;
-    result[RESULT_INDEX_X] = 1.0f;
-    result[RESULT_INDEX_Y] = 1.0f;
-    result[RESULT_INDEX_Z] = 1.0f;
+    uint verticeDataSize;
+    verticeData.GetDimensions(verticeDataSize);
+
+    for(int i = 0; i < verticeDataSize; i += structureSizeInFloatIndexes)
+    {
+        float3 vertexPosition;
+        vertexPosition.x = verticeData[i + positionOffsetInStructureInFloatIndexes];
+        vertexPosition.y = verticeData[i + positionOffsetInStructureInFloatIndexes + 1];
+        vertexPosition.z = verticeData[i + positionOffsetInStructureInFloatIndexes + 2];
+
+        if(vertexPosition.x < result[RESULT_INDEX_MINUS_X])
+            result[RESULT_INDEX_MINUS_X] = vertexPosition.x;
+        else if(vertexPosition.x > result[RESULT_INDEX_X])
+            result[RESULT_INDEX_X] = vertexPosition.x;
+
+        if(vertexPosition.y < result[RESULT_INDEX_MINUS_Y])
+            result[RESULT_INDEX_MINUS_Y] = vertexPosition.y;
+        else if(vertexPosition.y > result[RESULT_INDEX_Y])
+            result[RESULT_INDEX_Y] = vertexPosition.y;
+
+        if(vertexPosition.z < result[RESULT_INDEX_MINUS_Z])
+            result[RESULT_INDEX_MINUS_Z] = vertexPosition.z;
+        else if(vertexPosition.z > result[RESULT_INDEX_Z])
+            result[RESULT_INDEX_Z] = vertexPosition.z;
+    }
 }
