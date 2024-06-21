@@ -66,6 +66,5 @@ void main( uint3 DTid : SV_DispatchThreadID )
         result[0] = 1;
         return;
     }   
-
     result[0] = 0;
 }

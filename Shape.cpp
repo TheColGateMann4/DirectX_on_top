@@ -214,6 +214,8 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 		Microsoft::WRL::ComPtr<ID3D11Buffer> pRWOutputBuffer;
 		{
 			{
+				UINT pData[1] = { FALSE };
+
 				D3D11_BUFFER_DESC bufferDesc = {};
 				bufferDesc.ByteWidth = sizeof(UINT); // just single field
 				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -222,7 +224,10 @@ bool Shape::CheckIfVisible(GFX& gfx, Camera* camera)
 				bufferDesc.MiscFlags = NULL;
 				bufferDesc.StructureByteStride = sizeof(UINT);
 
-				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, nullptr, &pRWOutputBuffer));
+				D3D11_SUBRESOURCE_DATA subResourceData = {};
+				subResourceData.pSysMem = pData;
+
+				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pRWOutputBuffer));
 			}
 
 			ShaderUnorderedAccessView::GetBindable(gfx, 0, pRWOutputBuffer, DXGI_FORMAT_R32_UINT)->Bind(gfx);
