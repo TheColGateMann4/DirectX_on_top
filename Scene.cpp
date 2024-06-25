@@ -49,10 +49,13 @@ void Scene::DrawModels(GFX& gfx)
 	{
 		model->CalculateSceneTranformMatrix();
 		
-		model->PushObjectMatrixToBuffer(m_window->Graphics, m_sceneVisibilityManager->GetMatrixBuffer());
+		if(model->m_shape != nullptr) // checking if object is valid for drawing before doing unnecessary performence stuff for it
+			m_sceneVisibilityManager->PushObjectMatrixToBuffer(model->GetSceneTranformMatrix(), model->m_sceneIndex);
 
 		model->RenderOnScene();
 	}
+
+	m_sceneVisibilityManager->UpdateTransformBuffer(gfx);
 
 	//normally we would update scene visility now, but since we have shadow pass we don't need it since it runs before everything and overrides everything we would set right now
 	//UpdateSceneVisibility(gfx);
@@ -128,24 +131,24 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 			const auto& sceneModel = m_models.at(i);
 
 			if (sceneModel->GetOriginalName(false) == modelName) [[unlikely]]
+			{
+				currentNameIndex++;
+
+				if (currentNameIndex == 1)
 				{
-					currentNameIndex++;
-
-					if (currentNameIndex == 1)
-					{
-						modelName.append(std::string('_' + std::to_string(currentNameIndex)));
-					}
-					else
-					{
-						modelName.replace(modelName.begin() + startingLength, modelName.end(), std::string('_' + std::to_string(currentNameIndex)));
-					}
-
-					//go to the start of the loop
-					i = 0;
-					continue;
+					modelName.append(std::string('_' + std::to_string(currentNameIndex)));
+				}
+				else
+				{
+					modelName.replace(modelName.begin() + startingLength, modelName.end(), std::string('_' + std::to_string(currentNameIndex)));
 				}
 
-				i++;
+				//go to the start of the loop
+				i = 0;
+				continue;
+			}
+
+			i++;
 		}
 	}
 
@@ -160,6 +163,8 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 	//	if (m_highestSceneIndex != 0)
 	//		m_highestSceneIndex++;
 	model->SetSceneIndexes(m_highestSceneIndex++, currentNameIndex);
+
+	m_sceneVisibilityManager->ResizeBuffers(m_window->Graphics, m_highestSceneIndex);
 
 	if (isValidVisibleObject) 
 		model->GenerateBoundCube(m_window->Graphics, m_sceneVisibilityManager->GetCubeBoundsUAV());

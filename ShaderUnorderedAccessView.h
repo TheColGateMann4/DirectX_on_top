@@ -8,10 +8,16 @@ class ShaderUnorderedAccessView : public Bindable
 public:
 	ShaderUnorderedAccessView(GFX& gfx, UINT32 slot, Microsoft::WRL::ComPtr<ID3D11Resource> pResource, DXGI_FORMAT resourceFormat);
 
+private:
+	void UpdateUAV(GFX& gfx);
+
+public:
 	void Bind(GFX& gfx) noexcept override;
 
 public:
 	ID3D11Resource* GetResource() const;
+
+	void UpdateResource(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource> resource);
 
 public:
 	static std::shared_ptr<ShaderUnorderedAccessView> GetBindable(GFX& gfx, UINT32 slot, Microsoft::WRL::ComPtr<ID3D11Resource> pResource, DXGI_FORMAT resourceFormat)

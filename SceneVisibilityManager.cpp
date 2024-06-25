@@ -26,7 +26,7 @@ SceneVisibilityManager::SceneVisibilityManager(GFX& gfx)
 		}
 
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.ByteWidth = bufferSize * sizeof(float); // dynamicly change the size of this buffer when object gets added
+		bufferDesc.ByteWidth = bufferSize * sizeof(float);
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		bufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
 		bufferDesc.CPUAccessFlags = NULL;
@@ -43,7 +43,7 @@ SceneVisibilityManager::SceneVisibilityManager(GFX& gfx)
 
 	{
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.ByteWidth = startingBufferElementWidth * sizeof(DirectX::XMMATRIX); // dynamicly change the size of this buffer when object gets added
+		bufferDesc.ByteWidth = startingBufferElementWidth * sizeof(DirectX::XMMATRIX);
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		bufferDesc.CPUAccessFlags = NULL;
@@ -325,6 +325,97 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, U
 	}
 }
 
+void SceneVisibilityManager::UpdateTransformBuffer(GFX& gfx)
+{
+	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->UpdateSubresource(m_pObjectsMatrixBuffer.Get(), 0, NULL, m_modelsMatrixData.data(), m_modelsMatrixData.size() * sizeof(DirectX::XMMATRIX), 0));
+}
+
+void SceneVisibilityManager::PushObjectMatrixToBuffer(DirectX::XMMATRIX objectMatrix, UINT32 objectID)
+{
+	m_modelsMatrixData.at(objectID) = DirectX::XMMatrixTranspose(objectMatrix);
+}
+
+void SceneVisibilityManager::ResizeBuffers(GFX& gfx, UINT32 newHighestObjectID)
+{
+	// our buffers on GPU will be less affected by small changes
+	if(newHighestObjectID > currentElementWidth)
+	{
+		HRESULT hr;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> pNewCubeBoundBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> pNewTransformMatrixBuffer;
+
+		// first creating new buffers
+		{
+			{
+				const UINT32 bufferSize = (newHighestObjectID + startingBufferElementWidth) * 6;
+				std::vector<float> pData;
+
+				pData.resize(bufferSize);
+
+				for (UINT32 i = currentElementWidth; i < bufferSize / 6; i++)
+				{
+					pData.at(i * 6) = FLT_MAX;
+					pData.at(i * 6 + 1) = FLT_MAX;
+					pData.at(i * 6 + 2) = FLT_MAX;
+
+					pData.at(i * 6 + 3) = -FLT_MAX;
+					pData.at(i * 6 + 4) = -FLT_MAX;
+					pData.at(i * 6 + 5) = -FLT_MAX;
+				}
+
+				D3D11_BUFFER_DESC bufferDesc = {};
+				bufferDesc.ByteWidth = bufferSize * sizeof(float);
+				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+				bufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+				bufferDesc.CPUAccessFlags = NULL;
+				bufferDesc.MiscFlags = NULL;
+				bufferDesc.StructureByteStride = sizeof(float);
+
+				D3D11_SUBRESOURCE_DATA subResourceData = {};
+				subResourceData.pSysMem = pData.data();
+
+				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pNewCubeBoundBuffer));
+			}
+
+			{
+				D3D11_BUFFER_DESC bufferDesc = {};
+				bufferDesc.ByteWidth = (newHighestObjectID + startingBufferElementWidth) * sizeof(DirectX::XMMATRIX);
+				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+				bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+				bufferDesc.CPUAccessFlags = NULL;
+				bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+				bufferDesc.StructureByteStride = sizeof(DirectX::XMMATRIX);
+
+				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, nullptr, &pNewTransformMatrixBuffer));
+			}
+		}
+
+		// copying existing resources to them
+		{
+			D3D11_BOX dataBox = {};
+			dataBox.top = dataBox.left = dataBox.front = 0;
+			dataBox.bottom = dataBox.back = 1; // just to pass a check
+			dataBox.left = currentElementWidth * 6 * sizeof(float);
+
+			THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pNewCubeBoundBuffer.Get(), 0, 0, 0, 0, m_pModelBoundsUAV->GetResource(), 0, &dataBox));
+
+
+			dataBox.left = currentElementWidth * sizeof(DirectX::XMMATRIX);
+
+			THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pNewTransformMatrixBuffer.Get(), 0, 0, 0, 0, m_pObjectsMatrixBuffer.Get(), 0, &dataBox));
+		}
+
+		//setting new stuff
+		m_pModelBoundsUAV->UpdateResource(gfx, pNewCubeBoundBuffer);
+		m_pObjectsMatrixBuffer = pNewTransformMatrixBuffer;
+
+		currentElementWidth = newHighestObjectID + startingBufferElementWidth;
+	}
+
+	// this vector will be exact size we want since its not a problem in resizing it
+	m_modelsMatrixData.resize(newHighestObjectID);
+}
+
 bool SceneVisibilityManager::GetVisibility(size_t objectID) const
 {
 	if (!initializedVector)
@@ -336,9 +427,4 @@ bool SceneVisibilityManager::GetVisibility(size_t objectID) const
 ShaderUnorderedAccessView* SceneVisibilityManager::GetCubeBoundsUAV() const
 {
 	return m_pModelBoundsUAV.get();
-}
-
-ID3D11Buffer* SceneVisibilityManager::GetMatrixBuffer() const
-{
-	return m_pObjectsMatrixBuffer.Get();
 }

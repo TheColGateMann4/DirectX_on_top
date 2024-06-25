@@ -6,17 +6,23 @@
 ShaderUnorderedAccessView::ShaderUnorderedAccessView(GFX& gfx, UINT32 slot, Microsoft::WRL::ComPtr<ID3D11Resource> pResource, DXGI_FORMAT resourceFormat)
 	:
 	m_slot(slot),
-	m_resourceFormat(resourceFormat)
+	m_resourceFormat(resourceFormat),
+	m_resourceDimension(D3D11_UAV_DIMENSION_UNKNOWN) // temporary
+{
+	pResource.CopyTo(&m_pResource);
+
+	UpdateUAV(gfx);
+}
+
+void ShaderUnorderedAccessView::UpdateUAV(GFX& gfx)
 {
 	HRESULT hr;
 
-	pResource.CopyTo(&m_pResource);
-
 	D3D11_RESOURCE_DIMENSION resourceDimension;
 
-	pResource->GetType(&resourceDimension);
+	m_pResource->GetType(&resourceDimension);
 
-	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = GetUAVDesc(m_pResource, resourceDimension, resourceFormat);
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = GetUAVDesc(m_pResource, resourceDimension, m_resourceFormat);
 
 	m_resourceDimension = uavDesc.ViewDimension;
 
@@ -39,6 +45,13 @@ VOID ShaderUnorderedAccessView::Bind(GFX& gfx) noexcept
 ID3D11Resource* ShaderUnorderedAccessView::GetResource() const
 {
 	return m_pResource.Get();
+}
+
+void ShaderUnorderedAccessView::UpdateResource(GFX& gfx, Microsoft::WRL::ComPtr<ID3D11Resource> resource)
+{
+	resource.CopyTo(&m_pResource);
+
+	UpdateUAV(gfx);
 }
 
 constexpr D3D11_UAV_DIMENSION ShaderUnorderedAccessView::GetUAVDimension(const D3D11_RESOURCE_DIMENSION resourceDimension)
