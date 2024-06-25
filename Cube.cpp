@@ -81,6 +81,8 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 			normalStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pVertexShader.get()));
 
+			normalStep.AddBindable(RasterizerState::GetBindable(gfx, false));
+
 			normalStep.AddBindable(std::move(pVertexShader));
 
 			normalTechnique.AddRenderStep(normalStep);
