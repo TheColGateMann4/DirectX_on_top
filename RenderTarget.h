@@ -20,6 +20,8 @@ public:
 public:
 	virtual void Clear(GFX& gfx) const override;
 
+	void Clear(GFX& gfx, DirectX::XMFLOAT4 color) const;
+
 	void ChangeResolution(GFX& gfx, const int width, const int height) noexcept;
 
 private:
@@ -44,6 +46,8 @@ public:
 
 public:
 	virtual void Bind(GFX& gfx) noexcept override;
+
+	ID3D11ShaderResourceView* GetSRV() const;
 
 private:
 	int m_slot;

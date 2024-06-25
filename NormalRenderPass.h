@@ -10,5 +10,8 @@ public:
 
 public:
 	virtual void Render(GFX& gfx) const noexcept(!IS_DEBUG) override;
+
+private:
+	std::unique_ptr<RenderTargetWithTexture> m_previewCameraTexture;
 };
 

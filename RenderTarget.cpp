@@ -179,6 +179,14 @@ void RenderTarget::Clear(GFX& gfx) const
 	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->ClearRenderTargetView(m_pRenderTargetView.Get(), &color.x));
 }
 
+void RenderTarget::Clear(GFX& gfx, DirectX::XMFLOAT4 color) const
+{
+	if (!m_initialized)
+		THROW_INTERNAL_ERROR("Tried to clear uninitialized RenderTarget");
+
+	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->ClearRenderTargetView(m_pRenderTargetView.Get(), &color.x));
+}
+
 void RenderTarget::ChangeResolution(GFX& gfx, const int width, const int height) noexcept
 {
 	m_width = width;
@@ -235,6 +243,11 @@ RenderTargetWithTexture::RenderTargetWithTexture(GFX& gfx, const int width, cons
 void RenderTargetWithTexture::Bind(GFX& gfx) noexcept
 {
 	GFX::GetDeviceContext(gfx)->PSSetShaderResources(m_slot, 1, m_pTextureView.GetAddressOf());
+}
+
+ID3D11ShaderResourceView* RenderTargetWithTexture::GetSRV() const
+{
+	return m_pTextureView.Get();
 }
 
 

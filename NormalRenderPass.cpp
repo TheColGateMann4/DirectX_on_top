@@ -33,6 +33,48 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	m_scene->UpdateSceneVisibility(gfx);
 
+	// rendering selected camera preview
+	{
+		m_previewCameraTexture->Clear(gfx, {0.0f, 0.0f, 0.0f, 1.0f});
+		m_depthStencilView->Clear(gfx);
+		m_bindsGraphicBuffersByItself = true;
+
+		Camera* selectedCamera = m_scene->GetCameraManager()->GetSelectedCamera();
+
+		if (selectedCamera != nullptr)
+		{
+			Camera* previousCamera = m_scene->GetCameraManager()->GetActiveCamera();
+
+			m_scene->GetCameraManager()->SetActiveCameraByPtr(selectedCamera);
+
+			m_previewCameraTexture.get()->BindRenderTarget(gfx, m_depthStencilView.get());
+			BlendState::GetBindable(gfx, false)->Bind(gfx);
+			RenderJobPass::Render(gfx);
+
+			{
+				ImGuiWindowFlags windowFlags =
+					ImGuiWindowFlags_NoTitleBar |
+					ImGuiWindowFlags_NoResize |
+					ImGuiWindowFlags_AlwaysAutoResize;
+
+				if (ImGui::Begin("Camera Preview", nullptr, windowFlags))
+				{
+					ImVec2 imageSize;
+					imageSize.x = 1600.0f / 4;
+					imageSize.y = 900.0f / 4;
+					ImGui::Image((void*)m_previewCameraTexture->GetSRV(), imageSize);
+				}
+				ImGui::End();
+			}
+		
+			m_scene->GetCameraManager()->SetActiveCameraByPtr(previousCamera);
+		}
+
+		m_bindsGraphicBuffersByItself = false;
+		m_depthStencilView->Clear(gfx);
+	}
+
+	// render call for our regular camera
 	RenderJobPass::Render(gfx);
 
 	//unbinding depthStencilView texture after we used it where we needed it

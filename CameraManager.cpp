@@ -32,3 +32,13 @@ void CameraManager::SetActiveCameraByIndex(size_t newActiveCamera)
 {
 	m_activeCamera = m_cameras.at(newActiveCamera);
 }
+
+void CameraManager::SetSelectedCamera(Camera* selectedCamera)
+{
+	m_selectedCamera = selectedCamera;
+}
+
+Camera* CameraManager::GetSelectedCamera()
+{
+	return m_selectedCamera;
+}

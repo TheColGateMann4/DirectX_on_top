@@ -51,6 +51,8 @@ public:
 
 	UINT32 GetFrustumBufferByteSize() const;
 
+	void SetCameraManagerLinkage(CameraManager* cameraManager);
+
 private:
 	float WrapAngle(float angle, float value);
 
@@ -92,5 +94,7 @@ private:
 	DirectX::XMMATRIX m_projection = {};
 
 	DirectX::XMVECTOR m_upVector;
+
+	CameraManager* m_cameraManager;
 };
 

@@ -105,8 +105,14 @@ void Camera::MakeTransformPropeties(GFX& gfx)
 	if (!GetPressedState())
 		return;
 	
-	if (ImGui::Button("Activate"))
-		gfx.SetActiveCamera(this);
+	if (ImGui::Button("Activate")) 
+	{
+		m_cameraManager->SetActiveCameraByPtr(this);
+		m_cameraManager->SetSelectedCamera(nullptr);
+	}
+
+	if (!m_active)
+		m_cameraManager->SetSelectedCamera(this);
 
 	ImGui::Text("Positione");
 	ImGui::SliderFloat("camera X", &m_position.x, -80.0, 80.0f, "%.1f");
@@ -168,7 +174,7 @@ void Camera::RenderThisObjectOnScene() const noexcept(!IS_DEBUG)
 
 		if(drawFrustum)
 			if (m_pressed)
-				m_viewIndicator.Render();	
+				m_viewIndicator.Render();
 	}
 }
 
@@ -198,6 +204,11 @@ const DirectX::XMFLOAT3* Camera::GetFrustumBuffer() const
 UINT32 Camera::GetFrustumBufferByteSize() const
 {
 	return m_viewIndicator.GetVerticeBufferByteSize();
+}
+
+void Camera::SetCameraManagerLinkage(CameraManager* cameraManager)
+{
+	m_cameraManager = cameraManager;
 }
 
 void Camera::UpdateProjectionMatrix(GFX& gfx)

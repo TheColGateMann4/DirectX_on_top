@@ -15,8 +15,13 @@ public:
 
 	void SetActiveCameraByIndex(size_t newActiveCamera);
 
+	void SetSelectedCamera(Camera* selectedCamera);
+
+	Camera* GetSelectedCamera();
+
 private:
 	std::vector<Camera*> m_cameras = {};
 	Camera* m_activeCamera = nullptr;
+	Camera* m_selectedCamera = nullptr;
 };
 

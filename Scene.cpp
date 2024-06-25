@@ -173,6 +173,8 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 	}
 	else if (auto* camera = dynamic_cast<Camera*>(model.get()))
 	{
+		camera->SetCameraManagerLinkage(&m_cameraManager);
+
 		AddCameraObject(camera);
 	}
 
