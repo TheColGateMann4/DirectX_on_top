@@ -31,8 +31,6 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 
 void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
-	m_scene->UpdateSceneVisibility(gfx);
-
 	// rendering selected camera preview
 	{
 		m_previewCameraTexture->Clear(gfx, {0.0f, 0.0f, 0.0f, 1.0f});
@@ -47,6 +45,7 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 
 			m_scene->GetCameraManager()->SetActiveCameraByPtr(selectedCamera);
 
+			m_scene->UpdateSceneVisibility(gfx);
 			m_previewCameraTexture.get()->BindRenderTarget(gfx, m_depthStencilView.get());
 			BlendState::GetBindable(gfx, false)->Bind(gfx);
 			RenderJobPass::Render(gfx);
@@ -73,6 +72,8 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 		m_bindsGraphicBuffersByItself = false;
 		m_depthStencilView->Clear(gfx);
 	}
+
+	m_scene->UpdateSceneVisibility(gfx);
 
 	// render call for our regular camera
 	RenderJobPass::Render(gfx);
