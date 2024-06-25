@@ -12,13 +12,13 @@ public:
 	SceneVisibilityManager(GFX& gfx);
 
 public:
-	void ProcessVisibilityBuffer(GFX& gfx, Camera* camera, UINT highestIndexOnScene, std::vector<UINT8>* objectValidity);
+	void ProcessVisibilityBuffer(GFX& gfx, Camera* camera, INT32 highestIndexOnScene, std::vector<UINT8>* objectValidity);
 
 	void UpdateTransformBuffer(GFX& gfx);
 
 	void PushObjectMatrixToBuffer(DirectX::XMMATRIX objectMatrix, UINT32 objectID);
 
-	void ResizeBuffers(GFX& gfx, UINT32 newHighestObjectID);
+	void ResizeBuffers(GFX& gfx, INT32 newHighestObjectID);
 
 public:
 	bool GetVisibility(size_t objectID) const;

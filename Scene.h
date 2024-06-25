@@ -50,6 +50,6 @@ public:
 	Window* m_window;
 	SceneObject* m_pressedNode = nullptr;
 	CameraManager m_cameraManager;
-	UINT32 m_highestSceneIndex = 0;// make a vector that would hold indexes of deleted objects and we would assign them first. But we don't delete objects yet
+	INT32 m_highestSceneIndex = -1;// -1 means no objects on scene
 };
 

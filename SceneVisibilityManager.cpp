@@ -54,11 +54,13 @@ SceneVisibilityManager::SceneVisibilityManager(GFX& gfx)
 	}
 }
 
-void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, UINT highestIndexOnScene, std::vector<UINT8>* objectValidity)
+void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, INT32 highestIndexOnScene, std::vector<UINT8>* objectValidity)
 {
 	HRESULT hr;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pCleanModelRWBuffer;
+	INT32 numElementsOnScene = highestIndexOnScene + 1;
 
+	THROW_INTERNAL_ERROR_IF("numElementsOnScene was negative value", numElementsOnScene < 0);
 
 	// Step 2. cube bounds by camera projection view matrix
 	{
@@ -125,7 +127,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, U
 
 			{
 				D3D11_BUFFER_DESC bufferDesc = {};
-				bufferDesc.ByteWidth = highestIndexOnScene * sizeof(UINT8);
+				bufferDesc.ByteWidth = numElementsOnScene * sizeof(UINT8);
 				bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 				bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 				bufferDesc.CPUAccessFlags = NULL;
@@ -145,7 +147,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, U
 				shaderResourceViewDesc.Format = DXGI_FORMAT_R8_UINT;
 				shaderResourceViewDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
 				shaderResourceViewDesc.Buffer.FirstElement = 0;
-				shaderResourceViewDesc.Buffer.NumElements = highestIndexOnScene;
+				shaderResourceViewDesc.Buffer.NumElements = numElementsOnScene;
 
 				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pBuffer.Get(), &shaderResourceViewDesc, &pBufferView));
 			}
@@ -162,7 +164,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, U
 				shaderResourceViewDesc.Format = DXGI_FORMAT_UNKNOWN;
 				shaderResourceViewDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
 				shaderResourceViewDesc.Buffer.FirstElement = 0;
-				shaderResourceViewDesc.Buffer.NumElements = highestIndexOnScene;
+				shaderResourceViewDesc.Buffer.NumElements = numElementsOnScene;
 
 				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(m_pObjectsMatrixBuffer.Get(), &shaderResourceViewDesc, &pBufferView));
 			}
@@ -192,7 +194,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, U
 			{
 				UINT32 pData[4] =
 				{
-					highestIndexOnScene,
+					numElementsOnScene,
 					0,	//padding
 					0,
 					0
@@ -219,13 +221,13 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, U
 		Microsoft::WRL::ComPtr<ID3D11Buffer> pRWOutputBuffer;
 		{
 			{
-				if (m_visiblityData.size() != highestIndexOnScene * 4)
-					m_visiblityData.resize(highestIndexOnScene * 4);
+				if (m_visiblityData.size() != numElementsOnScene * 4)
+					m_visiblityData.resize(numElementsOnScene * 4);
 
-				memset(&m_visiblityData[0], FALSE, highestIndexOnScene * 4);
+				memset(&m_visiblityData[0], FALSE, numElementsOnScene * 4);
 
 				D3D11_BUFFER_DESC bufferDesc = {};
-				bufferDesc.ByteWidth = highestIndexOnScene * sizeof(UINT32);
+				bufferDesc.ByteWidth = numElementsOnScene * sizeof(UINT32);
 				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 				bufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
 				bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
@@ -249,7 +251,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, U
 			shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 			shaderResourceViewDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
 			shaderResourceViewDesc.Buffer.FirstElement = 0;
-			shaderResourceViewDesc.Buffer.NumElements = highestIndexOnScene * 6;
+			shaderResourceViewDesc.Buffer.NumElements = numElementsOnScene * 6;
 
 			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pCleanModelRWBuffer.Get(), &shaderResourceViewDesc, &pBufferView));
 
@@ -312,7 +314,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, U
 
 			BOOL* resultData = static_cast<BOOL*>(subresourceData.pData); // we could maybe change to bool to not read 3 empty bytes, but gotta debug
 
-			for(size_t i = 0; i < highestIndexOnScene; i++)
+			for(size_t i = 0; i < numElementsOnScene; i++)
 				m_visiblityData.at(i) = resultData[i]; // BOOL to bool
 
 			initializedVector = true;
@@ -335,7 +337,7 @@ void SceneVisibilityManager::PushObjectMatrixToBuffer(DirectX::XMMATRIX objectMa
 	m_modelsMatrixData.at(objectID) = DirectX::XMMatrixTranspose(objectMatrix);
 }
 
-void SceneVisibilityManager::ResizeBuffers(GFX& gfx, UINT32 newHighestObjectID)
+void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
 {
 	// our buffers on GPU will be less affected by small changes
 	if(newHighestObjectID > currentElementWidth)

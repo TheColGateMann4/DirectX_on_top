@@ -154,17 +154,15 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 
 	bool isValidVisibleObject = model->m_shape != nullptr; // make this for Model and children of objects overall
 
-	objectValidity.resize(m_highestSceneIndex + 1); // do some overhead resising
+	m_highestSceneIndex++;
 
-	objectValidity[m_highestSceneIndex] = static_cast<UINT8>(isValidVisibleObject);
+	objectValidity.resize(m_highestSceneIndex + 1);
 
-	// should fix this m_highestSceneIndex++ since it shows 1 more index than actually is
-	// could do something like:
-	//	if (m_highestSceneIndex != 0)
-	//		m_highestSceneIndex++;
-	model->SetSceneIndexes(m_highestSceneIndex++, currentNameIndex);
+	objectValidity.at(m_highestSceneIndex) = static_cast<UINT8>(isValidVisibleObject);
 
-	m_sceneVisibilityManager->ResizeBuffers(m_window->Graphics, m_highestSceneIndex);
+	model->SetSceneIndexes(m_highestSceneIndex, currentNameIndex);
+
+	m_sceneVisibilityManager->ResizeBuffers(m_window->Graphics, m_highestSceneIndex + 1);
 
 	if (isValidVisibleObject) 
 		model->GenerateBoundCube(m_window->Graphics, m_sceneVisibilityManager->GetCubeBoundsUAV());
