@@ -127,8 +127,6 @@ SpherePBR::SpherePBR(GFX& gfx, DirectX::XMFLOAT3 startingPosition)
 
 			normalStep.AddBindable(CachedBuffer::GetBindableWithoutCreation(gfx, "tesselationFactor"));
 
-			normalStep.AddBindable(BlendState::GetBindable(gfx, false));
-
 			normalStep.AddBindable(RasterizerState::GetBindable(gfx, false));
 
 			normalStep.AddBindable(CachedBuffer::GetBindableWithoutCreation(gfx, "heightMapFactor"));
