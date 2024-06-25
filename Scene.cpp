@@ -4,11 +4,12 @@
 #include "Model.h"
 #include "Camera.h"
 #include "Window.h"
+#include "SceneVisibilityManager.h"
 
 Scene::Scene(Window* window)
 	: m_window(window)
 {
-
+	m_sceneVisibilityManager = std::make_unique<SceneVisibilityManager>(m_window->Graphics);
 }
 
 void Scene::LinkModelsToPipeline(class RenderGraph& renderGraph)
@@ -18,6 +19,15 @@ void Scene::LinkModelsToPipeline(class RenderGraph& renderGraph)
 		model->LinkSceneObjectToPipeline(renderGraph);
 		model->LinkChildrenToPipeline(renderGraph);
 	}
+}
+
+void Scene::UpdateSceneVisibility(GFX& gfx)
+{
+	m_sceneVisibilityManager->ProcessVisibilityBuffer(gfx, m_cameraManager.GetActiveCamera(), GetHighestIndex(), &objectValidity);
+
+	for (const auto& model : m_models)
+		if (model->m_shape != nullptr)
+			model->SetVisibility(m_sceneVisibilityManager->GetVisibility(model->m_sceneIndex));
 }
 
 void Scene::UpdateModels(GFX& gfx, float deltaTime)
@@ -32,16 +42,20 @@ void Scene::UpdateModels(GFX& gfx, float deltaTime)
 void Scene::DrawModels(GFX& gfx)
 {
 	for (const auto& light : m_lights)
-	{
 		light->Bind(gfx, m_cameraManager.GetActiveCamera()->GetCameraView());
-	}
 
-	for (const auto& model : m_models)
+	//updating object's transform and pushing jobs to passes
+	for (const auto& model : m_models) 
 	{
 		model->CalculateSceneTranformMatrix();
+		
+		model->PushObjectMatrixToBuffer(m_window->Graphics, m_sceneVisibilityManager->GetMatrixBuffer());
 
 		model->RenderOnScene();
 	}
+
+	//normally we would update scene visility now, but since we have shadow pass we don't need it since it runs before everything and overrides everything we would set right now
+	//UpdateSceneVisibility(gfx);
 }
 
 void Scene::DrawModelHierarchy(bool show)
@@ -104,36 +118,51 @@ void Scene::AddCameraObject(Camera* model)
 
 void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 {
-	size_t currentIndex = 0;
-	std::string modelName = model->GetName();
-	size_t startingLength = modelName.length(); // for optimization to avoid lots of looping
-
-	for (size_t i = 0; i < m_models.size();)
+	size_t currentNameIndex = 0;
 	{
-		const auto& sceneModel = m_models.at(i);
+		std::string modelName = model->GetName();
+		size_t startingLength = modelName.length(); // for optimization to avoid lots of looping
 
-		if (sceneModel->GetOriginalName(false) == modelName) [[unlikely]]
+		for (size_t i = 0; i < m_models.size();)
 		{
-			currentIndex++;
+			const auto& sceneModel = m_models.at(i);
 
-			if (currentIndex == 1)
-			{
-				modelName.append(std::string('_' + std::to_string(currentIndex)));
-			}
-			else
-			{
-				modelName.replace(modelName.begin() + startingLength, modelName.end(), std::string('_' + std::to_string(currentIndex)));
-			}
+			if (sceneModel->GetOriginalName(false) == modelName) [[unlikely]]
+				{
+					currentNameIndex++;
 
-			//go to the start of the loop
-			i = 0;
-			continue;
+					if (currentNameIndex == 1)
+					{
+						modelName.append(std::string('_' + std::to_string(currentNameIndex)));
+					}
+					else
+					{
+						modelName.replace(modelName.begin() + startingLength, modelName.end(), std::string('_' + std::to_string(currentNameIndex)));
+					}
+
+					//go to the start of the loop
+					i = 0;
+					continue;
+				}
+
+				i++;
 		}
-
-		i++;
 	}
 
-	model->SetSceneIndex(currentIndex);
+	bool isValidVisibleObject = model->m_shape != nullptr; // make this for Model and children of objects overall
+
+	objectValidity.resize(m_highestSceneIndex + 1); // do some overhead resising
+
+	objectValidity[m_highestSceneIndex] = static_cast<UINT8>(isValidVisibleObject);
+
+	// should fix this m_highestSceneIndex++ since it shows 1 more index than actually is
+	// could do something like:
+	//	if (m_highestSceneIndex != 0)
+	//		m_highestSceneIndex++;
+	model->SetSceneIndexes(m_highestSceneIndex++, currentNameIndex);
+
+	if (isValidVisibleObject) 
+		model->GenerateBoundCube(m_window->Graphics, m_sceneVisibilityManager->GetCubeBoundsUAV());
 
 	if (auto* light = dynamic_cast<PointLight*>(model.get()))
 	{
@@ -150,6 +179,11 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 std::vector<PointLight*>& Scene::GetLights()
 {
 	return m_lights;
+}
+
+UINT32 Scene::GetHighestIndex()
+{
+	return m_highestSceneIndex;
 }
 
 void Scene::CleanupPressedNodes()

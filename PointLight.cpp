@@ -7,6 +7,8 @@ PointLight::PointLight(GFX& gfx, float radius, DirectX::XMFLOAT3 startingPositio
 	SceneObject(startingPosition),
 	m_model(gfx, this, radius)
 {
+	SetShape(&m_model);
+
 	DynamicConstantBuffer::BufferLayout layout;
 
 	layout.Add<DynamicConstantBuffer::DataType::Float3>("position");

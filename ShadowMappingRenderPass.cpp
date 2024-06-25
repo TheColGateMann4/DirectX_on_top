@@ -67,6 +67,8 @@ void ShadowMappingRenderPass::RenderModels(GFX& gfx) const noexcept(!IS_DEBUG)
 	m_renderTarget->Clear(gfx);
 	shadowRasterizer->Bind(gfx);
 
+	m_scene->UpdateSceneVisibility(gfx);
+
 	RenderJobPass::Render(gfx);
 }
 

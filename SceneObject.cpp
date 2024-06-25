@@ -2,6 +2,11 @@
 #include "imgui/imgui.h"
 #include "Shape.h"
 
+#include "ShaderUnorderedAccessView.h"
+#include "ComputeShader.h"
+#include "Camera.h"
+#include "VertexBuffer.h"
+
 SceneObject::SceneObject(DirectX::XMFLOAT3 startingPosition)
 {
 	m_position = startingPosition;
@@ -262,8 +267,8 @@ std::string SceneObject::GetOriginalName(bool withStatus) const
 {
 	std::string result = GetName();
 
-	if (m_sceneIndex > 0)
-		result += "_" + std::to_string(m_sceneIndex);
+	if (m_sceneNameIndex > 0)
+		result += "_" + std::to_string(m_sceneNameIndex);
 
 	if(withStatus)
 		result.append(GetNameSpecialStatus());
@@ -271,7 +276,106 @@ std::string SceneObject::GetOriginalName(bool withStatus) const
 	return result;
 }
 
-void SceneObject::SetSceneIndex(size_t index)
+void SceneObject::SetVisibility(bool visibility)
 {
-	m_sceneIndex = index;
+	m_shape->m_visible = visibility;
+}
+
+void SceneObject::PushObjectMatrixToBuffer(GFX& gfx, ID3D11Buffer* matrixBuffer) const
+{
+	UINT32 sizeofmatrix = sizeof(DirectX::XMMATRIX);
+
+	D3D11_BOX dstBox = {};
+	dstBox.top = dstBox.front = 0;
+	dstBox.bottom = dstBox.back = 1; // just to pass a check
+
+	dstBox.left = m_sceneIndex * sizeofmatrix;
+	dstBox.right = dstBox.left + sizeofmatrix;
+
+	DirectX::XMMATRIX pData = DirectX::XMMatrixTranspose(GetSceneTranformMatrix());
+
+	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->UpdateSubresource(matrixBuffer, 0, &dstBox, &pData, sizeofmatrix, 0));
+}
+
+void SceneObject::SetSceneIndexes(size_t sceneIndex, size_t repeatingNameIndex)
+{
+	m_sceneIndex = sceneIndex;
+	m_sceneNameIndex = repeatingNameIndex;
+}
+
+void SceneObject::GenerateBoundCube(GFX& gfx, ShaderUnorderedAccessView* pModelCubeRWBuffer)
+{
+	HRESULT hr;
+
+	// binding cube UAV
+	{
+		pModelCubeRWBuffer->Bind(gfx);
+	}
+
+	// giving vertex buffer as input to our shader
+	{
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pConstBufferView;
+
+		{
+			D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+			shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+			shaderResourceViewDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
+			shaderResourceViewDesc.Buffer.FirstElement = 0;
+			shaderResourceViewDesc.Buffer.NumElements = m_shape->m_pVertexBuffer->GetBufferByteSize() / 4;
+
+			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(m_shape->m_pVertexBuffer->Get(), &shaderResourceViewDesc, &pConstBufferView));
+		}
+
+		THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CSSetShaderResources(0, 1, pConstBufferView.GetAddressOf()));
+	}
+
+	// binding info about our vertex structure
+	{
+		//			cbuffer verticesInfo : register(b0)
+		//			{
+		//				uint positionOffsetInStructureInFloatIndexes;
+		//				uint structureSizeInFloatIndexes;
+		//				uint targetResultID;
+		//			};
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> pBuffer;
+
+		{
+			const DynamicVertex::VertexLayout& vertexLayout = m_shape->m_pVertexBuffer->GetLayout();
+
+			UINT pData[4] =
+			{
+				// in shaders we operate on float arrays, and every thread doesn't need to do the same operation, that's why we divide our values by 4 here
+				vertexLayout.GetByIndex(vertexLayout.GetIndexOfElement(DynamicVertex::VertexLayout::VertexComponent::Position3D)).GetOffset() / 4,
+				vertexLayout.GetByteSize() / 4,
+				m_sceneIndex,  // target index of our model
+				0	//padding
+			};
+
+			D3D11_BUFFER_DESC bufferDesc = {};
+			bufferDesc.ByteWidth = sizeof(pData);
+			bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+			bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+			bufferDesc.CPUAccessFlags = NULL;
+			bufferDesc.MiscFlags = NULL;
+			bufferDesc.StructureByteStride = sizeof(UINT);
+
+			D3D11_SUBRESOURCE_DATA subResourceData = {};
+			subResourceData.pSysMem = pData;
+
+			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pBuffer));
+		}
+
+		GFX::GetDeviceContext(gfx)->CSSetConstantBuffers(0, 1, pBuffer.GetAddressOf());
+	}
+
+	//compute shader for making cube
+	{
+		ComputeShader::GetBindable(gfx, "CS_BoundsCubeOfModel.cso")->Bind(gfx);
+	}
+
+	// running compute shader for generating cube that contains model fully
+	{
+		gfx.Dispatch({ 1,1,1 });
+	}
 }

@@ -11,6 +11,9 @@ public:
 	void Bind(GFX& gfx) noexcept override;
 
 public:
+	ID3D11Resource* GetResource() const;
+
+public:
 	static std::shared_ptr<ShaderUnorderedAccessView> GetBindable(GFX& gfx, UINT32 slot, Microsoft::WRL::ComPtr<ID3D11Resource> pResource, DXGI_FORMAT resourceFormat)
 	{
 		return std::make_shared<ShaderUnorderedAccessView>(gfx, slot, pResource, resourceFormat);

@@ -90,7 +90,4 @@ public:
 	static std::shared_ptr<NonCachedBuffer> GetBindable(GFX& gfx, UINT32 structureSize, UINT32 structuresInBufferNum, std::vector<TargetShaderBufferBinding> targetShader);
 
 	NonCachedBuffer& operator=(NonCachedBuffer toAssign);
-
-public:
-	void CopyResourceFrom(GFX& gfx, ID3D11Resource* pSourceResource, UINT32 bufferSizeToCopyInBytes);
 };

@@ -36,6 +36,11 @@ VOID ShaderUnorderedAccessView::Bind(GFX& gfx) noexcept
 	GFX::GetDeviceContext(gfx)->CSSetUnorderedAccessViews(m_slot, 1, pUnorderedAccessView.GetAddressOf(), NULL);
 }
 
+ID3D11Resource* ShaderUnorderedAccessView::GetResource() const
+{
+	return m_pResource.Get();
+}
+
 constexpr D3D11_UAV_DIMENSION ShaderUnorderedAccessView::GetUAVDimension(const D3D11_RESOURCE_DIMENSION resourceDimension)
 {
 	switch (resourceDimension)

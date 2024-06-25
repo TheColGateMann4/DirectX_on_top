@@ -1,7 +1,17 @@
 Buffer<float> modelBoxData : register(t0);
 Buffer<float> cameraFrustumData : register(t1);
 
+// if model with low id gets removed the id will be marked in this buffer as invalid, till some other model gets on its place
+// if object doesn't have visible parts or we don't want to check, then we mark is as invalid as well
+Buffer<uint> modelValidity : register(t2);
+
+cbuffer SceneData : register(b0)
+{
+    uint numberOfModels;
+}
+
 RWBuffer<uint> result : register(u0);
+
 
 #define CUBE_INDEX_MINUS_X 0
 #define CUBE_INDEX_MINUS_Y 1
@@ -10,26 +20,33 @@ RWBuffer<uint> result : register(u0);
 #define CUBE_INDEX_Y 4
 #define CUBE_INDEX_Z 5
 
-float3 GetCubeVertice(uint index)
+float3 GetCubeVerticeAtOffset(int3 verticeIndexes, uint modelIndex)
 {
-    switch(index)
+    uint modelIndexOffset = modelIndex * 6;
+
+    return float3(modelBoxData[modelIndexOffset + verticeIndexes.x], modelBoxData[modelIndexOffset + verticeIndexes.y], modelBoxData[modelIndexOffset + verticeIndexes.z]);
+}
+
+float3 GetCubeVertice(uint verticeIndex, uint modelIndex)
+{
+    switch(verticeIndex)
     {
         case 0:
-            return float3(modelBoxData[CUBE_INDEX_MINUS_X], modelBoxData[CUBE_INDEX_MINUS_Y], modelBoxData[CUBE_INDEX_MINUS_Z]);
+            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_MINUS_X, CUBE_INDEX_MINUS_Y, CUBE_INDEX_MINUS_Z), modelIndex);
         case 1:
-            return float3(modelBoxData[CUBE_INDEX_MINUS_X], modelBoxData[CUBE_INDEX_Y], modelBoxData[CUBE_INDEX_MINUS_Z]);
+            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_MINUS_X, CUBE_INDEX_Y, CUBE_INDEX_MINUS_Z), modelIndex);
         case 2:
-            return float3(modelBoxData[CUBE_INDEX_X], modelBoxData[CUBE_INDEX_Y], modelBoxData[CUBE_INDEX_MINUS_Z]);
+            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_X, CUBE_INDEX_Y, CUBE_INDEX_MINUS_Z), modelIndex);
         case 3:
-            return float3(modelBoxData[CUBE_INDEX_X], modelBoxData[CUBE_INDEX_MINUS_Y], modelBoxData[CUBE_INDEX_MINUS_Z]);
+            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_X, CUBE_INDEX_MINUS_Y, CUBE_INDEX_MINUS_Z), modelIndex);
         case 4:
-            return float3(modelBoxData[CUBE_INDEX_MINUS_X], modelBoxData[CUBE_INDEX_MINUS_Y], modelBoxData[CUBE_INDEX_Z]);
+            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_MINUS_X, CUBE_INDEX_MINUS_Y, CUBE_INDEX_Z), modelIndex);
         case 5:
-            return float3(modelBoxData[CUBE_INDEX_MINUS_X], modelBoxData[CUBE_INDEX_Y], modelBoxData[CUBE_INDEX_Z]);
+            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_MINUS_X, CUBE_INDEX_Y, CUBE_INDEX_Z), modelIndex);
         case 6:
-            return float3(modelBoxData[CUBE_INDEX_X], modelBoxData[CUBE_INDEX_Y], modelBoxData[CUBE_INDEX_Z]);
+            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_X, CUBE_INDEX_Y, CUBE_INDEX_Z), modelIndex);
         case 7:
-            return float3(modelBoxData[CUBE_INDEX_X], modelBoxData[CUBE_INDEX_MINUS_Y], modelBoxData[CUBE_INDEX_Z]);
+            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_X, CUBE_INDEX_MINUS_Y, CUBE_INDEX_Z), modelIndex);
         default:
             return float3(0.0f, 0.0f, 0.0f); // won't happen anyways
     }
@@ -88,23 +105,33 @@ bool CheckForSlope(float3 firstPoint, float3 secondPoint, float3 pointOnOtherSid
 // when camera moves: all objects per that camera view frustum
 // when object moves: moved object per all camera view frustums
 
-// for now it works for single modelBoxData, but later we will have multiple thread groups where each one is checking separate model from array
+// looking forward to multiple threads :P
 [numthreads(1, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
-    for(int iCubeVertice = 0; iCubeVertice < 8; iCubeVertice++)
+
+    for(int iModelID = 0; iModelID < numberOfModels; iModelID++)
     {
-        float3 verticePos = GetCubeVertice(iCubeVertice);
-        if(verticePos.z < GetFrustumVertice(0).z || verticePos.z > GetFrustumVertice(4).z)
+        if(modelValidity[iModelID] == 0)
             continue;
 
-        if(!CheckForSlope(GetFrustumVertice(0), GetFrustumVertice(4), GetFrustumVertice(1), verticePos, true))
-            continue;
+        //checking for vertices placed inside frustum
+        for(int iCubeVertice = 0; iCubeVertice < 8; iCubeVertice++)
+        {
+            float3 verticePos = GetCubeVertice(iCubeVertice, iModelID);
+            float3 nearZFrustumVertice = GetFrustumVertice(0);
+            float3 farZFrustumVertice = GetFrustumVertice(4);
 
-        if(!CheckForSlope(GetFrustumVertice(0), GetFrustumVertice(4), GetFrustumVertice(3), verticePos, false))
-            continue;
+            if(verticePos.z < nearZFrustumVertice.z || verticePos.z > farZFrustumVertice.z)
+                continue;
 
-        result[0] = 1;
-        return;
+            if(!CheckForSlope(nearZFrustumVertice, farZFrustumVertice, GetFrustumVertice(1), verticePos, true))
+                continue;
+
+            if(!CheckForSlope(nearZFrustumVertice, farZFrustumVertice, GetFrustumVertice(3), verticePos, false))
+                continue;
+
+            result[iModelID] = 1;
+        }
     }
 }

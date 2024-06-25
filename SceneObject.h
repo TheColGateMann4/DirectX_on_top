@@ -58,13 +58,18 @@ public:
 
 	virtual std::string GetOriginalName(bool withStatus) const;
 
+	void SetVisibility(bool visibility);
+
+	void PushObjectMatrixToBuffer(GFX& gfx, ID3D11Buffer* matrixBuffer) const;
+
 protected:
 	virtual const char* GetName() const = 0;
 
 	virtual const char* GetNameSpecialStatus() const;
 
-	virtual void SetSceneIndex(size_t index);
+	virtual void SetSceneIndexes(size_t sceneIndex, size_t repeatingNameIndex);
 
+	void GenerateBoundCube(GFX& gfx, class ShaderUnorderedAccessView* pModelCubeRWBuffer);
 
 public:
 	bool GetPressedState() const
@@ -89,7 +94,8 @@ public:
 
 public:
 	bool m_pressed = false;
-	size_t m_sceneIndex = 0;
+	UINT m_sceneIndex = 0;
+	size_t m_sceneNameIndex = 0;
 
 protected:
 	bool m_visibleInHierarchy = true;

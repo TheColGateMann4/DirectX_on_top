@@ -245,14 +245,3 @@ NonCachedBuffer& NonCachedBuffer::operator=(NonCachedBuffer toAssign)
 
 	return *this;
 }
-
-void NonCachedBuffer::CopyResourceFrom(GFX& gfx, ID3D11Resource* pSourceResource, UINT32 bufferSizeToCopyInBytes)
-{
-	D3D11_BOX box = {};
-	box.left = 0;
-	box.right = 20 * sizeof(UINT32);
-	box.top = box.front = 0;
-	box.bottom = box.back = 1; // setting those to 1 just to pass empty box test
-
-	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pConstantBuffer.Get(), 0, 0, 0, 0, pSourceResource, 0, &box));
-}

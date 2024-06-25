@@ -29,6 +29,7 @@ FullscreenFilterRenderPass::FullscreenFilterRenderPass(class GFX& gfx, const cha
 	AddBindable(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
 	AddBindable(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader.get()));
 	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::POINT));
+	AddBindable(Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	AddBindable(pVertexShader);
 }
 

@@ -31,6 +31,8 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 
 void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
+	m_scene->UpdateSceneVisibility(gfx);
+
 	RenderJobPass::Render(gfx);
 
 	//unbinding depthStencilView texture after we used it where we needed it

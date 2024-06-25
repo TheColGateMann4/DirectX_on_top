@@ -150,9 +150,6 @@ void Application::Update()
 
 	window.Graphics.BeginFrame();
 
-	if(Shape* hehe = dynamic_cast<Shape*>(scene.m_models.at(3).get()))
-			std::cout << hehe->CheckIfVisible(window.Graphics, scene.GetCameraManager()->GetActiveCamera());
-
 	scene.UpdateModels(window.Graphics, deltaTime);
 
 	scene.DrawModels(window.Graphics);

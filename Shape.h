@@ -62,9 +62,6 @@ public:
 	}
 
 public:
-	bool CheckIfVisible(GFX& gfx, class Camera* camera);
-
-public:
 	void AddRenderTechnique(const RenderTechnique& technique);
 
 public:
@@ -73,6 +70,7 @@ public:
 	UINT32 GetIndexCount() const noexcept;
 
 public:
+	bool m_visible = false;
 	std::shared_ptr<class IndexBuffer> m_pIndexBuffer = nullptr;
 	std::shared_ptr<class VertexBuffer> m_pVertexBuffer = nullptr;
 	std::shared_ptr<class Topology> m_pTopology = nullptr;

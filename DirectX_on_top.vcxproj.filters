@@ -369,6 +369,9 @@
     <ClInclude Include="ShaderUnorderedAccessView.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="SceneVisibilityManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -625,6 +628,9 @@
     </ClCompile>
     <ClCompile Include="ShaderUnorderedAccessView.cpp">
       <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneVisibilityManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

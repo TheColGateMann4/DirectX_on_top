@@ -240,6 +240,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SamplerState.h" />
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="SceneVisibilityManager.h" />
     <ClInclude Include="ShaderUnorderedAccessView.h" />
     <ClInclude Include="ShadowCamera.h" />
     <ClInclude Include="ShadowMappingRenderPass.h" />
@@ -329,6 +330,7 @@
     <ClCompile Include="RasterizerState.cpp" />
     <ClCompile Include="SamplerState.cpp" />
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="SceneVisibilityManager.cpp" />
     <ClCompile Include="ShaderUnorderedAccessView.cpp" />
     <ClCompile Include="ShadowCamera.cpp" />
     <ClCompile Include="ShadowMappingRenderPass.cpp" />
