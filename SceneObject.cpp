@@ -276,25 +276,59 @@ std::string SceneObject::GetOriginalName(bool withStatus) const
 	return result;
 }
 
-void SceneObject::SetVisibility(bool visibility)
+void SceneObject::SetVisibility(std::vector<UINT8>& visibilityData)
 {
-	m_shape->m_visible = visibility;
+	if (m_shape != nullptr)
+		m_shape->m_visible = visibilityData.at(m_sceneIndex);
+
+	for (const auto& pChild : m_children)
+		pChild->SetVisibility(visibilityData);
 }
 
-void SceneObject::PushObjectMatrixToBuffer(GFX& gfx, ID3D11Buffer* matrixBuffer) const
+void SceneObject::PushObjectMatrixToBuffer(std::vector<DirectX::XMMATRIX>& matrixData) const
 {
-	UINT32 sizeofmatrix = sizeof(DirectX::XMMATRIX);
+	if(m_shape != nullptr)
+		matrixData.at(m_sceneIndex) = DirectX::XMMatrixTranspose(GetSceneTranformMatrix());
 
-	D3D11_BOX dstBox = {};
-	dstBox.top = dstBox.front = 0;
-	dstBox.bottom = dstBox.back = 1; // just to pass a check
+	for (const auto& pChild : m_children)
+		pChild->PushObjectMatrixToBuffer(matrixData);
+}
 
-	dstBox.left = m_sceneIndex * sizeofmatrix;
-	dstBox.right = dstBox.left + sizeofmatrix;
+void SceneObject::InitialzeSceneObject(INT32 sceneIndex, size_t repeatingNameIndex, std::vector<UINT8>& validityData, GFX& gfx, ShaderUnorderedAccessView* pModelCubeRWBuffer)
+{
+	m_InitialzeSceneObject(sceneIndex, repeatingNameIndex, validityData, gfx, pModelCubeRWBuffer);
+}
 
-	DirectX::XMMATRIX pData = DirectX::XMMatrixTranspose(GetSceneTranformMatrix());
+void SceneObject::m_InitialzeSceneObject(INT32& internalSceneIndex, size_t repeatingNameIndex, std::vector<UINT8>& validityData, GFX& gfx, ShaderUnorderedAccessView* pModelCubeRWBuffer)
+{
+	bool isValidVisibleObject = m_shape != nullptr;
 
-	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->UpdateSubresource(matrixBuffer, 0, &dstBox, &pData, sizeofmatrix, 0));
+	internalSceneIndex++;
+
+	validityData.at(internalSceneIndex) = static_cast<UINT8>(isValidVisibleObject);
+
+	SetSceneIndexes(internalSceneIndex, repeatingNameIndex);
+
+	if (isValidVisibleObject)
+		GenerateBoundCube(gfx, pModelCubeRWBuffer);
+
+	for (const auto& pChild : m_children)
+		pChild->m_InitialzeSceneObject(internalSceneIndex, repeatingNameIndex, validityData, gfx, pModelCubeRWBuffer);
+}
+
+UINT32 SceneObject::GetNumChildren(bool getChildrenOfChildren) const
+{
+	return m_GetNumberOfChildren(true, getChildrenOfChildren);
+}
+
+UINT32 SceneObject::m_GetNumberOfChildren(bool firstOneCalled, bool getChildrenOfChildren) const
+{
+	UINT32 result = firstOneCalled ? 0 : 1;
+
+	for (UINT32 i = 0; i < m_children.size(); i++)
+		result += m_children.at(i)->m_GetNumberOfChildren(false, getChildrenOfChildren);
+
+	return result;
 }
 
 void SceneObject::SetSceneIndexes(size_t sceneIndex, size_t repeatingNameIndex)

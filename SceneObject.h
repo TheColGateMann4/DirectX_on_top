@@ -4,6 +4,7 @@
 class GFX;
 class Shape;
 class RenderGraph;
+class ShaderUnorderedAccessView;
 
 class SceneObject
 {
@@ -48,7 +49,7 @@ public:
 
 	void ResetLocalTransform() noexcept;
 
-	DirectX::XMMATRIX GetSceneTranformMatrix() const noexcept;
+	virtual DirectX::XMMATRIX GetSceneTranformMatrix() const noexcept;
 
 	virtual void CalculateSceneTranformMatrix(DirectX::XMMATRIX parentTransform = DirectX::XMMatrixIdentity()) noexcept;
 
@@ -58,9 +59,20 @@ public:
 
 	virtual std::string GetOriginalName(bool withStatus) const;
 
-	void SetVisibility(bool visibility);
+	void SetVisibility(std::vector<UINT8>& visibilityData);
 
-	void PushObjectMatrixToBuffer(GFX& gfx, ID3D11Buffer* matrixBuffer) const;
+	void PushObjectMatrixToBuffer(std::vector<DirectX::XMMATRIX>& matrixData) const;
+
+	void InitialzeSceneObject(INT32 sceneIndex, size_t repeatingNameIndex, std::vector<UINT8>& validityData, GFX& gfx, ShaderUnorderedAccessView* pModelCubeRWBuffer);
+
+	UINT32 GetNumChildren(bool getChildrenOfChildren) const;
+
+
+
+private:
+	void m_InitialzeSceneObject(INT32& internalSceneIndex, size_t repeatingNameIndex, std::vector<UINT8>& validityData, GFX& gfx, ShaderUnorderedAccessView* pModelCubeRWBuffer);
+
+	UINT32 m_GetNumberOfChildren(bool firstOneCalled, bool getChildrenOfChildren) const;
 
 protected:
 	virtual const char* GetName() const = 0;
@@ -69,7 +81,7 @@ protected:
 
 	virtual void SetSceneIndexes(size_t sceneIndex, size_t repeatingNameIndex);
 
-	void GenerateBoundCube(GFX& gfx, class ShaderUnorderedAccessView* pModelCubeRWBuffer);
+	void GenerateBoundCube(GFX& gfx, ShaderUnorderedAccessView* pModelCubeRWBuffer);
 
 public:
 	bool GetPressedState() const

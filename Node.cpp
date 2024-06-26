@@ -1,6 +1,15 @@
 #include "Node.h"
 #include "Mesh.h"
 
+ModelNode::ModelNode(std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform, const char* nodeName) noexcept(!IS_DEBUG)
+	: m_pMeshes(std::move(pMeshes)), m_nodeName(nodeName)
+{
+	if (!m_pMeshes.empty())
+		SetShape(m_pMeshes.front());
+
+	DirectX::XMStoreFloat4x4(&m_baseTransform, transform);
+}
+
 void ModelNode::CalculateSceneTranformMatrix(DirectX::XMMATRIX parentTransform) noexcept
 {
 	const auto finalTransform =
@@ -36,12 +45,15 @@ void ModelNode::LinkSceneObjectToPipeline(class RenderGraph& renderGraph)
 	if (m_pMeshes.empty())
 		return;
 
-	SetShape(m_pMeshes.front());
-
 	for (const auto& pMesh : m_pMeshes)
 	{
 		pMesh->LinkToPipeline(renderGraph);
 	}
+}
+
+DirectX::XMMATRIX ModelNode::GetSceneTranformMatrix() const noexcept
+{
+	return m_pMeshes.front()->GetTranformMatrix();
 }
 
 const char* ModelNode::GetName() const

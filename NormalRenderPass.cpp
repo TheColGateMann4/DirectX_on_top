@@ -46,6 +46,7 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 			m_scene->GetCameraManager()->SetActiveCameraByPtr(selectedCamera);
 
 			m_scene->UpdateSceneVisibility(gfx);
+
 			m_previewCameraTexture.get()->BindRenderTarget(gfx, m_depthStencilView.get());
 			BlendState::GetBindable(gfx, false)->Bind(gfx);
 			RenderJobPass::Render(gfx);

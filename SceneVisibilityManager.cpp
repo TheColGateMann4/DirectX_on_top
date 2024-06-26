@@ -75,7 +75,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 		{
 			{
 				D3D11_BUFFER_DESC bufferDesc = {};
-				bufferDesc.ByteWidth = 10 * 6 * sizeof(float);
+				bufferDesc.ByteWidth = currentElementWidth * 6 * sizeof(float);
 				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 				bufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
 				bufferDesc.CPUAccessFlags = NULL;
@@ -332,9 +332,9 @@ void SceneVisibilityManager::UpdateTransformBuffer(GFX& gfx)
 	THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->UpdateSubresource(m_pObjectsMatrixBuffer.Get(), 0, NULL, m_modelsMatrixData.data(), m_modelsMatrixData.size() * sizeof(DirectX::XMMATRIX), 0));
 }
 
-void SceneVisibilityManager::PushObjectMatrixToBuffer(DirectX::XMMATRIX objectMatrix, UINT32 objectID)
+std::vector<DirectX::XMMATRIX>& SceneVisibilityManager::GetMatrixBuffer()
 {
-	m_modelsMatrixData.at(objectID) = DirectX::XMMatrixTranspose(objectMatrix);
+	return m_modelsMatrixData;
 }
 
 void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
@@ -397,12 +397,12 @@ void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
 			D3D11_BOX dataBox = {};
 			dataBox.top = dataBox.left = dataBox.front = 0;
 			dataBox.bottom = dataBox.back = 1; // just to pass a check
-			dataBox.left = currentElementWidth * 6 * sizeof(float);
+			dataBox.right = currentElementWidth * 6 * sizeof(float);
 
 			THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pNewCubeBoundBuffer.Get(), 0, 0, 0, 0, m_pModelBoundsUAV->GetResource(), 0, &dataBox));
 
 
-			dataBox.left = currentElementWidth * sizeof(DirectX::XMMATRIX);
+			dataBox.right = currentElementWidth * sizeof(DirectX::XMMATRIX);
 
 			THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pNewTransformMatrixBuffer.Get(), 0, 0, 0, 0, m_pObjectsMatrixBuffer.Get(), 0, &dataBox));
 		}
@@ -418,12 +418,9 @@ void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
 	m_modelsMatrixData.resize(newHighestObjectID);
 }
 
-bool SceneVisibilityManager::GetVisibility(size_t objectID) const
+std::vector<UINT8>& SceneVisibilityManager::GetVisibilityBuffer()
 {
-	if (!initializedVector)
-		THROW_INTERNAL_ERROR("Tried to get visibility data before calling update function");
-
-	return m_visiblityData.at(objectID);
+	return m_visiblityData;
 }
 
 ShaderUnorderedAccessView* SceneVisibilityManager::GetCubeBoundsUAV() const

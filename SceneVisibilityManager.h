@@ -16,12 +16,12 @@ public:
 
 	void UpdateTransformBuffer(GFX& gfx);
 
-	void PushObjectMatrixToBuffer(DirectX::XMMATRIX objectMatrix, UINT32 objectID);
+	std::vector<DirectX::XMMATRIX>& GetMatrixBuffer();
 
 	void ResizeBuffers(GFX& gfx, INT32 newHighestObjectID);
 
 public:
-	bool GetVisibility(size_t objectID) const;
+	std::vector<UINT8>& GetVisibilityBuffer();
 
 	ShaderUnorderedAccessView* GetCubeBoundsUAV() const;
 

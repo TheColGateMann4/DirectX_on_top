@@ -9,11 +9,7 @@ class ModelNode : public SceneObject
 	friend class Model;
 
 public:
-	ModelNode(std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX &transform, const char* nodeName) noexcept(!IS_DEBUG)
-		: m_pMeshes(std::move(pMeshes)), m_nodeName(nodeName)
-	{
-		DirectX::XMStoreFloat4x4(&m_baseTransform, transform);
-	}
+	ModelNode(std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform, const char* nodeName) noexcept(!IS_DEBUG);
 
 public:
 	virtual void CalculateSceneTranformMatrix(DirectX::XMMATRIX parentTransform = DirectX::XMMatrixIdentity()) noexcept override;
@@ -21,6 +17,8 @@ public:
 	virtual void RenderThisObjectOnScene() const noexcept(!IS_DEBUG) override;
 
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override;
+
+	virtual DirectX::XMMATRIX GetSceneTranformMatrix() const noexcept override;
 
 protected:
 	virtual const char* GetName() const override;

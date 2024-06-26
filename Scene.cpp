@@ -26,8 +26,7 @@ void Scene::UpdateSceneVisibility(GFX& gfx)
 	m_sceneVisibilityManager->ProcessVisibilityBuffer(gfx, m_cameraManager.GetActiveCamera(), GetHighestIndex(), &objectValidity);
 
 	for (const auto& model : m_models)
-		if (model->m_shape != nullptr)
-			model->SetVisibility(m_sceneVisibilityManager->GetVisibility(model->m_sceneIndex));
+		model->SetVisibility(m_sceneVisibilityManager->GetVisibilityBuffer());
 }
 
 void Scene::UpdateModels(GFX& gfx, float deltaTime)
@@ -44,13 +43,11 @@ void Scene::DrawModels(GFX& gfx)
 	for (const auto& light : m_lights)
 		light->Bind(gfx, m_cameraManager.GetActiveCamera()->GetCameraView());
 
-	//updating object's transform and pushing jobs to passes
-	for (const auto& model : m_models) 
+	for (const auto& model : m_models)
 	{
 		model->CalculateSceneTranformMatrix();
 		
-		if(model->m_shape != nullptr) // checking if object is valid for drawing before doing unnecessary performence stuff for it
-			m_sceneVisibilityManager->PushObjectMatrixToBuffer(model->GetSceneTranformMatrix(), model->m_sceneIndex);
+		model->PushObjectMatrixToBuffer(m_sceneVisibilityManager->GetMatrixBuffer());
 
 		model->RenderOnScene();
 	}
@@ -152,20 +149,16 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 		}
 	}
 
-	bool isValidVisibleObject = model->m_shape != nullptr; // make this for Model and children of objects overall
+	// Model.cpp object has a wrapper around objects, should check if everything is good
+	UINT32 numberOfNewObjects = model->GetNumChildren(true) + 1; // +1 since we include model itself too 
 
-	m_highestSceneIndex++;
+	objectValidity.resize(m_highestSceneIndex + 1 + numberOfNewObjects);
 
-	objectValidity.resize(m_highestSceneIndex + 1);
+	m_sceneVisibilityManager->ResizeBuffers(m_window->Graphics, m_highestSceneIndex + 1 + numberOfNewObjects);
 
-	objectValidity.at(m_highestSceneIndex) = static_cast<UINT8>(isValidVisibleObject);
+	model->InitialzeSceneObject(m_highestSceneIndex, currentNameIndex, objectValidity, m_window->Graphics, m_sceneVisibilityManager->GetCubeBoundsUAV());
 
-	model->SetSceneIndexes(m_highestSceneIndex, currentNameIndex);
-
-	m_sceneVisibilityManager->ResizeBuffers(m_window->Graphics, m_highestSceneIndex + 1);
-
-	if (isValidVisibleObject) 
-		model->GenerateBoundCube(m_window->Graphics, m_sceneVisibilityManager->GetCubeBoundsUAV());
+	m_highestSceneIndex += numberOfNewObjects;
 
 	if (auto* light = dynamic_cast<PointLight*>(model.get()))
 	{
