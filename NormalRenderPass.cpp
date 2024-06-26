@@ -33,14 +33,14 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	// rendering selected camera preview
 	{
-		m_previewCameraTexture->Clear(gfx, {0.0f, 0.0f, 0.0f, 1.0f});
-		m_depthStencilView->Clear(gfx);
-		m_bindsGraphicBuffersByItself = true;
-
 		Camera* selectedCamera = m_scene->GetCameraManager()->GetSelectedCamera();
 
 		if (selectedCamera != nullptr)
 		{
+			m_previewCameraTexture->Clear(gfx, { 0.0f, 0.0f, 0.0f, 1.0f });
+			m_depthStencilView->Clear(gfx);
+			m_bindsGraphicBuffersByItself = true;
+
 			Camera* previousCamera = m_scene->GetCameraManager()->GetActiveCamera();
 
 			m_scene->GetCameraManager()->SetActiveCameraByPtr(selectedCamera);
@@ -60,18 +60,18 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 				if (ImGui::Begin("Camera Preview", nullptr, windowFlags))
 				{
 					ImVec2 imageSize;
-					imageSize.x = 1600.0f / 4;
-					imageSize.y = 900.0f / 4;
+					imageSize.x = gfx.GetWidth() / 4;
+					imageSize.y = gfx.GetHeight() / 4;
 					ImGui::Image((void*)m_previewCameraTexture->GetSRV(), imageSize);
 				}
 				ImGui::End();
 			}
 		
 			m_scene->GetCameraManager()->SetActiveCameraByPtr(previousCamera);
-		}
 
 		m_bindsGraphicBuffersByItself = false;
 		m_depthStencilView->Clear(gfx);
+	}
 	}
 
 	m_scene->UpdateSceneVisibility(gfx);
