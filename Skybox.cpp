@@ -12,7 +12,7 @@ Skybox::Skybox(class GFX& gfx, float scale, std::string skyboxTexture)
 	SetShape(this);
 
 
-	SimpleMesh skyboxModel = Cube::GetInsideDrawnMesh(scale);
+	SimpleMesh skyboxModel = Cube::GetInsideDrawnMesh(scale, true);
 
 	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), skyboxModel.m_indices);
 	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), skyboxModel.m_vertices);

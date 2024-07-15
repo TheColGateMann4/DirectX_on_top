@@ -8,17 +8,14 @@
 #include "RenderPass.h"
 #include "RenderStep.h"
 
-Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, DirectX::XMFLOAT3 startingPosition)
+Cube::Cube(GFX& gfx, SimpleMesh&& mesh, std::string normalShaderName, DirectX::XMFLOAT3 startingPosition)
 	:
 	SceneObject(startingPosition)
 {
 	SetShape(this);
 
-	SimpleMesh CubeModel = GetUnwrappedMesh(scale, true);
-
-
-	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, GetName(), CubeModel.m_indices);
-	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, GetName(), CubeModel.m_vertices);
+	m_pIndexBuffer = IndexBuffer::GetBindable(gfx, mesh.m_name, mesh.m_indices);
+	m_pVertexBuffer = VertexBuffer::GetBindable(gfx, mesh.m_name, mesh.m_vertices);
 	m_pTopology = Topology::GetBindable(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	m_pTransformConstBuffer = TransformConstBuffer::GetBindable(gfx, *this, { {TargetVertexShader, 0}, {TargetPixelShader, 2} });
@@ -31,7 +28,7 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 
 			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Shadow.cso");
 
-			shadowStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pVertexShader.get()));
+			shadowStep.AddBindable(InputLayout::GetBindable(gfx, mesh.GetLayout(), pVertexShader.get()));
 
 			shadowStep.AddBindable(std::move(pVertexShader));
 
@@ -47,41 +44,13 @@ Cube::Cube(GFX& gfx, float scale, std::string diffuseTexture, std::string normal
 		{
 			RenderStep normalStep("normalPass");
 
-			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, "VS_Phong_Cube.cso");
-
-			DynamicConstantBuffer::BufferLayout layout;
-
-			DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
-			floatInfo.v_min = 0.001f;
-			floatInfo.v_max = 150.0f;
-
-			layout.Add<DynamicConstantBuffer::DataType::Float>("specularIntensity", &floatInfo);
-			layout.Add<DynamicConstantBuffer::DataType::Float>("specularPower", &floatInfo);
-			layout.Add<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled");
-
-			floatInfo.v_min = 0.1f;
-			floatInfo.v_max = 5.0f;
-			floatInfo.format = "%.2f";
-			layout.Add<DynamicConstantBuffer::DataType::Float>("normalMapWeight", &floatInfo);
-
-			DynamicConstantBuffer::BufferData bufferData(std::move(layout));
-			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity") = 2.0f;
-			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 150.0f;
-			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = (size_t)1;
-			*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("normalMapWeight") = 1.0f;
-
-
-			normalStep.AddBindable(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
-
-			normalStep.AddBindable(CachedBuffer::GetBindable(gfx, bufferData, {{TargetPixelShader, 1}}));
-
-			normalStep.AddBindable(Texture::GetBindable(gfx, diffuseTexture, 0, true));
-
-			normalStep.AddBindable(Texture::GetBindable(gfx, normalTexture, 1, true));
-
-			normalStep.AddBindable(InputLayout::GetBindable(gfx, CubeModel.GetLayout(), pVertexShader.get()));
+			// contents will be added by inheriting objects, here we make just a base
 
 			normalStep.AddBindable(RasterizerState::GetBindable(gfx, false));
+
+			std::shared_ptr<VertexShader> pVertexShader = VertexShader::GetBindable(gfx, normalShaderName);
+
+			normalStep.AddBindable(InputLayout::GetBindable(gfx, mesh.GetLayout(), pVertexShader.get()));
 
 			normalStep.AddBindable(std::move(pVertexShader));
 
@@ -156,10 +125,13 @@ SimpleMesh Cube::GetNormalMesh(float scale)
 		0,1,4, 1,5,4
 	};
 
-	return { std::move(vertexBuffer), std::move(indices) };
+	std::string meshName = "NormalCubeMesh";
+	meshName += std::to_string(scale);
+
+	return { std::move(meshName), std::move(vertexBuffer), std::move(indices) };
 }
 
-SimpleMesh Cube::GetInsideDrawnMesh(float scale, bool withTextureCoords)
+SimpleMesh Cube::GetInsideDrawnMesh(float scale, bool withTextureCoords, bool withNormals)
 {
 	/* vertices */
 
@@ -202,6 +174,44 @@ SimpleMesh Cube::GetInsideDrawnMesh(float scale, bool withTextureCoords)
 		{-scale, scale, scale}
 	};
 
+	const std::vector<DirectX::XMFLOAT3> vertexNormals = {
+		//front
+		{0.0f, 0.0f, 1.0f},
+		{0.0f, 0.0f, 1.0f},
+		{0.0f, 0.0f, 1.0f},
+		{0.0f, 0.0f, 1.0f},
+
+		//right
+		{-1.0f, 0.0f, 0.0f},
+		{-1.0f, 0.0f, 0.0f},
+		{-1.0f, 0.0f, 0.0f},
+		{-1.0f, 0.0f, 0.0f},
+
+		//left
+		{1.0f, 0.0f, 0.0f},
+		{1.0f, 0.0f, 0.0f},
+		{1.0f, 0.0f, 0.0f},
+		{1.0f, 0.0f, 0.0f},
+
+		//top
+		{0.0f, -1.0f, 0.0f},
+		{0.0f, -1.0f, 0.0f},
+		{0.0f, -1.0f, 0.0f},
+		{0.0f, -1.0f, 0.0f},
+
+		//bottom
+		{0.0f, 1.0f, 0.0f},
+		{0.0f, 1.0f, 0.0f},
+		{0.0f, 1.0f, 0.0f},
+		{0.0f, 1.0f, 0.0f},
+
+		//back
+		{0.0f, 0.0f, -1.0f},
+		{0.0f, 0.0f, -1.0f},
+		{0.0f, 0.0f, -1.0f},
+		{0.0f, 0.0f, -1.0f}
+	};
+
 	const std::vector<DirectX::XMFLOAT2> vertexTexturePositions = {
 		{0.0f, 0.0f},
 		{0.0f, 1.0f},
@@ -236,14 +246,21 @@ SimpleMesh Cube::GetInsideDrawnMesh(float scale, bool withTextureCoords)
 
 	DynamicVertex::VertexLayout layout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
 
+	if (withNormals)
+		layout.Append(DynamicVertex::VertexLayout::Normal);
+
 	if (withTextureCoords)
 		layout.Append(DynamicVertex::VertexLayout::Texture2D);
 
 	DynamicVertex::VertexBuffer vertexBuffer(std::move(layout));
 
 	for (size_t i = 0; i < vertexPositions.size(); i++)
-		if (withTextureCoords)
+		if(withTextureCoords && withNormals) // make Emplace_Back function set propeties partially so we don't need to do this kind of if-else statements in our code
+			vertexBuffer.Emplace_Back(vertexPositions.at(i), vertexNormals.at(i), vertexTexturePositions.at(i));
+		else if (withTextureCoords)
 			vertexBuffer.Emplace_Back(vertexPositions.at(i), vertexTexturePositions.at(i));
+		else if (withNormals)
+			vertexBuffer.Emplace_Back(vertexPositions.at(i), vertexNormals.at(i));
 		else
 			vertexBuffer.Emplace_Back(vertexPositions.at(i));
 
@@ -256,11 +273,15 @@ SimpleMesh Cube::GetInsideDrawnMesh(float scale, bool withTextureCoords)
 		for (const auto& indice : cubeFaceIndices)
 			indices.push_back(indice + i * 4);
 
+	std::string meshName = "InsideDrawnCubeMesh";
+	meshName += std::to_string(scale);
+	meshName += '0' + withNormals;
+	meshName += '0' + withTextureCoords;
 
-	return { std::move(vertexBuffer), std::move(indices) };
+	return { std::move(meshName), std::move(vertexBuffer), std::move(indices) };
 }
 
-SimpleMesh Cube::GetUnwrappedMesh(float scale, bool getExtendedStuff)
+SimpleMesh Cube::GetUnwrappedMesh(float scale, bool withTextureCoords, bool withNormals)
 {
 	/* vertices */
 
@@ -375,17 +396,22 @@ SimpleMesh Cube::GetUnwrappedMesh(float scale, bool getExtendedStuff)
 
 	DynamicVertex::VertexLayout layout = DynamicVertex::VertexLayout{}.Append(DynamicVertex::VertexLayout::Position3D);
 
-	if (getExtendedStuff)
-	{
+	if (withNormals)
 		layout.Append(DynamicVertex::VertexLayout::Normal);
+
+	if (withTextureCoords)
 		layout.Append(DynamicVertex::VertexLayout::Texture2D);
-	}
+
 
 	DynamicVertex::VertexBuffer vertexBuffer(std::move(layout));
 
 	for (size_t i = 0; i < vertexPositions.size(); i++)
-		if(getExtendedStuff)
+		if (withTextureCoords && withNormals) // make Emplace_Back function set propeties partially so we don't need to do this kind of if-else statements in our code
 			vertexBuffer.Emplace_Back(vertexPositions.at(i), vertexNormals.at(i), vertexTexturePositions.at(i));
+		else if (withTextureCoords)
+			vertexBuffer.Emplace_Back(vertexPositions.at(i), vertexTexturePositions.at(i));
+		else if (withNormals)
+			vertexBuffer.Emplace_Back(vertexPositions.at(i), vertexNormals.at(i));
 		else
 			vertexBuffer.Emplace_Back(vertexPositions.at(i));
 
@@ -398,6 +424,74 @@ SimpleMesh Cube::GetUnwrappedMesh(float scale, bool getExtendedStuff)
 		for (const auto& indice : cubeFaceIndices)
 			indices.push_back(indice + i * 4);
 
+	std::string meshName = "UnwrappedDrawnCubeMesh";
+	meshName += std::to_string(scale);
+	meshName += '0' + withNormals;
+	meshName += '0' + withTextureCoords;
 
-	return { std::move(vertexBuffer), std::move(indices) };
+	return { std::move(meshName), std::move(vertexBuffer), std::move(indices) };
+}
+
+ColoredCube::ColoredCube(GFX& gfx, float scale, DirectX::XMFLOAT4 color, DirectX::XMFLOAT3 startingPosition)
+	: Cube(gfx, GetInsideDrawnMesh(scale, true, true), "VS_Phong_Normals.cso", startingPosition)
+{
+	RenderStep* normalStep = GetTechnique(1)->GetStep(0); // 1 stands for normal technique in this case, we should make with some technique types instead of just indexes
+
+	{
+		DynamicConstantBuffer::BufferLayout layout;
+
+		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
+		floatInfo.v_min = 0.001f;
+		floatInfo.v_max = 150.0f;
+
+		layout.Add<DynamicConstantBuffer::DataType::Float4>("materialColor");
+		layout.Add<DynamicConstantBuffer::DataType::Float4>("specularColor");
+		layout.Add<DynamicConstantBuffer::DataType::Float>("specularPower", &floatInfo);
+
+		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("materialColor") = color;
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float4>("specularColor") = DirectX::XMFLOAT4{1.0f, 1.0f, 1.0f, 1.0f};
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 150.0f;
+
+		normalStep->AddBindable(CachedBuffer::GetBindable(gfx, bufferData, { {TargetPixelShader, 1} }));
+	}
+
+	normalStep->AddBindable(PixelShader::GetBindable(gfx, "PS_Phong_NoMaps.cso"));
+}
+
+TexturedCube::TexturedCube(GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, DirectX::XMFLOAT3 startingPosition)
+	: Cube(gfx, GetUnwrappedMesh(scale, true, true), "VS_Phong_Cube.cso", startingPosition)
+{
+	RenderStep* normalStep = GetTechnique(1)->GetStep(0);
+
+	{
+		DynamicConstantBuffer::BufferLayout layout;
+
+		DynamicConstantBuffer::ImguiAdditionalInfo::ImguiFloatInfo floatInfo = {};
+		floatInfo.v_min = 0.001f;
+		floatInfo.v_max = 150.0f;
+
+		layout.Add<DynamicConstantBuffer::DataType::Float>("specularIntensity", &floatInfo);
+		layout.Add<DynamicConstantBuffer::DataType::Float>("specularPower", &floatInfo);
+		layout.Add<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled");
+
+		floatInfo.v_min = 0.1f;
+		floatInfo.v_max = 5.0f;
+		floatInfo.format = "%.2f";
+		layout.Add<DynamicConstantBuffer::DataType::Float>("normalMapWeight", &floatInfo);
+
+		DynamicConstantBuffer::BufferData bufferData(std::move(layout));
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularIntensity") = 2.0f;
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("specularPower") = 150.0f;
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Bool>("normalMapEnabled") = (size_t)1;
+		*bufferData.GetElementPointerValue<DynamicConstantBuffer::DataType::Float>("normalMapWeight") = 1.0f;
+
+		normalStep->AddBindable(CachedBuffer::GetBindable(gfx, bufferData, { {TargetPixelShader, 1} }));
+	}
+
+	normalStep->AddBindable(PixelShader::GetBindable(gfx, "PS_Phong_Texture_Normals_Specular_Cube.cso"));
+
+	normalStep->AddBindable(Texture::GetBindable(gfx, diffuseTexture, 0, true));
+
+	normalStep->AddBindable(Texture::GetBindable(gfx, normalTexture, 1, true));
 }

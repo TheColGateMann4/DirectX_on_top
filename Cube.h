@@ -5,8 +5,8 @@
 
 class Cube : public SceneObject, public Shape
 {
-public:
-	Cube(class GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
+protected:
+	Cube(class GFX& gfx, SimpleMesh&& mesh, std::string normalShaderName, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
 
 public:
 	virtual void LinkSceneObjectToPipeline(class RenderGraph& renderGraph) override
@@ -32,8 +32,8 @@ protected:
 
 public:
 	static SimpleMesh GetNormalMesh(float scale);
-	static SimpleMesh GetInsideDrawnMesh(float scale, bool withTextureCoords = false);
-	static SimpleMesh GetUnwrappedMesh(float scale, bool getExtendedStuff = false);
+	static SimpleMesh GetInsideDrawnMesh(float scale, bool withTextureCoords = false, bool withNormals = false);
+	static SimpleMesh GetUnwrappedMesh(float scale, bool withTextureCoords = false, bool withNormals = false);
 
 private:
 	bool m_materialsDefined = false;
@@ -43,4 +43,16 @@ private:
 private:
 	std::vector<std::shared_ptr<Bindable>> m_outlineBindables = {};
 	const class IndexBuffer* m_pOutlineIndexBuffer = nullptr;
+};
+
+class ColoredCube : public Cube
+{
+public:
+	ColoredCube(class GFX& gfx, float scale, DirectX::XMFLOAT4 color, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
+};
+
+class TexturedCube : public Cube
+{
+public:
+	TexturedCube(class GFX& gfx, float scale, std::string diffuseTexture, std::string normalTexture, DirectX::XMFLOAT3 startingPosition = { 0.0f, 0.0f, 0.0f });
 };

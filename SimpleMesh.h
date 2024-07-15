@@ -14,6 +14,7 @@ public:
 
 public:
 	SimpleMesh() = default;
+	SimpleMesh(std::string meshName, DynamicVertex::VertexBuffer vertices, std::vector<UINT32> indices, size_t numFaces = 0);
 	SimpleMesh(DynamicVertex::VertexBuffer vertices, std::vector<UINT32> indices, size_t numFaces = 0);
 
 	size_t GetNumberOfFaces() const;
@@ -30,5 +31,6 @@ public:
 	std::vector<UINT32> m_indices = {};
 	DynamicVertex::VertexBuffer m_vertices;
 	size_t m_numberOfFaces = 0; // this functionality is optional
+	std::string m_name;
 };
 

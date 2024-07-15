@@ -1,10 +1,18 @@
 #include "SimpleMesh.h"
 
+SimpleMesh::SimpleMesh(std::string meshName, DynamicVertex::VertexBuffer vertices, std::vector<UINT32> indices, size_t numFaces)
+	:
+	SimpleMesh(vertices, indices, numFaces)
+{
+	m_name = meshName;
+}
+
 SimpleMesh::SimpleMesh(DynamicVertex::VertexBuffer vertices, std::vector<UINT32> indices, size_t numFaces)
 	:
 	m_indices(std::move(indices)),
 	m_vertices(std::move(vertices)),
-	m_numberOfFaces(numFaces)
+	m_numberOfFaces(numFaces),
+	m_name("undefined")
 {
 	assert(m_indices.size() % 3 == 0);
 	assert(m_vertices.GetSize() > 2);
