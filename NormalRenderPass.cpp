@@ -26,13 +26,17 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Off));
 	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::POINT));
-	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 1, SamplerState::LESS_EQUAL, SamplerState::BILINEAR));
+	//AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 1, SamplerState::LESS_EQUAL, SamplerState::BILINEAR));
 
 	m_previewCameraTexture = std::make_unique<RenderTargetWithTexture>(gfx, gfx.GetWidth(), gfx.GetHeight(), 0);
 }
 
 void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
+	SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 1, SamplerState::LESS_EQUAL, (shadowTextureMultiSampling) ? SamplerState::BILINEAR : SamplerState::POINT)->Bind(gfx);
+	SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 2, SamplerState::NEVER, (shadowTextureMultiSampling) ? SamplerState::BILINEAR : SamplerState::POINT)->Bind(gfx);
+	SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 3, SamplerState::NEVER, SamplerState::POINT)->Bind(gfx);
+
 	// rendering selected camera preview
 	{
 		Camera* selectedCamera = m_scene->GetCameraManager()->GetSelectedCamera();
@@ -70,10 +74,10 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 			}
 		
 			m_scene->GetCameraManager()->SetActiveCameraByPtr(previousCamera);
-
-		m_bindsGraphicBuffersByItself = false;
-		m_depthStencilView->Clear(gfx);
-	}
+		
+			m_bindsGraphicBuffersByItself = false;
+			m_depthStencilView->Clear(gfx);
+		}
 	}
 
 	m_scene->UpdateSceneVisibility(gfx);
@@ -83,4 +87,17 @@ void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 
 	//unbinding depthStencilView texture after we used it where we needed it
 	NullTexture::GetBindable(gfx, 6, true)->Bind(gfx);
+}
+
+void NormalRenderPass::ShowWindow(GFX& gfx, bool show)
+{
+	if (!show)
+		return;
+
+	if (ImGui::Begin("Shadow Settings"))
+	{
+		ImGui::Checkbox("BillinearSampling", &shadowTextureMultiSampling);
+	}
+
+	ImGui::End();
 }

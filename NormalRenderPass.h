@@ -11,7 +11,10 @@ public:
 public:
 	virtual void Render(GFX& gfx) const noexcept(!IS_DEBUG) override;
 
+	void ShowWindow(GFX& gfx, bool show);
+
 private:
 	std::unique_ptr<RenderTargetWithTexture> m_previewCameraTexture;
+	bool shadowTextureMultiSampling = true;
 };
 

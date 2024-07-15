@@ -17,6 +17,12 @@ float4 main(float3 positionRelativeToCamera : POSITION, float3 normal : NORMAL, 
     float3 diffuse;
     float4 specular;
 
+    float depthUsedSample = t_depthMap.Sample(s_depthUsedSampler, depthMapCoords);
+    float depthPointSample = t_depthMap.Sample(s_depthPointSampler, depthMapCoords);
+
+    if(depthUsedSample > 1000.0f || depthPointSample > 1000.0f)
+        discard;
+
     const float shadowLevel = GetShadowLevel(t_depthMap, s_depthComparisonSampler, depthMapCoords, c0, c1, pcf);       
 
     if(shadowLevel != 0.0f)
