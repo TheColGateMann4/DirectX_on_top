@@ -27,6 +27,8 @@ NormalRenderPass::NormalRenderPass(class GFX& gfx, const char* name)
 	AddBindable(DepthStencilState::GetBindable(gfx, DepthStencilState::StencilMode::Off));
 	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::POINT));
 	AddBindable(SamplerState::GetBindable(gfx, SamplerState::Mode::CLAMP, 1, SamplerState::LESS_EQUAL, SamplerState::BILINEAR));
+
+	m_previewCameraTexture = std::make_unique<RenderTargetWithTexture>(gfx, gfx.GetWidth(), gfx.GetHeight(), 0);
 }
 
 void NormalRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
