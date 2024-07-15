@@ -50,7 +50,28 @@ float GetShadowDepthAtOffset(TextureCube t_depthMap, SamplerComparisonState s_de
         personalizedOffsetInRatioSpace.y = offsetInRatioSpace.y;
     }
    
-    const float3 localDepthCoords = (depthCoordsInRatioSpace + personalizedOffsetInRatioSpace) * longestAxis;
+    float3 localRatiodDepthCoords = (depthCoordsInRatioSpace + personalizedOffsetInRatioSpace);
+    
+#define FIX_OFFSET_COORDS(mainAxis, secondAxis, thirdAxis)\
+    if (abs(depthMapCoords.mainAxis) == longestAxis)\
+    {\
+        if (abs(localRatiodDepthCoords.secondAxis) > abs(localRatiodDepthCoords.mainAxis))\
+        {\
+            localRatiodDepthCoords.mainAxis = localRatiodDepthCoords.mainAxis - (abs(localRatiodDepthCoords.secondAxis) - 1.0f) * (localRatiodDepthCoords.mainAxis > 0.0f ? 1.0f : -1.0f);\
+            localRatiodDepthCoords.secondAxis = localRatiodDepthCoords.secondAxis > 0.0f ? 1.0f : -1.0f;\
+        }\
+        if (abs(localRatiodDepthCoords.thirdAxis) > abs(localRatiodDepthCoords.mainAxis))\
+        {\
+            localRatiodDepthCoords.mainAxis = localRatiodDepthCoords.mainAxis - (abs(localRatiodDepthCoords.thirdAxis) - 1.0f) * (localRatiodDepthCoords.mainAxis > 0.0f ? 1.0f : -1.0f);\
+            localRatiodDepthCoords.thirdAxis = localRatiodDepthCoords.thirdAxis > 0.0f ? 1.0f : -1.0f;\
+        }\
+    }
+    
+    FIX_OFFSET_COORDS(x, y, z)
+    FIX_OFFSET_COORDS(y, x, z)
+    FIX_OFFSET_COORDS(z, y, x)
+    
+    const float3 localDepthCoords = localRatiodDepthCoords * longestAxis;
     
     return t_depthMap.SampleCmpLevelZero(s_depthComparisonSampler, localDepthCoords, CalculateDepth(localDepthCoords, c0, c1));
 }
@@ -72,7 +93,7 @@ float GetShadowLevel(TextureCube t_depthMap, SamplerComparisonState s_depthCompa
             if (abs(y) > pcf)
                 continue;
         
-            result += GetShadowDepthAtOffset(t_depthMap, s_depthComparisonSampler, depthMapCoords, c0, c1, int2(x, y), pcf);
+            result += GetShadowDepthAtOffset(t_depthMap, s_depthComparisonSampler, depthMapCoords, c0, c1, int2(x, y));
         }
     }
     
