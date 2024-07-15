@@ -26,6 +26,7 @@ public:
 private:
 	std::vector<RenderJob> m_jobs;
 
+protected:
 	mutable bool m_captureFrame;
 };
 

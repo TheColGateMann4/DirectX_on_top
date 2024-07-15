@@ -12,7 +12,7 @@ public:
 	DepthTextureCube(GFX& gfx, size_t slot);
 
 public:
-	void BindDepthTextureCubeSide(GFX& gfx, CubeTextureDrawingOrder index, RenderTarget* renderTarget);
+	std::shared_ptr<DepthStencilView> GetDepthTextureCubeSide(CubeTextureDrawingOrder index);
 
 	virtual void Bind(GFX& gfx) noexcept override;
 

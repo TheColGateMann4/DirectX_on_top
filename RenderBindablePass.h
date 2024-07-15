@@ -37,6 +37,6 @@ private:
 protected:
 	mutable bool m_bindsGraphicBuffersByItself = false;
 	std::shared_ptr<RenderTarget> m_renderTarget;
-	std::shared_ptr<DepthStencilView> m_depthStencilView;
+	mutable std::shared_ptr<DepthStencilView> m_depthStencilView;
 };
 

@@ -19,7 +19,7 @@ public:
 private:
 	void RenderFromAllAngles(GFX& gfx, ShadowCamera* shadowCamera) const noexcept(!IS_DEBUG);
 
-	void RenderModels(GFX& gfx) const noexcept(!IS_DEBUG);
+	void RenderModels(GFX& gfx, std::shared_ptr<DepthStencilView> sideDepthStencilView) const noexcept(!IS_DEBUG);
 
 	void UpdateCameraData(GFX& gfx, ShadowCamera* shadowCamera) const;
 
@@ -41,4 +41,5 @@ private:
 	FLOAT biasClamp = 0.00365f;
 	FLOAT slopeScaledDepthBias = 3.464f;
 	INT pcf = 4;
+	mutable bool m_captureFrameAngles = false;
 };

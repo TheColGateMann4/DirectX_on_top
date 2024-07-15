@@ -40,14 +40,9 @@ DepthTextureCube::DepthTextureCube(GFX& gfx, size_t slot)
 	THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pCubeTexture.Get(), &shaderResourceViewDesc, &pShaderResourceView));
 }
 
-void DepthTextureCube::BindDepthTextureCubeSide(GFX& gfx, CubeTextureDrawingOrder index, RenderTarget* renderTarget)
+std::shared_ptr<DepthStencilView> DepthTextureCube::GetDepthTextureCubeSide(CubeTextureDrawingOrder index)
 {
-	int iIndex = static_cast<int>(index);
-	assert(iIndex < 6 && iIndex >= 0);
-
-	m_depthStencilViews[iIndex]->Clear(gfx);
-
-	m_depthStencilViews[iIndex]->BindRenderTarget(gfx, renderTarget);
+	return m_depthStencilViews[static_cast<int>(index)];
 }
 
 void DepthTextureCube::Bind(GFX& gfx) noexcept
