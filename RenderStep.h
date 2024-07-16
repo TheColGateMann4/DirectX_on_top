@@ -49,10 +49,11 @@ public:
 			if (T* bindableOfDesiredType = dynamic_cast<T*>(bindable.get()))
 				if (std::is_base_of_v<ConstantBuffer, T>)
 				{
-					TargetShaderBufferBinding buffer = bindableOfDesiredType->GetShaders().front();
+					std::vector<TargetShaderBufferBinding> targetShadersAndSlots = bindableOfDesiredType->GetShaders();
 
-					if ((buffer.slot == slotNumber) && (buffer.type == targetShader))
-						return bindableOfDesiredType;
+					for(const auto& target : targetShadersAndSlots)
+						if ((target.slot == slotNumber) && (target.type == targetShader))
+							return bindableOfDesiredType;
 				}
 				else
 					return bindableOfDesiredType;
