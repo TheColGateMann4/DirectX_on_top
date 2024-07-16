@@ -30,7 +30,7 @@ protected:
 	const Shape& m_parent;
 
 	DynamicConstantBuffer::BufferLayout TCBLayout;
-	std::vector<std::shared_ptr<NonCachedBuffer>> constBuffers;
+	std::shared_ptr<NonCachedBuffer> m_constBuffer;
 	std::vector<TargetShaderBufferBinding> m_targetBuffers;
 	bool initialized = false;
 };

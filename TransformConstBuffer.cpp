@@ -15,8 +15,7 @@ void TransformConstBuffer::Bind(GFX& gfx) noexcept
 	{
 		TCBLayout = GetBufferLayout();
 
-		for (const auto& targetShader : m_targetBuffers)
-			constBuffers.push_back(NonCachedBuffer::GetBindable(gfx, TCBLayout, {{targetShader.type, targetShader.slot}}));
+		m_constBuffer = NonCachedBuffer::GetBindable(gfx, TCBLayout, m_targetBuffers);
 
 		initialized = true;
 	}
@@ -30,11 +29,8 @@ void TransformConstBuffer::Bind(GFX& gfx) noexcept
 
 void TransformConstBuffer::UpdateAndBindConstBuffer(GFX& gfx, const DynamicConstantBuffer::BufferData& bufferData) noexcept
 {
-	for(auto& constBuffer : constBuffers)
-	{
-		constBuffer->Update(gfx, bufferData);
-		constBuffer->Bind(gfx);
-	}
+	m_constBuffer->Update(gfx, bufferData);
+	m_constBuffer->Bind(gfx);
 }
 
 void TransformConstBuffer::GetBuffer(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData) const noexcept
