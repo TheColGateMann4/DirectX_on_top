@@ -8,25 +8,33 @@ cbuffer cameraData : register(b0)
     matrix cameraViewProjection;
 };
 
-[numthreads(1, 1, 1)]
+cbuffer sceneData : register(b1)
+{
+    uint numberOfModels;
+};
+
+#define NUM_THREADS 100
+
+[numthreads(NUM_THREADS, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
-    uint numModelsInBuffer;
-    modelBoxData.GetDimensions(numModelsInBuffer);
-    
-    numModelsInBuffer /= 6;
-
-    for(uint i = 0; i < numModelsInBuffer; i++)
+    uint numPerThread = ceil(float(numberOfModels) / NUM_THREADS);
+    for(uint iModel = 0; iModel < numPerThread; iModel++)
     {
-        if(modelValidity[i] == 0)
+        uint iModelID = numPerThread * DTid.x + iModel;
+
+        if(iModelID > numberOfModels)
+            return;
+
+        if(modelValidity[iModelID] == 0)
             continue;
 
-        uint verticeIndex = i * 6;
+        uint verticeIndex = iModelID * 6;
         
         //each model has two vectors
-        for(uint j = 0; j < 2; j++)
+        for(uint iVector = 0; iVector < 2; iVector++)
         {
-            verticeIndex += j * 3;
+            verticeIndex += iVector * 3;
 
             float3 modelBoxVertice;
     
@@ -34,7 +42,7 @@ void main( uint3 DTid : SV_DispatchThreadID )
             modelBoxVertice.y = modelBoxData[verticeIndex + 1];
             modelBoxVertice.z = modelBoxData[verticeIndex + 2];
 
-            modelBoxVertice = (float3)mul(float4(modelBoxVertice, 1.0f), objectTransform[i]);
+            modelBoxVertice = (float3)mul(float4(modelBoxVertice, 1.0f), objectTransform[iModelID]);
 
             modelBoxVertice = (float3)mul(float4(modelBoxVertice, 1.0f), cameraViewProjection);
     

@@ -58,6 +58,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 {
 	HRESULT hr;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pCleanModelRWBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pSceneDataBuffer;
 	INT32 numElementsOnScene = highestIndexOnScene + 1;
 
 	THROW_INTERNAL_ERROR_IF("numElementsOnScene was negative value", numElementsOnScene < 0);
@@ -119,6 +120,40 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 			}
 
 			GFX::GetDeviceContext(gfx)->CSSetConstantBuffers(0, 1, pBuffer.GetAddressOf());
+		}
+
+		// binding number of elements on scene as a buffer
+		{
+			//		cbuffer sceneData : register(b1)
+			//		{
+			//			uint numberOfModels;
+			//		}
+			{
+				UINT32 pData[4] =
+				{
+					numElementsOnScene,
+					0,	//padding
+					0,
+					0
+				};
+
+				D3D11_BUFFER_DESC bufferDesc = {};
+				bufferDesc.ByteWidth = sizeof(pData);
+				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+				bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+				bufferDesc.CPUAccessFlags = NULL;
+				bufferDesc.MiscFlags = NULL;
+				bufferDesc.StructureByteStride = sizeof(UINT32);
+
+				D3D11_SUBRESOURCE_DATA subResourceData = {};
+				subResourceData.pSysMem = pData;
+
+				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pSceneDataBuffer));
+			}
+
+			{
+				GFX::GetDeviceContext(gfx)->CSSetConstantBuffers(1, 1, pSceneDataBuffer.GetAddressOf());
+			}
 		}
 
 		//binding validity buffer
@@ -183,38 +218,13 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 
 	// Step 3. checking if said cube is inside view frustum
 	{
+		// Binding the previously created buffer that contains number of objects on scene
 		//		cbuffer SceneData : register(b0)
 		//		{
 		//			uint numberOfModels;
 		//		}
-
 		{
-			Microsoft::WRL::ComPtr<ID3D11Buffer> pBuffer;
-
-			{
-				UINT32 pData[4] =
-				{
-					numElementsOnScene,
-					0,	//padding
-					0,
-					0
-				};
-
-				D3D11_BUFFER_DESC bufferDesc = {};
-				bufferDesc.ByteWidth = sizeof(pData);
-				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-				bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-				bufferDesc.CPUAccessFlags = NULL;
-				bufferDesc.MiscFlags = NULL;
-				bufferDesc.StructureByteStride = sizeof(UINT32);
-
-				D3D11_SUBRESOURCE_DATA subResourceData = {};
-				subResourceData.pSysMem = pData;
-
-				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateBuffer(&bufferDesc, &subResourceData, &pBuffer));
-			}
-
-			GFX::GetDeviceContext(gfx)->CSSetConstantBuffers(0, 1, pBuffer.GetAddressOf());
+			GFX::GetDeviceContext(gfx)->CSSetConstantBuffers(0, 1, pSceneDataBuffer.GetAddressOf());
 		}
 
 		// Binding our output - bool and overriding uav slot 0 to bind cube resource as buffer

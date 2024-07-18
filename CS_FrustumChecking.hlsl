@@ -8,7 +8,7 @@ Buffer<uint> modelValidity : register(t2);
 cbuffer SceneData : register(b0)
 {
     uint numberOfModels;
-}
+};
 
 RWBuffer<uint> result : register(u0);
 
@@ -145,69 +145,77 @@ bool CheckIfObjectsAxisOverlapsWithFrustum(float cubePlusVerticePosAxis, float c
 // when camera moves: all objects per that camera view frustum
 // when object moves: moved object per all camera view frustums
 
-// looking forward to multiple threads :P
-[numthreads(1, 1, 1)]
+#define NUM_THREADS 100
+
+[numthreads(NUM_THREADS, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
-    for(int iModelID = 0; iModelID < numberOfModels; iModelID++)
+    uint numPerThread = ceil(float(numberOfModels) / NUM_THREADS);
+
+    for(uint iModel = 0; iModel < numPerThread; iModel++)
     {
+        uint iModelID = numPerThread * DTid.x + iModel;
+
+        if(iModelID > numberOfModels)
+            return;
+
         if(modelValidity[iModelID] == 0)
             continue;
 
         bool passedDirectVisibleCheck = false;
 
         //checking for vertices placed inside frustum
-        for(int iCubeVertice = 0; iCubeVertice < 8; iCubeVertice++)
+        for(uint iCubeVertice = 0; iCubeVertice < 8; iCubeVertice++)
         {
             float3 verticePos = GetCubeVertice(iCubeVertice, iModelID);
             float3 nearZFrustumVertice = GetFrustumVertice(0);
             float3 farZFrustumVertice = GetFrustumVertice(4);
-
+    
             if(verticePos.z < nearZFrustumVertice.z || verticePos.z > farZFrustumVertice.z)
                 continue;
-
+    
             if(!CheckForSlope(nearZFrustumVertice, farZFrustumVertice, GetFrustumVertice(1).y, verticePos, true))
                 continue;
-
+    
             if(!CheckForSlope(nearZFrustumVertice, farZFrustumVertice, GetFrustumVertice(3).x, verticePos, false))
                 continue;
-
+    
             result[iModelID] = 1;
             passedDirectVisibleCheck = true;
             break;
         }
-
+    
         // if object is already marked as visible we don't need to check it in more complicated ways
         if(passedDirectVisibleCheck)
             continue;
-
-
+    
+    
         //checking for vertices that are around frustum, and we don't see them, but their middle part can be seen
         float3 cubeMinusVerticePos = GetCubeVertice(0, iModelID);
         float3 cubePlusVerticePos = GetCubeVertice(6, iModelID);
-
+    
         float3 nearZFrustumVertice = GetFrustumVertice(0);
         float3 farZFrustumVertice = GetFrustumVertice(4);
-
-        for(int iFrustumVertice = 0; iFrustumVertice < 8; iFrustumVertice++)
+    
+        for(uint iFrustumVertice = 0; iFrustumVertice < 8; iFrustumVertice++)
         {
             float3 frustumVerticePos = GetFrustumVertice(iFrustumVertice);
         
             // the point of this is, when object is infront of camera it has to be on at least two axels to be in frustum, thats why its okay if its not on one axis
             bool failedOnce = false;
                 
-
+    
             // checking Z axis
             {
                 if(!CheckIfObjectsAxisOverlapsWithFrustum(cubePlusVerticePos.z, cubeMinusVerticePos.z, frustumVerticePos.z, farZFrustumVertice.z, nearZFrustumVertice.z))
                     failedOnce = true;
             }
             
-
+    
             // top and bottom point on current slope at given Z depth
             float topPoint, bottomPoint;
-
-
+    
+    
             // checking X axis, we need to account for slope on view frustum
             {                    
                 GetSlopeValues(nearZFrustumVertice, farZFrustumVertice, GetFrustumVertice(3).y, cubePlusVerticePos, false, topPoint, bottomPoint);
@@ -221,16 +229,16 @@ void main( uint3 DTid : SV_DispatchThreadID )
                         failedOnce = true;
             }
           
-
+    
             // checking Y axis, we need to account for slope on view frustum as well
             {
                 GetSlopeValues(nearZFrustumVertice, farZFrustumVertice, GetFrustumVertice(1).x, cubePlusVerticePos, true, topPoint, bottomPoint);
-
+    
                 if(!CheckIfObjectsAxisOverlapsWithFrustum(cubePlusVerticePos.y, cubeMinusVerticePos.y, frustumVerticePos.y, topPoint, bottomPoint))
                     if(failedOnce)
                         continue;
             }
-
+    
             result[iModelID] = 1;
             break;
         }
