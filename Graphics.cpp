@@ -91,8 +91,8 @@ void GFX::FinishFrame()
 {
 	if (this->m_imgui_enabled)
 	{
-		ImGui::Render();
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		THROW_INFO_EXCEPTION(ImGui::Render());
+		THROW_INFO_EXCEPTION(ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()));
 	}
 
 	HRESULT hr;
