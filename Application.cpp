@@ -200,7 +200,7 @@ void Application::Update()
 					ImGuiWindowFlags_NoResize |
 					ImGuiWindowFlags_AlwaysAutoResize;
 
-				if (ImGui::Begin("Camera Preview"), nullptr, windowFlags)
+				if (ImGui::Begin("Camera Preview", nullptr, windowFlags))
 				{
 					ImGui::Image((void*)m_cameraPreviewTexture->GetSRV(), ImVec2(window.Graphics.GetWidth() / 4, window.Graphics.GetHeight() / 4));
 				}
