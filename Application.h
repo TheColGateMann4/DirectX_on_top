@@ -38,5 +38,6 @@ private:
 	GaussBlurRenderGraph renderGraph;
 	Time timer;
 	FPSCounter fpsCounter;
+	std::shared_ptr<RenderTargetWithTexture> m_cameraPreviewTexture;
 };
 

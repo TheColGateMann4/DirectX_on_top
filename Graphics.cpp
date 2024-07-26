@@ -114,14 +114,14 @@ void GFX::FinishFrame()
 	}
 }
 
-std::shared_ptr<RenderTarget>* GFX::GetRenderTarget()
+std::shared_ptr<RenderTarget> GFX::GetRenderTarget()
 {
-	return &m_backBuffer;
+	return m_backBuffer;
 }
 
-std::shared_ptr<DepthStencilView>* GFX::GetDepthStencil()
+std::shared_ptr<DepthStencilView> GFX::GetDepthStencil()
 {
-	return &m_depthStencil;
+	return m_depthStencil;
 }
 
 void GFX::ShowImGUI(bool show)

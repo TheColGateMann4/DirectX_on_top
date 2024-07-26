@@ -13,16 +13,11 @@ class GraphicBuffer;
 
 class RenderPassOutput
 {
-public:
+protected:
 	RenderPassOutput(const char* name)
 		: m_name(name)
 	{
 
-	}
-
-	static std::unique_ptr<RenderPassOutput> GetUnique(const char* name)
-	{
-		return std::move(std::make_unique<RenderPassOutput>(name));
 	}
 
 public:
@@ -135,7 +130,7 @@ public:
 
 		m_linked = true;
 
-		return std::dynamic_pointer_cast<GraphicBuffer>(*m_buffer);
+		return *m_buffer;
 	}
 	virtual std::shared_ptr<Bindable> GetBindable() noexcept override
 	{

@@ -19,8 +19,8 @@ public:
 	void FinishFrame();
 
 public:
-	std::shared_ptr<RenderTarget>* GetRenderTarget();
-	std::shared_ptr<DepthStencilView>* GetDepthStencil();
+	std::shared_ptr<RenderTarget> GetRenderTarget();
+	std::shared_ptr<DepthStencilView> GetDepthStencil();
 
 public:
 	void ShowImGUI(bool show);

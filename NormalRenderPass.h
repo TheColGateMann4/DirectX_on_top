@@ -14,7 +14,6 @@ public:
 	void ShowWindow(GFX& gfx, bool show);
 
 private:
-	std::unique_ptr<RenderTargetWithTexture> m_previewCameraTexture;
 	bool shadowTextureMultiSampling = true;
 };
 

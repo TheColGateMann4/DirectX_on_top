@@ -7,16 +7,21 @@
 #define THROW_INPUT_ERROR(errorMessage) std::string errorString = errorMessage; errorString += input->GetLocalInfo();THROW_RENDER_GRAPH_EXCEPTION(errorString.c_str());
 
 RenderGraph::RenderGraph(GFX& gfx)
-	: m_backBuffer(gfx.GetRenderTarget()), m_depthStencilView(gfx.GetDepthStencil())
+	: 
+	m_backBuffer(std::make_shared<RenderTarget>(*gfx.GetRenderTarget())),	// here we purposefully don't copy gfx render target shared_ptr to m_backBuffer, because if we would like to change it later on, we would override render target in gfx object
+	m_depthStencilView(std::make_shared<DepthStencilView>(*gfx.GetDepthStencil()))	// same situation here
 {
-	AddGlobalOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("backBuffer", m_backBuffer));
-	AddGlobalOutput(RenderPassBufferOutput<DepthStencilView>::GetUnique("depthStencilView", m_depthStencilView));
+	AddGlobalOutput(RenderPassBufferOutput<RenderTarget>::GetUnique("backBuffer", &m_backBuffer));
+	AddGlobalOutput(RenderPassBufferOutput<DepthStencilView>::GetUnique("depthStencilView", &m_depthStencilView));
 
-	AddGlobalInput(RenderPassBufferInput<RenderTarget>::GetUnique("backBuffer", m_backBuffer));
+	AddGlobalInput(RenderPassBufferInput<RenderTarget>::GetUnique("backBuffer", &m_backBuffer));
 }
 
 void RenderGraph::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 {
+	if (!m_backBuffer)
+		THROW_INTERNAL_ERROR("Tried to render without setting render target");
+
 	for (const auto& pass : m_passes)
 		pass->Render(gfx);
 }
@@ -46,6 +51,16 @@ void RenderGraph::CaptureNextFrame()
 	for (auto& pass : m_passes)
 		if (RenderJobPass* jobPass = dynamic_cast<RenderJobPass*>(pass.get()))
 			jobPass->CaptureNextFrame();
+}
+
+void RenderGraph::SetRenderTarget(std::shared_ptr<RenderTarget> renderTarget)
+{
+	*m_backBuffer = *renderTarget;
+}
+
+void RenderGraph::SetDepthStencil(std::shared_ptr<DepthStencilView> depthStencil)
+{
+	*m_depthStencilView = *depthStencil;
 }
 
 void RenderGraph::SetTarget(const char* inputName, const std::string& linkedResource)

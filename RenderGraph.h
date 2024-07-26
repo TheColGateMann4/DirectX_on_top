@@ -21,6 +21,11 @@ public:
 public:
 	void CaptureNextFrame();
 
+	void SetRenderTarget(std::shared_ptr<RenderTarget> renderTarget);
+
+	void SetDepthStencil(std::shared_ptr<DepthStencilView> depthStencil);
+
+protected:
 	void SetTarget(const char* inputName, const std::string& linkedResource);
 
 	void SetPassesScenePtr(class Scene* scene);
@@ -61,8 +66,8 @@ protected:
 	std::vector<std::unique_ptr<RenderPassOutput>> m_globalOutputs;
 	std::vector<std::unique_ptr<RenderPassInput>> m_globalInputs;
 
-	std::shared_ptr<RenderTarget>* m_backBuffer;
-	std::shared_ptr<DepthStencilView>* m_depthStencilView;
+	std::shared_ptr<RenderTarget> m_backBuffer;
+	std::shared_ptr<DepthStencilView> m_depthStencilView;
 
 	bool m_finished = false;
 };

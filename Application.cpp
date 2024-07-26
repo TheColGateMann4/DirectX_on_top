@@ -11,7 +11,14 @@
 #include "Sheet.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
-	: m_width(width), m_height(height), m_name(name), window(width, height, name), scene(&window), renderGraph(window.Graphics, scene), fpsCounter(window.Graphics)
+	: m_width(width),
+	m_height(height),
+	m_name(name),
+	window(width, height, name),
+	scene(&window),
+	renderGraph(window.Graphics, scene),
+	fpsCounter(window.Graphics),
+	m_cameraPreviewTexture(std::make_shared<RenderTargetWithTexture>(window.Graphics, window.Graphics.GetWidth(), window.Graphics.GetHeight(), 8))
 {
 	window.Graphics.LinkCameraManager(scene.GetCameraManager());
 }
@@ -20,7 +27,8 @@ BOOL Application::Initiate()
 {
  	window.Input.Key.allowRepeating(TRUE);
 
-	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{0.0f, 5.0f, -10.0f}));
+	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{0.0f, 5.0f, -35.0f}));
+	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{5.0f, 2.0f, -15.0f}));
 	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics, 0.5f, DirectX::XMFLOAT3{0.0f, 3.0f, 0.0f}));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Flashlight\\Flashlight.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, 6.0f }));
@@ -153,7 +161,65 @@ void Application::Update()
 
 	scene.DrawModels(window.Graphics);
 
-	renderGraph.Render(window.Graphics);
+	// drawing scene normally
+	{
+		renderGraph.Render(window.Graphics);
+	}
+
+	// drawing preview of selected camera if there is one selected in hierarchy
+	{
+		Camera* selectedCamera = scene.GetCameraManager()->GetSelectedCamera();
+
+		if (selectedCamera != nullptr)
+		{
+			std::shared_ptr<RenderTarget> cameraPreviewRenderTarget = std::dynamic_pointer_cast<RenderTarget>(m_cameraPreviewTexture);
+			std::shared_ptr<DepthStencilView> cameraPreviewDepthStencil = std::make_shared<DepthStencilView>(window.Graphics);
+
+			m_cameraPreviewTexture->Clear(window.Graphics, { 0.0f, 0.0f, 0.0f, 1.0f });
+
+			Camera* previousCamera = scene.GetCameraManager()->GetActiveCamera();
+
+			// actual render here
+			{
+				scene.GetCameraManager()->SetActiveCameraByPtr(selectedCamera);
+
+				renderGraph.SetRenderTarget(cameraPreviewRenderTarget);
+
+				renderGraph.SetDepthStencil(cameraPreviewDepthStencil);
+
+				scene.DrawModels(window.Graphics);
+
+				renderGraph.Render(window.Graphics);
+			}
+
+			// making imgui window to show rendered image on screen as preview
+
+			{
+				ImGuiWindowFlags windowFlags =
+					ImGuiWindowFlags_NoTitleBar |
+					ImGuiWindowFlags_NoResize |
+					ImGuiWindowFlags_AlwaysAutoResize;
+
+				if (ImGui::Begin("Camera Preview"), nullptr, windowFlags)
+				{
+					// the problem with transparent stuff is not how we make camera preview, but the renderer graph itself that makes everything alpha 0.0 outside glow objects
+					ImGui::Image((void*)m_cameraPreviewTexture->GetSRV(), ImVec2(window.Graphics.GetWidth() / 4, window.Graphics.GetHeight() / 4));
+				}
+				ImGui::End();
+			}
+
+			scene.GetCameraManager()->SetActiveCameraByPtr(previousCamera);
+
+			//cleanup
+			{
+				renderGraph.SetRenderTarget(window.Graphics.GetRenderTarget());
+
+				renderGraph.SetDepthStencil(window.Graphics.GetDepthStencil());
+
+				window.Graphics.GetRenderTarget()->BindRenderTarget(window.Graphics, window.Graphics.GetDepthStencil().get());
+			}
+		}
+	}
 
 	if (window.Input.Key.GetKeyDown(VK_INSERT))
 		showImguiWindows = !showImguiWindows;
