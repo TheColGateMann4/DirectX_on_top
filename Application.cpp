@@ -18,7 +18,9 @@ Application::Application(UINT32 width, UINT32 height, const char* name)
 	scene(&window),
 	renderGraph(window.Graphics, scene),
 	fpsCounter(window.Graphics),
-	m_cameraPreviewTexture(std::make_shared<RenderTargetWithTexture>(window.Graphics, window.Graphics.GetWidth(), window.Graphics.GetHeight(), 8))
+	m_cameraPreviewTexture(std::make_shared<RenderTargetWithTexture>(window.Graphics, window.Graphics.GetWidth(), window.Graphics.GetHeight(), 8)),
+	m_cameraPreviewRenderTarget(std::dynamic_pointer_cast<RenderTarget>(m_cameraPreviewTexture)),
+	m_cameraPreviewDepthStencil(std::make_shared<DepthStencilView>(window.Graphics))
 {
 	window.Graphics.LinkCameraManager(scene.GetCameraManager());
 }
@@ -172,9 +174,6 @@ void Application::Update()
 
 		if (selectedCamera != nullptr)
 		{
-			std::shared_ptr<RenderTarget> cameraPreviewRenderTarget = std::dynamic_pointer_cast<RenderTarget>(m_cameraPreviewTexture);
-			std::shared_ptr<DepthStencilView> cameraPreviewDepthStencil = std::make_shared<DepthStencilView>(window.Graphics);
-
 			m_cameraPreviewTexture->Clear(window.Graphics, { 0.0f, 0.0f, 0.0f, 1.0f });
 
 			Camera* previousCamera = scene.GetCameraManager()->GetActiveCamera();
@@ -183,9 +182,9 @@ void Application::Update()
 			{
 				scene.GetCameraManager()->SetActiveCameraByPtr(selectedCamera);
 
-				renderGraph.SetRenderTarget(cameraPreviewRenderTarget);
+				renderGraph.SetRenderTarget(m_cameraPreviewRenderTarget);
 
-				renderGraph.SetDepthStencil(cameraPreviewDepthStencil);
+				renderGraph.SetDepthStencil(m_cameraPreviewDepthStencil);
 
 				scene.DrawModels(window.Graphics);
 

@@ -38,6 +38,10 @@ private:
 	GaussBlurRenderGraph renderGraph;
 	Time timer;
 	FPSCounter fpsCounter;
+
+	//camera preview stuff
 	std::shared_ptr<RenderTargetWithTexture> m_cameraPreviewTexture;
+	std::shared_ptr<RenderTarget> m_cameraPreviewRenderTarget;
+	std::shared_ptr<DepthStencilView> m_cameraPreviewDepthStencil;
 };
 
