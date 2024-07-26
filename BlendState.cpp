@@ -9,6 +9,9 @@ BlendState::BlendState(GFX& gfx, bool blend)
 
 	D3D11_BLEND_DESC blendDesc = {};
 
+	blendDesc.AlphaToCoverageEnable = FALSE;
+	blendDesc.IndependentBlendEnable = TRUE; // to easily detect problems later on while having multiple render targets
+
 	auto& renderTargetBlendDesc = blendDesc.RenderTarget[0];
 
 	renderTargetBlendDesc.BlendEnable = m_blend;
@@ -20,7 +23,7 @@ BlendState::BlendState(GFX& gfx, bool blend)
 		renderTargetBlendDesc.BlendOp = D3D11_BLEND_OP_ADD;
 		renderTargetBlendDesc.SrcBlendAlpha = D3D11_BLEND_ZERO;
 		renderTargetBlendDesc.DestBlendAlpha = D3D11_BLEND_ZERO;
-		renderTargetBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		renderTargetBlendDesc.BlendOpAlpha = D3D11_BLEND_OP_MAX; // might be questionable in other cases than our glow stuff, gotta keep eye on it, prev value was D3D11_BLEND_OP_ADD
 		renderTargetBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	}
 	else

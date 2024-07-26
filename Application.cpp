@@ -202,7 +202,6 @@ void Application::Update()
 
 				if (ImGui::Begin("Camera Preview"), nullptr, windowFlags)
 				{
-					// the problem with transparent stuff is not how we make camera preview, but the renderer graph itself that makes everything alpha 0.0 outside glow objects
 					ImGui::Image((void*)m_cameraPreviewTexture->GetSRV(), ImVec2(window.Graphics.GetWidth() / 4, window.Graphics.GetHeight() / 4));
 				}
 				ImGui::End();
