@@ -21,6 +21,16 @@ void SceneObject::LinkChildrenToPipeline(RenderGraph& renderGraph)
 	}
 }
 
+void SceneObject::OnHierarchyFocus()
+{
+
+}
+
+void SceneObject::OnHierarchyUnfocus()
+{
+
+}
+
 void SceneObject::Update(GFX& gfx, float deltatime)
 {
 

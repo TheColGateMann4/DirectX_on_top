@@ -204,6 +204,8 @@ void Scene::CleanupPressedNodes()
 			{
 				if (previousObject->m_pressedNode != nullptr)
 				{
+					previousObject->OnHierarchyUnfocus();
+
 					previousObject->m_pressedNode->SetPressedState(false);
 
 					previousObject->m_pressedNode = nullptr;
@@ -218,6 +220,8 @@ void Scene::CleanupPressedNodes()
 		{
 			if (previousObject != nullptr)
 			{
+				model->OnHierarchyUnfocus();
+
 				model->m_pressedNode->SetPressedState(false);
 
 				model->m_pressedNode = nullptr;
@@ -229,5 +233,9 @@ void Scene::CleanupPressedNodes()
 
 	if (previousObject != nullptr)
 		if (previousObject->m_pressedNode != this->m_pressedNode)
-		this->m_pressedNode = previousObject->m_pressedNode;
+		{
+			previousObject->OnHierarchyFocus();
+
+			this->m_pressedNode = previousObject->m_pressedNode;
+		}
 }

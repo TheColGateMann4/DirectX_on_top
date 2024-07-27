@@ -20,6 +20,11 @@ public:
 
 	void LinkChildrenToPipeline(RenderGraph& renderGraph);
 
+protected:
+	virtual void OnHierarchyFocus();
+
+	virtual void OnHierarchyUnfocus();
+
 public:
 	virtual void Update(GFX& gfx, float deltatime);
 
@@ -66,8 +71,6 @@ public:
 	void InitialzeSceneObject(INT32 sceneIndex, size_t repeatingNameIndex, std::vector<UINT8>& validityData, GFX& gfx, ShaderUnorderedAccessView* pModelCubeRWBuffer);
 
 	UINT32 GetNumChildren(bool getChildrenOfChildren) const;
-
-
 
 private:
 	void m_InitialzeSceneObject(INT32& internalSceneIndex, size_t repeatingNameIndex, std::vector<UINT8>& validityData, GFX& gfx, ShaderUnorderedAccessView* pModelCubeRWBuffer);
