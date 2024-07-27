@@ -238,4 +238,13 @@ void Scene::CleanupPressedNodes()
 
 			this->m_pressedNode = previousObject->m_pressedNode;
 		}
+
+	// handle when object gets deselected by clicking on it again
+	if(this->m_pressedNode != nullptr)
+		if (this->m_pressedNode->m_pressedNode == nullptr)
+		{
+			this->m_pressedNode->OnHierarchyUnfocus();
+
+			this->m_pressedNode = nullptr;
+		}
 }
