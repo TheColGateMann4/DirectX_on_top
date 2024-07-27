@@ -186,7 +186,7 @@ void Application::Update()
 
 				renderGraph.SetDepthStencil(m_cameraPreviewDepthStencil);
 
-				scene.DrawModels(window.Graphics);
+				scene.BindLights(window.Graphics);
 
 				renderGraph.Render(window.Graphics);
 			}

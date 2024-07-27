@@ -38,10 +38,15 @@ void Scene::UpdateModels(GFX& gfx, float deltaTime)
 		model->Update(gfx, deltaTime);
 }
 
-void Scene::DrawModels(GFX& gfx)
+void Scene::BindLights(GFX& gfx)
 {
 	for (const auto& light : m_lights)
 		light->Bind(gfx, m_cameraManager.GetActiveCamera()->GetCameraView());
+}
+
+void Scene::DrawModels(GFX& gfx)
+{
+	BindLights(gfx);
 
 	for (const auto& model : m_models)
 	{

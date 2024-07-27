@@ -20,6 +20,8 @@ public:
 	
 	void UpdateModels(GFX& gfx, float deltaTime);
 
+	void BindLights(GFX& gfx);
+
 	void DrawModels(GFX& gfx);
 
 	void DrawModelHierarchy(bool show);
