@@ -10,7 +10,7 @@
 
 ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 	:
-	RenderJobPass(name)
+	RenderFirstCallJobPass(name)
 {
 	m_bindsGraphicBuffersByItself = true;
 	m_renderTarget = std::make_shared<RenderTarget>(gfx, gfx.GetWidth(), gfx.GetWidth());
@@ -46,7 +46,7 @@ ShadowMappingRenderPass::ShadowMappingRenderPass(GFX& gfx, const char* name)
 	shadowRasterizer = std::make_unique<RasterizerState>(gfx, true, bias, biasClamp, slopeScaledDepthBias);
 }
 
-void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
+void ShadowMappingRenderPass::FirstRenderCall(GFX& gfx) const noexcept(!IS_DEBUG)
 {
 	Camera* previousCamera = m_scene->GetCameraManager()->GetActiveCamera();
 	ShadowCamera* shadowCamera = m_scene->GetLights().front()->GetShadowCamera();
@@ -60,6 +60,11 @@ void ShadowMappingRenderPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 	RenderFromAllAngles(gfx, shadowCamera);
 
 	m_scene->GetCameraManager()->SetActiveCameraByPtr(previousCamera);
+}
+
+void ShadowMappingRenderPass::FurtherRenderCall(GFX& gfx) const noexcept(!IS_DEBUG)
+{
+	depthTextureCube->Bind(gfx);
 }
 
 void ShadowMappingRenderPass::RenderModels(GFX& gfx, std::shared_ptr<DepthStencilView> sideDepthStencilView) const noexcept(!IS_DEBUG)

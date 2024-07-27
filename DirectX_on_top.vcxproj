@@ -222,6 +222,7 @@
     <ClInclude Include="OutlineRenderPass.h" />
     <ClInclude Include="OutlineScalingRenderPass.h" />
     <ClInclude Include="RenderBindablePass.h" />
+    <ClInclude Include="RenderFirstCallPass.h" />
     <ClInclude Include="RenderGraph.h" />
     <ClInclude Include="RenderJob.h" />
     <ClInclude Include="RenderJobPass.h" />
@@ -315,6 +316,7 @@
     <ClCompile Include="OutlineRenderPass.cpp" />
     <ClCompile Include="OutlineScalingRenderPass.cpp" />
     <ClCompile Include="RenderBindablePass.cpp" />
+    <ClCompile Include="RenderFirstCallPass.cpp" />
     <ClCompile Include="RenderGraph.cpp" />
     <ClCompile Include="RenderJob.cpp" />
     <ClCompile Include="RenderJobPass.cpp" />

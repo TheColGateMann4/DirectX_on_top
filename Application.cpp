@@ -158,6 +158,7 @@ void Application::Update()
 			scene.GetCameraManager()->GetActiveCamera()->Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f }, true);
 
 	window.Graphics.BeginFrame();
+	renderGraph.BeginFrame();
 
 	scene.UpdateModels(window.Graphics, deltaTime);
 

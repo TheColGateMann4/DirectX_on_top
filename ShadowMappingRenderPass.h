@@ -2,18 +2,22 @@
 #include "RenderJobPass.h"
 #include "DepthTextureCube.h"
 #include "RasterizerState.h"
+#include "RenderFirstCallPass.h"
 
 class Scene;
 class ShadowCamera;
 
-class ShadowMappingRenderPass : public RenderJobPass
+class ShadowMappingRenderPass : public RenderFirstCallJobPass
 {
 public:
 	ShadowMappingRenderPass(class GFX& gfx, const char* name);
 
-public:
-	virtual void Render(GFX& gfx) const noexcept(!IS_DEBUG) override;
+protected:
+	virtual void FirstRenderCall(GFX& gfx) const noexcept(!IS_DEBUG) override;
 
+	virtual void FurtherRenderCall(GFX& gfx) const noexcept(!IS_DEBUG) override;
+
+public:
 	void ShowWindow(GFX& gfx, bool show);
 
 private:

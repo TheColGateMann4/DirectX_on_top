@@ -119,6 +119,9 @@ void RenderGraph::AddPass(std::unique_ptr<RenderPass> pass)
 
 	LinkInputs(pass.get());
 
+	if (RenderFirstCallPass* firstCallPass = dynamic_cast<RenderFirstCallPass*>(pass.get()))
+		m_firstCallPasses.push_back(firstCallPass);
+
 	m_passes.push_back(std::move(pass));
 }
 
@@ -166,6 +169,12 @@ void RenderGraph::CheckGraphIntegrity()
 {
 	for (const auto& pass : m_passes)
 		pass->CheckPassIntegrity();
+}
+
+void RenderGraph::BeginFrame()
+{
+	for (auto pFirstCallPass : m_firstCallPasses)
+		pFirstCallPass->FrameStarted();
 }
 
 void RenderGraph::LinkInputs(RenderPass* pass)

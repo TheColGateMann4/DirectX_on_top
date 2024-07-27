@@ -6,6 +6,7 @@
 #include "RenderPassInput.h"
 #include "RenderTarget.h"
 #include "DepthStencilView.h"
+#include "RenderFirstCallPass.h"
 
 class RenderGraph
 {
@@ -17,6 +18,8 @@ public:
 	void Finish();
 
 	void Reset();
+
+	void BeginFrame();
 
 public:
 	void CaptureNextFrame();
@@ -63,6 +66,7 @@ private:
 
 protected:
 	std::vector<std::unique_ptr<RenderPass>> m_passes;
+	std::vector<RenderFirstCallPass*> m_firstCallPasses; // passes that work differently on first call of a frame
 	std::vector<std::unique_ptr<RenderPassOutput>> m_globalOutputs;
 	std::vector<std::unique_ptr<RenderPassInput>> m_globalInputs;
 
