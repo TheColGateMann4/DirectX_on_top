@@ -228,5 +228,6 @@ void Scene::CleanupPressedNodes()
 	}
 
 	if (previousObject != nullptr)
+		if (previousObject->m_pressedNode != this->m_pressedNode)
 		this->m_pressedNode = previousObject->m_pressedNode;
 }
