@@ -111,9 +111,6 @@ void Camera::MakeTransformPropeties(GFX& gfx)
 		m_cameraManager->SetSelectedCamera(nullptr);
 	}
 
-	if (!m_active)
-		m_cameraManager->SetSelectedCamera(this);
-
 	ImGui::Text("Positione");
 	ImGui::SliderFloat("camera X", &m_position.x, -80.0, 80.0f, "%.1f");
 	ImGui::SliderFloat("camera Y", &m_position.y, -80.0, 80.0f, "%.1f");
@@ -230,4 +227,15 @@ float Camera::WrapAngle(float angle, float value)
 
 	float absoluteAngle = std::abs(angle);
 	return ((absoluteAngle / value) - std::floor(absoluteAngle / value)) * value + (value * ((absoluteAngle != angle) ? 1 : -1));
+}
+
+void Camera::OnHierarchyFocus()
+{
+	if(!m_active) // we don't want current working camera to be on preview
+		m_cameraManager->SetSelectedCamera(this);
+}
+
+void Camera::OnHierarchyUnfocus()
+{
+	m_cameraManager->SetSelectedCamera(nullptr);
 }

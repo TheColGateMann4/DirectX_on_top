@@ -57,6 +57,11 @@ private:
 	float WrapAngle(float angle, float value);
 
 protected:
+	virtual void OnHierarchyFocus() override;
+
+	virtual void OnHierarchyUnfocus() override;
+
+protected:
 	virtual const char* GetName() const override
 	{
 		return "Camera";
