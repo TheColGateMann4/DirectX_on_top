@@ -3,11 +3,12 @@
 #include <d3dcompiler.h>
 #include <DirectXTex.h> // DirectX::BitsPerPixel
 
-ShaderUnorderedAccessView::ShaderUnorderedAccessView(GFX& gfx, UINT32 slot, Microsoft::WRL::ComPtr<ID3D11Resource> pResource, DXGI_FORMAT resourceFormat)
+ShaderUnorderedAccessView::ShaderUnorderedAccessView(GFX& gfx, UINT32 slot, Microsoft::WRL::ComPtr<ID3D11Resource> pResource, DXGI_FORMAT resourceFormat, UINT32 bytesPerStructure)
 	:
 	m_slot(slot),
 	m_resourceFormat(resourceFormat),
-	m_resourceDimension(D3D11_UAV_DIMENSION_UNKNOWN) // temporary
+	m_resourceDimension(D3D11_UAV_DIMENSION_UNKNOWN), // temporary
+	m_bytesPerTexture((bytesPerStructure != 0 ? bytesPerStructure : DirectX::BitsPerPixel(m_resourceFormat) / 8))
 {
 	pResource.CopyTo(&m_pResource);
 
@@ -22,7 +23,7 @@ void ShaderUnorderedAccessView::UpdateUAV(GFX& gfx)
 
 	m_pResource->GetType(&resourceDimension);
 
-	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = GetUAVDesc(m_pResource, resourceDimension, m_resourceFormat);
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = GetUAVDesc(m_pResource, resourceDimension, m_resourceFormat, m_bytesPerTexture);
 
 	m_resourceDimension = uavDesc.ViewDimension;
 
@@ -89,110 +90,106 @@ constexpr D3D11_UAV_DIMENSION ShaderUnorderedAccessView::GetUAVDimension(const D
 	}
 }
 
-D3D11_UNORDERED_ACCESS_VIEW_DESC ShaderUnorderedAccessView::GetUAVDesc(const Microsoft::WRL::ComPtr<ID3D11Resource>& pResource, const D3D11_RESOURCE_DIMENSION resourceDimension, const DXGI_FORMAT resourceFormat)
+D3D11_UNORDERED_ACCESS_VIEW_DESC ShaderUnorderedAccessView::GetUAVDesc(const Microsoft::WRL::ComPtr<ID3D11Resource>& pResource, const D3D11_RESOURCE_DIMENSION resourceDimension, const DXGI_FORMAT resourceFormat, UINT32 bytesPerStructure)
 {
 	D3D11_UNORDERED_ACCESS_VIEW_DESC result;
 
 	result.Format = resourceFormat;
 	result.ViewDimension = GetUAVDimension(resourceDimension);
 
+	switch (resourceDimension)
 	{
-		UINT32 bytesPerStructure = DirectX::BitsPerPixel(resourceFormat) / 8;
-
-		switch (resourceDimension)
+		case D3D11_RESOURCE_DIMENSION_UNKNOWN:
 		{
-			case D3D11_RESOURCE_DIMENSION_UNKNOWN:
+			THROW_INTERNAL_ERROR("Tried to get UAV desc of resource with unknown dimension.");
+		}
+		case D3D11_RESOURCE_DIMENSION_BUFFER:
+		{
+			D3D11_BUFFER_DESC resourceDesc;
+
 			{
-				THROW_INTERNAL_ERROR("Tried to get UAV desc of resource with unknown dimension.");
+				Microsoft::WRL::ComPtr<ID3D11Buffer> pBuffer;
+
+				pResource->QueryInterface(pBuffer.GetAddressOf());
+
+				pBuffer->GetDesc(&resourceDesc);
 			}
-			case D3D11_RESOURCE_DIMENSION_BUFFER:
+
+			assert(resourceDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS && "Buffer wasn't created with D3D11_BIND_UNORDERED_ACCESS flag");
+
+			result.Buffer.FirstElement = 0;
+			result.Buffer.NumElements = resourceDesc.ByteWidth / bytesPerStructure;
+			result.Buffer.Flags = NULL;
+
+			break;
+		}
+		case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+		{
 			{
-				D3D11_BUFFER_DESC resourceDesc;
+				D3D11_TEXTURE1D_DESC resourceDesc;
 
 				{
-					Microsoft::WRL::ComPtr<ID3D11Buffer> pBuffer;
+					Microsoft::WRL::ComPtr<ID3D11Texture1D> pTexture;
 
-					pResource->QueryInterface(pBuffer.GetAddressOf());
+					pResource->QueryInterface(pTexture.GetAddressOf());
 
-					pBuffer->GetDesc(&resourceDesc);
+					pTexture->GetDesc(&resourceDesc);
 				}
 
-				assert(resourceDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS && "Buffer wasn't created with D3D11_BIND_UNORDERED_ACCESS flag");
-
-				result.Buffer.FirstElement = 0;
-				result.Buffer.NumElements = resourceDesc.ByteWidth / bytesPerStructure;
-				result.Buffer.Flags = NULL;
-
-				break;
+				assert(resourceDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS && "Texture1D wasn't created with D3D11_BIND_UNORDERED_ACCESS flag");
 			}
-			case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+
+			result.Texture1D.MipSlice = 0;
+
+			break;
+		}
+		case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+		{
 			{
+				D3D11_TEXTURE2D_DESC resourceDesc;
+
 				{
-					D3D11_TEXTURE1D_DESC resourceDesc;
+					Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
 
-					{
-						Microsoft::WRL::ComPtr<ID3D11Texture1D> pTexture;
+					pResource->QueryInterface(pTexture.GetAddressOf());
 
-						pResource->QueryInterface(pTexture.GetAddressOf());
-
-						pTexture->GetDesc(&resourceDesc);
-					}
-
-					assert(resourceDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS && "Texture1D wasn't created with D3D11_BIND_UNORDERED_ACCESS flag");
+					pTexture->GetDesc(&resourceDesc);
 				}
 
-				result.Texture1D.MipSlice = 0;
-
-				break;
+				assert(resourceDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS && "Texture2D wasn't created with D3D11_BIND_UNORDERED_ACCESS flag");
 			}
-			case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+
+			result.Texture2D.MipSlice = 0;
+
+			break;
+		}
+		case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+		{
 			{
+				D3D11_TEXTURE3D_DESC resourceDesc;
+
 				{
-					D3D11_TEXTURE2D_DESC resourceDesc;
+					Microsoft::WRL::ComPtr<ID3D11Texture3D> pTexture;
 
-					{
-						Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
+					pResource->QueryInterface(pTexture.GetAddressOf());
 
-						pResource->QueryInterface(pTexture.GetAddressOf());
-
-						pTexture->GetDesc(&resourceDesc);
-					}
-
-					assert(resourceDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS && "Texture2D wasn't created with D3D11_BIND_UNORDERED_ACCESS flag");
+					pTexture->GetDesc(&resourceDesc);
 				}
 
-				result.Texture2D.MipSlice = 0;
-
-				break;
+				assert(resourceDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS && "Texture3D wasn't created with D3D11_BIND_UNORDERED_ACCESS flag");
 			}
-			case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
-			{
-				{
-					D3D11_TEXTURE3D_DESC resourceDesc;
 
-					{
-						Microsoft::WRL::ComPtr<ID3D11Texture3D> pTexture;
+			result.Texture3D.MipSlice = 0;
 
-						pResource->QueryInterface(pTexture.GetAddressOf());
+			break;
+		}
+		default:
+		{
+			std::string errorString = "wrong resource dimension was used. Dimension number was:";
+			errorString += std::to_string(resourceDimension);
+			errorString += '.';
 
-						pTexture->GetDesc(&resourceDesc);
-					}
-
-					assert(resourceDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS && "Texture3D wasn't created with D3D11_BIND_UNORDERED_ACCESS flag");
-				}
-
-				result.Texture3D.MipSlice = 0;
-
-				break;
-			}
-			default:
-			{
-				std::string errorString = "wrong resource dimension was used. Dimension number was:";
-				errorString += std::to_string(resourceDimension);
-				errorString += '.';
-
-				THROW_INTERNAL_ERROR(errorString.c_str());
-			}
+			THROW_INTERNAL_ERROR(errorString.c_str());
 		}
 	}
 

@@ -9,20 +9,22 @@ SceneVisibilityManager::SceneVisibilityManager(GFX& gfx)
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pModelCubeRWBuffer;
 
 	{
-		constexpr UINT32 bufferSize = startingBufferElementWidth * 6;
+		constexpr UINT32 bufferSize = startingBufferElementWidth * 3 * 3; // vector = 3 floats, and we have 3 vectors
 		std::vector<float> pData;
 
 		pData.resize(bufferSize);
 
-		for(UINT32 i = 0; i < bufferSize / 6; i++)
+		for(UINT32 i = 0; i < bufferSize / 9; i++)
 		{
-			pData.at(i * 6) = FLT_MAX;
-			pData.at(i * 6 + 1) = FLT_MAX;
-			pData.at(i * 6 + 2) = FLT_MAX;
+			pData.at(i * 9) = FLT_MAX;
+			pData.at(i * 9 + 1) = FLT_MAX;
+			pData.at(i * 9 + 2) = FLT_MAX;
 
-			pData.at(i * 6 + 3) = -FLT_MAX;
-			pData.at(i * 6 + 4) = -FLT_MAX;
-			pData.at(i * 6 + 5) = -FLT_MAX;
+			pData.at(i * 9 + 3) = -FLT_MAX;
+			pData.at(i * 9 + 4) = -FLT_MAX;
+			pData.at(i * 9 + 5) = -FLT_MAX;
+
+			// we ignore next 3 since they will be overriden by values of previous two, never compared like previous two
 		}
 
 		D3D11_BUFFER_DESC bufferDesc = {};
@@ -76,7 +78,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 		{
 			{
 				D3D11_BUFFER_DESC bufferDesc = {};
-				bufferDesc.ByteWidth = currentElementWidth * 6 * sizeof(float);
+				bufferDesc.ByteWidth = currentElementWidth * 3 * sizeof(DirectX::XMFLOAT3);
 				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 				bufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
 				bufferDesc.CPUAccessFlags = NULL;
@@ -261,7 +263,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 			shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 			shaderResourceViewDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
 			shaderResourceViewDesc.Buffer.FirstElement = 0;
-			shaderResourceViewDesc.Buffer.NumElements = numElementsOnScene * 6;
+			shaderResourceViewDesc.Buffer.NumElements = numElementsOnScene * 3 * 3;
 
 			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pCleanModelRWBuffer.Get(), &shaderResourceViewDesc, &pBufferView));
 
@@ -278,8 +280,8 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 				bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 				bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 				bufferDesc.CPUAccessFlags = NULL;
-				bufferDesc.MiscFlags = NULL;
-				bufferDesc.StructureByteStride = sizeof(float);
+				bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+				bufferDesc.StructureByteStride = sizeof(DirectX::XMFLOAT3);
 
 				D3D11_SUBRESOURCE_DATA subResourceData = {};
 				subResourceData.pSysMem = camera->GetFrustumBuffer();
@@ -291,10 +293,10 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 
 			{
 				D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-				shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+				shaderResourceViewDesc.Format = DXGI_FORMAT_UNKNOWN;
 				shaderResourceViewDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
 				shaderResourceViewDesc.Buffer.FirstElement = 0;
-				shaderResourceViewDesc.Buffer.NumElements = 8 * 3;// 8 positions made up from 3 floats
+				shaderResourceViewDesc.Buffer.NumElements = 8; // 8 float3 in structured buffer
 
 				THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pBuffer.Get(), &shaderResourceViewDesc, &pBufferView));
 			}
@@ -359,20 +361,20 @@ void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
 		// first creating new buffers
 		{
 			{
-				const UINT32 bufferSize = (newHighestObjectID + startingBufferElementWidth) * 6;
+				const UINT32 bufferSize = (newHighestObjectID + startingBufferElementWidth) * 9;
 				std::vector<float> pData;
 
 				pData.resize(bufferSize);
 
-				for (UINT32 i = currentElementWidth; i < bufferSize / 6; i++)
+				for (UINT32 i = currentElementWidth; i < bufferSize / 9; i++)
 				{
-					pData.at(i * 6) = FLT_MAX;
-					pData.at(i * 6 + 1) = FLT_MAX;
-					pData.at(i * 6 + 2) = FLT_MAX;
+					pData.at(i * 9) = FLT_MAX;
+					pData.at(i * 9 + 1) = FLT_MAX;
+					pData.at(i * 9 + 2) = FLT_MAX;
 
-					pData.at(i * 6 + 3) = -FLT_MAX;
-					pData.at(i * 6 + 4) = -FLT_MAX;
-					pData.at(i * 6 + 5) = -FLT_MAX;
+					pData.at(i * 9 + 3) = -FLT_MAX;
+					pData.at(i * 9 + 4) = -FLT_MAX;
+					pData.at(i * 9 + 5) = -FLT_MAX;
 				}
 
 				D3D11_BUFFER_DESC bufferDesc = {};
@@ -392,6 +394,7 @@ void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
 			{
 				D3D11_BUFFER_DESC bufferDesc = {};
 				bufferDesc.ByteWidth = (newHighestObjectID + startingBufferElementWidth) * sizeof(DirectX::XMMATRIX);
+				
 				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 				bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 				bufferDesc.CPUAccessFlags = NULL;
@@ -407,7 +410,7 @@ void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
 			D3D11_BOX dataBox = {};
 			dataBox.top = dataBox.left = dataBox.front = 0;
 			dataBox.bottom = dataBox.back = 1; // just to pass a check
-			dataBox.right = currentElementWidth * 6 * sizeof(float);
+			dataBox.right = currentElementWidth * 9 * sizeof(float);
 
 			THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pNewCubeBoundBuffer.Get(), 0, 0, 0, 0, m_pModelBoundsUAV->GetResource(), 0, &dataBox));
 

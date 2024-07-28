@@ -20,7 +20,7 @@ RWBuffer<float> result : register(u0);
 [numthreads(1, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
-    uint verticeDataSize, targetIDOffset = targetResultID * 6; // each model has 6 vertices
+    uint verticeDataSize, targetIDOffset = targetResultID * 9; // each model has 9 vertices
     verticeData.GetDimensions(verticeDataSize);
 
     for(int i = 0; i < verticeDataSize; i += structureSizeInFloatIndexes)
