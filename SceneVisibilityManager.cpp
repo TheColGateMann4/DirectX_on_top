@@ -3,26 +3,28 @@
 #include "Camera.h"
 #include "Scene.h"
 
+#define SIZE_OF_CUBE_STRUCTURE (3 * 8)
+
 SceneVisibilityManager::SceneVisibilityManager(GFX& gfx)
 {
 	HRESULT hr;
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pModelCubeRWBuffer;
 
 	{
-		constexpr UINT32 bufferSize = startingBufferElementWidth * 3 * 3; // vector = 3 floats, and we have 3 vectors
+		constexpr UINT32 bufferSize = startingBufferElementWidth * SIZE_OF_CUBE_STRUCTURE; // vector = 3 floats, and we have 8 vectors
 		std::vector<float> pData;
 
 		pData.resize(bufferSize);
 
-		for(UINT32 i = 0; i < bufferSize / 9; i++)
+		for(UINT32 i = 0; i < bufferSize / SIZE_OF_CUBE_STRUCTURE; i++)
 		{
-			pData.at(i * 9) = FLT_MAX;
-			pData.at(i * 9 + 1) = FLT_MAX;
-			pData.at(i * 9 + 2) = FLT_MAX;
+			pData.at(i * SIZE_OF_CUBE_STRUCTURE) = -FLT_MAX;
+			pData.at(i * SIZE_OF_CUBE_STRUCTURE + 1) = -FLT_MAX;
+			pData.at(i * SIZE_OF_CUBE_STRUCTURE + 2) = -FLT_MAX;
 
-			pData.at(i * 9 + 3) = -FLT_MAX;
-			pData.at(i * 9 + 4) = -FLT_MAX;
-			pData.at(i * 9 + 5) = -FLT_MAX;
+			pData.at(i * SIZE_OF_CUBE_STRUCTURE + 3) = FLT_MAX;
+			pData.at(i * SIZE_OF_CUBE_STRUCTURE + 4) = FLT_MAX;
+			pData.at(i * SIZE_OF_CUBE_STRUCTURE + 5) = FLT_MAX;
 
 			// we ignore next 3 since they will be overriden by values of previous two, never compared like previous two
 		}
@@ -78,7 +80,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 		{
 			{
 				D3D11_BUFFER_DESC bufferDesc = {};
-				bufferDesc.ByteWidth = currentElementWidth * 3 * sizeof(DirectX::XMFLOAT3);
+				bufferDesc.ByteWidth = currentElementWidth * SIZE_OF_CUBE_STRUCTURE * sizeof(float);
 				bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 				bufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
 				bufferDesc.CPUAccessFlags = NULL;
@@ -263,7 +265,7 @@ void SceneVisibilityManager::ProcessVisibilityBuffer(GFX& gfx, Camera* camera, I
 			shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 			shaderResourceViewDesc.ViewDimension = D3D_SRV_DIMENSION_BUFFER;
 			shaderResourceViewDesc.Buffer.FirstElement = 0;
-			shaderResourceViewDesc.Buffer.NumElements = numElementsOnScene * 3 * 3;
+			shaderResourceViewDesc.Buffer.NumElements = numElementsOnScene * 8 * 3;
 
 			THROW_GFX_IF_FAILED(GFX::GetDevice(gfx)->CreateShaderResourceView(pCleanModelRWBuffer.Get(), &shaderResourceViewDesc, &pBufferView));
 
@@ -361,20 +363,20 @@ void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
 		// first creating new buffers
 		{
 			{
-				const UINT32 bufferSize = (newHighestObjectID + startingBufferElementWidth) * 9;
+				const UINT32 bufferSize = (newHighestObjectID + startingBufferElementWidth) * SIZE_OF_CUBE_STRUCTURE;
 				std::vector<float> pData;
 
 				pData.resize(bufferSize);
 
-				for (UINT32 i = currentElementWidth; i < bufferSize / 9; i++)
+				for (UINT32 i = currentElementWidth; i < bufferSize / SIZE_OF_CUBE_STRUCTURE; i++)
 				{
-					pData.at(i * 9) = FLT_MAX;
-					pData.at(i * 9 + 1) = FLT_MAX;
-					pData.at(i * 9 + 2) = FLT_MAX;
+					pData.at(i * SIZE_OF_CUBE_STRUCTURE) = -FLT_MAX;
+					pData.at(i * SIZE_OF_CUBE_STRUCTURE + 1) = -FLT_MAX;
+					pData.at(i * SIZE_OF_CUBE_STRUCTURE + 2) = -FLT_MAX;
 
-					pData.at(i * 9 + 3) = -FLT_MAX;
-					pData.at(i * 9 + 4) = -FLT_MAX;
-					pData.at(i * 9 + 5) = -FLT_MAX;
+					pData.at(i * SIZE_OF_CUBE_STRUCTURE + 3) = FLT_MAX;
+					pData.at(i * SIZE_OF_CUBE_STRUCTURE + 4) = FLT_MAX;
+					pData.at(i * SIZE_OF_CUBE_STRUCTURE + 5) = FLT_MAX;
 				}
 
 				D3D11_BUFFER_DESC bufferDesc = {};
@@ -410,7 +412,7 @@ void SceneVisibilityManager::ResizeBuffers(GFX& gfx, INT32 newHighestObjectID)
 			D3D11_BOX dataBox = {};
 			dataBox.top = dataBox.left = dataBox.front = 0;
 			dataBox.bottom = dataBox.back = 1; // just to pass a check
-			dataBox.right = currentElementWidth * 9 * sizeof(float);
+			dataBox.right = currentElementWidth * SIZE_OF_CUBE_STRUCTURE * sizeof(float);
 
 			THROW_INFO_EXCEPTION(GFX::GetDeviceContext(gfx)->CopySubresourceRegion(pNewCubeBoundBuffer.Get(), 0, 0, 0, 0, m_pModelBoundsUAV->GetResource(), 0, &dataBox));
 

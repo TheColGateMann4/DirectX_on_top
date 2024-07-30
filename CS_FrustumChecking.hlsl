@@ -1,4 +1,23 @@
 Buffer<float> modelBoxData : register(t0);
+// vertice  x  y  z
+// vertice -x  y  z
+// vertice  x -y  z
+// vertice -x -y  z
+// vertice  x  y -z
+// vertice -x  y -z
+// vertice  x -y -z
+// vertice -x -y -z
+
+// mX = minus X
+#define VERTICE_X_Y_Z    0
+#define VERTICE_mX_Y_Z   1
+#define VERTICE_X_mY_Z   2
+#define VERTICE_mX_mY_Z  3
+#define VERTICE_X_Y_mZ   4
+#define VERTICE_mX_Y_mZ  5
+#define VERTICE_X_mY_mZ  6
+#define VERTICE_mX_mY_mZ 7
+
 StructuredBuffer<float3> cameraFrustumData : register(t1);
 
 // if model with low id gets removed the id will be marked in this buffer as invalid, till some other model gets on its place
@@ -12,44 +31,11 @@ cbuffer SceneData : register(b0)
 
 RWBuffer<uint> result : register(u0);
 
-
-#define CUBE_INDEX_MINUS_X 0
-#define CUBE_INDEX_MINUS_Y 1
-#define CUBE_INDEX_MINUS_Z 2
-#define CUBE_INDEX_X 3
-#define CUBE_INDEX_Y 4
-#define CUBE_INDEX_Z 5
-
-float3 GetCubeVerticeAtOffset(int3 verticeIndexes, uint modelIndex)
-{
-    uint modelIndexOffset = modelIndex * 9;
-
-    return float3(modelBoxData[modelIndexOffset + verticeIndexes.x], modelBoxData[modelIndexOffset + verticeIndexes.y], modelBoxData[modelIndexOffset + verticeIndexes.z]);
-}
-
 float3 GetCubeVertice(uint verticeIndex, uint modelIndex)
 {
-    switch(verticeIndex)
-    {
-        case 0:
-            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_MINUS_X, CUBE_INDEX_MINUS_Y, CUBE_INDEX_MINUS_Z), modelIndex);
-        case 1:
-            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_MINUS_X, CUBE_INDEX_Y, CUBE_INDEX_MINUS_Z), modelIndex);
-        case 2:
-            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_X, CUBE_INDEX_Y, CUBE_INDEX_MINUS_Z), modelIndex);
-        case 3:
-            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_X, CUBE_INDEX_MINUS_Y, CUBE_INDEX_MINUS_Z), modelIndex);
-        case 4:
-            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_MINUS_X, CUBE_INDEX_MINUS_Y, CUBE_INDEX_Z), modelIndex);
-        case 5:
-            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_MINUS_X, CUBE_INDEX_Y, CUBE_INDEX_Z), modelIndex);
-        case 6:
-            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_X, CUBE_INDEX_Y, CUBE_INDEX_Z), modelIndex);
-        case 7:
-            return GetCubeVerticeAtOffset( int3(CUBE_INDEX_X, CUBE_INDEX_MINUS_Y, CUBE_INDEX_Z), modelIndex);
-        default:
-            return float3(0.0f, 0.0f, 0.0f); // won't happen anyways
-    }
+    uint modelIndexOffset = modelIndex * 3 * 8 + verticeIndex * 3;
+
+    return float3(modelBoxData[modelIndexOffset], modelBoxData[modelIndexOffset + 1], modelBoxData[modelIndexOffset + 2]);
 }
 
 // Gets values on both slopes on level of ourPoint
@@ -183,57 +169,57 @@ void main( uint3 DTid : SV_DispatchThreadID )
             continue;
     
     
-        //checking for vertices that are around frustum, and we don't see them, but their middle part can be seen
-        float3 cubeMinusVerticePos = GetCubeVertice(0, iModelID);
-        float3 cubePlusVerticePos = GetCubeVertice(6, iModelID);
-    
-        float3 nearZFrustumVertice = cameraFrustumData[0];
-        float3 farZFrustumVertice = cameraFrustumData[4];
-    
-        for(uint iFrustumVertice = 0; iFrustumVertice < 8; iFrustumVertice++)
-        {
-            float3 frustumVerticePos = cameraFrustumData[iFrustumVertice];
-        
-            // the point of this is, when object is infront of camera it has to be on at least two axels to be in frustum, thats why its okay if its not on one axis
-            bool failedOnce = false;
-                
-    
-            // checking Z axis
-            {
-                if(!CheckIfObjectsAxisOverlapsWithFrustum(cubePlusVerticePos.z, cubeMinusVerticePos.z, frustumVerticePos.z, farZFrustumVertice.z, nearZFrustumVertice.z))
-                    failedOnce = true;
-            }
-            
-    
-            // top and bottom point on current slope at given Z depth
-            float topPoint, bottomPoint;
-    
-    
-            // checking X axis, we need to account for slope on view frustum
-            {                    
-                GetSlopeValues(nearZFrustumVertice, farZFrustumVertice, cameraFrustumData[3].y, cubePlusVerticePos, false, topPoint, bottomPoint);
-                
-                if(!CheckIfObjectsAxisOverlapsWithFrustum(cubePlusVerticePos.x, cubeMinusVerticePos.x, frustumVerticePos.x, topPoint, bottomPoint))
-                    if(failedOnce)
-                    {
-                        continue;
-                    }
-                    else
-                        failedOnce = true;
-            }
-          
-    
-            // checking Y axis, we need to account for slope on view frustum as well
-            {
-                GetSlopeValues(nearZFrustumVertice, farZFrustumVertice, cameraFrustumData[1].x, cubePlusVerticePos, true, topPoint, bottomPoint);
-    
-                if(!CheckIfObjectsAxisOverlapsWithFrustum(cubePlusVerticePos.y, cubeMinusVerticePos.y, frustumVerticePos.y, topPoint, bottomPoint))
-                    if(failedOnce)
-                        continue;
-            }
-    
-            result[iModelID] = 1;
-            break;
-        }
+//        //checking for vertices that are around frustum, and we don't see them, but their middle part can be seen
+//        float3 cubeMinusVerticePos = GetCubeVertice(7, iModelID);
+//        float3 cubePlusVerticePos = GetCubeVertice(0, iModelID);
+//    
+//        float3 nearZFrustumVertice = cameraFrustumData[0];
+//        float3 farZFrustumVertice = cameraFrustumData[4];
+//    
+//        for(uint iFrustumVertice = 0; iFrustumVertice < 8; iFrustumVertice++)
+//        {
+//            float3 frustumVerticePos = cameraFrustumData[iFrustumVertice];
+//        
+//            // the point of this is, when object is infront of camera it has to be on at least two axels to be in frustum, thats why its okay if its not on one axis
+//            bool failedOnce = false;
+//                
+//    
+//            // checking Z axis
+//            {
+//                if(!CheckIfObjectsAxisOverlapsWithFrustum(cubePlusVerticePos.z, cubeMinusVerticePos.z, frustumVerticePos.z, farZFrustumVertice.z, nearZFrustumVertice.z))
+//                    failedOnce = true;
+//            }
+//            
+//    
+//            // top and bottom point on current slope at given Z depth
+//            float topPoint, bottomPoint;
+//    
+//    
+//            // checking X axis, we need to account for slope on view frustum
+//            {                    
+//                GetSlopeValues(nearZFrustumVertice, farZFrustumVertice, cameraFrustumData[3].y, cubePlusVerticePos, false, topPoint, bottomPoint);
+//                
+//                if(!CheckIfObjectsAxisOverlapsWithFrustum(cubePlusVerticePos.x, cubeMinusVerticePos.x, frustumVerticePos.x, topPoint, bottomPoint))
+//                    if(failedOnce)
+//                    {
+//                        continue;
+//                    }
+//                    else
+//                        failedOnce = true;
+//            }
+//          
+//    
+//            // checking Y axis, we need to account for slope on view frustum as well
+//            {
+//                GetSlopeValues(nearZFrustumVertice, farZFrustumVertice, cameraFrustumData[1].x, cubePlusVerticePos, true, topPoint, bottomPoint);
+//    
+//                if(!CheckIfObjectsAxisOverlapsWithFrustum(cubePlusVerticePos.y, cubeMinusVerticePos.y, frustumVerticePos.y, topPoint, bottomPoint))
+//                    if(failedOnce)
+//                        continue;
+//            }
+//    
+//            result[iModelID] = 1;
+//            break;
+//        }
     }
 }

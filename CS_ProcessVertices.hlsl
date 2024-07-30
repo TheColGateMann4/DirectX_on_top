@@ -2,9 +2,14 @@ StructuredBuffer<matrix> objectTransform : register(t0);
 Buffer<uint> modelValidity : register(t2);
 
 RWBuffer<float> modelBoxData : register(u0);
-// vertice minus
-// vertice plus
-// vertice side to plus - for later frustum calculations
+// vertice  x  y  z
+// vertice -x  y  z
+// vertice  x -y  z
+// vertice -x -y  z
+// vertice  x  y -z
+// vertice -x  y -z
+// vertice  x -y -z
+// vertice -x -y -z
 
 cbuffer cameraData : register(b0)
 {
@@ -32,19 +37,12 @@ void main( uint3 DTid : SV_DispatchThreadID )
         if(modelValidity[iModelID] == 0)
             continue;
 
-        uint verticeIndex = iModelID * 9;
-    
-        // constructing our side vector here, before matrix multiplications
-        modelBoxData[verticeIndex + 6] = 0;          // getting X value from minus-vertice
-        modelBoxData[verticeIndex + 6 + 1] = 3 + 1;  // getting Y from plus-vertice
-        modelBoxData[verticeIndex + 6 + 2] = 3 + 2;  // getting Z from plus-vertice
+        uint verticeIndex = iModelID * 3 * 8;
 
-        for(uint iVector = 0; iVector < 3; iVector++)
+        for(uint iVector = 0; iVector < 8; iVector++)
         {
-            verticeIndex += 3;
-
             float3 modelBoxVertice;
-    
+
             modelBoxVertice.x = modelBoxData[verticeIndex];
             modelBoxVertice.y = modelBoxData[verticeIndex + 1];
             modelBoxVertice.z = modelBoxData[verticeIndex + 2];
@@ -56,6 +54,8 @@ void main( uint3 DTid : SV_DispatchThreadID )
             modelBoxData[verticeIndex] = modelBoxVertice.x;
             modelBoxData[verticeIndex + 1] = modelBoxVertice.y;
             modelBoxData[verticeIndex + 2] = modelBoxVertice.z;
+
+            verticeIndex += 3;
         }
     }
 }
