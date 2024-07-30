@@ -70,6 +70,7 @@ public:
 	UINT32 GetIndexCount() const noexcept;
 
 public:
+	bool m_ignoreVisibility = false;
 	bool m_visible = false;
 	std::shared_ptr<class IndexBuffer> m_pIndexBuffer = nullptr;
 	std::shared_ptr<class VertexBuffer> m_pVertexBuffer = nullptr;

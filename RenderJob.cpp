@@ -10,7 +10,7 @@ RenderJob::RenderJob(const Shape* shape, const RenderStep* step)
 
 void RenderJob::Bind(GFX& gfx) const
 {
-	if (!m_step->m_active || !m_shape->m_visible)
+	if (!m_step->m_active || (!m_shape->m_visible && !m_shape->m_ignoreVisibility))
 		return;
 
 	m_shape->Bind(gfx);

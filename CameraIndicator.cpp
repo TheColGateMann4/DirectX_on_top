@@ -8,6 +8,8 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 	:
 	m_parent(parent)
 {
+	m_ignoreVisibility = true;
+
 	CameraSettings cameraSettings;
 	m_parent->GetCameraSettings(&cameraSettings);
 
