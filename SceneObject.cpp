@@ -87,15 +87,22 @@ void SceneObject::GenerateTree(SceneObject*& pressedNode)
 		if (pressedNode != this)
 		{
 			if (pressedNode != nullptr)
+			{
 				pressedNode->SetPressedState(false);
+				pressedNode->m_pressedNode = nullptr;
+			}
 
 			m_pressed = true;
+
 			pressedNode = this;
+			m_pressedNode = this;
 		}
 		else
 		{
 			m_pressed = false;
+
 			pressedNode = nullptr;
+			m_pressedNode = nullptr;
 		}
 
 	if (nodeExpanded)
