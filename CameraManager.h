@@ -9,6 +9,8 @@ public:
 	Camera* GetActiveCamera() const;
 
 public:
+	void HandleMovement(float deltaTime, class InputSystem& hardwareInput, bool cursorLocked, bool cursorShowing);
+
 	void AddCamera(Camera* camera, bool asActive);
 
 	void SetActiveCameraByPtr(Camera* newActiveCamera);

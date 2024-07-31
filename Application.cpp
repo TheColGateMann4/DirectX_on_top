@@ -32,7 +32,7 @@ BOOL Application::Initiate()
 	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{0.0f, 5.0f, -35.0f}));
 	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{5.0f, 2.0f, -15.0f}));
 	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics, 0.5f, DirectX::XMFLOAT3{0.0f, 3.0f, 0.0f}));
-	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
+	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Flashlight\\Flashlight.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, 6.0f }));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 1.0f, DirectX::XMFLOAT3{ 6.0f, 0.0f, 0.0f }));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Ghosts\\GroundCape1.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, -7.0f }));
@@ -134,28 +134,7 @@ void Application::Update()
 
 	float deltaTime = timer.GetDeltaTime(true);
 
-	DirectX::XMFLOAT3 movingDir = {};
-	if (window.Input.Key.GetKeyState(KEY_W))
-		movingDir.z += deltaTime;
-	if (window.Input.Key.GetKeyState(KEY_S))
-		movingDir.z -= deltaTime;
-	if (window.Input.Key.GetKeyState(KEY_E))
-		movingDir.x += deltaTime;
-	if (window.Input.Key.GetKeyState(KEY_A))
-		movingDir.x -= deltaTime;
-	if (window.Input.Key.GetKeyState(VK_SPACE))
-		movingDir.y += deltaTime;
-	if (window.Input.Key.GetKeyState(VK_CONTROL))
-		movingDir.y -= deltaTime;
-
-	if (movingDir.x != 0 || movingDir.y != 0 || movingDir.z != 0)
-		scene.GetCameraManager()->GetActiveCamera()->Move(movingDir);
-
-	DirectX::XMINT2 lookOffset = window.Input.Mouse.GetRawInputPos();
-
-	if (cursorLocked && !cursorShowing)
-		if (lookOffset.x != 0 || lookOffset.y != 0)
-			scene.GetCameraManager()->GetActiveCamera()->Look({ (float)lookOffset.x, (float)lookOffset.y, 0.0f }, true);
+	scene.GetCameraManager()->HandleMovement(deltaTime, window.Input, cursorLocked, cursorShowing);
 
 	window.Graphics.BeginFrame();
 	renderGraph.BeginFrame();
