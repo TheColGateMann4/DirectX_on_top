@@ -44,11 +44,9 @@ void CameraManager::HandleMovement(float deltaTime, InputSystem& hardwareInput, 
 
 	//gamepad input
 	{
-		std::unique_ptr<DirectX::GamePad> gamepad;
-		gamepad = std::make_unique<DirectX::GamePad>();
+		std::unique_ptr<DirectX::GamePad> gamepad = std::make_unique<DirectX::GamePad>();
 
-
-		auto gamepadState = gamepad->GetState(0, DirectX::GamePad::DEAD_ZONE_CIRCULAR); // DEAD_ZONE_CIRCULAR makes everything so much smoother, because then deadzone works as circle not as a square
+		DirectX::GamePad::State gamepadState = gamepad->GetState(0, DirectX::GamePad::DEAD_ZONE_CIRCULAR); // DEAD_ZONE_CIRCULAR makes everything so much smoother, because then deadzone works as circle not as a square
 
 		if (gamepadState.IsConnected())
 		{
