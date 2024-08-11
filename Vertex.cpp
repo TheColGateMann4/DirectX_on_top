@@ -275,7 +275,7 @@ DynamicVertex::ConstVertex DynamicVertex::VertexBuffer::Front() const noexcept(!
 
 DynamicVertex::ConstVertex DynamicVertex::VertexBuffer::operator[](size_t i) const noexcept(!IS_DEBUG)
 {
-	return const_cast<const VertexBuffer&>(*this)[i];
+	return const_cast<VertexBuffer&>(*this)[i];
 }
 
 
