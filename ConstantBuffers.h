@@ -50,8 +50,6 @@ public:
 
 	void Update(GFX& gfx, DynamicConstantBuffer::BufferData& bufferData);
 
-	using ConstantBuffer::Bind;
-
 	void SetBufferID(const char* bufferID);
 
 public:
