@@ -4,8 +4,8 @@
 
 Texture::Texture(GFX& gfx, const std::string imagePath, UINT32 slot, bool isCube, TargetShader targetShader)
 	:
-	m_slot(slot),
 	m_imagePath(imagePath),
+	m_slot(slot),
 	m_isCube(isCube),
 	m_targetShader(targetShader)
 {
