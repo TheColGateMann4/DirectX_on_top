@@ -53,10 +53,11 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 void FullscreenFilter::ChangePixelShader(GFX& gfx, std::string ShaderName)
 {
 	currentShaderName = ShaderName;
+	
+	if (!dynamic_cast<PixelShader*>(m_bindables.at(pixelShaderIndex).get()))
+		THROW_INTERNAL_ERROR("PixelShader was not found on index it should be. Bindable vector was changed.");
 
-	if (PixelShader* pPixelShader = dynamic_cast<PixelShader*>(m_bindables.at(pixelShaderIndex).get())) // checking if pixel shader is really there. To be honest if it isn't we got problems anyways
-		m_bindables.erase(m_bindables.begin() + pixelShaderIndex);
-
+	m_bindables.erase(m_bindables.begin() + pixelShaderIndex);
 
 	m_bindables.push_back(PixelShader::GetBindable(gfx, ("PS_Fullscreen_" + ShaderName + ".cso").c_str()));
 	pixelShaderIndex = m_bindables.size() - 1;
