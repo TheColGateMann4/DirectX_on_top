@@ -48,10 +48,9 @@ protected:
 public:
 	RenderJobPass* GetRenderJobPass(const char* passName)
 	{
-		for (const auto& pass : m_passes)
-			if (strcmp(pass->m_name, passName) == 0)
-				if(RenderJobPass* resultPass = dynamic_cast<RenderJobPass*>(pass.get()))
-					return resultPass;
+		for (const auto& jobPass : m_jobPasses)
+			if (strcmp(jobPass->m_name, passName) == 0)
+					return jobPass;
 
 		std::string errorString = "RenderPass could not be found. RenderPass name was: \"";
 		errorString += passName;
@@ -69,6 +68,8 @@ private:
 protected:
 	std::vector<std::unique_ptr<RenderPass>> m_passes;
 	std::vector<RenderFirstCallPass*> m_firstCallPasses; // passes that work differently on first call of a frame
+	std::vector<RenderJobPass*> m_jobPasses;
+
 	std::vector<std::unique_ptr<RenderPassOutput>> m_globalOutputs;
 	std::vector<std::unique_ptr<RenderPassInput>> m_globalInputs;
 

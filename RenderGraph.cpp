@@ -50,15 +50,13 @@ void RenderGraph::Reset()
 
 void RenderGraph::ResetTempModels()
 {
-	for (auto& pass : m_passes)
-		if (RenderJobPass* jobPass = dynamic_cast<RenderJobPass*>(pass.get()))
+	for (auto& jobPass : m_jobPasses)
 			jobPass->ResetTempModels();
 }
 
 void RenderGraph::CaptureNextFrame()
 {
-	for (auto& pass : m_passes)
-		if (RenderJobPass* jobPass = dynamic_cast<RenderJobPass*>(pass.get()))
+	for (auto& jobPass : m_jobPasses)
 			jobPass->CaptureNextFrame();
 }
 
@@ -130,6 +128,9 @@ void RenderGraph::AddPass(std::unique_ptr<RenderPass> pass)
 
 	if (RenderFirstCallPass* firstCallPass = dynamic_cast<RenderFirstCallPass*>(pass.get()))
 		m_firstCallPasses.push_back(firstCallPass);
+
+	if (RenderJobPass* firstCallPass = dynamic_cast<RenderJobPass*>(pass.get()))
+		m_jobPasses.push_back(firstCallPass);
 
 	m_passes.push_back(std::move(pass));
 }
