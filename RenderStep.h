@@ -113,21 +113,6 @@ public:
 	{
 	}
 
-	TempRenderStep()
-		: RenderStep()
-	{
-
-	}
-
-	TempRenderStep(const TempRenderStep& tempRenderStep) noexcept
-		: RenderStep(tempRenderStep)
-	{
-		m_used = tempRenderStep.m_used;
-	}
-
 public:
 	virtual void Render(const Shape* shape) const noexcept override;
-
-private:
-	mutable bool m_used = false;
 };

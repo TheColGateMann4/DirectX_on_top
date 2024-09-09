@@ -122,4 +122,3 @@ protected:
 	std::vector<std::unique_ptr<SceneObject>> m_children;
 	DirectX::XMFLOAT4X4 m_transform = {};
 };
-
