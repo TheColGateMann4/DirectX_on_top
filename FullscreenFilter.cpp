@@ -44,6 +44,8 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 	VertexShader* pVertexShader = static_cast<VertexShader*>(m_bindables.back().get());
 
 	m_bindables.push_back(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
+	pixelShaderIndex = m_bindables.size() - 1;
+
 	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader));
 	m_bindables.push_back(SamplerState::GetBindable(gfx, SamplerState::Mode::MIRROR, 0, SamplerState::NEVER, SamplerState::POINT));
 }
@@ -52,11 +54,12 @@ void FullscreenFilter::ChangePixelShader(GFX& gfx, std::string ShaderName)
 {
 	currentShaderName = ShaderName;
 
-	for (size_t i = 0; i < m_bindables.size(); i++)
-		if (PixelShader* pPixelShader = dynamic_cast<PixelShader*>(m_bindables.at(i).get()))
-			m_bindables.erase(m_bindables.begin() + i);
+	if (PixelShader* pPixelShader = dynamic_cast<PixelShader*>(m_bindables.at(pixelShaderIndex).get())) // checking if pixel shader is really there. To be honest if it isn't we got problems anyways
+		m_bindables.erase(m_bindables.begin() + pixelShaderIndex);
+
 
 	m_bindables.push_back(PixelShader::GetBindable(gfx, ("PS_Fullscreen_" + ShaderName + ".cso").c_str()));
+	pixelShaderIndex = m_bindables.size() - 1;
 }
 
 void FullscreenFilter::ChangeBlurStrength(GFX& gfx, int strength)

@@ -25,5 +25,6 @@ private:
 	std::shared_ptr<class CachedBuffer> m_constBuffer;
 	class IndexBuffer* pIndexBuffer;
 	GaussBlurFilter m_gaussFilter;
+	size_t pixelShaderIndex;
 };
 
