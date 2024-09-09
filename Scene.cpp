@@ -14,17 +14,23 @@ Scene::Scene(Window* window)
 
 void Scene::LinkModelsToPipeline(class RenderGraph& renderGraph)
 {
-	for (auto& model : m_models)
+	for (auto& model : m_pRegularModels)
 	{
 		model->LinkSceneObjectToPipeline(renderGraph);
 		model->LinkChildrenToPipeline(renderGraph);
+	}
+
+	for (auto& tempModel : m_pTempModels)
+	{
+		tempModel->LinkSceneObjectToPipeline(renderGraph);
+		tempModel->LinkChildrenToPipeline(renderGraph);
 	}
 }
 
 void Scene::UpdateSceneVisibility(GFX& gfx)
 {
-	m_sceneVisibilityManager->ProcessVisibilityBuffer(gfx, m_cameraManager.GetActiveCamera(), GetHighestIndex(), &objectValidity);
 
+	m_sceneVisibilityManager->ProcessVisibilityBuffer(gfx, m_cameraManager.GetActiveCamera(), GetHighestIndex(), &objectValidity);
 	for (const auto& model : m_models)
 		model->SetVisibility(m_sceneVisibilityManager->GetVisibilityBuffer());
 }
@@ -48,19 +54,34 @@ void Scene::DrawModels(GFX& gfx)
 {
 	BindLights(gfx);
 
-	for (const auto& model : m_models)
+	for (const auto& model : m_pRegularModels)
 	{
-		model->CalculateSceneTranformMatrix();
+		model->CalculateSceneTranformMatrix(); // updating scene matrix of each model
 		
-		model->PushObjectMatrixToBuffer(m_sceneVisibilityManager->GetMatrixBuffer());
+		model->PushObjectMatrixToBuffer(m_sceneVisibilityManager->GetMatrixBuffer()); // pushing to SceneVisibilityManager each model matrix
 
 		model->RenderOnScene();
 	}
 
-	m_sceneVisibilityManager->UpdateTransformBuffer(gfx);
+	m_sceneVisibilityManager->UpdateTransformBuffer(gfx); // updating scene matrices in graphic buffer that will be used to check if objects are visible
 
 	//normally we would update scene visility now, but since we have shadow pass we don't need it since it runs before everything and overrides everything we would set right now
 	//UpdateSceneVisibility(gfx);
+	// this would be an issue since we are now adding temp models to our pipeline
+}
+
+void Scene::DrawTempModels(GFX& gfx)
+{
+	for (const auto& tempModel : m_pTempModels)
+	{
+		tempModel->CalculateSceneTranformMatrix();
+
+		tempModel->PushObjectMatrixToBuffer(m_sceneVisibilityManager->GetMatrixBuffer());
+
+		tempModel->RenderOnScene();
+	}
+
+	m_sceneVisibilityManager->UpdateTransformBuffer(gfx);
 }
 
 void Scene::DrawModelHierarchy(bool show)
@@ -82,6 +103,7 @@ void Scene::DrawModelHierarchy(bool show)
 					for (auto& filePath : filePaths)
 					{
 						m_models.push_back(std::make_unique<Model>(m_window->Graphics, filePath, 1.0f));
+						m_pRegularModels.push_back(m_models.back().get());
 					}
 			}
 		}
@@ -165,6 +187,8 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 
 	m_highestSceneIndex += numberOfNewObjects;
 
+	bool isTempObject = false;
+
 	if (auto* light = dynamic_cast<PointLight*>(model.get()))
 	{
 		AddLightObject(light);
@@ -174,7 +198,15 @@ void Scene::AddSceneObject(std::unique_ptr<SceneObject>&& model)
 		camera->SetCameraManagerLinkage(&m_cameraManager);
 
 		AddCameraObject(camera);
+
+		isTempObject = true; // later we could do some proper check for it, maybe TempSceneObject class or something. But for now this is the only case where we use it
 	}
+
+
+	if(isTempObject)
+		m_pTempModels.push_back(model.get());
+	else
+		m_pRegularModels.push_back(model.get());
 
 	m_models.push_back(std::move(model));
 }

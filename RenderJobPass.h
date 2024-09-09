@@ -19,12 +19,17 @@ public:
 public:
 	void AddRenderJob(const RenderJob& job);
 
-	virtual void Reset() override;
+	void AddTempRenderJob(const RenderJob& tempJob);
+
+	void Reset();
+
+	void ResetTempModels();
 
 	void CaptureNextFrame();
 
 private:
 	std::vector<RenderJob> m_jobs;
+	std::vector<RenderJob> m_tempJobs; // jobs that should be done only once per frame, since they are camera specific
 
 protected:
 	mutable bool m_captureFrame;

@@ -9,6 +9,9 @@ void RenderJobPass::Render(GFX& gfx) const noexcept(!IS_DEBUG)
 	for (const auto& job : m_jobs)
 		job.Bind(gfx);
 
+	for (const auto& tempJob : m_tempJobs)
+		tempJob.Bind(gfx);
+
 	if(m_captureFrame)
 	{
 		if (m_renderTarget)
@@ -26,9 +29,19 @@ void RenderJobPass::AddRenderJob(const RenderJob& job)
 	m_jobs.push_back(job);
 }
 
+void RenderJobPass::AddTempRenderJob(const RenderJob& tempJob)
+{
+	m_tempJobs.push_back(tempJob);
+}
+
 void RenderJobPass::Reset()
 {
 	m_jobs.clear();
+}
+
+void RenderJobPass::ResetTempModels()
+{
+	m_tempJobs.clear();
 }
 
 void RenderJobPass::CaptureNextFrame()

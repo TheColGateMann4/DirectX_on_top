@@ -28,7 +28,10 @@ public:
 	RenderStep(const RenderStep&) noexcept;
 
 public:
-	void Render(const Shape* shape) const noexcept;
+	virtual ~RenderStep() = default;
+
+public:
+	virtual void Render(const Shape* shape) const noexcept;
 
 	void LinkToPipeline(class RenderGraph& renderGraph);
 
@@ -93,7 +96,7 @@ public:
 		return m_pass;
 	}
 
-private:
+protected:
 	RenderJobPass* m_pass = nullptr;
 	std::vector<std::shared_ptr<Bindable>> m_bindables = {};
 	std::vector<std::shared_ptr<Bindable>> m_postRenderBindables = {};
@@ -102,3 +105,29 @@ private:
 	bool m_linked = false;
 };
 
+class TempRenderStep : public RenderStep
+{
+public:
+	TempRenderStep(const char* targetPassName)
+		: RenderStep(targetPassName)
+	{
+	}
+
+	TempRenderStep()
+		: RenderStep()
+	{
+
+	}
+
+	TempRenderStep(const TempRenderStep& tempRenderStep) noexcept
+		: RenderStep(tempRenderStep)
+	{
+		m_used = tempRenderStep.m_used;
+	}
+
+public:
+	virtual void Render(const Shape* shape) const noexcept override;
+
+private:
+	mutable bool m_used = false;
+};

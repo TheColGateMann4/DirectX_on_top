@@ -68,3 +68,14 @@ void RenderStep::AddPostRenderBindable(std::shared_ptr<Bindable> bindable)
 {
 	m_postRenderBindables.push_back(bindable);
 }
+
+
+
+void TempRenderStep::Render(const Shape* shape) const noexcept
+{
+	if (m_active)
+	{
+		assert(m_linked);
+		m_pass->AddTempRenderJob(RenderJob(shape, this));
+	}
+}

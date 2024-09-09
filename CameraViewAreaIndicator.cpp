@@ -29,7 +29,7 @@ CameraViewAreaIndicator::CameraViewAreaIndicator(GFX& gfx, Camera* parent)
 		RenderTechnique technique;
 
 		{
-			RenderStep step("normalPass");
+			TempRenderStep step("normalPass");
 
 			DynamicConstantBuffer::BufferLayout constBufferLayout;
 			constBufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");
@@ -48,7 +48,7 @@ CameraViewAreaIndicator::CameraViewAreaIndicator(GFX& gfx, Camera* parent)
 		}
 
 		{
-			RenderStep step("ignoreZBufferPass");
+			TempRenderStep step("ignoreZBufferPass");
 
 			DynamicConstantBuffer::BufferLayout constBufferLayout;
 			constBufferLayout.Add<DynamicConstantBuffer::DataType::Float4>("color");

@@ -43,7 +43,16 @@ void RenderGraph::Reset()
  	for (const auto& pass : m_passes)
  		pass->Reset();
 
+	ResetTempModels();
+
  	m_finished = false;
+}
+
+void RenderGraph::ResetTempModels()
+{
+	for (auto& pass : m_passes)
+		if (RenderJobPass* jobPass = dynamic_cast<RenderJobPass*>(pass.get()))
+			jobPass->ResetTempModels();
 }
 
 void RenderGraph::CaptureNextFrame()

@@ -24,6 +24,8 @@ public:
 
 	void DrawModels(GFX& gfx);
 
+	void DrawTempModels(GFX& gfx);
+
 	void DrawModelHierarchy(bool show);
 
 	void AddSceneObject(std::unique_ptr<SceneObject>&& model);
@@ -47,6 +49,8 @@ public:
 	std::vector<UINT8> objectValidity;
 
 	std::vector<std::unique_ptr<SceneObject>> m_models;
+	std::vector<SceneObject*> m_pRegularModels;
+	std::vector<SceneObject*> m_pTempModels;
 	std::vector<PointLight*> m_lights;
 
 	Window* m_window;

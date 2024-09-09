@@ -37,7 +37,7 @@ CameraIndicator::CameraIndicator(GFX& gfx, Camera* parent)
 
 	RenderTechnique technique;
 	{
-		RenderStep step("normalPass");
+		TempRenderStep step("normalPass");
 
 
 		DynamicConstantBuffer::BufferLayout constBufferLayout;

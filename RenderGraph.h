@@ -19,6 +19,8 @@ public:
 
 	void Reset();
 
+	void ResetTempModels();
+
 	void BeginFrame();
 
 public:

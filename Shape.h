@@ -46,7 +46,7 @@ public:
 		m_techniques.at(techniqueNum).m_active = active;
 
 		for(auto& step : m_techniques.at(techniqueNum).m_steps)
-			step.m_active = active;
+			step->m_active = active;
 	}
 
 	bool GetTechniqueActive(size_t techniqueNum)

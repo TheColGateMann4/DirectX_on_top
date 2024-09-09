@@ -32,7 +32,7 @@ BOOL Application::Initiate()
 	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{0.0f, 5.0f, -35.0f}));
 	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{5.0f, 2.0f, -15.0f}));
 	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics, 0.5f, DirectX::XMFLOAT3{0.0f, 3.0f, 0.0f}));
-	scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
+	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Flashlight\\Flashlight.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, 6.0f }));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\muro\\muro.obj", 1.0f, DirectX::XMFLOAT3{ 6.0f, 0.0f, 0.0f }));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Ghosts\\GroundCape1.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, -7.0f }));
@@ -142,6 +142,7 @@ void Application::Update()
 	scene.UpdateModels(window.Graphics, deltaTime);
 
 	scene.DrawModels(window.Graphics);
+	scene.DrawTempModels(window.Graphics);
 
 	// drawing scene normally
 	{
@@ -166,7 +167,18 @@ void Application::Update()
 
 				renderGraph.SetDepthStencil(m_cameraPreviewDepthStencil);
 
-				scene.BindLights(window.Graphics);
+				// preparing our renderGraph passes
+				{
+					scene.BindLights(window.Graphics); // binding light buffer
+
+					// we are not pushing normal models to passes since its not needed
+
+					renderGraph.ResetTempModels(); // deletes temp models(models dedicated for one render camera) from passes
+
+					scene.DrawTempModels(window.Graphics); // scene pushes temp models to passes
+				
+					// we might want to update matrices for normal models in visibilityBuffer
+				}
 
 				renderGraph.Render(window.Graphics);
 			}

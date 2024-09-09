@@ -28,26 +28,29 @@ public:
 	template<class T>
 	T* GetBindable(size_t stepNumber, size_t slotNumber, TargetShader targetShader = TargetPixelShader) const noexcept
 	{
-		return m_steps.at(stepNumber).GetBindable<T>(slotNumber, targetShader);
+		return m_steps.at(stepNumber)->GetBindable<T>(slotNumber, targetShader);
 	}
 
 	template<class T>
 	void GetEveryBindableOfType(std::vector< std::pair<std::string, std::vector<T*>> >& result)
 	{
 		for (auto& step : m_steps)
-			step.GetEveryBindableOfType<T>(result);
+			step->GetEveryBindableOfType<T>(result);
 	}
 
 public:
-	void AddRenderStep(RenderStep& renderStep)
+	template<class T,
+		std::enable_if_t<std::is_base_of_v<RenderStep, T>,
+			int> = 0>
+	void AddRenderStep(T& renderStep)
 	{
 		renderStep.m_active = m_active;
-		m_steps.push_back(renderStep);
+		m_steps.push_back(std::make_shared<T>(renderStep));
 	}
 
 	RenderStep* GetStep(size_t stepNum)
 	{
-		return &m_steps.at(stepNum);
+		return m_steps.at(stepNum).get();
 	}
 
 public:
@@ -62,7 +65,7 @@ public:
 		m_active = active;
 
 		for (auto& step : m_steps)
-			step.m_active = active;
+			step->m_active = active;
 	}
 
 	bool GetTechniqueActive() const
@@ -71,7 +74,7 @@ public:
 	}
 
 private:
-	std::vector<RenderStep> m_steps = {};
+	std::vector<std::shared_ptr<RenderStep>> m_steps = {};
 	const char* m_name;
 	bool m_active = true;
 };
