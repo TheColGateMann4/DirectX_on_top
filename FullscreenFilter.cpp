@@ -37,11 +37,11 @@ FullscreenFilter::FullscreenFilter(GFX& gfx)
 		m_constBuffer = CachedBuffer::GetBindable(gfx, constBufferData, {{TargetPixelShader, 0}});
 	}
 
-	pIndexBuffer = dynamic_cast<IndexBuffer*>(m_bindables.back().get());
+	pIndexBuffer = static_cast<IndexBuffer*>(m_bindables.back().get());
 
 	m_bindables.push_back(VertexShader::GetBindable(gfx, "VS_FullScreen.cso"));
 
-	VertexShader* pVertexShader = dynamic_cast<VertexShader*>(m_bindables.back().get());
+	VertexShader* pVertexShader = static_cast<VertexShader*>(m_bindables.back().get());
 
 	m_bindables.push_back(PixelShader::GetBindable(gfx, "PS_Fullscreen_Normal.cso"));
 	m_bindables.push_back(InputLayout::GetBindable(gfx, vertexLayout.GetDirectXLayout(), pVertexShader));
