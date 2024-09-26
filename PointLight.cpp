@@ -1,6 +1,6 @@
 #include "PointLight.h"
 #include "ShadowCamera.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 
 PointLight::PointLight(GFX& gfx, float radius, DirectX::XMFLOAT3 startingPosition)
 	:

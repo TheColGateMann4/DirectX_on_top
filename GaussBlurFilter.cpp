@@ -2,7 +2,7 @@
 #include "Includes.h"
 #include "ConstantBuffers.h"
 #include "Graphics.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 
 GaussBlurFilter::GaussBlurFilter(GFX& gfx, int range, float sigma)
 	: m_range(range), m_sigma(sigma)

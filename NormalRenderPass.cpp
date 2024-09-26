@@ -3,7 +3,7 @@
 #include "RenderPassInput.h"
 #include "RenderTarget.h"
 #include "BindableClassesMacro.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 #include "DepthTextureCube.h"
 
 #include "Camera.h"

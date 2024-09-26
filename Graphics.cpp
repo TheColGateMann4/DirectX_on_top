@@ -9,9 +9,9 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
-#include "imgui/imgui.h"
-#include "imgui/backend/imgui_impl_dx11.h"
-#include "imgui/backend/imgui_impl_win32.h"
+#include <imgui.h>
+#include <backend/imgui_impl_dx11.h>
+#include <backend/imgui_impl_win32.h>
 
 
 void GFX::Initialize(HWND hWnd)

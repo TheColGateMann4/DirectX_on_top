@@ -79,6 +79,15 @@
     <Filter Include="Shader\PBR">
       <UniqueIdentifier>{a8ed7917-ec75-4ef2-8412-f6cc4e23d169}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Shapes">
+      <UniqueIdentifier>{4bf419ed-acae-4122-a13a-da1961badd9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgui">
+      <UniqueIdentifier>{a9196bbf-f6bb-4a5f-82cc-9560203be097}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgui\backend">
+      <UniqueIdentifier>{40544b75-749e-497b-abf9-90ad69014481}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes.h">
@@ -375,6 +384,30 @@
     <ClInclude Include="RenderFirstCallPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
+    <ClInclude Include="D:\Libraries\imgui\imconfig.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Libraries\imgui\imgui.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Libraries\imgui\imgui_internal.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Libraries\imgui\imstb_rectpack.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Libraries\imgui\imstb_textedit.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Libraries\imgui\imstb_truetype.h">
+      <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Libraries\imgui\backend\imgui_impl_win32.h">
+      <Filter>Imgui\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Libraries\imgui\backend\imgui_impl_dx11.h">
+      <Filter>Imgui\backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPoint.cpp">
@@ -637,6 +670,27 @@
     </ClCompile>
     <ClCompile Include="RenderFirstCallPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Libraries\imgui\imgui.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Libraries\imgui\imgui_demo.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Libraries\imgui\imgui_draw.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Libraries\imgui\imgui_tables.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Libraries\imgui\imgui_widgets.cpp">
+      <Filter>Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Libraries\imgui\backend\imgui_impl_dx11.cpp">
+      <Filter>Imgui\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Libraries\imgui\backend\imgui_impl_win32.cpp">
+      <Filter>Imgui\backend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 #include "FPSCounter.h"
 #include "Includes.h"
 #include "Graphics.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 
 FPSCounter::FPSCounter(GFX& gfx)
 	:

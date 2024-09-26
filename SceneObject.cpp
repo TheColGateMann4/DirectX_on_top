@@ -1,5 +1,5 @@
 #include "SceneObject.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 #include "Shape.h"
 
 #include "ShaderUnorderedAccessView.h"

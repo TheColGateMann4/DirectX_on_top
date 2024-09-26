@@ -1,5 +1,5 @@
 #include "DynamicConstantBuffer.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 
 #define FOR_ALL_TYPES \
 	STATEMENT(Padding) \

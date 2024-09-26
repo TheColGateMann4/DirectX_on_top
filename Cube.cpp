@@ -2,7 +2,7 @@
 #include "BindableClassesMacro.h"
 #include "Vertex.h"
 #include "DynamicConstantBuffer.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 
 #include "RenderTechnique.h"
 #include "RenderPass.h"

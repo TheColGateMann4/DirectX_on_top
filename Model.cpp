@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include "imgui/imgui.h"
+#include <imgui.h>
 #include <Shlwapi.h> // PathIsDirectory
 
 

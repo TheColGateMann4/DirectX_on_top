@@ -81,12 +81,14 @@
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\DirectXTex\DirectXTex</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\DirectXTK\Inc;$(SolutionDir)\DirectXTK\Audio;$(SolutionDir)\DirectXTex\DirectXTex</IncludePath>
-    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\DirectXTK\Inc;$(SolutionDir)\DirectXTK\Audio;$(SolutionDir)\DirectXTex\DirectXTex;$(SolutionDir)\assimp\include</ExternalIncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\Libraries\DirectXTK11\Inc;D:\Libraries\DirectXTK11\Audio;D:\Libraries\DirectXTex\DirectXTex;D:\Libraries\imgui</IncludePath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\Libraries\DirectXTK11\Inc;D:\Libraries\DirectXTK11\Audio;D:\Libraries\DirectXTex\DirectXTex;D:\Libraries\assimp\include</ExternalIncludePath>
+    <SourcePath>D:\Libraries\imgui;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\DirectXTK\Inc;$(SolutionDir)\DirectXTK\Audio;$(SolutionDir)\DirectXTex\DirectXTex</IncludePath>
-    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\DirectXTK\Inc;$(SolutionDir)\DirectXTK\Audio;$(SolutionDir)\DirectXTex\DirectXTex;$(SolutionDir)\assimp\include</ExternalIncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\Libraries\DirectXTK11\Inc;D:\Libraries\DirectXTK11\Audio;D:\Libraries\DirectXTex\DirectXTex;D:\Libraries\imgui</IncludePath>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\Libraries\DirectXTK11\Inc;D:\Libraries\DirectXTK11\Audio;D:\Libraries\DirectXTex\DirectXTex;D:\Libraries\assimp\include</ExternalIncludePath>
+    <SourcePath>D:\Libraries\imgui;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -139,7 +141,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(MSBuildStartupDirectory)\DirectXTK\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);$(MSBuildStartupDirectory)\DirectXTex\DirectXTex\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);$(MSBuildStartupDirectory)\assimp\lib\$(LibrariesArchitecture)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Libraries\DirectXTK11\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);D:\Libraries\DirectXTex\DirectXTex\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);D:\Libraries\assimp\lib\$(LibrariesArchitecture)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTK.lib;DirectXTex.lib;assimp-vc143-mt.lib;Shlwapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -162,7 +164,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>DirectXTK.lib;DirectXTex.lib;assimp-vc143-mt.lib;Shlwapi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(MSBuildStartupDirectory)\DirectXTK\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);$(MSBuildStartupDirectory)\DirectXTex\DirectXTex\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);$(MSBuildStartupDirectory)\assimp\lib\$(LibrariesArchitecture)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Libraries\DirectXTK11\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);D:\Libraries\DirectXTex\DirectXTex\Bin\Windows10_2022\$(LibrariesArchitecture)\$(Configuration);D:\Libraries\assimp\lib\$(LibrariesArchitecture)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -181,6 +183,14 @@
     <ClInclude Include="ConstantBuffers.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeMapTexture.h" />
+    <ClInclude Include="D:\Libraries\imgui\backend\imgui_impl_dx11.h" />
+    <ClInclude Include="D:\Libraries\imgui\backend\imgui_impl_win32.h" />
+    <ClInclude Include="D:\Libraries\imgui\imconfig.h" />
+    <ClInclude Include="D:\Libraries\imgui\imgui.h" />
+    <ClInclude Include="D:\Libraries\imgui\imgui_internal.h" />
+    <ClInclude Include="D:\Libraries\imgui\imstb_rectpack.h" />
+    <ClInclude Include="D:\Libraries\imgui\imstb_textedit.h" />
+    <ClInclude Include="D:\Libraries\imgui\imstb_truetype.h" />
     <ClInclude Include="DepthStencilState.h" />
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="DepthTextureCube.h" />

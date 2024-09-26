@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "KeyMacros.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 #include <random>
 #include "CameraManager.h"
 #include "Camera.h"
