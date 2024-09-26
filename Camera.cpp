@@ -208,6 +208,16 @@ void Camera::SetCameraManagerLinkage(CameraManager* cameraManager)
 	m_cameraManager = cameraManager;
 }
 
+const AudioListener& Camera::GetListener() const
+{
+	return m_audioListener;
+}
+
+void Camera::Update(GFX& gfx, float deltatime)
+{
+	m_audioListener.Update(m_position, m_rotation, deltatime);
+}
+
 void Camera::UpdateProjectionMatrix(GFX& gfx)
 {
 	bool setWrongEntriesProjectionMatrix = (m_Fov == 0.0f || m_AspectRatio == 0.0f || m_NearZ == 0.0f || m_FarZ == 0.0f);

@@ -9,6 +9,7 @@
 #include "Skybox.h"
 #include "SpherePBR.h"
 #include "Sheet.h"
+#include "AudioObject.h"
 
 Application::Application(UINT32 width, UINT32 height, const char* name)
 	: m_width(width),
@@ -30,7 +31,7 @@ BOOL Application::Initiate()
  	window.Input.Key.allowRepeating(TRUE);
 
 	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{0.0f, 5.0f, -35.0f}));
-	scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{5.0f, 2.0f, -15.0f}));
+	//scene.AddSceneObject(std::make_unique<Camera>(window.Graphics, DirectX::XMFLOAT3{5.0f, 2.0f, -15.0f}));
 	scene.AddSceneObject(std::make_unique<PointLight>(window.Graphics, 0.5f, DirectX::XMFLOAT3{0.0f, 3.0f, 0.0f}));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Sponza\\sponza.obj", 1.0f / 20.0f));
 	//scene.AddSceneObject(std::make_unique<Model>(window.Graphics, "Models\\Flashlight\\Flashlight.obj", 1.0f, DirectX::XMFLOAT3{ 0.0f, 0.0f, 6.0f }));
@@ -41,6 +42,7 @@ BOOL Application::Initiate()
 	//scene.AddSceneObject(std::make_unique<SpherePBR>(window.Graphics, DirectX::XMFLOAT3{-5.0f, 3.0f, 2.0f}));
 	//scene.AddSceneObject(std::make_unique<Sheet>(window.Graphics, DirectX::XMFLOAT3{1.0f, 0.0f, 0.0f}));
 	scene.AddSceneObject(std::make_unique<Skybox>(window.Graphics, 20.0f, "Images\\SpaceSkybox\\Space.png"));
+	scene.AddSceneObject(std::make_unique<AudioObject>(window.Audio));
 	scene.LinkModelsToPipeline(renderGraph);
 
 	timer.SetTime();
@@ -140,6 +142,7 @@ void Application::Update()
 	renderGraph.BeginFrame();
 
 	scene.UpdateModels(window.Graphics, deltaTime);
+	window.Audio.Update();
 
 	scene.DrawModels(window.Graphics);
 	scene.DrawTempModels(window.Graphics);
@@ -235,6 +238,7 @@ void Application::Update()
 
 	static_cast<ShadowMappingRenderPass*>(renderGraph.GetRenderJobPass("shadowMappingPass"))->ShowWindow(window.Graphics, showImguiWindows);
 	static_cast<NormalRenderPass*>(renderGraph.GetRenderJobPass("normalPass"))->ShowWindow(window.Graphics, showImguiWindows);
+	window.Audio.ShowWindow(window.Graphics, showImguiWindows);
 
 	fpsCounter.Draw(deltaTime);
 

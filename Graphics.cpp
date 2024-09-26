@@ -16,6 +16,10 @@
 
 void GFX::Initialize(HWND hWnd)
 {
+	HRESULT hr;
+
+	THROW_GFX_IF_FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED));
+
 	DXGI_SWAP_CHAIN_DESC scDesc = {};
 	scDesc.BufferDesc.Width = 0;
 	scDesc.BufferDesc.Height = 0;
@@ -33,7 +37,6 @@ void GFX::Initialize(HWND hWnd)
 	scDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	scDesc.Flags = 0;
 
-	HRESULT hr;
 	UINT32 SwapChainFlags = 0;
 
 #ifdef _DEBUG

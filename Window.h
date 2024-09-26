@@ -3,6 +3,7 @@
 #include "ErrorHandling.h"
 #include "Graphics.h"
 #include "Input.h"
+#include "AudioEngine.h"
 
 class Window
 {
@@ -63,4 +64,5 @@ private:
 public:
 	InputSystem Input;
 	GFX Graphics;
+	AudioEngine Audio;
 };

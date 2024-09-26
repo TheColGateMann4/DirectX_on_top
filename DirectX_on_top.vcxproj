@@ -169,6 +169,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="AudioListener.h" />
+    <ClInclude Include="AudioObject.h" />
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="BindableClassesMacro.h" />
     <ClInclude Include="BindableList.h" />
@@ -209,14 +212,6 @@
     <ClInclude Include="HullShader.h" />
     <ClInclude Include="IgnoreZBufferRenderPass.h" />
     <ClInclude Include="ImguiManager.h" />
-    <ClInclude Include="imgui\backend\imgui_impl_dx11.h" />
-    <ClInclude Include="imgui\backend\imgui_impl_win32.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Includes.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Input.h" />
@@ -272,11 +267,15 @@
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="GaussBlurRenderPass.h" />
+    <ClInclude Include="VoiceEffectSettings.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="wrl_no_warnings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="AudioListener.cpp" />
+    <ClCompile Include="AudioObject.cpp" />
     <ClCompile Include="BlendState.cpp" />
     <ClCompile Include="BoxBlurRenderPass.cpp" />
     <ClCompile Include="BufferClearRenderPass.cpp" />
@@ -289,6 +288,13 @@
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="CubeMapTexture.cpp" />
     <ClCompile Include="CubeTextureDrawingOrder.h" />
+    <ClCompile Include="D:\Libraries\imgui\backend\imgui_impl_dx11.cpp" />
+    <ClCompile Include="D:\Libraries\imgui\backend\imgui_impl_win32.cpp" />
+    <ClCompile Include="D:\Libraries\imgui\imgui.cpp" />
+    <ClCompile Include="D:\Libraries\imgui\imgui_demo.cpp" />
+    <ClCompile Include="D:\Libraries\imgui\imgui_draw.cpp" />
+    <ClCompile Include="D:\Libraries\imgui\imgui_tables.cpp" />
+    <ClCompile Include="D:\Libraries\imgui\imgui_widgets.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="DepthTextureCube.cpp" />
     <ClCompile Include="DomainShader.cpp" />
@@ -306,13 +312,6 @@
     <ClCompile Include="HullShader.cpp" />
     <ClCompile Include="IgnoreZBufferRenderPass.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
-    <ClCompile Include="imgui\backend\imgui_impl_dx11.cpp" />
-    <ClCompile Include="imgui\backend\imgui_impl_win32.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputLayout.cpp" />
@@ -362,6 +361,7 @@
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="GaussBlurRenderPass.cpp" />
+    <ClCompile Include="VoiceEffectSettings.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>

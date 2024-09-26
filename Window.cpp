@@ -6,6 +6,9 @@
 #include <backend/imgui_impl_win32.h>
 #include <shlobj_core.h>
 
+#include <dbt.h>
+#include <ks.h>
+#include <ksmedia.h>
 
 //! WindowClass
 
@@ -212,6 +215,8 @@ Window::Window(UINT32 width, UINT32 height, const char* name)
 	this->Graphics.SetResolution(width, height);
 	this->Graphics.Initialize(m_hWnd);
 
+	this->Audio.Initialize();
+
 	ShowWindow(m_hWnd, SW_SHOW);
 
 	//initializing imgui
@@ -226,8 +231,22 @@ Window::Window(UINT32 width, UINT32 height, const char* name)
 
 	RegisterPrntScrHotKey();
 
+	// registering for raw input
+	{
 	if (!RegisterRawInputDevices(&rawInputDevice, 1, sizeof(rawInputDevice)))
 		THROW_LAST_ERROR;
+}
+
+	// registering notifications about device changes
+	{
+		DEV_BROADCAST_DEVICEINTERFACE filter = {};
+		filter.dbcc_size = sizeof(filter);
+		filter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+		filter.dbcc_classguid = KSCATEGORY_AUDIO;
+
+		HDEVNOTIFY hNewAudio = RegisterDeviceNotification(m_hWnd, &filter,
+			DEVICE_NOTIFY_WINDOW_HANDLE);
+	}
 }
 
 Window::~Window()
@@ -454,6 +473,33 @@ LRESULT Window::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			break;
 		}
+	case WM_DEVICECHANGE:
+		{
+			// we only want to handle device being removed and added
+			if (wParam != DBT_DEVICEARRIVAL && wParam != DBT_DEVICEREMOVECOMPLETE)
+				break;
+
+
+			DEV_BROADCAST_HDR* pDevice = reinterpret_cast<DEV_BROADCAST_HDR*>(lParam);
+
+			//
+			if (pDevice->dbch_devicetype != DBT_DEVTYP_DEVICEINTERFACE)
+			break;
+
+
+			DEV_BROADCAST_DEVICEINTERFACE* pInterface = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE*>(pDevice);
+
+			// finnaly checking if said device is for audio
+//			if (pInterface->dbcc_classguid != KSCATEGORY_AUDIO)
+//				break;
+
+			std::cout << pInterface->dbcc_name;
+
+			this->Audio.UpdateAudioDeviceList();
+
+			break;
+		}
+
 	}
 
 

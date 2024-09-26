@@ -25,17 +25,8 @@
     <Filter Include="Source Files\Bindable">
       <UniqueIdentifier>{71cf443e-a688-45ed-b84e-848c3b224086}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Shapes">
-      <UniqueIdentifier>{4bf419ed-acae-4122-a13a-da1961badd9b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Shapes">
       <UniqueIdentifier>{19997f83-2e53-42b7-93d7-b66b2bfb30ef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Imgui">
-      <UniqueIdentifier>{e6bec452-8f9b-4277-b0e5-9ab4dc0da864}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Imgui\Backend">
-      <UniqueIdentifier>{c3395999-abc6-4d5b-8047-435f2df3489b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shader\Header Files">
       <UniqueIdentifier>{dae04c4b-72b1-4b48-b2cf-26a0291eb2a8}</UniqueIdentifier>
@@ -174,30 +165,6 @@
     <ClInclude Include="SamplerState.h">
       <Filter>Header Files\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\imconfig.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\backend\imgui_impl_dx11.h">
-      <Filter>Imgui\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\backend\imgui_impl_win32.h">
-      <Filter>Imgui\Backend</Filter>
-    </ClInclude>
     <ClInclude Include="ImguiManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -253,9 +220,6 @@
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="DepthStencilView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderTarget.h">
@@ -384,6 +348,21 @@
     <ClInclude Include="RenderFirstCallPass.h">
       <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceEffectSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="D:\Libraries\imgui\imconfig.h">
       <Filter>Imgui</Filter>
     </ClInclude>
@@ -466,27 +445,6 @@
     </ClCompile>
     <ClCompile Include="SamplerState.cpp">
       <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_demo.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_draw.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_tables.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_widgets.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\backend\imgui_impl_dx11.cpp">
-      <Filter>Imgui\Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\backend\imgui_impl_win32.cpp">
-      <Filter>Imgui\Backend</Filter>
     </ClCompile>
     <ClCompile Include="ImguiManager.cpp">
       <Filter>Source Files</Filter>
@@ -670,6 +628,18 @@
     </ClCompile>
     <ClCompile Include="RenderFirstCallPass.cpp">
       <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VoiceEffectSettings.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\Libraries\imgui\imgui.cpp">
       <Filter>Imgui</Filter>

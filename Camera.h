@@ -3,6 +3,7 @@
 #include "SceneObject.h"
 #include "CameraIndicator.h"
 #include "CameraViewAreaIndicator.h"
+#include "AudioListener.h"
 
 class GFX;
 
@@ -53,6 +54,10 @@ public:
 
 	void SetCameraManagerLinkage(CameraManager* cameraManager);
 
+	const AudioListener& GetListener() const;
+
+	virtual void Update(GFX& gfx, float deltatime) override;
+
 private:
 	float WrapAngle(float angle, float value);
 
@@ -101,5 +106,7 @@ private:
 	DirectX::XMVECTOR m_upVector;
 
 	CameraManager* m_cameraManager;
+
+	AudioListener m_audioListener;
 };
 
