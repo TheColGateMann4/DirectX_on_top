@@ -1,9 +1,0 @@
-namespace DirectXontop
-{
-    [default_interface]
-    runtimeclass hlsl : Windows.UI.Xaml.Controls.Page
-    {
-        hlsl();
-        Int32 MyProperty;
-    }
-}

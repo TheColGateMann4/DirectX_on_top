@@ -52,7 +52,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_APPICON             ICON                    "C:\\Users\\U¿ytkownik1\\source\\repos\\DirectX_on_top\\icons8-video-card-96.ico"
+IDI_APPICON             ICON                    "icons8-video-card-96.ico"
 
 #endif    // Polish (Poland) resources
 /////////////////////////////////////////////////////////////////////////////

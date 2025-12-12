@@ -73,594 +73,546 @@
     <Filter Include="Header Files\Shapes">
       <UniqueIdentifier>{4bf419ed-acae-4122-a13a-da1961badd9b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Imgui">
-      <UniqueIdentifier>{a9196bbf-f6bb-4a5f-82cc-9560203be097}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Imgui\backend">
-      <UniqueIdentifier>{40544b75-749e-497b-abf9-90ad69014481}</UniqueIdentifier>
+    <Filter Include="Dependencies">
+      <UniqueIdentifier>{81b57312-4b3c-43c2-9169-91977d71a00e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Includes.h">
+    <ClInclude Include="src/Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Window.h">
+    <ClInclude Include="src/AudioEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ErrorHandling.h">
+    <ClInclude Include="src/AudioListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="src/AudioObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
+    <ClInclude Include="src/BindableClassesMacro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DXError.h">
+    <ClInclude Include="src/BindableList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
+    <ClInclude Include="src/Bindable/BlendState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.h">
+    <ClInclude Include="src/BoxBlurRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Bindable.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="ErrorMacros.h">
-      <Filter>Header Files\Macros</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBuffers.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexBuffer.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexBuffer.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="InputLayout.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="Topology.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexShader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="PixelShader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="TransformConstBuffer.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="Shape.h">
-      <Filter>Header Files\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube.h">
-      <Filter>Header Files\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyMacros.h">
-      <Filter>Header Files\Macros</Filter>
-    </ClInclude>
-    <ClInclude Include="BindableClassesMacro.h">
-      <Filter>Header Files\Macros</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.h">
+    <ClInclude Include="src/BufferClearRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
+    <ClInclude Include="src/CameraIndicator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>Header Files\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Sheet.h">
-      <Filter>Header Files\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="SamplerState.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="ImguiManager.h">
+    <ClInclude Include="src/CameraManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PointLight.h">
+    <ClInclude Include="src/Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PointLightModel.h">
-      <Filter>Header Files\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.h">
+    <ClInclude Include="src/CameraViewAreaIndicator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
+    <ClInclude Include="src/Bindable/ComputeShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="src/Cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleMesh.h">
+    <ClInclude Include="src/Bindable/CubeMapTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BindableList.h">
+    <ClInclude Include="src/DepthStencilView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
+    <ClInclude Include="src/DepthTextureCube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BlendState.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="RasterizerState.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="StringConverting.h">
+    <ClInclude Include="src/Bindable/DomainShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicConstantBuffer.h">
+    <ClInclude Include="src/DXError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthStencilState.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneObject.h">
+    <ClInclude Include="src/DynamicConstantBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderPass.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderJob.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderTechnique.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthStencilView.h">
+    <ClInclude Include="src/ErrorHandling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderTarget.h">
+    <ClInclude Include="src/ErrorMacros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FullscreenFilter.h">
+    <ClInclude Include="src/FPSCounter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GaussBlurFilter.h">
+    <ClInclude Include="src/FullscreenFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderBindablePass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPassOuput.h">
-      <Filter>Header Files\Render\RenderGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPassInput.h">
-      <Filter>Header Files\Render\RenderGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicBuffer.h">
+    <ClInclude Include="src/FullscreenFilterRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderJobPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderStep.h">
-      <Filter>Header Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="OutlineRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="OutlineMaskingRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="GaussBlurRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="FullscreenFilterRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="BufferClearRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderGraph.h">
-      <Filter>Header Files\Render\RenderGraph\RenderGraphType</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalOutlineRenderGraph.h">
-      <Filter>Header Files\Render\RenderGraph\RenderGraphType</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxBlurRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="GaussBlurRenderGraph.h">
-      <Filter>Header Files\Render\RenderGraph\RenderGraphType</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraManager.h">
+    <ClInclude Include="src/GaussBlurFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wrl_no_warnings.h">
+    <ClInclude Include="src/GaussBlurRenderGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CameraIndicator.h">
-      <Filter>Header Files\Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraViewAreaIndicator.h">
+    <ClInclude Include="src/GraphicBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IgnoreZBufferRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowMappingRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="NullTexture.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="CubeMapTexture.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="OutlineScalingRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSCounter.h">
+    <ClInclude Include="src/Graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SkyboxRenderPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyboxTransformBuffer.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="Skybox.h">
+    <ClInclude Include="src/Bindable/HullShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowCamera.h">
+    <ClInclude Include="src/IgnoreZBufferRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthTextureCube.h">
+    <ClInclude Include="src/ImguiManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SpherePBR.h">
+    <ClInclude Include="src/Includes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HullShader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="DomainShader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="NullShader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="ComputeShader.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderUnorderedAccessView.h">
-      <Filter>Header Files\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneVisibilityManager.h">
+    <ClInclude Include="src/Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RenderFirstCallPass.h">
-      <Filter>Header Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="src/KeyMacros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AudioObject.h">
+    <ClInclude Include="src/Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AudioEngine.h">
+    <ClInclude Include="src/Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AudioListener.h">
+    <ClInclude Include="src/NormalOutlineRenderGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VoiceEffectSettings.h">
+    <ClInclude Include="src/NormalRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Libraries\imgui\imconfig.h">
-      <Filter>Imgui</Filter>
+    <ClInclude Include="src/OutlineMaskingRenderPass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Libraries\imgui\imgui.h">
-      <Filter>Imgui</Filter>
+    <ClInclude Include="src/OutlineRenderPass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Libraries\imgui\imgui_internal.h">
-      <Filter>Imgui</Filter>
+    <ClInclude Include="src/OutlineScalingRenderPass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Libraries\imgui\imstb_rectpack.h">
-      <Filter>Imgui</Filter>
+    <ClInclude Include="src/RenderBindablePass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Libraries\imgui\imstb_textedit.h">
-      <Filter>Imgui</Filter>
+    <ClInclude Include="src/RenderFirstCallPass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Libraries\imgui\imstb_truetype.h">
-      <Filter>Imgui</Filter>
+    <ClInclude Include="src/RenderGraph.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Libraries\imgui\backend\imgui_impl_win32.h">
-      <Filter>Imgui\backend</Filter>
+    <ClInclude Include="src/RenderJob.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D:\Libraries\imgui\backend\imgui_impl_dx11.h">
-      <Filter>Imgui\backend</Filter>
+    <ClInclude Include="src/RenderJobPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/RenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/RenderPassOuput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/RenderPassInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/RenderStep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/RenderTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/RenderTechnique.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/PointLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/PointLightModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/SceneObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/SceneVisibilityManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/ShadowCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/ShadowMappingRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Shape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Sheet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/SimpleMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/SkyboxRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/SpherePBR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/StringConverting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/GaussBlurRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/VoiceEffectSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/wrl_no_warnings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/Bindable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/ConstantBuffers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/DepthStencilState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/IndexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/InputLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/NullShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/NullTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/PixelShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/RasterizerState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/SamplerState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/ShaderUnorderedAccessView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/SkyboxTransformBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/Topology.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/TransformConstBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/VertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/Bindable/VertexShader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EntryPoint.cpp">
+    <ClCompile Include="src/Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Window.cpp">
+    <ClCompile Include="src/AudioEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ErrorHandling.cpp">
+    <ClCompile Include="src/AudioListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="src/AudioObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DXError.cpp">
+    <ClCompile Include="src/Bindable/BlendState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Input.cpp">
+    <ClCompile Include="src/BoxBlurRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics.cpp">
+    <ClCompile Include="src/BufferClearRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IndexBuffer.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexBuffer.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="InputLayout.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="Topology.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexShader.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="PixelShader.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube.cpp">
-      <Filter>Source Files\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Time.cpp">
+    <ClCompile Include="src/CameraIndicator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>Source Files\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Sheet.cpp">
-      <Filter>Source Files\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="SamplerState.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="ImguiManager.cpp">
+    <ClCompile Include="src/CameraManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="src/Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointLight.cpp">
+    <ClCompile Include="src/CameraViewAreaIndicator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointLightModel.cpp">
-      <Filter>Source Files\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
+    <ClCompile Include="src/Bindable/ComputeShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="src/Cube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BlendState.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="RasterizerState.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="DynamicConstantBuffer.cpp">
+    <ClCompile Include="src/Bindable/CubeMapTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderPass.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderJob.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderTechnique.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Shape.cpp">
-      <Filter>Source Files\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthStencilView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderTarget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FullscreenFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GaussBlurFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderBindablePass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPassInput.cpp">
-      <Filter>Source Files\Render\RenderGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderJobPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderStep.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="OutlineRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="OutlineMaskingRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="GaussBlurRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="FullscreenFilterRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="BufferClearRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderGraph.cpp">
-      <Filter>Source Files\Render\RenderGraph\RenderGraphType</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalOutlineRenderGraph.cpp">
-      <Filter>Source Files\Render\RenderGraph\RenderGraphType</Filter>
-    </ClCompile>
-    <ClCompile Include="BoxBlurRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="GaussBlurRenderGraph.cpp">
-      <Filter>Source Files\Render\RenderGraph\RenderGraphType</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraIndicator.cpp">
-      <Filter>Source Files\Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraViewAreaIndicator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IgnoreZBufferRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShadowMappingRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="Node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NullTexture.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="CubeMapTexture.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="OutlineScalingRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="FPSCounter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyboxRenderPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyboxTransformBuffer.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="TransformConstBuffer.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShadowCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthTextureCube.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CubeTextureDrawingOrder.h">
+    <ClCompile Include="src/CubeTextureDrawingOrder.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpherePBR.cpp">
+    <ClCompile Include="src/DepthStencilView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleMesh.cpp">
+    <ClCompile Include="src/DepthTextureCube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HullShader.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="DomainShader.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="NullShader.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="ConstantBuffers.cpp">
+    <ClCompile Include="src/Bindable/DomainShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ComputeShader.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderUnorderedAccessView.cpp">
-      <Filter>Source Files\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneVisibilityManager.cpp">
+    <ClCompile Include="src/DXError.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderFirstCallPass.cpp">
-      <Filter>Source Files\Render\RenderGraph\Passes\Pre-Made Passes</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioObject.cpp">
+    <ClCompile Include="src/DynamicConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AudioEngine.cpp">
+    <ClCompile Include="src/EntryPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AudioListener.cpp">
+    <ClCompile Include="src/ErrorHandling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VoiceEffectSettings.cpp">
+    <ClCompile Include="src/FPSCounter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Libraries\imgui\imgui.cpp">
-      <Filter>Imgui</Filter>
+    <ClCompile Include="src/FullscreenFilter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Libraries\imgui\imgui_demo.cpp">
-      <Filter>Imgui</Filter>
+    <ClCompile Include="src/FullscreenFilterRenderPass.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Libraries\imgui\imgui_draw.cpp">
-      <Filter>Imgui</Filter>
+    <ClCompile Include="src/GaussBlurFilter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Libraries\imgui\imgui_tables.cpp">
-      <Filter>Imgui</Filter>
+    <ClCompile Include="src/GaussBlurRenderGraph.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Libraries\imgui\imgui_widgets.cpp">
-      <Filter>Imgui</Filter>
+    <ClCompile Include="src/GraphicBuffer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Libraries\imgui\backend\imgui_impl_dx11.cpp">
-      <Filter>Imgui\backend</Filter>
+    <ClCompile Include="src/Graphics.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Libraries\imgui\backend\imgui_impl_win32.cpp">
-      <Filter>Imgui\backend</Filter>
+    <ClCompile Include="src/Bindable/HullShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/IgnoreZBufferRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/ImguiManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/NormalOutlineRenderGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/NormalRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/OutlineMaskingRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/OutlineRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/OutlineScalingRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderBindablePass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderFirstCallPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderJob.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderJobPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderPassInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderStep.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/RenderTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/PointLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/PointLightModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/SceneObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/SceneVisibilityManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/ShadowCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/ShadowMappingRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Shape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Sheet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/SimpleMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/SkyboxRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/SpherePBR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Vertex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/GaussBlurRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/VoiceEffectSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/ConstantBuffers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/IndexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/InputLayout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/NullShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/NullTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/PixelShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/RasterizerState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/SamplerState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/ShaderUnorderedAccessView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/SkyboxTransformBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/Topology.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/TransformConstBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/VertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/Bindable/VertexShader.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -674,175 +626,183 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VS_wave.hlsl">
+    <FxCompile Include="src/Shaders/CS_BoundsCubeOfModel.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_FaceColors.hlsl">
+    <FxCompile Include="src/Shaders/CS_FrustumChecking.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Blend.hlsl">
+    <FxCompile Include="src/Shaders/CS_ProcessVertices.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Blend.hlsl">
+    <FxCompile Include="src/Shaders/CS_Test.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS.hlsl">
+    <FxCompile Include="src/Shaders/DS_Shadow_Test.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Texture.hlsl">
+    <FxCompile Include="src/Shaders/DS_Test.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Texture.hlsl">
+    <FxCompile Include="src/Shaders/DS_Wave.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS.hlsl">
+    <FxCompile Include="src/Shaders/HS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_TextureAnimation.hlsl">
+    <FxCompile Include="src/Shaders/HS_Shadow_Test.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Solid.hlsl">
+    <FxCompile Include="src/Shaders/HS_Test.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Outline.hlsl">
+    <FxCompile Include="src/Shaders/PS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Fullscreen_GaussBlur.hlsl">
-      <Filter>Shader\FullscreenFilters</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Fullscreen_NegativeColors.hlsl">
-      <Filter>Shader\FullscreenFilters</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Fullscreen.hlsl">
-      <Filter>Shader\FullscreenFilters</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Fullscreen_Normal.hlsl">
-      <Filter>Shader\FullscreenFilters</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Fullscreen_Outline.hlsl">
-      <Filter>Shader\FullscreenFilters</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Fullscreen_BoxBlur.hlsl">
-      <Filter>Shader\FullscreenFilters</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Shadow.hlsl">
+    <FxCompile Include="src/Shaders/PS_Blend.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Skybox.hlsl">
+    <FxCompile Include="src/Shaders/PS_FaceColors.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Skybox.hlsl">
+    <FxCompile Include="src/Shaders/PS_Fullscreen_BoxBlur.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_Phong_NoMaps.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Mask_Normals_SpecularMap.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Normals_Specular.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Normals_Specular_Cube.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Normals_Specular_NoTangent.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Normals_SpecularMap.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_Specular.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Phong_Texture_SpecularMap.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong_Cube.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong_Normals.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Phong_Texture_Normals.hlsl">
-      <Filter>Shader\Phong</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_PBR.hlsl">
-      <Filter>Shader\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_PBR.hlsl">
-      <Filter>Shader\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_PBR_Height.hlsl">
-      <Filter>Shader\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Shadow_Height.hlsl">
+    <FxCompile Include="src/Shaders/PS_Fullscreen_GaussBlur.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="PS_PBR_Diffuse_Normal_Roughness_Metallic.hlsl">
-      <Filter>Shader\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="HS_Test.hlsl">
+    <FxCompile Include="src/Shaders/PS_Fullscreen_NegativeColors.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="DS_Test.hlsl">
+    <FxCompile Include="src/Shaders/PS_Fullscreen_Normal.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="HS.hlsl">
+    <FxCompile Include="src/Shaders/PS_Fullscreen_Outline.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="DS_Wave.hlsl">
+    <FxCompile Include="src/Shaders/PS_PBR.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="VS_NoProjection.hlsl">
+    <FxCompile Include="src/Shaders/PS_PBR_Diffuse_Normal_Roughness_Metallic.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="HS_Shadow_Test.hlsl">
+    <FxCompile Include="src/Shaders/PS_Phong_NoMaps.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="DS_Shadow_Test.hlsl">
+    <FxCompile Include="src/Shaders/PS_Phong_Texture_Mask_Normals_SpecularMap.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="CS_Test.hlsl">
+    <FxCompile Include="src/Shaders/PS_Phong_Texture_Normals_Specular.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="CS_BoundsCubeOfModel.hlsl">
+    <FxCompile Include="src/Shaders/PS_Phong_Texture_Normals_Specular_Cube.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="CS_FrustumChecking.hlsl">
+    <FxCompile Include="src/Shaders/PS_Phong_Texture_Normals_Specular_NoTangent.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="CS_ProcessVertices.hlsl">
+    <FxCompile Include="src/Shaders/PS_Phong_Texture_Normals_SpecularMap.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/PS_Phong_Texture_Specular.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/PS_Phong_Texture_SpecularMap.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/PS_Skybox.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/PS_Solid.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/PS_Texture.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/PS_TextureAnimation.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Blend.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Fullscreen.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_NoProjection.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Outline.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_PBR.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_PBR_Height.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Phong.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Phong_Cube.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Phong_Normals.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Phong_Texture_Normals.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Shadow.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Shadow_Height.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Skybox.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_Texture.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="src/Shaders/VS_wave.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PointLightConstBuffer.hlsli">
-      <Filter>Shader\Header Files</Filter>
+    <None Include="src/Shaders/FloatHLSLMacros.hlsli">
+      <Filter>Shader</Filter>
     </None>
-    <None Include="ShaderFunctions.hlsli">
-      <Filter>Shader\Header Files</Filter>
+    <None Include="src/Shaders/PointLightConstBuffer.hlsli">
+      <Filter>Shader</Filter>
     </None>
-    <None Include="FloatHLSLMacros.hlsli">
-      <Filter>Shader\Header Files</Filter>
+    <None Include="src/Shaders/PS_ShadowFunctions.hlsli">
+      <Filter>Shader</Filter>
     </None>
-    <None Include="PS_ShadowFunctions.hlsli">
-      <Filter>Shader\Header Files</Filter>
+    <None Include="src/Shaders/PS_TransformConstBuffer.hlsli">
+      <Filter>Shader</Filter>
     </None>
-    <None Include="ShadowResources.hlsli">
-      <Filter>Shader\Header Files</Filter>
+    <None Include="src/Shaders/ShaderFunctions.hlsli">
+      <Filter>Shader</Filter>
     </None>
-    <None Include="PS_TransformConstBuffer.hlsli">
-      <Filter>Shader\Header Files</Filter>
+    <None Include="src/Shaders/ShadowResources.hlsli">
+      <Filter>Shader</Filter>
     </None>
-    <None Include="VS_TransformConstBuffer.hlsli">
-      <Filter>Shader\Header Files</Filter>
+    <None Include="src/Shaders/VS_ShadowFunctions.hlsli">
+      <Filter>Shader</Filter>
     </None>
-    <None Include="VS_ShadowFunctions.hlsli">
-      <Filter>Shader\Header Files</Filter>
+    <None Include="src/Shaders/VS_TransformConstBuffer.hlsli">
+      <Filter>Shader</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="Dependencies\assimp-vc143-mt.dll">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Dependencies\zlib1.dll">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
