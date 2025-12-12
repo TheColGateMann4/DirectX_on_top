@@ -45,3 +45,18 @@ Editor & Camera Previews
 <div align="center"> 
   <img src="showcase/GUIShowcase.png" width="70%" alt="Editor showing hierarchy, camera preview, and frustum">
 </div>
+
+## 🛠 Dependencies
+
+### [ImGui](https://github.com/ocornut/imgui) & [Freetype](https://github.com/freetype/freetype)
+- Imgui built in separate project -> single `.lib`  
+  - Faster builds  
+  - No imgui warnings  
+- Freetype required by my ImGui config
+
+### [DirectXTK](https://github.com/microsoft/DirectXTK) & [DirectXTex](https://github.com/microsoft/DirectXTex)
+- Must use `*_Desktop_2022_Win10.sln`
+- Build **x64 Debug/Release** -> produces `.lib` files
+
+### [Assimp](https://github.com/assimp/assimp)
+- Get pre-built binaries from Assimp itch.io
